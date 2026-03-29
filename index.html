@@ -14,29 +14,52 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
-    body{background:#030014;color:#eaeaf4;font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-m);min-height:100vh;overflow-x:hidden}
     a{text-decoration:none;color:inherit}
     button{font-family:inherit;cursor:pointer}
 
     :root{
-      --black:#030014;
-      --dark:#080820;
-      --card-bg:rgba(10,10,34,.78);
-      --card-border:rgba(110,70,190,.2);
-      --accent:#b388ff;
-      --accent-dim:rgba(179,136,255,.12);
-      --accent-glow:rgba(179,136,255,.24);
-      --purple-glow:rgba(157,80,187,.28);
-      --blue:#38bdf8;
-      --white:#eaeaf4;
-      --white-dim:rgba(234,234,244,.45);
-      --white-faint:rgba(234,234,244,.06);
-      --border:rgba(90,70,170,.22);
-      --green:#4fffb0;
-      --gold:#e0b854;
-      --gold-dim:rgba(224,184,84,.12);
-      --gold-border:rgba(224,184,84,.32);
-      --red:#ff6b6b;
+      /* MBRN Design System v3.0 - Core Tokens */
+      --bg:            #0a0a0f;
+      --bg-soft:       #12121a;
+      
+      --text:          #eaeaf4;
+      --text-dim:      rgba(234,234,244,0.45);
+      --text-faint:    rgba(234,234,244,0.06);
+      
+      --accent-main:   #8b5cf6;
+      --accent-dim:    rgba(139,92,246,0.12);
+      --accent-glow:   rgba(139,92,246,0.28);
+      
+      --feature-secondary: #38bdf8;
+      --feature-dim:   rgba(56,189,248,0.12);
+      
+      --success:       #4fffb0;
+      --danger:        #ff6b6b;
+      
+      --border:        rgba(255,255,255,0.08);
+      --border-hover:  rgba(255,255,255,0.15);
+      
+      --card:          rgba(15,15,25,0.8);
+      --card-hover:    rgba(20,20,35,0.9);
+      
+      /* Legacy Aliases */
+      --black:         var(--bg);
+      --dark:          var(--bg-soft);
+      --white:         var(--text);
+      --white-dim:     var(--text-dim);
+      --white-faint:   var(--text-faint);
+      --card-bg:       var(--card);
+      --card-border:   var(--border);
+      --accent:        var(--accent-main);
+      --blue:          var(--feature-secondary);
+      --green:         var(--success);
+      --red:           var(--danger);
+      --gold:          var(--feature-secondary);
+      --gold-dim:      var(--feature-dim);
+      --gold-border:   var(--feature-dim);
+      --purple-glow:   var(--accent-glow);
+      
       --font-d:'Syne',sans-serif;
       --font-m:'Space Mono',monospace;
       --r:10px; --rl:16px;
@@ -71,91 +94,102 @@
       box-shadow:0 0 6px var(--green);animation:blink 2.5s ease-in-out infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-    /* ── HERO ─── */
-    .hero{position:relative;z-index:1;min-height:100vh;
+    /* ── HERO V2 PREMIUM ─── */
+    .hero{position:relative;z-index:1;min-height:85vh;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      text-align:center;padding:80px 24px 60px}
+      text-align:center;padding:140px 24px 60px}
 
-    .hero-system-id{display:inline-flex;align-items:center;gap:8px;
-      font-size:9px;letter-spacing:.25em;text-transform:uppercase;
-      color:var(--accent);opacity:.7;margin-bottom:28px;
-      background:var(--accent-dim);border:1px solid rgba(179,136,255,.22);
-      padding:6px 16px;border-radius:99px;
-      animation:fadeUp .7s ease both}
-    .hero-system-id-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);
-      box-shadow:0 0 6px var(--accent-glow);animation:blink 2s infinite}
+    .hero-brand{font-family:var(--font-d);font-weight:800;
+      font-size:clamp(80px,22vw,160px);line-height:.82;letter-spacing:-.04em;
+      text-transform:uppercase;color:var(--text);
+      filter:drop-shadow(0 0 60px rgba(139,92,246,.15));
+      animation:mbrn-hero-entrance 1.2s cubic-bezier(.22,.61,.36,1) both}
+    @keyframes mbrn-hero-entrance{
+      0%{opacity:0;transform:translateY(40px) scale(.95);letter-spacing:.1em}
+      100%{opacity:1;transform:translateY(0) scale(1);letter-spacing:-.04em}
+    }
 
-    .hero-title{font-family:var(--font-d);font-weight:800;
-      font-size:clamp(64px,16vw,120px);line-height:.85;letter-spacing:-.03em;
-      text-transform:uppercase;
-      background:linear-gradient(135deg,#fff 0%,var(--accent) 45%,var(--blue) 100%);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-      filter:drop-shadow(0 0 40px rgba(179,136,255,.15));
-      animation:fadeUp .7s .06s ease both}
+    .hero-hook{font-family:var(--font-d);font-weight:400;
+      font-size:clamp(18px,3.5vw,24px);color:var(--text-dim);letter-spacing:.04em;margin-top:24px;
+      animation:fadeUp .8s .3s ease both}
 
-    .hero-tagline{font-family:var(--font-d);font-size:clamp(13px,2.5vw,18px);font-weight:400;
-      color:var(--white-dim);letter-spacing:.04em;margin-top:10px;
-      animation:fadeUp .7s .12s ease both}
+    .hero-cta{margin-top:40px;animation:fadeUp .8s .5s ease both}
+    .btn-start{position:relative;display:inline-flex;align-items:center;gap:10px;
+      background:linear-gradient(135deg,var(--accent-main),#a78bfa);border:none;
+      color:#fff;padding:20px 44px;border-radius:99px;
+      font-family:var(--font-d);font-size:14px;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;transition:all .35s cubic-bezier(.34,1.56,.64,1);
+      box-shadow:0 8px 32px rgba(139,92,246,.35),inset 0 1px 0 rgba(255,255,255,.2)}
+    .btn-start::before{content:'';position:absolute;inset:0;border-radius:99px;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+      background-size:200% 100%;animation:mbrn-shine 3s ease-in-out infinite;
+      pointer-events:none}
+    @keyframes mbrn-shine{0%{background-position:-200%}100%{background-position:200%}}
+    .btn-start:hover{transform:translateY(-3px) scale(1.02);
+      box-shadow:0 16px 48px rgba(139,92,246,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+    .btn-start:active{transform:translateY(-1px) scale(.98)}
+    .btn-start-arrow{transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+    .btn-start:hover .btn-start-arrow{transform:translateX(6px)}
 
-    .hero-divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--accent-glow),transparent);
-      margin:28px auto;animation:fadeUp .7s .18s ease both}
+    .hero-subline{margin-top:28px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+      color:var(--text-dim);opacity:.5;animation:fadeUp .8s .7s ease both}
 
-    .hero-desc{max-width:560px;font-size:13px;letter-spacing:.05em;
-      color:var(--white-dim);line-height:1.85;
-      animation:fadeUp .7s .22s ease both}
+    .hero-scroll{margin-top:80px;display:flex;flex-direction:column;align-items:center;gap:10px;
+      animation:fadeUp .8s .9s ease both;opacity:.35}
+    .hero-scroll-text{font-size:10px;letter-spacing:.25em;text-transform:uppercase;font-weight:500}
+    .hero-scroll-arrow{font-size:14px;animation:mbrn-bounce 2s ease-in-out infinite}
+    @keyframes mbrn-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 
-    .hero-specs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:24px;
-      animation:fadeUp .7s .28s ease both}
-    .hero-spec{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-      color:var(--white-dim);opacity:.65;
-      background:rgba(255,255,255,.04);border:1px solid var(--border);
-      padding:5px 14px;border-radius:99px}
-
-    .hero-scroll{margin-top:52px;display:flex;flex-direction:column;align-items:center;gap:7px;
-      animation:fadeUp .7s .36s ease both;opacity:.4}
-    .hero-scroll-text{font-size:9px;letter-spacing:.2em;text-transform:uppercase}
-    .hero-scroll-arrow{font-size:16px;animation:bounce 2.2s ease-in-out infinite}
-    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
-
-    /* ── METRICS BAR ─── */
-    .metrics{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:0 24px;
-      animation:fadeUp .7s .3s ease both}
-    .metrics-inner{display:grid;grid-template-columns:repeat(3,1fr);
+    /* ── METRICS BAR PREMIUM ─── */
+    .metrics{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:0 24px;
+      animation:fadeUp .8s .6s ease both}
+    .metrics-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
       background:var(--card-bg);border:1px solid var(--card-border);
-      border-radius:var(--rl);overflow:hidden;backdrop-filter:blur(18px)}
-    .metric{padding:20px 16px;text-align:center;border-right:1px solid var(--card-border)}
-    .metric:last-child{border-right:none}
-    .metric-num{font-family:var(--font-d);font-size:26px;font-weight:800;color:var(--accent);line-height:1;
-      filter:drop-shadow(0 0 10px var(--accent-glow))}
-    .metric-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;
-      color:var(--white-dim);opacity:.5;margin-top:5px}
+      border-radius:var(--rl);overflow:hidden;backdrop-filter:blur(24px);
+      box-shadow:0 8px 48px rgba(0,0,0,.3),0 0 0 1px rgba(139,92,246,.1)}
+    .metric{padding:28px 20px;text-align:center;position:relative;
+      background:linear-gradient(180deg,rgba(139,92,246,.03),transparent)}
+    .metric::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:1px;
+      background:linear-gradient(180deg,transparent,var(--border),transparent)}
+    .metric:last-child::after{display:none}
+    .metric-num{font-family:var(--font-d);font-size:32px;font-weight:800;color:var(--accent);line-height:1;
+      filter:drop-shadow(0 0 12px var(--accent-glow));transition:all .3s ease}
+    .metric:hover .metric-num{transform:scale(1.1);filter:drop-shadow(0 0 20px var(--accent-glow))}
+    .metric-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--white-dim);opacity:.6;margin-top:10px;font-weight:500}
 
-    /* ── TOOLS SECTION ─── */
-    .section{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:80px 24px}
-    .section-header{text-align:center;margin-bottom:48px}
-    .section-eyebrow{font-size:9px;letter-spacing:.25em;text-transform:uppercase;
-      color:var(--accent);opacity:.7;margin-bottom:12px}
-    .section-title{font-family:var(--font-d);font-size:clamp(26px,5vw,38px);font-weight:800;
-      letter-spacing:-.01em}
+    /* ── TOOLS SECTION PREMIUM ─── */
+    .section{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:100px 24px}
+    .section-header{text-align:center;margin-bottom:64px}
+    .section-eyebrow{font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+      color:var(--accent);opacity:.8;margin-bottom:16px;font-weight:600}
+    .section-title{font-family:var(--font-d);font-size:clamp(28px,5vw,42px);font-weight:800;
+      letter-spacing:-.02em;background:linear-gradient(135deg,#fff 0%,var(--accent) 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .section-sub{font-size:12px;color:var(--white-dim);letter-spacing:.04em;
       line-height:1.7;margin-top:10px;max-width:500px;margin-left:auto;margin-right:auto}
 
-    /* TOOL GRID */
-    .tools-grid{display:grid;grid-template-columns:1fr;gap:16px}
+    /* TOOL GRID PREMIUM */
+    .tools-grid{display:grid;grid-template-columns:1fr;gap:24px}
     @media(min-width:640px){.tools-grid{grid-template-columns:repeat(2,1fr)}}
     @media(min-width:900px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
 
     .tool-card{position:relative;background:var(--card-bg);border:1px solid var(--card-border);
-      border-radius:var(--rl);padding:26px;display:flex;flex-direction:column;gap:14px;
-      backdrop-filter:blur(22px);overflow:hidden;
-      transition:transform .25s cubic-bezier(.34,1.2,.64,1),
-                 border-color .25s,box-shadow .25s;
-      box-shadow:0 4px 24px rgba(157,80,187,.05),inset 0 1px 0 rgba(255,255,255,.03)}
-    .tool-card::after{content:'';position:absolute;inset:0;opacity:0;
-      background:radial-gradient(ellipse at 50% 0%,rgba(179,136,255,.07) 0%,transparent 60%);
-      transition:opacity .3s;pointer-events:none}
-    .tool-card:hover{transform:translateY(-5px);border-color:rgba(179,136,255,.38);
-      box-shadow:0 16px 48px rgba(157,80,187,.18),inset 0 1px 0 rgba(255,255,255,.05)}
+      border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:18px;
+      backdrop-filter:blur(24px);overflow:hidden;isolation:isolate;
+      transition:all .4s cubic-bezier(.22,.61,.36,1);
+      box-shadow:0 4px 24px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.05)}
+    .tool-card::before{content:'';position:absolute;inset:0;opacity:0;
+      background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.12) 0%,transparent 70%);
+      transition:opacity .4s ease;pointer-events:none;z-index:-1}
+    .tool-card::after{content:'';position:absolute;inset:-1px;border-radius:21px;padding:1px;
+      background:linear-gradient(135deg,rgba(139,92,246,.4),transparent,rgba(139,92,246,.2));
+      -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s ease}
+    .tool-card:hover{transform:translateY(-8px) scale(1.01);
+      box-shadow:0 24px 64px rgba(139,92,246,.2),0 0 0 1px rgba(139,92,246,.2),inset 0 1px 0 rgba(255,255,255,.1)}
+    .tool-card:hover::before{opacity:1}
     .tool-card:hover::after{opacity:1}
     .tool-card--featured{grid-column:1/-1}
     @media(min-width:900px){.tool-card--featured{grid-column:span 2}}
@@ -179,9 +213,10 @@
     .card-tier--experimental{color:var(--gold);border-color:var(--gold-border);background:var(--gold-dim)}
     .card-tier--premium{color:var(--green);border-color:rgba(79,255,176,.25);background:rgba(79,255,176,.06)}
 
-    .tool-icon{font-size:32px;line-height:1}
-    .tool-name{font-family:var(--font-d);font-size:20px;font-weight:800;letter-spacing:-.01em}
-    .tool-desc{font-size:12px;color:var(--white-dim);letter-spacing:.04em;line-height:1.7;flex:1}
+    .tool-icon{font-size:36px;line-height:1;transition:transform .3s ease}
+    .tool-card:hover .tool-icon{transform:scale(1.1) rotate(-3deg)}
+    .tool-name{font-family:var(--font-d);font-size:22px;font-weight:800;letter-spacing:-.01em;margin-top:4px}
+    .tool-desc{font-size:13px;color:var(--white-dim);letter-spacing:.02em;line-height:1.7;flex:1;opacity:.85}
 
     .tool-specs{display:flex;flex-direction:column;gap:4px}
     .tool-spec{font-size:10px;color:var(--white-dim);letter-spacing:.04em;opacity:.65;
@@ -190,14 +225,19 @@
 
     .tool-footer{display:flex;align-items:center;justify-content:space-between;
       padding-top:14px;border-top:1px solid var(--border)}
-    .btn-access{display:inline-flex;align-items:center;gap:7px;
-      background:var(--accent-dim);border:1px solid rgba(179,136,255,.28);
-      color:var(--accent);padding:9px 16px;border-radius:99px;
-      font-size:11px;font-weight:700;letter-spacing:.08em;
-      transition:all .2s}
-    .btn-access:hover{background:rgba(179,136,255,.22);box-shadow:0 0 18px var(--accent-glow)}
-    .btn-access-arrow{transition:transform .2s}
-    .btn-access:hover .btn-access-arrow{transform:translateX(3px)}
+    .btn-access{position:relative;display:inline-flex;align-items:center;gap:8px;
+      background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);
+      color:var(--accent);padding:12px 20px;border-radius:99px;
+      font-size:12px;font-weight:700;letter-spacing:.06em;
+      transition:all .3s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
+    .btn-access::before{content:'';position:absolute;inset:0;border-radius:99px;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+      background-size:200% 100%;opacity:0;transition:opacity .3s}
+    .btn-access:hover{background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.5);
+      box-shadow:0 0 24px rgba(139,92,246,.3);transform:translateX(4px)}
+    .btn-access:hover::before{opacity:1;animation:mbrn-shine 2s ease-in-out infinite}
+    .btn-access-arrow{transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+    .btn-access:hover .btn-access-arrow{transform:translateX(4px)}
     .tool-live{display:flex;align-items:center;gap:5px;
       font-size:9px;letter-spacing:.1em;text-transform:uppercase}
     .live-dot{width:5px;height:5px;border-radius:50%;animation:blink 2.5s infinite}
@@ -326,26 +366,16 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-system-id">
-      <span class="hero-system-id-dot"></span>
-      System · Flase · MBRN Architecture
+    <h1 class="hero-brand">MBRN</h1>
+    <p class="hero-hook">Stop watching. Start doing.</p>
+    <div class="hero-cta">
+      <a href="#tools" class="btn-start">
+        Start using <span class="btn-start-arrow">→</span>
+      </a>
     </div>
-    <h1 class="hero-title">MBRN<br/>Tools</h1>
-    <p class="hero-tagline">High-Performance Digital Assets. Built for Clarity.</p>
-    <div class="hero-divider"></div>
-    <p class="hero-desc">
-      Präzise Tools für reale Entscheidungen. Jedes Produkt folgt einer klaren Architektur:
-      Local-First Processing, Zero-Tracking-Design und ein Fokus auf das Eine,
-      das wirklich zählt — das Ergebnis.
-    </p>
-    <div class="hero-specs">
-      <span class="hero-spec">Local-First Architecture</span>
-      <span class="hero-spec">Zero Tracking</span>
-      <span class="hero-spec">No Backend Required</span>
-      <span class="hero-spec">Open Access Core</span>
-    </div>
+    <p class="hero-subline">Built to be used.</p>
     <div class="hero-scroll">
-      <span class="hero-scroll-text">System erkunden</span>
+      <span class="hero-scroll-text">Think less. Do more.</span>
       <span class="hero-scroll-arrow">↓</span>
     </div>
   </section>
@@ -369,11 +399,10 @@
   </div>
 
   <!-- TOOLS -->
-  <section class="section" id="tools">
+  <section class="section" id="tools" style="padding-top:40px">
     <div class="section-header reveal">
-      <p class="section-eyebrow">✦ Das Asset-Portfolio</p>
-      <h2 class="section-title">Deployed Systems</h2>
-      <p class="section-sub">Jedes Tool ist ein eigenständiges, browserbasiertes System. Kein Account, kein Server-State — alles lokal, alles sofort.</p>
+      <p class="section-eyebrow">✦ Tools — Ready to use</p>
+      <h2 class="section-title">Start using</h2>
     </div>
 
     <div class="tools-grid">
@@ -411,11 +440,11 @@
 
         <div class="tool-footer">
           <div class="btn-access">
-            System öffnen <span class="btn-access-arrow">→</span>
+            Start using <span class="btn-access-arrow">→</span>
           </div>
           <div class="tool-live">
             <span class="live-dot live-dot--on"></span>
-            <span class="live-label--on">Operational</span>
+            <span class="live-label--on">Ready</span>
           </div>
         </div>
       </a>
@@ -432,18 +461,11 @@
         <span class="tool-icon">✦</span>
         <h3 class="tool-name">Numerologie-System</h3>
         <p class="tool-desc">
-          36 Kennzahlen. Lo-Shu Psychomatrix. Pythagoreisches System.
-          Dein vollständiger Lebens-Archetypus — ohne Registrierung, ohne Datenweitergabe.
+          36 Kennzahlen. Lo-Shu Psychomatrix. Dein vollständiger Profil — berechnet lokal.
         </p>
-        <div class="tool-specs">
-          <div class="tool-spec">36 numerologische Parameter</div>
-          <div class="tool-spec">Lo-Shu Psychomatrix Analyse</div>
-          <div class="tool-spec">Kompatibilitäts-Engine</div>
-          <div class="tool-spec">Shareable Output-Card</div>
-        </div>
         <div class="tool-footer">
           <div class="btn-access">
-            System öffnen <span class="btn-access-arrow">→</span>
+            Start using <span class="btn-access-arrow">→</span>
           </div>
           <div class="tool-live">
             <span class="live-dot live-dot--beta"></span>
@@ -464,22 +486,15 @@
         <span class="tool-icon">🎯</span>
         <h3 class="tool-name">30-Tage Disziplin-System</h3>
         <p class="tool-desc">
-          Habit-Tracking ohne Overhead. Eine Gewohnheit, 30 Tage,
-          täglicher Commit. Streak-Engine, Cross-Device Sync via URL-State.
+          Habit-Tracking ohne Overhead. Eine Gewohnheit, täglicher Commit.
         </p>
-        <div class="tool-specs">
-          <div class="tool-spec">Streak-Engine mit Best-Series Tracking</div>
-          <div class="tool-spec">URL-State Snapshot (kein Account nötig)</div>
-          <div class="tool-spec">Output-Card 1:1 & 9:16 (Canvas)</div>
-          <div class="tool-spec">Premium: 3 parallele Challenge-Instanzen</div>
-        </div>
         <div class="tool-footer">
           <div class="btn-access">
-            System öffnen <span class="btn-access-arrow">→</span>
+            Start using <span class="btn-access-arrow">→</span>
           </div>
           <div class="tool-live">
             <span class="live-dot live-dot--on"></span>
-            <span class="live-label--on">Operational</span>
+            <span class="live-label--on">Ready</span>
           </div>
         </div>
       </a>
@@ -619,7 +634,7 @@
         <a class="footer-link" href="https://ko-fi.com/flasembrn" target="_blank" rel="noopener">Ko-fi</a>
         <a class="footer-link" href="https://flase.gumroad.com/l/mxjflg" target="_blank" rel="noopener">Gumroad</a>
       </div>
-      <p class="footer-copy">MBRN · Local-First · Zero Tracking · 2025 · Flase</p>
+      <p class="footer-copy">MBRN · Built to be used. · 2025</p>
     </div>
   </footer>
 
