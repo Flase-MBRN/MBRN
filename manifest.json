@@ -1,0 +1,53 @@
+{
+  "id": "/MBRN/",
+  "name": "MBRN Tools",
+  "short_name": "MBRN",
+  "start_url": "/MBRN/",
+  "scope": "/MBRN/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "lang": "de",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/MBRN/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/MBRN/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/MBRN/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "FinanzRechner",
+      "short_name": "Finanz",
+      "url": "/FinanzRechner/",
+      "icons": [{ "src": "/FinanzRechner/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Disziplin Tracker",
+      "short_name": "Disziplin",
+      "url": "/discipline-tracker/",
+      "icons": [{ "src": "/discipline-tracker/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Numerologie",
+      "short_name": "Numerologie",
+      "url": "/NumerologieRechner/",
+      "icons": [{ "src": "/NumerologieRechner/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "description": "MBRN Tools Hub - FinanzRechner, Disziplin Tracker & Numerologie"
+}
