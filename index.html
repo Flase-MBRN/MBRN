@@ -174,9 +174,10 @@
       color:var(--text-dim);opacity:.5;animation:fadeUp .8s .7s ease both}
 
     .hero-scroll{margin-top:80px;display:flex;flex-direction:column;align-items:center;gap:10px;
-      animation:fadeUp .8s .9s ease both;opacity:.35}
+      animation:fadeUp .8s .9s ease both;opacity:.65}
     .hero-scroll-text{font-size:10px;letter-spacing:.25em;text-transform:uppercase;font-weight:500}
-    .hero-scroll-arrow{font-size:14px;animation:mbrn-bounce 2s ease-in-out infinite}
+    .hero-scroll-arrow{font-size:18px;animation:mbrn-bounce 1.5s ease-in-out infinite;
+      filter:drop-shadow(0 0 8px rgba(139,92,246,.5))}
     @keyframes mbrn-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 
     /* ── METRICS BAR PREMIUM ─── */
@@ -209,13 +210,13 @@
       line-height:1.7;margin-top:10px;max-width:500px;margin-left:auto;margin-right:auto}
 
     /* TOOL GRID PREMIUM */
-    .tools-grid{display:grid;grid-template-columns:1fr;gap:24px}
+    .tools-grid{display:grid;grid-template-columns:1fr;gap:24px;align-items:stretch}
     @media(min-width:640px){.tools-grid{grid-template-columns:repeat(2,1fr)}}
     @media(min-width:900px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
 
     .tool-card{position:relative;background:var(--card-bg);border:1px solid var(--card-border);
       border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:18px;
-      overflow:hidden;isolation:isolate;transform:translateZ(0);
+      overflow:hidden;isolation:isolate;transform:translateZ(0);height:100%;
       transition:all .4s cubic-bezier(.22,.61,.36,1);
       box-shadow:0 2px 12px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.05);contain:layout style}
     .tool-card::before{content:'';position:absolute;inset:0;opacity:0;
@@ -255,7 +256,7 @@
     .tool-icon{font-size:36px;line-height:1;transition:transform .3s ease}
     .tool-card:hover .tool-icon{transform:scale(1.1) rotate(-3deg)}
     .tool-name{font-family:var(--font-d);font-size:22px;font-weight:800;letter-spacing:-.01em;margin-top:4px}
-    .tool-desc{font-size:13px;color:var(--white-dim);letter-spacing:.02em;line-height:1.7;flex:1;opacity:.85}
+    .tool-desc{font-size:13px;color:var(--text);letter-spacing:.02em;line-height:1.7;flex:1}
 
     .tool-specs{display:flex;flex-direction:column;gap:4px}
     .tool-spec{font-size:10px;color:var(--white-dim);letter-spacing:.04em;opacity:.65;
@@ -347,10 +348,10 @@
     .support-desc{font-size:12px;color:var(--white-dim);letter-spacing:.04em;
       line-height:1.75;margin-bottom:24px}
     .btn-kofi{display:inline-flex;align-items:center;gap:9px;
-      background:transparent;border:1px solid rgba(255,94,91,.35);color:#ff5e5b;
+      background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(167,139,250,.1));border:1px solid rgba(139,92,246,.4);color:var(--accent);
       padding:13px 26px;border-radius:99px;font-size:13px;font-weight:700;
-      letter-spacing:.08em;transition:all .2s}
-    .btn-kofi:hover{background:rgba(255,94,91,.1);box-shadow:0 0 24px rgba(255,94,91,.2)}
+      letter-spacing:.08em;transition:all .3s;box-shadow:0 4px 16px rgba(139,92,246,.15)}
+    .btn-kofi:hover{background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(167,139,250,.2));box-shadow:0 8px 32px rgba(139,92,246,.35);transform:translateY(-2px)}
 
     /* ── FOOTER ─── */
     .footer{position:relative;z-index:1;padding:24px;border-top:1px solid var(--border)}
