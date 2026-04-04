@@ -67,6 +67,41 @@
       --r:10px; --rl:16px;
     }
 
+    /* Light Mode */
+    [data-theme="light"]{
+      --bg:            #ffffff;
+      --bg-soft:       #f5f5f5;
+      
+      --text:          #1a1a1a;
+      --text-dim:      rgba(26,26,26,0.60);
+      --text-faint:    rgba(26,26,26,0.30);
+      
+      --accent-main:   #7c3aed;
+      --accent-dim:    rgba(124,58,237,0.12);
+      --accent-glow:   rgba(124,58,237,0.25);
+      
+      --feature-secondary: #0ea5e9;
+      --feature-dim:   rgba(14,165,233,0.12);
+      
+      --success:       #22c55e;
+      --danger:        #ef4444;
+      
+      --border:        rgba(0,0,0,0.10);
+      --border-hover:  rgba(0,0,0,0.20);
+      
+      --card:          rgba(250,250,250,0.95);
+      --card-hover:    rgba(255,255,255,1);
+      
+      --white:         var(--text);
+      --white-dim:     var(--text-dim);
+      --white-faint:   var(--text-faint);
+      --card-bg:       var(--card);
+    }
+    [data-theme="light"] .nav{background:rgba(255,255,255,.95)}
+    [data-theme="light"] .bg-base{background:radial-gradient(ellipse at 25% 40%,#f0f0f5 0%,#e8e8f0 65%)}
+    [data-theme="light"] .bg-glow-1{opacity:.15}
+    [data-theme="light"] .bg-glow-2{opacity:.12}
+
     /* ── BG ─── */
     .bg-base{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 25% 40%,#0c0830 0%,#030014 65%);transform:translateZ(0);contain:layout}
     .bg-glow{position:fixed;z-index:0;pointer-events:none;border-radius:50%;filter:blur(60px);transform:translateZ(0);contain:layout}
@@ -86,6 +121,8 @@
     .nav-logo{font-size:18px;color:var(--accent);filter:drop-shadow(0 0 8px var(--accent-glow))}
     .nav-name{font-family:var(--font-d);font-size:15px;font-weight:800;letter-spacing:.08em;color:var(--white)}
     .nav-right{display:flex;align-items:center;gap:10px}
+    .theme-toggle{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .theme-toggle:hover{border-color:var(--accent);background:var(--accent-dim)}
     .nav-link{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--white-dim);
       background:var(--white-faint);border:1px solid var(--border);
       padding:6px 14px;border-radius:99px;transition:all .2s}
@@ -358,6 +395,7 @@
       <span class="nav-name">MBRN</span>
     </div>
     <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Dark/Light Mode wechseln">☀</button>
       <div class="nav-status">
         <span class="nav-status-dot"></span>
         <span>3 Tools Live</span>
@@ -673,6 +711,27 @@
           var t=setInterval(function(){n++;el.textContent=n;if(n>=3)clearInterval(t);},220);
         }
       }).observe(el);
+    })();
+
+    // Theme Toggle
+    (function(){
+      const saved = localStorage.getItem('mbrn-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+      
+      const btn = document.getElementById('themeToggle');
+      if(!btn) return;
+      
+      btn.textContent = saved === 'dark' ? '☀' : '☾';
+      btn.setAttribute('aria-label', saved === 'dark' ? 'Light Mode aktivieren' : 'Dark Mode aktivieren');
+      
+      btn.addEventListener('click', function(){
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('mbrn-theme', next);
+        btn.textContent = next === 'dark' ? '☀' : '☾';
+        btn.setAttribute('aria-label', next === 'dark' ? 'Light Mode aktivieren' : 'Dark Mode aktivieren');
+      });
     })();
   </script>
   
