@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function(){
     els.forEach(function(el) {
       var rect = el.getBoundingClientRect();
       if (rect.top < h - 60) {
-        el.classList.add('revealed');
+        el.classList.add('visible');
       }
     });
   }
