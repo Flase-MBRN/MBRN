@@ -5,7 +5,28 @@
 
 'use strict';
 
-// 1. Scroll Reveal Animation
+// 1. Theme Toggle
+document.addEventListener('DOMContentLoaded', function(){
+  const saved = localStorage.getItem('mbrn-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  
+  const btn = document.getElementById('themeToggle');
+  if(!btn) return;
+  
+  btn.textContent = saved === 'dark' ? '☀' : '☾';
+  btn.setAttribute('aria-label', saved === 'dark' ? 'Hell-Modus aktivieren' : 'Dunkel-Modus aktivieren');
+  
+  btn.addEventListener('click', function(){
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('mbrn-theme', next);
+    btn.textContent = next === 'dark' ? '☀' : '☾';
+    btn.setAttribute('aria-label', next === 'dark' ? 'Hell-Modus aktivieren' : 'Dunkel-Modus aktivieren');
+  });
+});
+
+// 2. Scroll Reveal Animation
 document.addEventListener('DOMContentLoaded', function(){
   var els = document.querySelectorAll('.reveal');
   
@@ -24,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function(){
   reveal();
 });
 
-// 2. PWA Service Worker Registration
+// 3. PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')
     .then(function() { console.log('[PWA] MBRN Hub Service Worker aktiv'); })
