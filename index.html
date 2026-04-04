@@ -5,12 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MBRN – Praktische Tools direkt im Browser</title>
   <meta name="description" content="Kostenlose Tools für Finanzen, Numerologie und Gewohnheiten. Ohne Konto. Ohne App. Einfach loslegen." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;">
+  
+  <!-- Security Headers (GitHub Pages compatible via meta tags) -->
+  <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), fullscreen=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()">
+  
   <meta property="og:title" content="MBRN – Praktische Tools direkt im Browser" />
   <meta property="og:description" content="Finanzen, Numerologie, Gewohnheiten – alles einfach berechnen. Ohne Konto. Ohne App." />
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="assets/js/inline-scripts.js"></script>
+  
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#8b5cf6" />
   <style>
@@ -175,7 +187,7 @@
 
     .hero-scroll{margin-top:80px;display:flex;flex-direction:column;align-items:center;gap:10px;
       animation:fadeUp .8s .9s ease both;opacity:.65}
-    .hero-scroll-text{font-size:10px;letter-spacing:.25em;text-transform:uppercase;font-weight:500}
+    .hero-scroll-text{font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:600;color:var(--accent)}
     .hero-scroll-arrow{font-size:18px;animation:mbrn-bounce 1.5s ease-in-out infinite;
       filter:drop-shadow(0 0 8px rgba(139,92,246,.5))}
     @keyframes mbrn-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
@@ -676,70 +688,5 @@
     </div>
   </footer>
 
-  <script>
-    // Scroll Reveal
-    (function(){
-      var els=document.querySelectorAll('.reveal');
-      var obs=new IntersectionObserver(function(entries){
-        entries.forEach(function(e){
-          if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}
-        });
-      },{threshold:.1,rootMargin:'0px 0px -30px 0px'});
-      els.forEach(function(el){obs.observe(el);});
-    })();
-
-    // Staggered cards - optimized with requestAnimationFrame
-    (function(){
-      requestAnimationFrame(function(){
-        document.querySelectorAll('.tool-card').forEach(function(c,i){
-          c.style.willChange = 'transform, box-shadow';
-          c.style.transitionDelay = (i*.06)+'s';
-        });
-      });
-    })();
-
-    // Counter animation
-    (function(){
-      var el=document.getElementById('m-tools');
-      if(!el)return;
-      var done=false;
-      new IntersectionObserver(function(entries){
-        if(entries[0].isIntersecting&&!done){
-          done=true;var n=0;
-          var t=setInterval(function(){n++;el.textContent=n;if(n>=3)clearInterval(t);},220);
-        }
-      }).observe(el);
-    })();
-
-    // Theme Toggle
-    (function(){
-      const saved = localStorage.getItem('mbrn-theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', saved);
-      
-      const btn = document.getElementById('themeToggle');
-      if(!btn) return;
-      
-      btn.textContent = saved === 'dark' ? '☀' : '☾';
-      btn.setAttribute('aria-label', saved === 'dark' ? 'Hell-Modus aktivieren' : 'Dunkel-Modus aktivieren');
-      
-      btn.addEventListener('click', function(){
-        const cur = document.documentElement.getAttribute('data-theme');
-        const next = cur === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('mbrn-theme', next);
-        btn.textContent = next === 'dark' ? '☀' : '☾';
-        btn.setAttribute('aria-label', next === 'dark' ? 'Hell-Modus aktivieren' : 'Dunkel-Modus aktivieren');
-      });
-    })();
-  </script>
-  
-  <!-- PWA Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('[PWA] MBRN Hub Service Worker aktiv'))
-        .catch((err) => console.log('[PWA] Fehler', err));
-    }
-  </script>
 </body>
 </html>
