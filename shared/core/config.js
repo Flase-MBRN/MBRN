@@ -20,5 +20,11 @@ export const MBRN_CONFIG = {
   stripe: {
     publicKey: 'pk_test_REPLACE_WITH_YOUR_KEY',
     priceIdArtifact: 'price_REPLACE_WITH_YOUR_PRICE_ID'
+  },
+  
+  // DEV FLAGS (Phase 4.0: Local Development Overrides)
+  // ⚠️ WICHTIG: Diese Flags auf FALSE setzen vor Production-Release!
+  dev: {
+    bypassPayment: true, // ← AUF FALSE SETZEN für Production
   }
 };

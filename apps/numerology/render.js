@@ -9,6 +9,7 @@ import { dom }    from '../../shared/ui/dom_utils.js';
 import { nav }    from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { calculateFullProfile, generateShareCard, generateDeepReport, generateOperatorReport } from './logic.js';
+import { MBRN_CONFIG } from '../../shared/core/config.js';
 
 export const numerologyRender = {
   currentData: null,
@@ -59,10 +60,8 @@ export const numerologyRender = {
         const user = state.get('user');
         const accessLevel = user ? (user.access_level || 0) : 0;
 
-        // DEBUG OVERRIDE: Ermöglicht den Test des PDFs ohne Level 10
-        const isLocalTest = true; // Setze auf false für Produktion
-
-        if (accessLevel < 10 && !isLocalTest) {
+        // DEV BYPASS (Phase 4.0): PDF ohne Stripe generieren
+        if (accessLevel < 10 && !MBRN_CONFIG.dev.bypassPayment) {
           state.emit('paywallRequested', { feature: 'Deep Decode Artefakt' });
           return;
         }

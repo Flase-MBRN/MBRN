@@ -1,129 +1,425 @@
-/* /shared/ui/components.css */
+/* ========================================
+   MBRN-HUB-V1: Medical Luxury Components
+   Phase 4.0: Premium UI Elements
+   ======================================== */
 
-.hub-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+/* ========================================
+   Cards (Medical Luxury)
+   OLED Black with subtle borders
+   ======================================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: var(--space-xl);
+  transition: border-color var(--transition-base), 
+              box-shadow var(--transition-base);
 }
 
-.card {
+.card:hover {
+  border-color: var(--border-hover);
+}
+
+.card-elevated {
+  background: var(--bg-elevated);
+  border-color: var(--border-default);
+}
+
+.card-glow {
+  border-color: rgba(124, 58, 237, 0.3);
+  box-shadow: var(--glow-subtle);
+}
+
+.card-glow:hover {
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow: var(--glow-purple);
+}
+
+/* Legacy Glassmorphism Support */
+.card-glass {
   background: var(--bg-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--line-color);
-  border-radius: var(--radius-card);
-  padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  transform: translateZ(0); /* Hardware Acceleration */
+  border: 1px solid var(--border-subtle);
 }
 
-.btn-primary {
-  background: var(--text-primary);
-  color: #000;
-  border: none;
-  border-radius: var(--radius-btn);
+/* ========================================
+   Buttons (Medical Luxury)
+   ======================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   padding: 12px 24px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-btn);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-base);
+  border: none;
+  outline: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Primary Button: Deep Purple Gradient */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: var(--text-primary);
+  box-shadow: var(--glow-subtle);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-  background: #fff;
+  background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
+  box-shadow: var(--glow-purple);
+  transform: translateY(-1px);
 }
 
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--glow-subtle);
+}
+
+/* Secondary Button: Ghost Style */
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(4px);
-  color: var(--text-primary);
-  border: 1px solid var(--line-color);
-  border-radius: var(--radius-btn);
-  padding: 12px 24px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent-color);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
 }
 
-/* Utilities */
+/* Ghost Button: Subtle */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.75rem;
+}
+
+.btn-lg {
+  padding: 16px 32px;
+  font-size: 1rem;
+}
+
+/* ========================================
+   Form Inputs (Medical Luxury)
+   Dark background with focus glow
+   ======================================== */
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.input-field {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  transition: border-color var(--transition-base), 
+              box-shadow var(--transition-base);
+  width: 100%;
+}
+
+.input-field::placeholder {
+  color: var(--text-dim);
+}
+
+.input-field:hover {
+  border-color: var(--border-hover);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.input-field:focus-visible {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+/* Input States */
+.input-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input-field.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Textarea */
+.textarea-field {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ========================================
+   Typography Utilities
+   ======================================== */
+
 .text-center { text-align: center; }
-.max-w-400 { max-width: 400px; }
-.text-accent { color: var(--accent-color); }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-accent { color: var(--accent-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
 .text-dim { color: var(--text-dim); }
+
+/* Font Weights */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Font Sizes */
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+
+/* ========================================
+   Spacing Utilities
+   ======================================== */
+
+.m-0 { margin: 0; }
+.m-xs { margin: var(--space-xs); }
+.m-sm { margin: var(--space-sm); }
+.m-md { margin: var(--space-md); }
+.m-lg { margin: var(--space-lg); }
+.m-xl { margin: var(--space-xl); }
+.m-2xl { margin: var(--space-2xl); }
+.m-3xl { margin: var(--space-3xl); }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mx-lg { margin-left: var(--space-lg); margin-right: var(--space-lg); }
+.mx-xl { margin-left: var(--space-xl); margin-right: var(--space-xl); }
+
+.my-xs { margin-top: var(--space-xs); margin-bottom: var(--space-xs); }
+.my-sm { margin-top: var(--space-sm); margin-bottom: var(--space-sm); }
+.my-md { margin-top: var(--space-md); margin-bottom: var(--space-md); }
+.my-lg { margin-top: var(--space-lg); margin-bottom: var(--space-lg); }
+.my-xl { margin-top: var(--space-xl); margin-bottom: var(--space-xl); }
+.my-2xl { margin-top: var(--space-2xl); margin-bottom: var(--space-2xl); }
+.my-3xl { margin-top: var(--space-3xl); margin-bottom: var(--space-3xl); }
+
+.mt-lg { margin-top: var(--space-lg); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+.mb-xl { margin-bottom: var(--space-xl); }
+
+.p-0 { padding: 0; }
+.p-xs { padding: var(--space-xs); }
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
+.p-2xl { padding: var(--space-2xl); }
+
+.px-lg { padding-left: var(--space-lg); padding-right: var(--space-lg); }
+.py-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
+
+/* Legacy Support */
 .my-16 { margin: 16px 0; }
 .ml-8 { margin-left: 8px; }
+.max-w-400 { max-width: 400px; }
 
-/* --- Modals --- */
+/* ========================================
+   Modals (Medical Luxury)
+   ======================================== */
+
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: var(--space-lg);
 }
 
 .modal-content {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--accent-color);
-  border-radius: var(--radius-card);
-  padding: 40px;
-  max-width: 420px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  max-width: 480px;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: var(--glow-subtle);
 }
 
-/* --- Navigation --- */
+.modal-content:focus-within {
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+/* ========================================
+   Navigation (Medical Luxury)
+   ======================================== */
+
 .nav-container {
   display: flex;
-  gap: 12px;
+  gap: var(--space-md);
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line-color);
+  padding: var(--space-md) var(--space-xl);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
   flex-wrap: wrap;
   position: sticky;
   top: 0;
   z-index: 100;
+  height: var(--header-height);
 }
 
 .nav-links {
   display: flex;
-  gap: 12px;
+  gap: var(--space-xs);
 }
 
-/* --- Sync Indicator --- */
+.nav-link {
+  color: var(--text-secondary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.nav-link.active {
+  color: var(--accent-primary);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* ========================================
+   Status Indicators
+   ======================================== */
+
+/* Sync Indicator */
 .sync-indicator {
-  display: inline-block;
-  margin-right: 12px;
-  font-size: 1.2rem;
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  transition: color var(--transition-base);
+}
+
+.sync-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background var(--transition-base);
+}
+
+.sync-indicator.online::before {
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
 }
 
 .sync-indicator.syncing {
-  opacity: 1;
-  color: var(--accent-color);
-  animation: spin 2s linear infinite;
+  color: var(--accent-primary);
 }
 
+.sync-indicator.syncing::before {
+  background: var(--accent-primary);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.9); }
+}
+
+/* Legacy Support */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
-
+
+/* ========================================
+   Dividers
+   ======================================== */
+
+.divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-xl) 0;
+}
+
+.divider-accent {
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+}
+
+/* ========================================
+   Badges
+   ======================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.badge-accent {
+  background: rgba(124, 58, 237, 0.15);
+  color: var(--accent-tertiary);
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
