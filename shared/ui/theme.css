@@ -1,70 +1,49 @@
 /* ========================================
-   MBRN-HUB-V1: Medical Luxury Theme
-   Version 2.0: Blueprint Evolution
-   Space Grotesk + Space Mono
+   MBRN-HUB-V1: Design System
+   Navy Theme - Unified with Landing Page
    ======================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
+
 :root {
-  /* OLED Black Foundation */
-  --bg-primary: #040405;
-  --bg-void: #000000;
-  --bg-card: #0a0a0c;
-  --bg-elevated: #111113;
+  /* Navy Background System */
+  --bg-primary: #0d0d1a;
+  --bg-surface: #13132a;
+  --bg-elevated: #1a1a3a;
   
-  /* Borders & Separators (Refined Alpha Standard) */
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --border-default: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
+  /* Purple Accent */
+  --accent: #7c3aed;
+  --accent-glow: rgba(124, 58, 237, 0.15);
+  --accent-hover: rgba(124, 58, 237, 0.25);
   
-  /* Typography Scale */
-  --font-main: 'Space Grotesk', -apple-system, sans-serif;
-  --font-mono: 'Space Mono', monospace;
-  
+  /* Text Colors */
   --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-  --text-dim: #52525b;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.3);
+  --text-dim: rgba(255, 255, 255, 0.25);
   
-  /* Medical Luxury: Royal Indigo */
-  --accent-primary: #6366f1;
-  --accent-secondary: #818cf8;
-  --accent-tertiary: #a5b4fc;
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.07);
+  --border-accent: rgba(124, 58, 237, 0.25);
+  --border-subtle: rgba(255, 255, 255, 0.05);
   
-  /* Glow Effects (Indigo based) */
-  --glow-accent: 0 0 20px rgba(99, 102, 241, 0.3);
-  --glow-accent-strong: 0 0 40px rgba(99, 102, 241, 0.4);
-  --glow-subtle: 0 0 10px rgba(99, 102, 241, 0.15);
+  /* Radii */
+  --radius-card: 20px;
+  --radius-btn: 50px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
   
-  /* Spacing Scale */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-  --space-3xl: 64px;
-  
-  /* Border Radius (Technical Minimalist) */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --radius-card: 4px;
-  --radius-btn: 4px;
-  
-  /* Layout */
-  --max-width: 1100px;
-  --header-height: 64px;
+  /* Fonts */
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Inter', sans-serif;
   
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
 }
 
-/* ========================================
-   Global Reset & Base Styles
-   ======================================== */
-
-* {
+/* ===== CSS RESET & BASE ===== */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -75,66 +54,44 @@ html {
 }
 
 body {
-  font-family: var(--font-main);
-  font-weight: 400;
-  background-color: var(--bg-primary);
+  background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 400;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
-/* Technical Grid Background */
-.bg-grid {
-  background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px),
-                    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: center center;
-}
-
-/* Typography Scale */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 500;
-  line-height: 1.1;
+/* ===== TYPOGRAPHY ===== */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
   letter-spacing: -0.02em;
-  color: #fff;
+  line-height: 1.2;
 }
 
-h1 { font-size: 2.5rem; font-weight: 300; }
-h2 { font-size: 2rem; font-weight: 400; }
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
 h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
 
 p {
   color: var(--text-secondary);
   line-height: 1.7;
 }
 
-/* Monospaced Utility */
-.mono, .card-number, .result-value, .label-mono, .breadcrumb, .streak-badge, .nav-icon {
-  font-family: var(--font-mono) !important;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-/* Link Styles */
 a {
-  color: var(--accent-tertiary);
+  color: inherit;
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 
-a:hover {
-  color: var(--accent-primary);
-}
-
-/* Selection */
 ::selection {
-  background: rgba(99, 102, 241, 0.3);
+  background: rgba(124, 58, 237, 0.3);
   color: #fff;
 }
 
-/* Scrollbar (Medical Luxury) */
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -145,54 +102,43 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-default);
+  background: var(--border);
   border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
+  background: rgba(255, 255, 255, 0.12);
 }
 
-/* ========================================
-   Layout Components
-   ======================================== */
-
-.hub-container {
-  width: 100%;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--space-lg);
-}
-
-.section {
-  padding: var(--space-3xl) 0;
-}
-
-/* SIDEBAR LAYOUT SYSTEM */
-.nav-sidebar {
+/* ===== SIDEBAR (Landing Page Navy Style) ===== */
+.nav-sidebar,
+.nav-container,
+aside[class*="nav"] {
   position: fixed;
   left: 0;
   top: 0;
   width: 220px;
   height: 100vh;
-  background: var(--bg-card);
-  border-right: 1px solid var(--border-default);
+  background: rgba(13, 13, 26, 0.98) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
   z-index: 200;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
-.nav-brand {
+.nav-brand,
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  color: var(--accent);
   padding: 24px;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.logo-text {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: var(--accent-primary);
+.nav-brand::before {
+  content: '✦';
+  margin-right: 8px;
 }
 
 .nav-menu {
@@ -202,32 +148,41 @@ a:hover {
   flex: 1;
 }
 
-.nav-item {
+.nav-item,
+.nav-link {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.8125rem;
+  font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 150ms ease;
+  transition: all var(--transition-fast);
   margin-bottom: 4px;
+  cursor: pointer;
 }
 
-.nav-item:hover {
-  background: var(--border-subtle);
-  color: #fff;
+.nav-item:hover,
+.nav-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .nav-item.active {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--accent-primary);
-  border-left: 2px solid var(--accent-primary);
+  color: var(--accent);
+  background: rgba(124, 58, 237, 0.1);
+  border-left: 2px solid var(--accent);
+  margin-left: -2px;
 }
 
+.nav-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: auto;
+}
+
+/* ===== MAIN CONTENT ===== */
 .main-content {
   margin-left: 220px;
   flex: 1;
@@ -236,10 +191,45 @@ a:hover {
   width: calc(100% - 220px);
 }
 
-/* ========================================
-   Global Input Styles (The Obsidian Logic)
-   ======================================== */
+@media (max-width: 768px) {
+  .nav-sidebar {
+    transform: translateX(-100%);
+    transition: transform 250ms ease;
+  }
+  
+  .nav-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 24px 16px;
+  }
+}
 
+/* ===== HUB CONTAINER (Tool Pages Content) ===== */
+.hub-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+/* ===== CARDS (Landing Page Style) ===== */
+.card,
+[class*="card"] {
+  background: #13132a !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 20px !important;
+  padding: 32px !important;
+  box-shadow: none !important;
+}
+
+.card:hover {
+  border-color: rgba(124, 58, 237, 0.15) !important;
+}
+
+/* ===== INPUTS (Transparent, not Black) ===== */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -248,36 +238,174 @@ input[type="date"],
 input[type="tel"],
 textarea,
 select {
-  background: #0c0c0c !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: #ffffff !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--radius-md) !important;
+  border-radius: 10px !important;
   padding: 12px 16px !important;
-  font-family: var(--font-main) !important;
-  font-size: 0.9375rem !important;
-  transition: all var(--transition-base) !important;
-}
-
-input:focus {
+  font-family: var(--font-body) !important;
+  font-size: 15px !important;
   outline: none !important;
-  border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 0 1px var(--accent-primary) !important;
+  transition: border-color var(--transition-fast) !important;
+  width: 100% !important;
 }
 
-/* Remove browser autofill */
-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px #0c0c0c inset !important;
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(124, 58, 237, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Remove browser autofill white background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.04) inset !important;
   -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
-/* ========================================
-   Glow Utilities
-   ======================================== */
+/* ===== BUTTONS (Pill Style) ===== */
+.btn-primary,
+button[type="submit"],
+[class*="btn-primary"] {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 50px !important;
+  padding: 14px 28px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  transition: all var(--transition-fast) !important;
+  font-family: var(--font-body) !important;
+}
 
-.glow-accent { box-shadow: var(--glow-accent); }
-.glow-text { text-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+.btn-primary:hover,
+button[type="submit"]:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+}
 
-.void-bg {
-  background-color: var(--bg-primary);
-  min-height: 100vh;
+.btn-secondary,
+[class*="btn-secondary"] {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 50px !important;
+  padding: 10px 20px !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) !important;
+  font-family: var(--font-body) !important;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* ===== TEXT UTILITIES ===== */
+.text-accent,
+[class*="text-accent"] {
+  color: #7c3aed !important;
+}
+
+.text-secondary,
+[class*="text-secondary"] {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.text-muted,
+[class*="text-muted"] {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.text-glow {
+  text-shadow: 0 0 40px rgba(124, 58, 237, 0.3);
+}
+
+/* ===== FORM GROUPS ===== */
+.form-group,
+[class*="form-group"] {
+  margin-bottom: 20px;
+}
+
+.form-group label,
+[class*="form-group"] label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* ===== RESULT ROWS (Finance Tool) ===== */
+.result-row,
+[class*="result"] {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.result-row:last-child {
+  border-bottom: none !important;
+}
+
+.result-value,
+[class*="result-value"] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ===== UTILITY SPACING ===== */
+.my-16 { margin-top: 16px; margin-bottom: 16px; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-24 { margin-bottom: 24px; }
+
+/* ===== LEGACY OVERRIDES ===== */
+/* Force navy background on all pages */
+body.void-bg,
+body[class*="void"],
+body[class*="dark"],
+body[class*="black"] {
+  background: var(--bg-primary) !important;
+}
+
+/* Override any remaining pure black inputs */
+input[style*="background: #000"],
+input[style*="background:black"] {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Legacy nav-container support */
+.nav-container {
+  background: rgba(13, 13, 26, 0.98) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Fix for any remaining old styles */
+[class*="max-w-400"] {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
