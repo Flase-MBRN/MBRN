@@ -2,23 +2,20 @@
 
 
 
-🎯 SYSTEM ARCHITECT DIRECTIVE: Wir transformieren die statische Artefakt-Generierung in ein dynamisches, täglich genutztes High-Performance-Ökosystem. Die "Medical Luxury"-Ästhetik (OLED-Black, Gunmetal, Deep Purple) und die Identität von "Flase" bleiben unantastbar. Schwere algorithmische Last wird in isolierte Python-Microservices (FastAPI) ausgelagert, um das Frontend als pfeilschnellen, asynchronen Monolithen zu bewahren. Das System wird zur operativen Kommandozentrale.
+🎯 SYSTEM ARCHITECT DIRECTIVE: Wir transformieren die statische Artefakt-Generierung in ein dynamisches, täglich genutztes High-Performance-Ökosystem. Die "Medical Luxury"-Ästhetik (OLED-Black, Gunmetal, Deep Purple) und die Identität von "Flase" bleiben unantastbar. Das System wird zum Ökosystem. Die Architektur bleibt ein asynchroner JavaScript-Monolith im Apple-Style. Komplexe algorithmische Berechnungen werden direkt im Frontend oder über Supabase Edge Functions (TypeScript) abgewickelt, um die Integrität der Codebase zu wahren.
 
 
 
-✅ MILESTONE 13: THE HYBRID CORE (Python Microservices)
+✅ MILESTONE 13: THE LOGIC CORE (Modular Architecture)
 
 
 
-Ziel: Entkopplung der Rechenlast. Etablierung eines sicheren, serverlosen Python-Backends für deterministische, komplexe Kombinatorik.
+Ziel: Optimierung der Rechenlast. Etablierung einer asynchronen Verarbeitungs-Logik im JS-Frontend für deterministische, komplexe Kombinatorik.
 
 
 
-\[ ] Python Entrypoint: `main.py` mit FastAPI initialisieren und CORS-Richtlinien strikt konfigurieren.
 
-\[ ] Data Validation: Pydantic-Schemas in `models/schemas.py` anlegen, um jeden In- und Output mathematisch abzusichern.
-
-\[ ] Client Bridge: `python\_client.js` im Frontend (`/shared/core`) als asynchronen Fetch-Wrapper programmieren.
+[ ] Client Bridge: Optimierung der `api.js` für erweiterte Datenabfragen.
 
 \[ ] UI Foundation: `components.js` um die neuen "Medical Luxury"-Elemente (Oura-Style Gauges, Gunmetal-Cards, Timelines) erweitern.
 
@@ -30,7 +27,7 @@ Ziel: Entkopplung der Rechenlast. Etablierung eines sicheren, serverlosen Python
 
 Frontend und Backend kommunizieren asynchron und latenzfrei.
 
-Ungültige Datenformate werden vom Python-Core sofort rejected, bevor Berechnungen starten.
+Ungültige Datenformate werden von der Validierung-Logik sofort rejected, bevor Berechnungen starten.
 
 
 
@@ -38,9 +35,7 @@ Ungültige Datenformate werden vom Python-Core sofort rejected, bevor Berechnung
 
 
 
-\[ ] Ein Test-Ping via `python\_client.js` an den FastAPI-Server liefert status 200 und ein validiertes JSON zurück.
-
-\[ ] Neue UI-Komponenten rendern im OLED-Black/Gunmetal-Style ohne CSS-Konflikte.
+[ ] Die neuen UI-Komponenten rendern im OLED-Black/Gunmetal-Style ohne CSS-Konflikte.
 
 
 
@@ -52,7 +47,7 @@ Ziel: Überlagerung zweier Operator-Systeme zur präzisen Berechnung von Team-Ko
 
 
 
-\[ ] Python Logic: `synergy.py` Router erstellen, der zwei Blueprints vergleicht und Differenzvektoren berechnet.
+[ ] Logic Core: Synergy-Modul implementieren, das zwei Blueprints vergleicht und Differenzvektoren berechnet.
 
 \[ ] Synergy UI: Ein Eingabe-Dashboard für Doppel-Daten entwerfen (asymmetrischer Whitespace, minimalistisch).
 
@@ -128,7 +123,7 @@ Ziel: Echtzeit-Abgleich von Projekt- oder Firmennamen mit der Hardware-Konfigura
 
 
 
-\[ ] Tuning Engine: Algorithmus für Namens-Frequenzberechnung in Python integrieren.
+[ ] Tuning Engine: Algorithmus für Namens-Frequenzberechnung im Logic-Core integrieren.
 
 \[ ] Live Input Loop: Frontend-Input-Feld, das bei jedem Tastendruck die Resonanz neu anfragt (mit Debounce-Technik).
 
@@ -158,5 +153,5 @@ Die UI reagiert latenzfrei auf Tasteneingaben.
 
 
 
-🏁 ENDSTATE PHASE 4.0: Das MBRN-System operiert als holistisches, asymmetrisches Ökosystem. Der Operator nutzt die Plattform nicht mehr nur zur initialen Dekodierung (Artifact), sondern als tägliches, hochpräzises Steuerungsinstrument. Die asymmetrische Hybrid-Architektur (JS-Frontend / Python-Backend) garantiert grenzenlose Skalierbarkeit für kommende algorithmische Modelle, während das "Medical Luxury"-Branding den Premium-Status zementiert.
+🏁 ENDSTATE PHASE 4.0: Das MBRN-System operiert als holistisches, asymmetrisches Ökosystem. Der Operator nutzt die Plattform nicht mehr nur zur initialen Dekodierung (Artifact), sondern als tägliches, hochpräzises Steuerungsinstrument. Die asymmetrische Architektur garantiert grenzenlose Skalierbarkeit für kommende algorithmische Modelle, während das "Medical Luxury"-Branding den Premium-Status zementiert.
 

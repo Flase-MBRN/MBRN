@@ -282,7 +282,7 @@ Ziel: Der Nutzer sieht seinen Status. Die Retention-Loop schließt sich.
 
 
 
-Ziel: Das System ist bereit für das erste Geld und die Anbindung an mächtige Backend-Logiken (wie externe Python-Microservices).
+Ziel: Das System ist bereit für das erste Geld und die Anbindung an mächtige System-Schnittstellen (wie externe Daten-Logiken).
 
 
 

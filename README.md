@@ -17,10 +17,10 @@
 
 ```bash
 # Lokaler Server (ES6-Module erfordern HTTP)
-python -m http.server 8080
+npx serve .
 
 # Dann öffnen:
-# http://localhost:8080/
+# http://localhost:3000/ (oder angegebener Port)
 ```
 
 ## Status

@@ -1,45 +1,41 @@
 /* ========================================
    MBRN-HUB-V1: Medical Luxury Theme
-   Phase 4.0: OLED Black + Deep Purple
+   Version 2.0: Blueprint Evolution
+   Space Grotesk + Space Mono
    ======================================== */
-
-/* Inter Font Import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* OLED Black Foundation */
-  --bg-primary: #000000;
+  --bg-primary: #040405;
   --bg-void: #000000;
-  --bg-card: #0a0a0a;
-  --bg-elevated: #111111;
+  --bg-card: #0a0a0c;
+  --bg-elevated: #111113;
   
-  /* Borders & Separators */
-  --border-subtle: #1a1a1a;
-  --border-default: #2a2a2a;
-  --border-hover: #3a3a3a;
+  /* Borders & Separators (Refined Alpha Standard) */
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-default: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
   
-  /* Typography */
+  /* Typography Scale */
+  --font-main: 'Space Grotesk', -apple-system, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
   --text-dim: #52525b;
   
-  /* Medical Luxury: Deep Purple */
-  --accent-primary: #7c3aed;
-  --accent-secondary: #8b5cf6;
-  --accent-tertiary: #a78bfa;
+  /* Medical Luxury: Royal Indigo */
+  --accent-primary: #6366f1;
+  --accent-secondary: #818cf8;
+  --accent-tertiary: #a5b4fc;
   
-  /* Glow Effects */
-  --glow-purple: 0 0 20px rgba(124, 58, 237, 0.4);
-  --glow-purple-strong: 0 0 40px rgba(124, 58, 237, 0.6);
-  --glow-subtle: 0 0 10px rgba(124, 58, 237, 0.2);
+  /* Glow Effects (Indigo based) */
+  --glow-accent: 0 0 20px rgba(99, 102, 241, 0.3);
+  --glow-accent-strong: 0 0 40px rgba(99, 102, 241, 0.4);
+  --glow-subtle: 0 0 10px rgba(99, 102, 241, 0.15);
   
-  /* Legacy Support (während Migration) */
-  --accent-color: var(--accent-primary);
-  --accent-glow: rgba(124, 58, 237, 0.4);
-  --line-color: var(--border-subtle);
-  
-  /* Spacing Scale (Medical Luxury: Großzügig) */
+  /* Spacing Scale */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -48,13 +44,12 @@
   --space-2xl: 48px;
   --space-3xl: 64px;
   
-  /* Border Radius (Minimalistisch) */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-card: 8px;
-  --radius-btn: 8px;
+  /* Border Radius (Technical Minimalist) */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-card: 4px;
+  --radius-btn: 4px;
   
   /* Layout */
   --max-width: 1100px;
@@ -63,7 +58,6 @@
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
-  --transition-slow: 350ms ease;
 }
 
 /* ========================================
@@ -81,31 +75,46 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-main);
   font-weight: 400;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Technical Grid Background */
+.bg-grid {
+  background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
 }
 
 /* Typography Scale */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 500;
+  line-height: 1.1;
   letter-spacing: -0.02em;
+  color: #fff;
 }
 
 h1 { font-size: 2.5rem; font-weight: 300; }
 h2 { font-size: 2rem; font-weight: 400; }
-h3 { font-size: 1.5rem; font-weight: 500; }
-h4 { font-size: 1.25rem; font-weight: 500; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
 
 p {
   color: var(--text-secondary);
   line-height: 1.7;
+}
+
+/* Monospaced Utility */
+.mono, .card-number, .result-value, .label-mono, .breadcrumb, .streak-badge, .nav-icon {
+  font-family: var(--font-mono) !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* Link Styles */
@@ -121,14 +130,14 @@ a:hover {
 
 /* Selection */
 ::selection {
-  background: rgba(124, 58, 237, 0.3);
-  color: var(--text-primary);
+  background: rgba(99, 102, 241, 0.3);
+  color: #fff;
 }
 
 /* Scrollbar (Medical Luxury) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -159,41 +168,33 @@ a:hover {
   padding: var(--space-3xl) 0;
 }
 
-/* SIDEBAR LAYOUT SYSTEM
-   Fixed 220px Sidebar + Main Content
-   ======================================== */
-
-/* SIDEBAR (Fixed Left Navigation) */
+/* SIDEBAR LAYOUT SYSTEM */
 .nav-sidebar {
   position: fixed;
   left: 0;
   top: 0;
   width: 220px;
   height: 100vh;
-  background: #0a0a0a;
-  border-right: 1px solid #1a1a1a;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-default);
   z-index: 200;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
-/* Logo Area */
 .nav-brand {
   padding: 24px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .logo-text {
+  font-family: var(--font-mono);
   font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #7c3aed;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--accent-primary);
 }
 
-/* Navigation Menu */
 .nav-menu {
   display: flex;
   flex-direction: column;
@@ -201,16 +202,15 @@ a:hover {
   flex: 1;
 }
 
-/* Navigation Items */
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-radius: 8px;
-  color: #a1a1aa;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 150ms ease;
@@ -218,66 +218,26 @@ a:hover {
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #f5f5f5;
+  background: var(--border-subtle);
+  color: #fff;
 }
 
 .nav-item.active {
-  background: rgba(124, 58, 237, 0.15);
-  color: #7c3aed;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent-primary);
+  border-left: 2px solid var(--accent-primary);
 }
 
-.nav-icon {
-  font-size: 1rem;
-  width: 20px;
-  text-align: center;
-}
-
-/* Sidebar Footer */
-.nav-footer {
-  padding: 16px;
-  border-top: 1px solid #1a1a1a;
-  margin-top: auto;
-}
-
-/* MAIN CONTENT */
 .main-content {
   margin-left: 220px;
   flex: 1;
   min-height: 100vh;
   padding: 32px 40px;
   width: calc(100% - 220px);
-  max-width: none;
-}
-
-/* Responsive: Mobile Sidebar */
-@media (max-width: 768px) {
-  .nav-sidebar {
-    transform: translateX(-100%);
-    transition: transform 250ms ease;
-  }
-  
-  .nav-sidebar.open {
-    transform: translateX(0);
-  }
-  
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-    padding: 24px;
-  }
-}
-
-/* Legacy Support */
-.dashboard-layout,
-.dashboard-sidebar,
-.dashboard-content {
-  display: none;
 }
 
 /* ========================================
-   Global Input Styles (PROBLEM 3)
-   Force dark theme on ALL inputs
+   Global Input Styles (The Obsidian Logic)
    ======================================== */
 
 input[type="text"],
@@ -286,87 +246,38 @@ input[type="password"],
 input[type="number"],
 input[type="date"],
 input[type="tel"],
-input[type="search"],
-input[type="url"],
-input[type="datetime-local"],
 textarea,
 select {
-  background: #111 !important;
-  color: #f5f5f5 !important;
-  border: 1px solid #2a2a2a !important;
+  background: #0c0c0c !important;
+  color: #ffffff !important;
+  border: 1px solid var(--border-default) !important;
   border-radius: var(--radius-md) !important;
   padding: 12px 16px !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-main) !important;
   font-size: 0.9375rem !important;
-  transition: border-color var(--transition-base), 
-              box-shadow var(--transition-base) !important;
+  transition: all var(--transition-base) !important;
 }
 
-input[type="text"]::placeholder,
-input[type="email"]::placeholder,
-input[type="password"]::placeholder,
-input[type="number"]::placeholder,
-textarea::placeholder {
-  color: var(--text-dim) !important;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="number"]:focus,
-textarea:focus,
-select:focus {
+input:focus {
   outline: none !important;
   border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+  box-shadow: 0 0 0 1px var(--accent-primary) !important;
 }
 
-/* Remove browser autofill white background */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill,
-textarea:-webkit-autofill:hover,
-textarea:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #111 inset !important;
-  -webkit-text-fill-color: #f5f5f5 !important;
-  transition: background-color 5000s ease-in-out 0s;
+/* Remove browser autofill */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #0c0c0c inset !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /* ========================================
    Glow Utilities
    ======================================== */
 
-.glow-purple {
-  box-shadow: var(--glow-purple);
-}
-
-.glow-purple-strong {
-  box-shadow: var(--glow-purple-strong);
-}
-
-.glow-text {
-  text-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
-}
-
-/* Legacy Support */
-.text-glow {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
+.glow-accent { box-shadow: var(--glow-accent); }
+.glow-text { text-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
 
 .void-bg {
   background-color: var(--bg-primary);
   min-height: 100vh;
-}
-
-/* ========================================
-   Light Mode (Platzhalter)
-   ======================================== */
-
-.light-mode {
-  --bg-primary: #fafafa;
-  --bg-card: #ffffff;
-  --text-primary: #18181b;
-  --text-secondary: #71717a;
-  --border-subtle: #e4e4e7;
 }
