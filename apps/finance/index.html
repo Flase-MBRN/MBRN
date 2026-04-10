@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance App - MBRN Hub</title>
+  
+  <link rel="stylesheet" href="../../shared/ui/theme.css">
+  <link rel="stylesheet" href="../../shared/ui/components.css">
+</head>
+<body class="void-bg">
+
+  <!-- Globale Navigation -->
+  <nav class="nav-container">
+    <div class="nav-links">
+      <button class="btn-secondary" data-route="home">Home</button>
+      <button class="btn-secondary" data-route="dashboard">Dashboard</button>
+      <button class="btn-secondary" data-route="finance">Finance App</button>
+      <button class="btn-secondary" data-route="numerology">Numerologie</button>
+    </div>
+    <div id="nav-auth-container">
+      <!-- Dynamisch gefüllt durch render_auth.js -->
+    </div>
+  </nav>
+
+  <div class="hub-container">
+    
+    <div class="card max-w-400">
+      <h1 class="text-center text-accent text-glow" style="font-weight: 200;">QUANTUM FINANCE</h1>
+      <p class="text-center">Deine Mathe-Maschine.</p>
+      
+      <!-- Input Form -->
+      <div class="my-16">
+        <label>Startkapital (€)</label>
+        <input type="number" id="input-principal" value="10000" class="my-16" style="width: 100%; padding: 8px;">
+        
+        <label>Zinssatz (%)</label>
+        <input type="number" id="input-rate" value="5" class="my-16" style="width: 100%; padding: 8px;">
+        
+        <label>Laufzeit (Jahre)</label>
+        <input type="number" id="input-years" value="10" class="my-16" style="width: 100%; padding: 8px;">
+        
+        <label>Monatliche Rate (€)</label>
+        <input type="number" id="input-monthly" value="100" class="my-16" style="width: 100%; padding: 8px;">
+        
+        <button class="btn-primary" id="calc-btn" style="width: 100%; margin-top: 16px;">Jetzt Berechnen</button>
+      </div>
+
+      <p id="finance-error" class="text-accent text-center"></p>
+
+      <!-- Output (Render Layer Target) -->
+      <div class="my-16" style="border-top: 1px solid var(--line-color); padding-top: 16px;">
+        <h3 class="text-center">Ergebnis</h3>
+        <div style="display: flex; justify-content: space-between;">
+          <span>Endkapital:</span>
+          <strong id="res-final" class="text-accent">- €</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+          <span>Eingezahlt:</span>
+          <span id="res-invested">- €</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+          <span>Zinsgewinn:</span>
+          <span id="res-interest">- €</span>
+        </div>
+      </div>
+
+      <!-- Feature Flag Container -->
+      <div id="premium-features-container" class="text-center my-16"></div>
+
+      <!-- Templates for Safari XSS via dom_utils -->
+      <template id="pdf-btn-template">
+        <button class="btn-primary" style="width: 100%;">📄 PDF Generieren</button>
+      </template>
+      
+      <template id="pdf-locked-template">
+        <button class="btn-secondary locked-feature-btn" data-feature="pdf_export" style="width: 100%; opacity: 0.5;" title="Nur ab Level 10 verfügbar">🔒 PDF (Premium Feature)</button>
+      </template>
+
+    </div>
+  </div>
+
+  <!-- Modal Container -->
+  <div id="modal-container"></div>
+
+  <!-- Paywall Template -->
+  <template id="paywall-template">
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <h2 class="text-accent">Premium Feature</h2>
+        <p class="my-16">Das Modul '<span class="paywall-feature-name"></span>' ist nur für Member (Level 10) verfügbar.</p>
+        <button class="btn-primary" style="width: 100%;">🌟 Jetzt Upgraden</button>
+        <button class="btn-secondary modal-close" style="width: 100%; margin-top: 8px;">Vielleicht später</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Render Modul übernimmt Boot + Nav -->
+  <script type="module" src="./render.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+archive/
+.gemini/
+*.log
+.DS_Store
+node_modules/
+tmp/
+*.pdf
+MBRN_DEEP_DECODE_*.pdf

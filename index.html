@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBRN Hub - Dein Masterplan</title>
+
+  <link rel="stylesheet" href="./shared/ui/theme.css">
+  <link rel="stylesheet" href="./shared/ui/components.css">
+  
+  <!-- Stripe SDK: External Loading for PCI Compliance (Phase 18.1) -->
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="void-bg">
+
+  <!-- Globale Navigation -->
+  <nav class="nav-container">
+    <div class="nav-links">
+      <button class="btn-secondary" data-route="home">Home</button>
+      <button class="btn-secondary" data-route="dashboard">Dashboard</button>
+      <button class="btn-secondary" data-route="finance">Finance App</button>
+      <button class="btn-secondary" data-route="numerology">Numerologie</button>
+    </div>
+    <div id="nav-auth-container">
+      <!-- Dynamisch gefüllt durch render_auth.js -->
+    </div>
+  </nav>
+
+  <!-- Landing Page Container -->
+  <!-- Override height: 100vh manually to allow scrolling for the landing page -->
+  <div class="hub-container" style="min-height: calc(100vh - 70px); height: auto; flex-direction: column; padding: 60px 20px; justify-content: flex-start;">
+    
+    <!-- HERO SECTION -->
+    <section class="text-center" style="margin-bottom: 40px;">
+      <h1 class="text-glow" style="font-size: 3.5rem; margin-bottom: 8px; font-weight: 200; letter-spacing: -0.05em;">MBRN HUB</h1>
+      <p class="text-accent" style="font-size: 1.5rem; margin-bottom: 24px;">
+        Dein Masterplan für finanzielle Freiheit & tiefes Selbstverständnis.
+      </p>
+      <button class="btn-primary" data-route="numerology" style="font-size: 1.2rem; padding: 12px 24px;">
+        Dein Profil berechnen
+      </button>
+    </section>
+
+    <!-- TRUST BADGES -->
+    <div class="text-center" style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 60px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+      <span>🔒 100% Offlinefähig</span>
+      <span>🛡️ Zero Tracking</span>
+      <span>⚡ Pure Mathematik</span>
+    </div>
+
+    <!-- FEATURES GRID -->
+    <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 900px;">
+      
+      <!-- Card 1: Finance -->
+      <div class="card text-center" style="flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <h3 class="text-accent" style="margin-bottom: 12px;">Zinseszins & Finanzen</h3>
+          <p style="margin-bottom: 24px;">
+            Erreiche deine Millionen-Ziele durch pure Mathematik. Keine Emotionen, nur Zinseszins.
+          </p>
+        </div>
+        <button class="btn-secondary" data-route="finance" style="width: 100%;">Zinseszins Rechner</button>
+      </div>
+
+      <!-- Card 2: Numerology -->
+      <div class="card text-center" style="flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <h3 class="text-accent" style="margin-bottom: 12px;">Numerologie & Persönlichkeit</h3>
+          <p style="margin-bottom: 24px;">
+            Erkenne deine verborgenen Stärken und Talente. Nutze die Kraft der Zahlen für deinen Weg.
+          </p>
+        </div>
+        <button class="btn-secondary" data-route="numerology" style="width: 100%;">Numerologie Check</button>
+      </div>
+
+    </div>
+
+    <!-- AUTH SECTION (Phase 14) -->
+    <section id="auth-section" class="text-center" style="margin-top: 80px; width: 100%;">
+      <div class="card max-w-400" style="margin: 0 auto;">
+        <h2 id="auth-title" style="margin-bottom: 24px;">System Login</h2>
+        
+        <form id="login-form" data-mode="login">
+          <div class="form-group">
+            <label for="email">E-Mail Adresse</label>
+            <input type="email" id="email" name="email" required placeholder="name@beispiel.de">
+          </div>
+          <div class="form-group">
+            <label for="password">Passwort</label>
+            <input type="password" id="password" name="password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 16px;">
+            <span id="auth-submit-text">Anmelden</span>
+          </button>
+        </form>
+
+        <button id="auth-toggle-mode" class="btn-secondary" style="border: none; margin-top: 16px; font-size: 0.9rem;">
+          Noch kein Konto? Registrieren
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <script type="module">
+    import { dom } from './shared/ui/dom_utils.js';
+    import { actions } from './shared/core/actions.js';
+    import { nav } from './shared/ui/navigation.js';
+    import { renderAuth } from './shared/ui/render_auth.js';
+
+    // Boot System
+    actions.initSystem();
+    nav.bindNavigation();
+    renderAuth.init();
+  </script>
+
+</body>
+</html>

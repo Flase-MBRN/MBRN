@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - MBRN Hub</title>
+  
+  <link rel="stylesheet" href="../shared/ui/theme.css">
+  <link rel="stylesheet" href="../shared/ui/components.css">
+</head>
+<body>
+
+  <!-- Globale Navigation -->
+  <nav class="nav-container">
+    <div class="nav-links">
+      <button class="btn-secondary" data-route="home">Home</button>
+      <button class="btn-secondary" data-route="dashboard">Dashboard</button>
+      <button class="btn-secondary" data-route="finance">Finance App</button>
+      <button class="btn-secondary" data-route="numerology">Numerologie</button>
+    </div>
+    <div id="nav-auth-container">
+      <!-- Dynamisch gefüllt durch render_auth.js -->
+    </div>
+  </nav>
+
+  <div class="hub-container">
+    <div class="card max-w-400">
+      <h1 class="text-center text-accent">Mastery Mirror</h1>
+      
+      <div class="my-16 text-center">
+        <p>Current Tier</p>
+        <p style="font-size: 28px; font-weight: bold; margin-top: 8px;" id="dash-tier">-</p>
+      </div>
+      
+      <div class="my-16" style="display: flex; justify-content: space-around; border-top: 1px solid var(--line-color); padding-top: 16px;">
+        <div class="text-center">
+          <p>🔥 Streak</p>
+          <strong id="dash-streak" style="font-size: 24px;">0</strong>
+        </div>
+        <div class="text-center">
+          <p>🛡️ Shields</p>
+          <strong id="dash-shields" style="font-size: 24px;">0</strong>
+        </div>
+      </div>
+      
+      <div class="my-16" style="margin-top: 24px;">
+        <button id="btn-checkin" class="btn-primary" style="width: 100%;">Täglicher Check-In</button>
+      </div>
+      
+      <p id="dash-msg" class="text-center text-accent"></p>
+
+    </div>
+  </div>
+
+  <!-- Render Modul übernimmt Boot + Nav -->
+  <script type="module" src="./render_dashboard.js"></script>
+
+</body>
+</html>
