@@ -77,125 +77,147 @@
     </div>
   </aside>
 
+  <!-- Background Glow -->
+  <div class="bg-glow"></div>
+
   <!-- MAIN CONTENT -->
   <main class="main-content">
     
-    <div class="card max-w-400" style="margin-bottom: 24px;">
-      <h1 class="text-center text-accent text-glow" style="font-weight: 200;">QUANTUM DECODE</h1>
-      <p class="text-center">Analysiere dein vollständiges Schwingungsprofil.</p>
+    <!-- HERO SECTION -->
+    <section class="tool-hero reveal">
+      <div class="hero-eyebrow">✦ Pattern Analysis</div>
+      <h1 class="hero-title">QUANTUM<br>DECODE</h1>
+      <p class="hero-subtitle">Analysiere dein vollständiges Schwingungsprofil</p>
+    </section>
 
-      <!-- Input Form -->
-      <div class="my-16">
-        <label>Vollständiger Name</label>
-        <input type="text" id="num-input-name" placeholder="Vollständiger Name" class="my-16" style="width: 100%; padding: 12px; box-sizing: border-box;">
+    <!-- INPUT SECTION -->
+    <section class="tool-section reveal">
+      <div class="section-card">
+        <h2 class="text-accent mb-24">Eingabe</h2>
 
-        <label>Geburtsdatum (TT.MM.JJJJ)</label>
-        <input type="text" id="num-input-date" placeholder="z.B. 15.08.1990" class="my-16" style="width: 100%; padding: 12px; box-sizing: border-box;">
+        <div class="input-grid" style="grid-template-columns: 1fr;">
+          <div class="form-group">
+            <label for="num-input-name">Vollständiger Name</label>
+            <input type="text" id="num-input-name" placeholder="z.B. Max Mustermann">
+          </div>
+          <div class="form-group">
+            <label for="num-input-date">Geburtsdatum (TT.MM.JJJJ)</label>
+            <input type="text" id="num-input-date" placeholder="z.B. 15.08.1990">
+          </div>
+        </div>
 
-        <button class="btn-primary" id="num-calc-btn" style="width: 100%; margin-top: 8px; padding: 16px;">
-          Berechne vollständiges Profil
-        </button>
+        <button class="btn-primary" id="num-calc-btn">Berechne vollständiges Profil</button>
+        <p id="num-error" class="text-accent text-center mt-16"></p>
       </div>
-      <p id="num-error" class="text-accent text-center" style="font-size: 0.9rem;"></p>
-    </div>
+    </section>
 
     <!-- MAIN RESULTS (Only visible after calculation) -->
-    <div id="num-results-area" style="display: none; width: 100%; max-width: 400px;">
+    <div id="num-results-area" style="display: none;">
       
       <!-- Quantum Score Card -->
-      <div class="card text-center" style="margin-bottom: 24px;">
-        <h3>Quantum Vibrations-Score</h3>
-        <div id="num-quantum-gauge" style="width: 100%; max-width: 300px; margin: 0 auto;">
-          <!-- SVG Gauge injected by render.js -->
+      <section class="tool-section reveal">
+        <div class="section-card text-center">
+          <h3 class="mb-24">Quantum Vibrations-Score</h3>
+          <div id="num-quantum-gauge" style="max-width: 300px; margin: 0 auto;">
+            <!-- SVG Gauge injected by render.js -->
+          </div>
+          <div style="display: flex; justify-content: space-between; font-weight: bold; margin: 20px 0;">
+            <span id="num-quantum-score">0%</span>
+            <span id="num-quantum-label" class="text-accent">—</span>
+          </div>
+          
+          <button class="btn-primary" id="num-share-btn">
+            📸 Share to Story
+          </button>
+          <p style="font-size: 11px; opacity: 0.5; margin-top: 8px;">Generiere deine 9:16 Share-Card für Social Media.</p>
+          <a id="num-download-link" style="display: none;"></a>
         </div>
-        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px;">
-          <span id="num-quantum-score">0%</span>
-          <span id="num-quantum-label" class="text-accent">—</span>
-        </div>
-        
-        <button class="btn-primary" id="num-share-btn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <span style="font-size: 1.2rem;">📸</span> Share to Story
-        </button>
-        <p style="font-size: 11px; opacity: 0.5; margin-top: 8px;">Generiere deine 9:16 Share-Card für Social Media.</p>
-        <a id="num-download-link" style="display: none;"></a>
-      </div>
+      </section>
 
-      <!-- Deep Decode Artifact (Phase 19.3 / Premium) -->
-      <div class="card text-center" style="margin-bottom: 24px; border: 1px solid var(--accent-color); position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 10px; right: 10px; font-size: 10px; opacity: 0.6; letter-spacing: 2px;">LVL 10</div>
-        <h3>Deep Decode Artefakt</h3>
-        <p style="font-size: 12px; margin-bottom: 20px;" class="text-dim">Generiere eine 10-seitige, systemische Tiefen-Analyse deines Codes.</p>
-        <button class="btn-primary" id="num-pdf-btn" style="width: 100%; letter-spacing: 2px;">
-          ARTEFAKT ERSTELLEN
-        </button>
-      </div>
+      <!-- Deep Decode Artifact -->
+      <section class="tool-section reveal">
+        <div class="section-card text-center" style="border: 1px solid rgba(124, 58, 237, 0.3); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 10px; right: 10px; font-size: 10px; opacity: 0.6; letter-spacing: 2px;">LVL 10</div>
+          <h3 class="mb-16">Deep Decode Artefakt</h3>
+          <p style="font-size: 13px; margin-bottom: 20px; color: rgba(255,255,255,0.5);">Generiere eine 10-seitige, systemische Tiefen-Analyse deines Codes.</p>
+          <button class="btn-primary" id="num-pdf-btn">
+            ARTEFAKT ERSTELLEN
+          </button>
+        </div>
+      </section>
 
       <!-- Lo-Shu Grid Card -->
-      <div class="card text-center" style="margin-bottom: 24px;">
-        <h3>Lo-Shu Psychomatrix</h3>
-        <div class="loshu-grid" id="num-loshu-grid">
-          <!-- Dynamically filled -->
+      <section class="tool-section reveal">
+        <div class="section-card text-center">
+          <h3 class="mb-24">Lo-Shu Psychomatrix</h3>
+          <div class="loshu-grid" id="num-loshu-grid">
+            <!-- Dynamically filled -->
+          </div>
+          <p id="num-loshu-lines" style="font-size: 12px; opacity: 0.7; margin-top: 16px;"></p>
         </div>
-        <p id="num-loshu-lines" style="font-size: 12px; opacity: 0.7;"></p>
-      </div>
+      </section>
 
       <!-- Accordion System -->
-      <div id="num-accordions">
-        
-        <!-- Gruppe 1: Kernzahlen -->
-        <div class="acc-item">
-          <button class="btn-secondary acc-trigger">
-            <span>🧬 Kern-Zahlen</span>
-            <span>▼</span>
-          </button>
-          <div class="acc-content">
-            <div id="acc-core-list"></div>
+      <section class="tool-section reveal">
+        <div id="num-accordions" style="display: flex; flex-direction: column; gap: 8px;">
+          
+          <!-- Gruppe 1: Kernzahlen -->
+          <div class="acc-item">
+            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+              <span>🧬 Kern-Zahlen</span>
+              <span>▼</span>
+            </button>
+            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+              <div id="acc-core-list"></div>
+            </div>
           </div>
-        </div>
 
-        <!-- Gruppe 2: Lebensphasen -->
-        <div class="acc-item">
-          <button class="btn-secondary acc-trigger">
-            <span>⏳ Lebensphasen & Umbrüche</span>
-            <span>▼</span>
-          </button>
-          <div class="acc-content">
-            <div id="acc-phases-list"></div>
+          <!-- Gruppe 2: Lebensphasen -->
+          <div class="acc-item">
+            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+              <span>⏳ Lebensphasen & Umbrüche</span>
+              <span>▼</span>
+            </button>
+            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+              <div id="acc-phases-list"></div>
+            </div>
           </div>
-        </div>
 
-        <!-- Gruppe 3: Herausforderungen & Karma -->
-        <div class="acc-item">
-          <button class="btn-secondary acc-trigger">
-            <span>⚖️ Herausforderungen & Karma</span>
-            <span>▼</span>
-          </button>
-          <div class="acc-content">
-            <div id="acc-karma-list"></div>
+          <!-- Gruppe 3: Herausforderungen & Karma -->
+          <div class="acc-item">
+            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+              <span>⚖️ Herausforderungen & Karma</span>
+              <span>▼</span>
+            </button>
+            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+              <div id="acc-karma-list"></div>
+            </div>
           </div>
-        </div>
 
-        <!-- Gruppe 4: Analyse & Brücken -->
-        <div class="acc-item">
-          <button class="btn-secondary acc-trigger">
-            <span>🌉 Psychologie & Brücken</span>
-            <span>▼</span>
-          </button>
-          <div class="acc-content">
-            <div id="acc-bridge-list"></div>
+          <!-- Gruppe 4: Analyse & Brücken -->
+          <div class="acc-item">
+            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+              <span>🌉 Psychologie & Brücken</span>
+              <span>▼</span>
+            </button>
+            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+              <div id="acc-bridge-list"></div>
+            </div>
           </div>
+
         </div>
+      </section>
 
-      </div>
-
-      <!-- Lead Bridge CTA (Phase 16.3) -->
-      <div class="card text-center" style="margin-top: 24px; border: 1px solid var(--accent-color); background: rgba(211,211,211,0.05);">
-        <h4 style="margin-bottom: 8px;">Dein Code steht.</h4>
-        <p style="font-size: 0.9rem; margin-bottom: 16px;">Maximiere jetzt dein Potenzial.</p>
-        <button class="btn-primary" id="num-bridge-btn" style="width: 100%;">
-          Zum Finanz-Hub
-        </button>
-      </div>
+      <!-- Lead Bridge CTA -->
+      <section class="tool-section reveal">
+        <div class="section-card text-center" style="border: 1px solid rgba(124, 58, 237, 0.3);">
+          <h4 style="margin-bottom: 8px;">Dein Code steht.</h4>
+          <p style="font-size: 0.9rem; margin-bottom: 16px; color: rgba(255,255,255,0.5);">Maximiere jetzt dein Potenzial.</p>
+          <button class="btn-primary" id="num-bridge-btn">
+            Zum Finanz-Hub
+          </button>
+        </div>
+      </section>
 
     </div>
 
@@ -217,6 +239,28 @@
   </template>
 
   <script type="module" src="./render.js"></script>
+
+  <!-- Scroll Reveal Animation -->
+  <script>
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
 
 </body>
 </html>

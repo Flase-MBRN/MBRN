@@ -409,3 +409,192 @@ input[style*="background:black"] {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* ===== TOOL PAGES SPECIFIC (Landing Page Style) ===== */
+
+/* Hero für Tool-Seiten */
+.tool-hero {
+  min-height: 35vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 0 60px;
+}
+
+.tool-hero .hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #7c3aed;
+  margin-bottom: 16px;
+}
+
+.tool-hero .hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(40px, 8vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 16px;
+}
+
+.tool-hero .hero-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Tool Sections */
+.tool-section {
+  max-width: 720px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+}
+
+/* Section Cards */
+.section-card {
+  background: #13132a;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.section-card h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* Input Grid */
+.input-grid {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 640px) {
+  .input-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Results Grid */
+.results-grid {
+  display: grid;
+  gap: 16px;
+}
+
+/* Result Row */
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.result-row:last-child {
+  border-bottom: none;
+}
+
+.result-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+}
+
+.result-value {
+  color: #7c3aed;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Stats Grid (Dashboard) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* Tier Display */
+.tier-display {
+  margin: 24px 0;
+}
+
+.tier-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  color: #7c3aed;
+  letter-spacing: 0.05em;
+}
+
+/* Glow Background für Tool-Seiten */
+.bg-glow {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  right: -200px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+  filter: blur(60px);
+  z-index: -1;
+  transform: translateZ(0);
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Scroll Reveal Animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero Entrance Animation */
+@keyframes heroEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    letter-spacing: 0.1em;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    letter-spacing: -0.04em;
+  }
+}
+
+.tool-hero .hero-title {
+  animation: heroEntrance 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Utility Classes */
+.mb-24 { margin-bottom: 24px; }
+.my-24 { margin-top: 24px; margin-bottom: 24px; }
+.text-center { text-align: center !important; }

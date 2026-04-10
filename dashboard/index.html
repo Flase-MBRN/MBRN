@@ -43,38 +43,69 @@
     </div>
   </aside>
 
+  <!-- Background Glow -->
+  <div class="bg-glow"></div>
+
   <!-- MAIN CONTENT -->
   <main class="main-content">
-    <div class="card max-w-400">
-      <h1 class="text-center text-accent">Mastery Mirror</h1>
-      
-      <div class="my-16 text-center">
-        <p>Current Tier</p>
-        <p style="font-size: 28px; font-weight: bold; margin-top: 8px;" id="dash-tier">-</p>
-      </div>
-      
-      <div class="my-16" style="display: flex; justify-content: space-around; border-top: 1px solid var(--line-color); padding-top: 16px;">
-        <div class="text-center">
-          <p>🔥 Streak</p>
-          <strong id="dash-streak" style="font-size: 24px;">0</strong>
+    
+    <!-- HERO SECTION -->
+    <section class="tool-hero reveal">
+      <div class="hero-eyebrow">✦ Command Center</div>
+      <h1 class="hero-title">MASTERY<br>MIRROR</h1>
+      <p class="hero-subtitle">Dein persönliches Progress-Tracking</p>
+    </section>
+    
+    <!-- DASHBOARD CARD -->
+    <section class="tool-section reveal">
+      <div class="section-card text-center">
+        <h2 class="text-accent mb-24">Current Tier</h2>
+        <div class="tier-display">
+          <span id="dash-tier" class="tier-value">-</span>
         </div>
-        <div class="text-center">
-          <p>🛡️ Shields</p>
-          <strong id="dash-shields" style="font-size: 24px;">0</strong>
+        
+        <div class="stats-grid my-24">
+          <div class="stat-item">
+            <span class="stat-label">🔥 Streak</span>
+            <span id="dash-streak" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">🛡️ Shields</span>
+            <span id="dash-shields" class="stat-value">0</span>
+          </div>
         </div>
+        
+        <button id="btn-checkin" class="btn-primary">Täglicher Check-In</button>
+        <p id="dash-msg" class="text-accent text-center mt-16"></p>
       </div>
-      
-      <div class="my-16" style="margin-top: 24px;">
-        <button id="btn-checkin" class="btn-primary" style="width: 100%;">Täglicher Check-In</button>
-      </div>
-      
-      <p id="dash-msg" class="text-center text-accent"></p>
+    </section>
 
-    </div>
   </main>
 
   <!-- Render Modul übernimmt Boot + Nav -->
   <script type="module" src="./render_dashboard.js"></script>
+
+  <!-- Scroll Reveal Animation -->
+  <script>
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
 
 </body>
 </html>

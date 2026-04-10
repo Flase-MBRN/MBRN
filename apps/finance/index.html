@@ -43,62 +43,83 @@
     </div>
   </aside>
 
+  <!-- Background Glow -->
+  <div class="bg-glow"></div>
+
   <!-- MAIN CONTENT -->
   <main class="main-content">
     
-    <div class="card max-w-400">
-      <h1 class="text-center text-accent text-glow" style="font-weight: 200;">QUANTUM FINANCE</h1>
-      <p class="text-center">Deine Mathe-Maschine.</p>
-      
-      <!-- Input Form -->
-      <div class="my-16">
-        <label>Startkapital (€)</label>
-        <input type="number" id="input-principal" value="10000" class="my-16" style="width: 100%; padding: 8px;">
+    <!-- HERO SECTION -->
+    <section class="tool-hero reveal">
+      <div class="hero-eyebrow">✦ Financial Intelligence</div>
+      <h1 class="hero-title">QUANTUM<br>FINANCE</h1>
+      <p class="hero-subtitle">Deine Mathe-Maschine für Vermögensaufbau</p>
+    </section>
+    
+    <!-- INPUT SECTION -->
+    <section class="tool-section reveal">
+      <div class="section-card">
+        <h2 class="text-accent mb-24">Eingabe</h2>
         
-        <label>Zinssatz (%)</label>
-        <input type="number" id="input-rate" value="5" class="my-16" style="width: 100%; padding: 8px;">
+        <div class="input-grid">
+          <div class="form-group">
+            <label for="input-principal">Startkapital (€)</label>
+            <input type="number" id="input-principal" value="10000">
+          </div>
+          <div class="form-group">
+            <label for="input-rate">Zinssatz (%)</label>
+            <input type="number" id="input-rate" value="5">
+          </div>
+          <div class="form-group">
+            <label for="input-years">Laufzeit (Jahre)</label>
+            <input type="number" id="input-years" value="10">
+          </div>
+          <div class="form-group">
+            <label for="input-monthly">Monatliche Rate (€)</label>
+            <input type="number" id="input-monthly" value="100">
+          </div>
+        </div>
         
-        <label>Laufzeit (Jahre)</label>
-        <input type="number" id="input-years" value="10" class="my-16" style="width: 100%; padding: 8px;">
-        
-        <label>Monatliche Rate (€)</label>
-        <input type="number" id="input-monthly" value="100" class="my-16" style="width: 100%; padding: 8px;">
-        
-        <button class="btn-primary" id="calc-btn" style="width: 100%; margin-top: 16px;">Jetzt Berechnen</button>
+        <button class="btn-primary" id="calc-btn">Jetzt Berechnen</button>
+        <p id="finance-error" class="text-accent text-center mt-16"></p>
       </div>
+    </section>
 
-      <p id="finance-error" class="text-accent text-center"></p>
-
-      <!-- Output (Render Layer Target) -->
-      <div class="my-16" style="border-top: 1px solid var(--line-color); padding-top: 16px;">
-        <h3 class="text-center">Ergebnis</h3>
-        <div style="display: flex; justify-content: space-between;">
-          <span>Endkapital:</span>
-          <strong id="res-final" class="text-accent">- €</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-          <span>Eingezahlt:</span>
-          <span id="res-invested">- €</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-          <span>Zinsgewinn:</span>
-          <span id="res-interest">- €</span>
+    <!-- RESULTS SECTION -->
+    <section class="tool-section reveal" id="results-section">
+      <div class="section-card results-card">
+        <h2 class="text-accent mb-24">Ergebnis</h2>
+        <div class="results-grid">
+          <div class="result-row">
+            <span class="result-label">Endkapital:</span>
+            <span class="result-value" id="res-final">- €</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Eingezahlt:</span>
+            <span id="res-invested">- €</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Zinsgewinn:</span>
+            <span id="res-interest">- €</span>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- Feature Flag Container -->
-      <div id="premium-features-container" class="text-center my-16"></div>
+    <!-- PREMIUM FEATURES -->
+    <section class="tool-section reveal">
+      <div id="premium-features-container"></div>
+    </section>
 
-      <!-- Templates for Safari XSS via dom_utils -->
-      <template id="pdf-btn-template">
-        <button class="btn-primary" style="width: 100%;">📄 PDF Generieren</button>
-      </template>
-      
-      <template id="pdf-locked-template">
-        <button class="btn-secondary locked-feature-btn" data-feature="pdf_export" style="width: 100%; opacity: 0.5;" title="Nur ab Level 10 verfügbar">🔒 PDF (Premium Feature)</button>
-      </template>
+    <!-- Templates -->
+    <template id="pdf-btn-template">
+      <button class="btn-primary">📄 PDF Generieren</button>
+    </template>
+    
+    <template id="pdf-locked-template">
+      <button class="btn-secondary locked-feature-btn" data-feature="pdf_export" title="Nur ab Level 10 verfügbar">🔒 PDF (Premium Feature)</button>
+    </template>
 
-    </div>
   </main>
 
   <!-- Modal Container -->
@@ -118,6 +139,28 @@
 
   <!-- Render Modul übernimmt Boot + Nav -->
   <script type="module" src="./render.js"></script>
+
+  <!-- Scroll Reveal Animation -->
+  <script>
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
 
 </body>
 </html>
