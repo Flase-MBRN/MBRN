@@ -39,10 +39,13 @@
 
     /* Accordion Style */
     .acc-item { margin-bottom: 8px; }
-    .acc-trigger { width: 100%; text-align: left; display: flex; justify-content: space-between; }
-    .acc-content { display: none; padding: 16px; border-top: 1px solid var(--line-color); margin-top: -1px; }
+    .acc-trigger { width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+    .acc-content { display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05); }
     .acc-item.active .acc-content { display: block; }
     .acc-item.active .acc-trigger { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+    
+    /* Fix: Override inline styles when active */
+    .acc-item.active .acc-content[style] { display: block !important; }
   </style>
 </head>
 <body class="void-bg bg-grid">
@@ -159,48 +162,48 @@
 
       <!-- Accordion System -->
       <section class="tool-section reveal">
-        <div id="num-accordions" style="display: flex; flex-direction: column; gap: 8px;">
+        <div id="num-accordions">
           
           <!-- Gruppe 1: Kernzahlen -->
           <div class="acc-item">
-            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-secondary acc-trigger">
               <span>🧬 Kern-Zahlen</span>
               <span>▼</span>
             </button>
-            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div class="acc-content">
               <div id="acc-core-list"></div>
             </div>
           </div>
 
           <!-- Gruppe 2: Lebensphasen -->
           <div class="acc-item">
-            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-secondary acc-trigger">
               <span>⏳ Lebensphasen & Umbrüche</span>
               <span>▼</span>
             </button>
-            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div class="acc-content">
               <div id="acc-phases-list"></div>
             </div>
           </div>
 
           <!-- Gruppe 3: Herausforderungen & Karma -->
           <div class="acc-item">
-            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-secondary acc-trigger">
               <span>⚖️ Herausforderungen & Karma</span>
               <span>▼</span>
             </button>
-            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div class="acc-content">
               <div id="acc-karma-list"></div>
             </div>
           </div>
 
           <!-- Gruppe 4: Analyse & Brücken -->
           <div class="acc-item">
-            <button class="btn-secondary acc-trigger" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-secondary acc-trigger">
               <span>🌉 Psychologie & Brücken</span>
               <span>▼</span>
             </button>
-            <div class="acc-content" style="display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div class="acc-content">
               <div id="acc-bridge-list"></div>
             </div>
           </div>
