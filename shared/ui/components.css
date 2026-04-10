@@ -344,84 +344,9 @@
 }
 
 /* ========================================
-   Navigation (PROBLEM 2)
-   Fixed Sidebar Navigation (220px vertical)
+   Navigation Styles
+   Ergänzung zu theme.css .nav-sidebar
    ======================================== */
-
-/* Main Nav Container: Fixed Sidebar */
-.nav-container {
-  display: flex;
-  flex-direction: column;
-  width: 220px;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background: #0a0a0a;
-  border-right: 1px solid #1a1a1a;
-  z-index: 200;
-  padding: var(--space-xl) 0;
-  overflow-y: auto;
-}
-
-/* Logo/Brand Area */
-.nav-brand {
-  padding: 0 var(--space-lg) var(--space-xl);
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: var(--space-lg);
-}
-
-/* Vertical Nav Links */
-.nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  padding: 0 var(--space-md);
-  flex: 1;
-}
-
-/* Individual Nav Items */
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  color: var(--text-secondary);
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-  text-decoration: none;
-}
-
-.nav-link:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-link.active {
-  color: var(--accent-primary);
-  background: rgba(124, 58, 237, 0.15);
-  border-left: 3px solid var(--accent-primary);
-  margin-left: -3px;
-}
-
-/* Nav Section Headers */
-.nav-section {
-  padding: var(--space-md) var(--space-lg) var(--space-sm);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-dim);
-}
-
-/* Bottom Area (User/Settings) */
-.nav-footer {
-  padding: var(--space-lg) var(--space-md) 0;
-  border-top: 1px solid var(--border-subtle);
-  margin-top: auto;
-}
 
 /* Mobile Toggle Button */
 .nav-toggle {
@@ -438,21 +363,12 @@
 }
 
 @media (max-width: 768px) {
-  .nav-container {
-    transform: translateX(-100%);
-    transition: transform var(--transition-base);
-  }
-  
-  .nav-container.open {
-    transform: translateX(0);
-  }
-  
   .nav-toggle {
     display: block;
   }
 }
 
-/* Legacy Horizontal Navigation (falls noch benötigt) */
+/* Legacy Horizontal Navigation */
 .nav-horizontal {
   display: flex;
   gap: var(--space-md);

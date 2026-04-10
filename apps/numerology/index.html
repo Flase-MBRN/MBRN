@@ -44,20 +44,38 @@
 </head>
 <body class="void-bg">
 
-  <!-- Globale Navigation -->
-  <nav class="nav-container">
-    <div class="nav-links">
-      <button class="btn-secondary" data-route="home">Home</button>
-      <button class="btn-secondary" data-route="dashboard">Dashboard</button>
-      <button class="btn-secondary" data-route="finance">Finance App</button>
-      <button class="btn-secondary" data-route="numerology">Numerologie</button>
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="nav-sidebar">
+    <div class="nav-brand">
+      <span class="logo-text">MBRN</span>
     </div>
-    <div id="nav-auth-container">
-      <!-- Dynamisch gefüllt durch render_auth.js -->
+    
+    <nav class="nav-menu">
+      <a class="nav-item" data-route="home">
+        <span class="nav-icon">⌂</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-item" data-route="dashboard">
+        <span class="nav-icon">◈</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a class="nav-item" data-route="finance">
+        <span class="nav-icon">◉</span>
+        <span class="nav-label">Finance</span>
+      </a>
+      <a class="nav-item active" data-route="numerology">
+        <span class="nav-icon">◐</span>
+        <span class="nav-label">Numerologie</span>
+      </a>
+    </nav>
+    
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
     </div>
-  </nav>
+  </aside>
 
-  <div class="hub-container" style="min-height: 100vh; height: auto; flex-direction: column; padding: 40px 20px; justify-content: flex-start;">
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
     
     <div class="card max-w-400" style="margin-bottom: 24px;">
       <h1 class="text-center text-accent text-glow" style="font-weight: 200;">QUANTUM DECODE</h1>
@@ -178,7 +196,7 @@
 
     </div>
 
-  </div>
+  </main>
 
   <!-- Modal Container (Phase 18.4) -->
   <div id="modal-container"></div>

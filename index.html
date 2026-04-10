@@ -13,22 +13,40 @@
 </head>
 <body class="void-bg">
 
-  <!-- Globale Navigation -->
-  <nav class="nav-container">
-    <div class="nav-links">
-      <button class="btn-secondary" data-route="home">Home</button>
-      <button class="btn-secondary" data-route="dashboard">Dashboard</button>
-      <button class="btn-secondary" data-route="finance">Finance App</button>
-      <button class="btn-secondary" data-route="numerology">Numerologie</button>
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="nav-sidebar">
+    <div class="nav-brand">
+      <span class="logo-text">MBRN</span>
     </div>
-    <div id="nav-auth-container">
-      <!-- Dynamisch gefüllt durch render_auth.js -->
+    
+    <nav class="nav-menu">
+      <a class="nav-item active" data-route="home">
+        <span class="nav-icon">⌂</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-item" data-route="dashboard">
+        <span class="nav-icon">◈</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a class="nav-item" data-route="finance">
+        <span class="nav-icon">◉</span>
+        <span class="nav-label">Finance</span>
+      </a>
+      <a class="nav-item" data-route="numerology">
+        <span class="nav-icon">◐</span>
+        <span class="nav-label">Numerologie</span>
+      </a>
+    </nav>
+    
+    <div class="nav-footer">
+      <div id="nav-auth-container">
+        <!-- Dynamisch gefüllt durch render_auth.js -->
+      </div>
     </div>
-  </nav>
+  </aside>
 
-  <!-- Landing Page Container -->
-  <!-- Override height: 100vh manually to allow scrolling for the landing page -->
-  <div class="hub-container" style="min-height: calc(100vh - 70px); height: auto; flex-direction: column; padding: 60px 20px; justify-content: flex-start;">
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
     
     <!-- HERO SECTION -->
     <section class="text-center" style="margin-bottom: 40px;">
@@ -100,7 +118,7 @@
       </div>
     </section>
 
-  </div>
+  </main>
 
   <script type="module">
     import { dom } from './shared/ui/dom_utils.js';
