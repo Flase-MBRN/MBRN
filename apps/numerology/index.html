@@ -10,43 +10,9 @@
   
   <!-- Fonts: Syne (Display) + Inter (Body) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    /* Lo-Shu Grid Styles */
-    .loshu-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      width: 240px;
-      margin: 20px auto;
-    }
-    .loshu-cell {
-      aspect-ratio: 1;
-      border: 1px solid var(--line-color);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .loshu-val { font-size: 20px; font-weight: bold; color: var(--accent-color); }
-    .loshu-num { font-size: 10px; opacity: 0.5; }
-
-    /* Quantum Gauge Style */
-    #num-quantum-gauge {
-      margin-bottom: 20px;
-    }
-
-    /* Accordion Style */
-    .acc-item { margin-bottom: 8px; }
-    .acc-trigger { width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-    .acc-content { display: none; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05); }
-    .acc-item.active .acc-content { display: block; }
-    .acc-item.active .acc-trigger { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-    
-    /* Fix: Override inline styles when active */
-    .acc-item.active .acc-content[style] { display: block !important; }
-  </style>
+  
+  <!-- App-Specific Styles -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="void-bg bg-grid">
 
@@ -98,7 +64,7 @@
       <div class="section-card">
         <h2 class="text-accent mb-24">Eingabe</h2>
 
-        <div class="input-grid" style="grid-template-columns: 1fr;">
+        <div class="input-grid grid-1fr">
           <div class="form-group">
             <label for="num-input-name">Vollständiger Name</label>
             <input type="text" id="num-input-name" placeholder="z.B. Max Mustermann">
@@ -115,16 +81,16 @@
     </section>
 
     <!-- MAIN RESULTS (Only visible after calculation) -->
-    <div id="num-results-area" style="display: none;">
+    <div id="num-results-area" class="hidden">
       
       <!-- Quantum Score Card -->
       <section class="tool-section reveal">
         <div class="section-card text-center">
           <h3 class="mb-24">Quantum Vibrations-Score</h3>
-          <div id="num-quantum-gauge" style="max-width: 300px; margin: 0 auto;">
+          <div id="num-quantum-gauge" class="max-w-300">
             <!-- SVG Gauge injected by render.js -->
           </div>
-          <div style="display: flex; justify-content: space-between; font-weight: bold; margin: 20px 0;">
+          <div class="flex-between font-bold my-20">
             <span id="num-quantum-score">0%</span>
             <span id="num-quantum-label" class="text-accent">—</span>
           </div>
@@ -132,17 +98,17 @@
           <button class="btn-primary" id="num-share-btn">
             📸 Share to Story
           </button>
-          <p style="font-size: 11px; opacity: 0.5; margin-top: 8px;">Generiere deine 9:16 Share-Card für Social Media.</p>
-          <a id="num-download-link" style="display: none;"></a>
+          <p class="text-sm opacity-50 mt-8">Generiere deine 9:16 Share-Card für Social Media.</p>
+          <a id="num-download-link" class="hidden"></a>
         </div>
       </section>
 
       <!-- Deep Decode Artifact -->
       <section class="tool-section reveal">
-        <div class="section-card text-center" style="border: 1px solid rgba(124, 58, 237, 0.3); position: relative; overflow: hidden;">
-          <div style="position: absolute; top: 10px; right: 10px; font-size: 10px; opacity: 0.6; letter-spacing: 2px;">LVL 10</div>
+        <div class="section-card text-center border-accent relative overflow-hidden">
+          <div class="absolute top-10 right-10 text-xs opacity-60 letter-spacing-2">LVL 10</div>
           <h3 class="mb-16">Deep Decode Artefakt</h3>
-          <p style="font-size: 13px; margin-bottom: 20px; color: rgba(255,255,255,0.5);">Generiere eine 10-seitige, systemische Tiefen-Analyse deines Codes.</p>
+          <p class="text-base mb-20 text-secondary">Generiere eine 10-seitige, systemische Tiefen-Analyse deines Codes.</p>
           <button class="btn-primary" id="num-pdf-btn">
             ARTEFAKT ERSTELLEN
           </button>
@@ -156,7 +122,7 @@
           <div class="loshu-grid" id="num-loshu-grid">
             <!-- Dynamically filled -->
           </div>
-          <p id="num-loshu-lines" style="font-size: 12px; opacity: 0.7; margin-top: 16px;"></p>
+          <p id="num-loshu-lines" class="text-md opacity-70 mt-16"></p>
         </div>
       </section>
 
@@ -213,9 +179,9 @@
 
       <!-- Lead Bridge CTA -->
       <section class="tool-section reveal">
-        <div class="section-card text-center" style="border: 1px solid rgba(124, 58, 237, 0.3);">
-          <h4 style="margin-bottom: 8px;">Dein Code steht.</h4>
-          <p style="font-size: 0.9rem; margin-bottom: 16px; color: rgba(255,255,255,0.5);">Maximiere jetzt dein Potenzial.</p>
+        <div class="section-card text-center border-accent">
+          <h4 class="mb-8">Dein Code steht.</h4>
+          <p class="text-lg mb-16 text-secondary">Maximiere jetzt dein Potenzial.</p>
           <button class="btn-primary" id="num-bridge-btn">
             Zum Finanz-Hub
           </button>
