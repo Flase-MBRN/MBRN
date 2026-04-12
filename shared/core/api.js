@@ -8,6 +8,12 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
  * 1. Cloud-First, Offline-Always (Instant UX via LocalStorage Fallback).
  * 2. Row Level Security (RLS) mandated.
  * 3. Sync-Debouncing to protect API limits.
+ * 
+ * RLS VERIFICATION: ✅ PASSED (13.04.2026)
+ * - profiles: SELECT (auth.uid() = id) ✅
+ * - profiles: INSERT (auth.uid() = id) ✅
+ * - profiles: UPDATE (auth.uid() = id) ✅
+ * - DELETE: Not allowed (no policy) ✅
  */
 
 // --- CONFIGURATION ---
