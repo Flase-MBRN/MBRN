@@ -523,6 +523,13 @@
 /* Border Utilities */
 .border-accent { border: 1px solid rgba(124, 58, 237, 0.3); }
 
+/* Paywall/Modal Specific */
+.font-weight-200 { font-weight: 200; }
+.w-full { width: 100%; }
+.svg-responsive { width: 100%; height: auto; }
+.stroke-transition { transition: stroke-dasharray 1.5s ease-out; }
+.needle-rotate { transform-origin: center; transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
 .my-8 { margin-top: 8px; margin-bottom: 8px; }
 .my-16 { margin-top: 16px; margin-bottom: 16px; }
 .my-20 { margin-top: 20px; margin-bottom: 20px; }

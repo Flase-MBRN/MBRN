@@ -150,26 +150,66 @@ export const numerologyRender = {
     const container = document.getElementById('num-quantum-gauge');
     if (!container) return;
 
-    // Phase 16.1: Premium SVG Gauge
+    // Gesetz 3 Compliance: DOM API statt innerHTML
     const score = quantum.score;
-    // Rotation mapping: 0% -> -90deg, 100% -> 90deg (arc is 180deg)
-    const rotation = -90 + (1.8 * score); 
+    const rotation = -90 + (1.8 * score);
+    const arcLength = (Math.PI * 80) * (score / 100);
 
-    container.innerHTML = `
-      <svg viewBox="0 0 200 120" style="width: 100%; height: auto;">
-        <!-- Background Track (Arc) -->
-        <path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#333" stroke-width="12" stroke-linecap="round"/>
-        <!-- Active Track (Dynamic Arc) -->
-        <path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#D3D3D3" stroke-width="12" stroke-linecap="round" 
-              stroke-dasharray="${(Math.PI * 80) * (score / 100)} 1000" style="transition: stroke-dasharray 1.5s ease-out;"/>
-        <!-- Needle -->
-        <g transform="translate(100, 100)">
-          <line x1="0" y1="0" x2="0" y2="-75" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"
-                style="transform: rotate(${rotation}deg); transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); transform-origin: center;"/>
-          <circle cx="0" cy="0" r="8" fill="#FFFFFF"/>
-        </g>
-      </svg>
-    `;
+    // Clear container
+    container.replaceChildren();
+
+    // Create SVG
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 200 120');
+    svg.classList.add('svg-responsive');
+
+    // Background Track
+    const track = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    track.setAttribute('d', 'M20,100 A80,80 0 0,1 180,100');
+    track.setAttribute('fill', 'none');
+    track.setAttribute('stroke', '#333');
+    track.setAttribute('stroke-width', '12');
+    track.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(track);
+
+    // Active Track
+    const activeTrack = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    activeTrack.setAttribute('d', 'M20,100 A80,80 0 0,1 180,100');
+    activeTrack.setAttribute('fill', 'none');
+    activeTrack.setAttribute('stroke', '#D3D3D3');
+    activeTrack.setAttribute('stroke-width', '12');
+    activeTrack.setAttribute('stroke-linecap', 'round');
+    activeTrack.setAttribute('stroke-dasharray', `${arcLength} 1000`);
+    activeTrack.classList.add('stroke-transition');
+    svg.appendChild(activeTrack);
+
+    // Needle Group
+    const needleGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    needleGroup.setAttribute('transform', 'translate(100, 100)');
+
+    // Needle Line
+    const needle = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    needle.setAttribute('x1', '0');
+    needle.setAttribute('y1', '0');
+    needle.setAttribute('x2', '0');
+    needle.setAttribute('y2', '-75');
+    needle.setAttribute('stroke', '#FFFFFF');
+    needle.setAttribute('stroke-width', '3');
+    needle.setAttribute('stroke-linecap', 'round');
+    needle.style.transform = `rotate(${rotation}deg)`;
+    needle.classList.add('needle-rotate');
+    needleGroup.appendChild(needle);
+
+    // Center Circle
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', '0');
+    circle.setAttribute('cy', '0');
+    circle.setAttribute('r', '8');
+    circle.setAttribute('fill', '#FFFFFF');
+    needleGroup.appendChild(circle);
+
+    svg.appendChild(needleGroup);
+    container.appendChild(svg);
 
     dom.setText('num-quantum-score', `${score}%`);
     dom.setText('num-quantum-label', quantum.interpretation);
@@ -221,60 +261,77 @@ export const numerologyRender = {
   },
 
   renderAccordions(data) {
-    // ARCHITECTURE EXEMPTION: innerHTML used here to render computed numbers
-    // from logic.js (pure functions, zero user input). XSS risk = 0.
-    // A full DOM-builder refactor is deferred to Phase 3.0.
-    const createRow = (label, val) => `
-      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
-        <span style="opacity: 0.7; font-size: 14px;">${label}</span>
-        <strong class="text-accent">${val}</strong>
-      </div>`;
+    // Gesetz 3 Compliance: DOM API statt innerHTML
+    const createRow = (container, label, val) => {
+      const row = document.createElement('div');
+      row.className = 'flex-between mb-16 pb-4';
+      row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+      
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'opacity-70 text-base';
+      labelSpan.textContent = label;
+      
+      const valStrong = document.createElement('strong');
+      valStrong.className = 'text-accent';
+      valStrong.textContent = val;
+      
+      row.appendChild(labelSpan);
+      row.appendChild(valStrong);
+      container.appendChild(row);
+    };
+
+    const createSectionHeader = (container, text) => {
+      const header = document.createElement('div');
+      header.className = 'font-bold text-xs text-accent mb-8';
+      header.textContent = text;
+      container.appendChild(header);
+    };
 
     // 1. Kernzahlen
-    const coreHtml = `
-      ${createRow('Lebenszahl', data.core.lifePath)}
-      ${createRow('Seelenzahl', data.core.soulUrge)}
-      ${createRow('Persönlichkeit', data.core.personality)}
-      ${createRow('Ausdruckszahl', data.core.expression)}
-      ${createRow('Reifezahl', data.additional.maturity)}
-      ${createRow('Geburtstag', data.additional.birthday)}
-    `;
-    document.getElementById('acc-core-list').innerHTML = coreHtml;
+    const coreList = document.getElementById('acc-core-list');
+    coreList.replaceChildren();
+    createRow(coreList, 'Lebenszahl', data.core.lifePath);
+    createRow(coreList, 'Seelenzahl', data.core.soulUrge);
+    createRow(coreList, 'Persönlichkeit', data.core.personality);
+    createRow(coreList, 'Ausdruckszahl', data.core.expression);
+    createRow(coreList, 'Reifezahl', data.additional.maturity);
+    createRow(coreList, 'Geburtstag', data.additional.birthday);
 
     // 2. Phasen
-    const phaseHtml = `
-      <div style="margin-bottom: 8px; font-weight: bold; font-size: 12px; color: var(--accent-color);">LEBENSZYKLEN</div>
-      ${createRow('Früher Zyklus', data.cycles.c1)}
-      ${createRow('Mittlerer Zyklus', data.cycles.c2)}
-      ${createRow('Später Zyklus', data.cycles.c3)}
-      <div style="margin: 16px 0 8px 0; font-weight: bold; font-size: 12px; color: var(--accent-color);">HÖHEPUNKTE (PINNACLES)</div>
-      ${createRow('Pinnacle 1', data.pinnacles.p1)}
-      ${createRow('Pinnacle 2', data.pinnacles.p2)}
-      ${createRow('Pinnacle 3', data.pinnacles.p3)}
-      ${createRow('Pinnacle 4', data.pinnacles.p4)}
-    `;
-    document.getElementById('acc-phases-list').innerHTML = phaseHtml;
+    const phasesList = document.getElementById('acc-phases-list');
+    phasesList.replaceChildren();
+    createSectionHeader(phasesList, 'LEBENSZYKLEN');
+    createRow(phasesList, 'Früher Zyklus', data.cycles.c1);
+    createRow(phasesList, 'Mittlerer Zyklus', data.cycles.c2);
+    createRow(phasesList, 'Später Zyklus', data.cycles.c3);
+    createSectionHeader(phasesList, 'HÖHEPUNKTE (PINNACLES)');
+    createRow(phasesList, 'Pinnacle 1', data.pinnacles.p1);
+    createRow(phasesList, 'Pinnacle 2', data.pinnacles.p2);
+    createRow(phasesList, 'Pinnacle 3', data.pinnacles.p3);
+    createRow(phasesList, 'Pinnacle 4', data.pinnacles.p4);
 
     // 3. Karma
-    const karmaHtml = `
-      <div style="margin-bottom: 8px; font-weight: bold; font-size: 12px; color: var(--accent-color);">HERAUSFORDERUNGEN</div>
-      ${createRow('Challenge 1', data.challenges.ch1)}
-      ${createRow('Challenge 2', data.challenges.ch2)}
-      ${createRow('Haupt-Challenge', data.challenges.ch3)}
-      ${createRow('Gespannte Challenge', data.challenges.ch4)}
-      <div style="margin: 16px 0 8px 0; font-weight: bold; font-size: 12px; color: var(--accent-color);">KARMA</div>
-      ${createRow('Karmische Lektionen', data.karma.lessons.join(', ') || 'Keine')}
-      ${createRow('Verborgene Passion', data.karma.passion.join(', '))}
-    `;
-    document.getElementById('acc-karma-list').innerHTML = karmaHtml;
+    const karmaList = document.getElementById('acc-karma-list');
+    karmaList.replaceChildren();
+    createSectionHeader(karmaList, 'HERAUSFORDERUNGEN');
+    createRow(karmaList, 'Challenge 1', data.challenges.ch1);
+    createRow(karmaList, 'Challenge 2', data.challenges.ch2);
+    createRow(karmaList, 'Haupt-Challenge', data.challenges.ch3);
+    createRow(karmaList, 'Gespannte Challenge', data.challenges.ch4);
+    createSectionHeader(karmaList, 'KARMA');
+    createRow(karmaList, 'Karmische Lektionen', data.karma.lessons.join(', ') || 'Keine');
+    createRow(karmaList, 'Verborgene Passion', data.karma.passion.join(', '));
 
     // 4. Brücken
-    const bridgeHtml = `
-      ${createRow('Brücke Seele-Persönlichkeit', data.bridges.soulPers)}
-      ${createRow('Brücke Leben-Ausdruck', data.bridges.lifeExpr)}
-      <p style="font-size: 11px; opacity: 0.5; margin-top: 10px;">Brücken zeigen an, wie viel Aufwand nötig ist, um gegensätzliche Anteile zu harmonisieren (0 = Harmonie, 9 = hohe Spannung).</p>
-    `;
-    document.getElementById('acc-bridge-list').innerHTML = bridgeHtml;
+    const bridgeList = document.getElementById('acc-bridge-list');
+    bridgeList.replaceChildren();
+    createRow(bridgeList, 'Brücke Seele-Persönlichkeit', data.bridges.soulPers);
+    createRow(bridgeList, 'Brücke Leben-Ausdruck', data.bridges.lifeExpr);
+    
+    const bridgeNote = document.createElement('p');
+    bridgeNote.className = 'text-sm opacity-50 mt-16';
+    bridgeNote.textContent = 'Brücken zeigen an, wie viel Aufwand nötig ist, um gegensätzliche Anteile zu harmonisieren (0 = Harmonie, 9 = hohe Spannung).';
+    bridgeList.appendChild(bridgeNote);
   }
 };
 
