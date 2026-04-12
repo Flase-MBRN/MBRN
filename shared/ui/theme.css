@@ -1,15 +1,15 @@
 /* ========================================
    MBRN-HUB-V1: Design System
-   Navy Theme - Unified with Landing Page
+   Sternenhimmel Theme - v5.0 Master Directive
    ======================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  /* Navy Background System */
-  --bg-primary: #0d0d1a;
-  --bg-surface: #13132a;
-  --bg-elevated: #1a1a3a;
+  /* Sternenhimmel Background System */
+  --bg-primary: #05050A;
+  --bg-surface: #0A0A0F;
+  --bg-elevated: #0F0F15;
   
   /* Purple Accent */
   --accent: #7c3aed;
