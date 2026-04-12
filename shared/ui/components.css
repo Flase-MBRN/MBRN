@@ -1,6 +1,6 @@
 /* ========================================
    MBRN-HUB-V1: Components
-   Navy Theme - Unified with Landing Page
+   Sternenhimmel Theme - v5.0 Master Directive
    ======================================== */
 
 /* Import Theme Variables */
@@ -71,9 +71,9 @@
    CARD SYSTEM (Landing Page Style)
    ======================================== */
 
-/* Base Card - Navy Background */
+/* Base Card - Sternenhimmel Background */
 .card {
-  background: #13132a;
+  background: var(--bg-surface);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 20px;
   padding: 32px;
@@ -89,7 +89,7 @@
 
 /* Primary Card: Featured/Premium */
 .card-primary {
-  background: #13132a;
+  background: var(--bg-surface);
   border: 1px solid rgba(124, 58, 237, 0.2);
   border-radius: 20px;
   padding: 32px;
@@ -104,7 +104,7 @@
 
 /* Secondary Card: Default */
 .card-secondary {
-  background: #13132a;
+  background: var(--bg-surface);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 20px;
   padding: 32px;
@@ -117,7 +117,7 @@
 
 /* Heading Card */
 .card-heading {
-  background: #13132a;
+  background: var(--bg-surface);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 20px;
   padding: 48px 32px 32px;
@@ -317,7 +317,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(13, 13, 26, 0.9);
+  background: rgba(5, 5, 10, 0.9);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -328,7 +328,7 @@
 }
 
 .modal-content {
-  background: #13132a;
+  background: var(--bg-surface);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   max-width: 480px;
@@ -368,7 +368,7 @@
   top: 16px;
   left: 16px;
   z-index: 300;
-  background: #13132a;
+  background: var(--bg-surface);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 12px;
@@ -389,7 +389,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: rgba(13, 13, 26, 0.8);
+  background: rgba(5, 5, 10, 0.8);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   height: 64px;
 }
@@ -482,8 +482,8 @@
 .text-center { text-align: center !important; }
 .text-glow { text-shadow: 0 0 40px rgba(124, 58, 237, 0.3); }
 
-.bg-surface { background: #13132a !important; }
-.bg-elevated { background: #1a1a3a !important; }
+.bg-surface { background: var(--bg-surface) !important; }
+.bg-elevated { background: #0F0F15 !important; }
 
 .max-w-400 { max-width: 400px; margin-left: auto; margin-right: auto; }
 .max-w-600 { max-width: 600px; margin-left: auto; margin-right: auto; }
@@ -517,7 +517,7 @@
 
 /* Override any old black backgrounds */
 [class*="void-bg"] {
-  background: #0d0d1a !important;
+  background: #05050A !important;
 }
 
 /* Ensure all buttons get pill style */
