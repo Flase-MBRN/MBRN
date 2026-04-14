@@ -1,0 +1,7 @@
+# CRITICAL SECURITY DIRECTIVE - NEVER BYPASS
+
+1. SECRETS & KEYS: Du bist STRIKT VERBOTEN, echte API-Keys, Supabase-URLs oder Passwörter in Repositories zu schreiben.
+2. ENV FILES: Nutze AUSSCHLIESSLICH Platzhalter.
+3. GIT COMMITS: Bevor du `git add` oder `git commit` ausführst, MUSST du verifizieren, dass keine echten Keys im Staging-Bereich sind.
+4. ENV.JS: Die Datei `shared/core/env.js` ist TABU, AUSSER bei legitimen Security Incidents (Key Rotation).
+5. NOTFALL-PROTOKOLL: Bei exposed Credentials darfst du `env.js` LOKAL anpassen, aber du MUSST sicherstellen, dass die Datei nicht von Git getrackt wird, bevor du committest.
