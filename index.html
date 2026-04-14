@@ -3,201 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MBRN · Digital Tools — Local-First Architecture</title>
-  <meta name="description" content="MBRN ist ein Portfolio präziser Digital-Tools. Local-First. Zero Tracking. Gebaut für Menschen die klare Entscheidungen treffen.">
+  <title>MBRN · Entschlüssle deinen Frequenz-Code</title>
+  <meta name="description" content="Kein Login. Keine Datenweitergabe. Entschlüssle deine Kernfrequenz in 3 Sekunden.">
   
   <!-- Fonts: Syne (Display) + Inter (Body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- External CSS: Law 9 Compliance -->
+  <!-- MBRN Design System -->
   <link rel="stylesheet" href="shared/ui/theme.css">
   <link rel="stylesheet" href="shared/ui/components.css">
   <link rel="stylesheet" href="shared/ui/landing.css">
 </head>
 <body>
-  <!-- Background Layers -->
-  <div class="bg-gradient"></div>
-  <div class="bg-glow"></div>
-  <div class="bg-glow-2"></div>
-  
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="nav-brand">MBRN</div>
-    <div class="nav-links">
-      <a href="#tools" class="nav-link">Tools</a>
+  <!-- === 1. THE HOOK (Above the Fold) === -->
+  <section id="hook-section" class="hook-section">
+    <div class="bg-glow"></div>
+    
+    <nav class="nav-minimal">
+      <div class="nav-brand">MBRN</div>
       <a href="./dashboard/" class="nav-link">Dashboard</a>
+    </nav>
+    
+    <div class="hook-content">
+      <h1 class="hook-headline">
+        Entschlüssle<br>deinen<br><span class="text-glow">Frequenz-Code</span>
+      </h1>
+      
+      <p class="hook-subtitle">Kein Login. Keine Datenweitergabe. <br>3 Sekunden. Ein Ergebnis.</p>
+      
+      <!-- Glassmorphism Input Form -->
+      <form id="frequency-form" class="frequency-form">
+        <div class="input-group">
+          <label class="input-label">Vollständiger Name</label>
+          <input type="text" id="input-name" class="glass-input" placeholder="Max Mustermann" required>
+        </div>
+        
+        <div class="input-group">
+          <label class="input-label" for="input-date">Geburtsdatum</label>
+          <input type="date" id="input-date" class="glass-input" placeholder="TT.MM.JJJJ" title="Geburtsdatum eingeben" required>
+        </div>
+        
+        <button type="submit" class="pulse-cta">
+          <span class="cta-text">Frequenz analysieren</span>
+          <span class="cta-glow"></span>
+        </button>
+      </form>
     </div>
-  </nav>
-  
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-eyebrow">✦ THE BEHAVIOR SYSTEM</div>
-    <h1 class="hero-title">MBRN</h1>
-    <p class="hero-subtitle">Wir fragen nicht nach Zertifikaten. Wir fragen nach Potenzial.<br>Kein Login. Keine Limits. Finde heraus, wie deine Membran schwingt.</p>
-    <a href="#tools" class="hero-cta-main">
-      Explore Tools <span>→</span>
-    </a>
-    <p class="hero-subline">Built to be used.</p>
   </section>
-  
-  <!-- Metrics Bar -->
-  <div class="metrics">
-    <div class="metrics-inner">
-      <div class="metric">
-        <div class="metric-value">3</div>
-        <div class="metric-label">Tools Live</div>
+
+  <!-- === 2. THE ANTICIPATION (Terminal Loader) === -->
+  <section id="loader-section" class="loader-section hidden">
+    <div class="terminal-overlay">
+      <div class="terminal-header">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">MBRN_CORE_v5.0</span>
       </div>
-      <div class="metric">
-        <div class="metric-value">0 KB</div>
-        <div class="metric-label">Data Sent</div>
-      </div>
-      <div class="metric">
-        <div class="metric-value">∞</div>
-        <div class="metric-label">Access Forever</div>
+      <div class="terminal-body">
+        <div id="terminal-text" class="terminal-text"></div>
+        <div class="terminal-progress">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <!-- Tools Section -->
-  <section class="section" id="tools">
-    <div class="section-header reveal">
-      <div class="section-eyebrow">✦ DIE 11 DIMENSIONEN</div>
-      <h2 class="section-title">Werkzeuge zur Potenzial-Entschlüsselung</h2>
-      <p class="section-subtitle">Alles läuft offline und direkt in deinem System.</p>
+  </section>
+
+  <!-- === 3. THE REVEAL (Life Path Display) === -->
+  <section id="reveal-section" class="reveal-section hidden">
+    <div class="reveal-content">
+      <div class="number-display">
+        <svg class="number-ring" viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#6B4CE6"/>
+              <stop offset="100%" stop-color="#9f7aea"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="100" cy="100" r="90"/>
+          <circle id="ring-progress" class="ring-progress" cx="100" cy="100" r="90"/>
+        </svg>
+        <div id="life-path-number" class="life-path-number">-</div>
+      </div>
+      
+      <div class="reveal-text">
+        <p class="reveal-label">Deine Kernfrequenz</p>
+        <h2 id="archetype-title" class="archetype-title">Der Architekt</h2>
+        <p id="archetype-desc" class="archetype-desc">Baumeister. Stratege. Der, der fundamentale Strukturen schafft.</p>
+      </div>
+      
+      <button id="btn-unlock" class="unlock-cta">
+        Vollständiges MBRN-Profil freischalten
+      </button>
+    </div>
+  </section>
+
+  <!-- === 4. THE CLIFFHANGER (Blurred Features) === -->
+  <section id="cliffhanger-section" class="cliffhanger-section hidden">
+    <h3 class="cliffhanger-title">Die 11 Dimensionen</h3>
+    
+    <div class="dimension-grid">
+      <div class="dimension-card blurred">
+        <div class="dimension-icon">◷</div>
+        <h4>Chronos</h4>
+        <p>Zeit-Zyklen als Navigation</p>
+        <div class="lock-overlay">
+          <span class="lock-icon">🔒</span>
+        </div>
+      </div>
+      
+      <div class="dimension-card blurred">
+        <div class="dimension-icon">◐</div>
+        <h4>Synergy</h4>
+        <p>Kompatibilitäts-Analyse</p>
+        <div class="lock-overlay">
+          <span class="lock-icon">🔒</span>
+        </div>
+      </div>
+      
+      <div class="dimension-card blurred">
+        <div class="dimension-icon">◎</div>
+        <h4>Tuner</h4>
+        <p>Namens-Frequenz Alignment</p>
+        <div class="lock-overlay">
+          <span class="lock-icon">🔒</span>
+        </div>
+      </div>
+      
+      <div class="dimension-card">
+        <div class="dimension-icon">◉</div>
+        <h4>Finance</h4>
+        <p>Investitions-Projektion</p>
+        <a href="./apps/finance/" class="dimension-link">Start →</a>
+      </div>
+      
+      <div class="dimension-card">
+        <div class="dimension-icon">○</div>
+        <h4>Numerology</h4>
+        <p>36 Kennzahlen Profil</p>
+        <a href="./apps/numerology/" class="dimension-link">Start →</a>
+      </div>
+      
+      <div class="dimension-card">
+        <div class="dimension-icon">◈</div>
+        <h4>Dashboard</h4>
+        <p>Command Center</p>
+        <a href="./dashboard/" class="dimension-link">Start →</a>
+      </div>
     </div>
     
-    <div class="tools-grid">
-      
-      <!-- Finance Tool -->
-      <a href="./apps/finance/" class="tool-card featured reveal">
-        <div class="card-header">
-          <div class="card-category finance">
-            <span>●</span>
-            Financial Intelligence
-          </div>
-          <span class="card-status ready">PUBLIC CORE</span>
-        </div>
-        <div class="tool-icon">💸</div>
-        <h3 class="tool-name">Investitions-Projektion</h3>
-        <p class="tool-desc">
-          Was wärst du heute wert — wenn du früher angefangen hättest? Echtzeit-Kursintegration, vier Anlagemodelle, steuerbereinigter Output.
-        </p>
-        <div class="tool-footer">
-          <div class="btn-access">
-            Start using <span>→</span>
-          </div>
-          <div class="live-indicator">
-            <span class="live-dot"></span>
-            <span class="text-success">Ready</span>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Numerology Tool -->
-      <a href="./apps/numerology/" class="tool-card reveal">
-        <div class="card-header">
-          <div class="card-category numerology">
-            <span>●</span>
-            Pattern Analysis
-          </div>
-          <span class="card-status beta">BETA</span>
-        </div>
-        <div class="tool-icon">✦</div>
-        <h3 class="tool-name">Numerologie-System</h3>
-        <p class="tool-desc">
-          36 Kennzahlen. Lo-Shu Psychomatrix. Dein vollständiges Profil — berechnet lokal.
-        </p>
-        <div class="tool-footer">
-          <div class="btn-access">
-            Start using <span>→</span>
-          </div>
-          <div class="live-indicator">
-            <span class="live-dot beta"></span>
-            <span class="text-warning">Beta</span>
-          </div>
-        </div>
-      </a>
-      
-      <!-- Dashboard Tool -->
-      <a href="./dashboard/" class="tool-card reveal">
-        <div class="card-header">
-          <div class="card-category dashboard">
-            <span>●</span>
-            Command Center
-          </div>
-          <span class="card-status ready">LIVE</span>
-        </div>
-        <div class="tool-icon">◈</div>
-        <h3 class="tool-name">Dashboard</h3>
-        <p class="tool-desc">
-          Dein persönliches Command Center. Streak-Tracking, Disziplin-System, täglicher Check-In.
-        </p>
-        <div class="tool-footer">
-          <div class="btn-access">
-            Start using <span>→</span>
-          </div>
-          <div class="live-indicator">
-            <span class="live-dot"></span>
-            <span class="text-success">Ready</span>
-          </div>
-        </div>
-      </a>
-      
+    <div class="cliffhanger-cta">
+      <p class="cliffhanger-teaser">Über 30 weitere Kennzahlen warten.</p>
+      <button id="btn-deep-dive" class="pulse-cta">
+        Komplettes Profil freischalten
+      </button>
     </div>
   </section>
-  
-  <!-- Architecture Section -->
-  <section class="architecture">
-    <div class="arch-card reveal">
-      <div class="arch-header">
-        <div class="arch-eyebrow">✦ Das Antimaterie-Prinzip</div>
-        <h2 class="arch-title">Die Welt fragt, was du hast. MBRN fragt, was du kannst.</h2>
-        <p class="arch-desc">
-          Die Werkzeuge sind kostenlos, erfordern keinen Account und werten keine Daten aus. Dein Potenzial gehört dir.
-        </p>
-      </div>
-      <div class="arch-features">
-        <div class="arch-feature">
-          <div class="arch-feature-icon">🔒</div>
-          <div class="arch-feature-title">Zero Data Egress</div>
-          <div class="arch-feature-text">Keine personenbezogenen Daten verlassen den Browser</div>
-        </div>
-        <div class="arch-feature">
-          <div class="arch-feature-icon">⚡</div>
-          <div class="arch-feature-title">Instant Execution</div>
-          <div class="arch-feature-text">Kein Server-Roundtrip — alle Berechnungen in Echtzeit</div>
-        </div>
-        <div class="arch-feature">
-          <div class="arch-feature-icon">∞</div>
-          <div class="arch-feature-title">Persistent Access</div>
-          <div class="arch-feature-text">Kein Account, kein Ablaufdatum, kein Paywall</div>
-        </div>
-        <div class="arch-feature">
-          <div class="arch-feature-icon">◈</div>
-          <div class="arch-feature-title">Portable State</div>
-          <div class="arch-feature-text">URL-kodierter State für Cross-Device ohne Login</div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-brand">MBRN</div>
-      <div class="footer-links">
-        <a href="./apps/finance/" class="footer-link">Finance</a>
-        <a href="./apps/numerology/" class="footer-link">Numerology</a>
-        <a href="./dashboard/" class="footer-link">Dashboard</a>
-      </div>
-      <div class="footer-copy">© 2024 MBRN · Built to be used</div>
-    </div>
-  </footer>
-  
-  <!-- Scroll Reveal Script -->
-  <!-- Render Modul übernimmt Animation + Navigation -->
+
+  <!-- === RENDER MODULE === -->
   <script type="module" src="shared/ui/render_landing.js"></script>
 
 </body>
