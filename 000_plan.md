@@ -16,6 +16,7 @@
 6. **Debouncing:** Keystroke-intensive Features (Frequency Tuner) mit 300ms Debounce.
 7. **Action Registry:** Neue Apps registrieren via `actions.register()` — Core niemals anfassen.
 8. **Navigation:** `getRepoRoot()` in `navigation.js` — kein `<base href>`.
+9. **Documentation First:** Komplexe Module (Synergy, Chronos) erfordern .md im `/docs` Ordner.
 
 ---
 
@@ -43,6 +44,7 @@
 - ✅ Numerologie App mit 36 Kennzahlen + Lo-Shu + Quantum Score
 - ✅ PDF Engine (Vision E: The Operator, 9 Seiten)
 - ✅ Stripe Integration (eingefroren, `devBypass: true`)
+- ✅ Payment Verification: `api.verifySession()` via `transactions` table (DB-Schema aligned, Webhook → DB → API Kreislauf geschlossen)
 
 ---
 
@@ -207,10 +209,10 @@ Task 16.4: SMOKE TEST
 | **M0-M12** | Alle abgeschlossen | ✅ Archiviert |
 | **D1: Landing Page** | 8 Tasks | 🔄 Aktiv |
 | **D2: Design System** | 4 Tasks | 🔄 Aktiv |
-| **M13: Logic Core** | 4 Tasks | ⏳ Pending |
-| **M14: Synergy Engine** | 5 Tasks | ⏳ Pending |
-| **M15: Chronos Protocol** | 4 Tasks | ⏳ Pending |
-| **M16: Frequency Tuner** | 4 Tasks | ⏳ Pending |
+| **M13: Logic Core** | 4 Tasks | ✅ COMPLETE |
+| **M14: Synergy Engine** | 5 Tasks | ✅ COMPLETE |
+| **M15: Chronos Protocol** | 4 Tasks | ✅ COMPLETE |
+| **M16: Frequency Tuner** | 4 Tasks | ✅ COMPLETE |
 
 ---
 

@@ -25,6 +25,6 @@ export const MBRN_CONFIG = {
   // DEV FLAGS (Phase 4.0: Local Development Overrides)
   // ⚠️ WICHTIG: Diese Flags auf FALSE setzen vor Production-Release!
   dev: {
-    bypassPayment: true, // ← AUF FALSE SETZEN für Production
+    bypassPayment: false, // ← DEV ONLY: Auf true setzen für lokale Tests ohne Payment
   }
 };

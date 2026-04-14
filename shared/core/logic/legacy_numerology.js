@@ -1,8 +1,11 @@
 /**
- * /apps/numerology/logic.js
- * FULL SCALE NUMEROLOGY ENGINE — v2.5 (SYMMETRICAL BLUEPRINT REBOOT)
+ * /shared/core/logic/legacy_numerology.js
+ * LEGACY NUMEROLOGY ENGINE — v2.5 (MIGRATED TO CORE)
  * * Persona: Flase (Anonym, monolithisch, präzise)
  * Ziel: Perfekte Symmetrie, humanisierte Fachbegriffe, maximaler Nutzwert.
+ * 
+ * MIGRATION NOTICE: This file was moved from apps/numerology/logic.js
+ * It now serves as the Core's Legacy Numerology Engine.
  */
 
 /* ─── KONSTANTEN ────────────────────────────────────────────────────────── */

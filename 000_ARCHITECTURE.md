@@ -124,6 +124,7 @@ Labels:   Space Mono oder Inter Caps + Letter-spacing — wie Koordinaten
 | **PDF** | jsPDF (ESM CDN) | Client-seitige Artifact-Generierung |
 | **Deploy** | GitHub Pages (Frontend) + PWA | Zero-Cost, Offline-fähig |
 | **AI** | Supabase Edge Functions + Gemini API | Kostenlos im Free Tier |
+| **Docs** | Obsidian (Local Vault) | Knowledge Graph & System Documentation |
 
 **NO-BUILD-POLICY:** Kein Webpack, kein Vite, kein npm für Production. Alle Imports zwingend mit `.js` Endung.
 
@@ -160,6 +161,7 @@ Labels:   Space Mono oder Inter Caps + Letter-spacing — wie Koordinaten
 │
 ├── /dashboard                  # 📊 User Area (Mastery Mirror)
 ├── /landing                    # 🌍 Public Frontend (The Hook)
+├── /docs                       # 🧠 Obsidian Vault (System Knowledge)
 └── index.html                  # 🔄 Root (Landing Page)
 ```
 

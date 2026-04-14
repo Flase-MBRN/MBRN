@@ -8,32 +8,20 @@ import { actions } from '../../shared/core/actions.js';
 import { dom }    from '../../shared/ui/dom_utils.js';
 import { nav }    from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
-import { calculateFullProfile, generateShareCard, generateDeepReport, generateOperatorReport } from './logic.js';
+import { generateShareCard, generateOperatorReport } from '../../shared/core/logic/orchestrator.js';
 import { MBRN_CONFIG } from '../../shared/core/config.js';
 
 export const numerologyRender = {
   currentData: null,
 
   init() {
-    // 1. Action Registration
-    actions.register('calculateNumerology', (payload) => {
-      const res = calculateFullProfile(payload.name, payload.date);
-      if (res.success) {
-        this.currentData = res.data;
-        state.emit('numerologyDone', res);
-      } else {
-        state.emit('numerologyFailed', res);
-      }
-      return res;
-    });
-
-    // 2. Event Binding
+    // 1. Event Binding (Action Registration moved to Core)
     const calcBtn = document.getElementById('num-calc-btn');
     if (calcBtn) {
       calcBtn.addEventListener('click', () => {
         const name = document.getElementById('num-input-name').value.trim();
         const date = document.getElementById('num-input-date').value.trim();
-        actions.dispatch('calculateNumerology', { name, date });
+        actions.dispatch('calculateFullProfile', { name, birthDate: date });
       });
     }
 
@@ -72,8 +60,10 @@ export const numerologyRender = {
         pdfBtn.disabled = true;
 
         try {
-          const doc = await generateOperatorReport(this.currentData);
-          doc.save(`MBRN_CONFIG_${this.currentData.meta.name.replace(/\s+/g, '_')}.pdf`);
+          // Pass legacy data format to generator (unified format compatibility)
+          const legacyData = this.currentData.legacy?.full_profile || this.currentData;
+          const doc = await generateOperatorReport(legacyData);
+          doc.save(`MBRN_CONFIG_${legacyData.meta.name.replace(/\s+/g, '_')}.pdf`);
           state.emit('analyticsTrack', { event: 'pdf_artifact_generated', source: 'numerology' });
         } catch (err) {
           console.error('[PDF Engine] Generation failed:', err);
@@ -98,8 +88,9 @@ export const numerologyRender = {
 
     // 3. State Subscriptions
     state.subscribe('numerologyDone', (res) => {
+      this.currentData = res.data; // Store unified data
       this.showResultsPanel();
-      this.renderAll(res.data);
+      this.renderAll(res.data.legacy.full_profile); // Use legacy format for rendering
     });
 
     state.subscribe('numerologyFailed', (res) => {
@@ -141,6 +132,7 @@ export const numerologyRender = {
   },
 
   renderAll(data) {
+    // data comes from unified format res.data.legacy.full_profile
     this.renderQuantum(data.quantum);
     this.renderLoShu(data.loShu);
     this.renderAccordions(data);
@@ -219,11 +211,13 @@ export const numerologyRender = {
     if (!this.currentData) return;
     
     // Phase 16.2: Viral Share Card Generation
-    const canvas = generateShareCard(this.currentData);
+    // Use legacy data format for generator (unified format compatibility)
+    const legacyData = this.currentData.legacy?.full_profile || this.currentData;
+    const canvas = generateShareCard(legacyData);
     const link = document.getElementById('num-download-link');
     if (link) {
       link.href = canvas.toDataURL('image/png');
-      link.download = `MBRN_Share_${this.currentData.meta.name.replace(/\s+/g, '_')}.png`;
+      link.download = `MBRN_Share_${legacyData.meta.name.replace(/\s+/g, '_')}.png`;
       link.click();
     }
   },
@@ -337,3 +331,28 @@ export const numerologyRender = {
 
 // Auto-Init
 numerologyRender.init();
+
+// ========================================
+// SCROLL REVEAL ANIMATION (Moved from index.html)
+// ========================================
+// Phase D2: Intersection Observer for reveal animations
+// Compliant with 000_plan.md Rule 4: Single Script-Tag
+
+const observerOptions = {
+  root: null,
+  rootMargin: '0px',
+  threshold: 0.1
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.reveal').forEach(el => {
+  observer.observe(el);
+});

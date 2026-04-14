@@ -87,6 +87,26 @@ export const financeRender = {
         return result;
     });
 
+    // Phase 4.0: Scroll Reveal Animation (aus index.html migriert)
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+
     // Fix #2: Boot + Nav am Ende von init()
     console.log('[Finance Render] Initializing...');
     actions.initSystem();

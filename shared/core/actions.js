@@ -9,10 +9,15 @@ import { state } from './state.js';
 import { storage } from './storage.js';
 import { streakManager } from '../loyalty/streak_manager.js';
 import { api } from './api.js';
+import { MBRN_CONFIG } from './config.js';
+import { calculateSynergy } from './logic/synergy.js';
+import { calculateChronos } from './logic/chronos.js';
+import { calculateNameFrequency } from './logic/frequency.js';
 
 // Fix #2 (Phase 0.5): Private Registry — nicht exportiert, nicht von außen erreichbar
 const _registry = new Map();
 let _syncDebounceTimer = null;
+let _systemInitialized = false;  // Idempotency Guard
 
 // Fix #3 (Phase 0.7): Private Hilfsfunktion — kein this, kein export, reine Closure
 function resolveCurrentProfile() {
@@ -35,9 +40,27 @@ export const actions = {
       console.warn(`[Actions] Action '${actionName}' not found in registry`);
       return { success: false, error: 'Action not registered' };
     }
-    // Error-Boundary: crashende Handler werden isoliert
+    // Error-Boundary: crashende Handler werden isoliert (sync + async)
     try {
-      return handler(payload);
+      const result = handler(payload);
+      // Fix: Explicit warning for null/undefined returns
+      if (result === null || result === undefined) {
+        console.error(`[Actions] Handler for '${actionName}' returned null/undefined`);
+        return { success: false, error: 'Handler returned null/undefined' };
+      }
+      // Additional guard: Ensure handler returns an object
+      if (typeof result !== 'object') {
+        console.error(`[Actions] Handler for '${actionName}' returned non-object: ${typeof result}`);
+        return { success: false, error: `Handler returned ${typeof result} instead of object` };
+      }
+      // Handle async handlers (Promise rejection catching)
+      if (typeof result.then === 'function') {
+        return result.catch(error => {
+          console.error(`[Actions] Async handler for '${actionName}' rejected:`, error);
+          return { success: false, error: error.message };
+        });
+      }
+      return result;
     } catch (error) {
       console.error(`[Actions] Handler for '${actionName}' threw:`, error);
       return { success: false, error: error.message };
@@ -47,8 +70,14 @@ export const actions = {
   /**
    * BOOT-SEQUENZ
    * Lädt Daten aus dem LocalStorage und hydratisiert den State (Memory).
+   * Idempotent: Mehrfache Aufrufe sind sicher.
    */
   initSystem() {
+    if (_systemInitialized) {
+      console.log('[System Boot] Already initialized — skipping.');
+      return { success: true, data: state.get('systemInitialized') };
+    }
+    _systemInitialized = true;
     console.log('[System Boot] Initializing...');
 
     // Phase 13.2: Initialize Cloud Gateway
@@ -87,10 +116,40 @@ export const actions = {
 
     // Phase 15: Reactive Sync Hooks
     state.subscribe('streakUpdated', () => this.debouncedSync());
-    state.subscribe('numerologyDone', (res) => this.syncAppData('numerology', res.data));
 
     // Phase 16.4: Global Analytics Listener
     state.subscribe('analyticsTrack', (eventData) => api.logEvent(eventData));
+
+    // Phase 4.0: Register new Logic Engines (M14-M16)
+    this.register('calculateSynergy', async (payload) => {
+      const res = await calculateSynergy(payload.operatorA, payload.operatorB);
+      state.emit('synergyCalculated', res);
+      return res;
+    });
+
+    this.register('calculateChronos', async (payload) => {
+      const res = await calculateChronos(payload.birthDate);
+      state.emit('chronosCalculated', res);
+      return res;
+    });
+
+    this.register('calculateNameFrequency', (payload) => {
+      const res = calculateNameFrequency(payload.fullName);
+      state.emit('frequencyCalculated', res);
+      return res;
+    });
+
+    // Phase 4.0: Unified Numerology Orchestrator (Migrated from App)
+    this.register('calculateFullProfile', async (payload) => {
+      const { getUnifiedProfile } = await import('./logic/orchestrator.js');
+      const res = await getUnifiedProfile(payload.name, payload.birthDate);
+      if (res.success) {
+        state.emit('numerologyDone', res);
+      } else {
+        state.emit('numerologyFailed', res);
+      }
+      return res;
+    });
 
     return { success: true, data: initialProfile };
   },
@@ -304,11 +363,16 @@ export const actions = {
   },
 
   async handlePaymentSuccess(sessionId) {
+    // Phase 18.3: Verify payment with Cloud Fortress
     const res = await api.verifySession(sessionId);
+    
     if (res.success) {
       state.emit('paymentVerified', res.data);
-      return { success: true };
+      return { success: true, data: res.data };
     }
-    return { success: false, error: 'Verification failed' };
+    
+    // Verification failed — payment not confirmed
+    state.emit('paymentFailed', { sessionId, error: res.error, code: res.code });
+    return { success: false, error: res.error || 'Payment verification failed' };
   }
 };

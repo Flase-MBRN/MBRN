@@ -1,4 +1,5 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { ENV } from './env.js';
 
 /**
  * /shared/core/api.js
@@ -17,8 +18,9 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
  */
 
 // --- CONFIGURATION ---
-const SUPABASE_URL = 'https://wqfijgzlxypqftwwoxxp.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZmlqZ3pseHlwcWZ0d3dveHhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NzIxNTMsImV4cCI6MjA5MTM0ODE1M30.rCWllu1Lfukb7XI_wZ_cXk7MOf3uaTBAw4c5iozI4Oc';
+// SECURITY: Credentials loaded from env.js (NOT in version control)
+const SUPABASE_URL = ENV.SUPABASE_URL;
+const SUPABASE_KEY = ENV.SUPABASE_ANON_KEY;
 
 export const api = {
   client: null,
@@ -185,6 +187,57 @@ export const api = {
     } catch (err) {
       console.error('[API] Checkout Session creation failed:', err);
       return { success: false, error: err.message };
+    }
+  },
+
+  /**
+   * Verifies a Stripe Checkout Session by sessionId.
+   * Queries the transactions table to confirm successful payment.
+   * 
+   * @param {string} sessionId - The Stripe Checkout Session ID (cs_test_... or cs_live_...)
+   * @returns {Promise<Object>} - Verification result per Gesetz 4
+   */
+  async verifySession(sessionId) {
+    if (!this.isOnline || !this.client) {
+      return { success: false, error: 'Verification requires cloud connection' };
+    }
+
+    if (!sessionId || typeof sessionId !== 'string') {
+      return { success: false, error: 'Invalid sessionId provided' };
+    }
+
+    try {
+      // Query transactions table (Stripe Webhook aligned schema)
+      // Status values: Webhook writes 'completed', API accepts all successful states
+      const { data, error } = await this.client
+        .from('transactions')
+        .select('id, status, user_id, product_id, amount_total, currency, stripe_session_id, created_at')
+        .eq('stripe_session_id', sessionId)
+        .in('status', ['succeeded', 'complete', 'paid', 'completed'])
+        .single();
+
+      if (error || !data) {
+        return { 
+          success: false, 
+          error: 'Session not found or payment not completed',
+          code: 'SESSION_INVALID'
+        };
+      }
+
+      // Session verified successfully
+      return {
+        success: true,
+        data: {
+          sessionId,
+          verified: true,
+          transaction: data,
+          verifiedAt: new Date().toISOString()
+        }
+      };
+
+    } catch (err) {
+      console.error('[API] Session verification failed:', err);
+      return { success: false, error: err.message, code: 'VERIFICATION_ERROR' };
     }
   }
 };

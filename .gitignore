@@ -6,3 +6,8 @@ node_modules/
 tmp/
 *.pdf
 MBRN_DEEP_DECODE_*.pdf
+.obsidian/
+
+# Security: Environment secrets
+shared/core/env.js
+.env

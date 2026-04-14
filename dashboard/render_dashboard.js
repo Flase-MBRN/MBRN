@@ -38,6 +38,26 @@ export const dashboardRender = {
       dom.setText('dash-msg', `⚠️ ${payload.message}`);
     });
 
+    // Phase 4.0: Scroll Reveal Animation (migrated from index.html)
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+
     // initSystem nach allen Subscriptions — garantiert kein Event-Verlust
     console.log('[Dashboard Render] Initializing...');
     actions.initSystem();
