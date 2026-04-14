@@ -43,21 +43,41 @@ export const renderAuth = {
     const navRight = document.getElementById('nav-auth-container');
     if (!navRight) return;
 
+    // SECURITY: Use dom.clear() + dom.createEl() instead of innerHTML
+    // Prevents XSS if user.email contains malicious HTML
+    dom.clear('nav-auth-container');
+
     if (user) {
       // User is logged in
-      navRight.innerHTML = `
-        <span id="nav-sync-indicator" class="sync-indicator">🔄</span>
-        <span style="font-size: 0.8rem; opacity: 0.7; margin-right: 8px;">${user.email}</span>
-        <button class="btn-secondary" id="auth-logout-btn">Logout</button>
-      `;
-      document.getElementById('auth-logout-btn')?.addEventListener('click', () => actions.logout());
+      dom.createEl('span', {
+        id: 'nav-sync-indicator',
+        className: 'sync-indicator',
+        text: '🔄',
+        parent: navRight
+      });
+
+      dom.createEl('span', {
+        style: { fontSize: '0.8rem', opacity: '0.7', marginRight: '8px' },
+        text: user.email,  // XSS-safe: textContent escapes HTML
+        parent: navRight
+      });
+
+      const logoutBtn = dom.createEl('button', {
+        className: 'btn-secondary',
+        id: 'auth-logout-btn',
+        text: 'Logout',
+        parent: navRight
+      });
+      logoutBtn.addEventListener('click', () => actions.logout());
     } else {
       // User is guest
-      navRight.innerHTML = `
-        <button class="btn-primary" id="auth-login-btn">Login / Register</button>
-      `;
-      document.getElementById('auth-login-btn')?.addEventListener('click', () => {
-        // Scroll to auth section or open modal
+      const loginBtn = dom.createEl('button', {
+        className: 'btn-primary',
+        id: 'auth-login-btn',
+        text: 'Login / Register',
+        parent: navRight
+      });
+      loginBtn.addEventListener('click', () => {
         const authSection = document.getElementById('auth-section');
         if (authSection) {
           authSection.scrollIntoView({ behavior: 'smooth' });
