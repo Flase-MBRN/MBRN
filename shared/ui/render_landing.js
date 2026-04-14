@@ -1,14 +1,20 @@
 /**
  * /shared/ui/render_landing.js
- * LANDING PAGE RENDERER — v2.0 WTF-MOMENT FLOW
+ * LANDING PAGE RENDERER — v3.0 STATE PERSISTENCE
  * 
- * 1. The Hook → Glassmorphism Form
+ * 1. The Hook → Glassmorphism Form (NEW USERS)
  * 2. The Anticipation → Terminal Loader (2.5s)
  * 3. The Reveal → Life Path Display with SVG Ring
  * 4. The Cliffhanger → Blurred Dimensions Grid
+ * 
+ * v3.0: Added State Persistence for Returning Users
+ * - Checks localStorage for existing profile
+ * - Skips loader for returning users
+ * - Shows "Welcome back" message
  */
 
 import { nav } from './navigation.js';
+import { storage } from '../core/storage.js';
 
 // Archetype definitions for life path numbers 1-9
 const ARCHETYPES = {
@@ -36,15 +42,144 @@ const TERMINAL_MESSAGES = [
 
 export const landingRender = {
   currentSection: 'hook', // hook → loader → reveal → cliffhanger
+  userData: null, // Stores name + birthDate for persistence
   
   /**
    * Initialize Landing Page
+   * v3.0: Check for returning users FIRST (before showing form)
    */
   init() {
     this.bindForm();
     this.bindUnlockButtons();
     nav.bindNavigation();
-    console.log('[Landing Render] v2.0 WTF-Moment Flow initialized');
+    
+    // CRITICAL: Check for returning user BEFORE showing form
+    const existingData = this.checkExistingProfile();
+    
+    if (existingData) {
+      // RETURNING USER: Skip hook, go directly to reveal
+      this.userData = existingData;
+      this.showReturningUserReveal();
+      console.log('[Landing Render] v3.0 Welcome back,', existingData.firstName);
+    } else {
+      // NEW USER: Show normal flow
+      console.log('[Landing Render] v3.0 State Persistence Active — New User Flow');
+    }
+  },
+  
+  /**
+   * Check if user has existing profile in localStorage
+   * @returns {Object|null} { name, birthDate, lifePath, firstName } or null
+   */
+  checkExistingProfile() {
+    // Check for last numerology calculation data
+    const lastCalc = storage.get('last_numerology_calc');
+    
+    if (lastCalc.success && lastCalc.data) {
+      const data = lastCalc.data;
+      
+      // Validate we have all required fields
+      if (data.name && data.birthDate && data.lifePath) {
+        // Extract first name for welcome message
+        const firstName = data.name.split(' ')[0];
+        
+        return {
+          name: data.name,
+          birthDate: data.birthDate,
+          lifePath: data.lifePath,
+          firstName: firstName
+        };
+      }
+    }
+    
+    // Also check legacy profile format
+    const profile = storage.get('profile');
+    if (profile.success && profile.data && profile.data.name) {
+      // Try to extract birthdate from profile
+      const legacyData = profile.data;
+      if (legacyData.birthDate || legacyData.birth_date) {
+        const birthDate = legacyData.birthDate || legacyData.birth_date;
+        const lifePath = this.calculateLifePath(birthDate);
+        
+        return {
+          name: legacyData.name,
+          birthDate: birthDate,
+          lifePath: lifePath,
+          firstName: legacyData.name.split(' ')[0]
+        };
+      }
+    }
+    
+    return null;
+  },
+  
+  /**
+   * Show reveal for returning users (NO loader, instant)
+   */
+  showReturningUserReveal() {
+    const { lifePath, firstName } = this.userData;
+    const archetype = ARCHETYPES[lifePath];
+    
+    // INSTANT transition (no loader for returning users)
+    this.transitionTo('reveal');
+    
+    // Update DOM with data
+    const numberEl = document.getElementById('life-path-number');
+    const titleEl = document.getElementById('archetype-title');
+    const descEl = document.getElementById('archetype-desc');
+    const ringProgress = document.getElementById('ring-progress');
+    
+    if (!numberEl || !titleEl || !descEl) {
+      console.error('[Landing] DOM elements missing for reveal');
+      return;
+    }
+    
+    // Show number immediately (no animation for returning users)
+    numberEl.textContent = lifePath;
+    titleEl.textContent = archetype.title;
+    descEl.textContent = archetype.desc;
+    
+    // Add welcome back message
+    const revealText = document.querySelector('.reveal-text');
+    if (revealText) {
+      const welcomeMsg = document.createElement('p');
+      welcomeMsg.className = 'welcome-back';
+      welcomeMsg.textContent = `Willkommen zurück, ${firstName}`;
+      revealText.insertBefore(welcomeMsg, revealText.firstChild);
+    }
+    
+    // Animate ring (still show animation for visual delight)
+    if (ringProgress) {
+      const circumference = 2 * Math.PI * 90;
+      ringProgress.style.strokeDasharray = circumference;
+      ringProgress.style.strokeDashoffset = circumference;
+      
+      // Small delay for visual effect
+      requestAnimationFrame(() => {
+        ringProgress.style.transition = 'stroke-dashoffset 1s ease-out';
+        ringProgress.style.strokeDashoffset = 0;
+      });
+    }
+    
+    // After short delay, show cliffhanger
+    setTimeout(() => {
+      this.transitionTo('cliffhanger');
+    }, 2500);
+  },
+  
+  /**
+   * Save user data to localStorage after analysis
+   */
+  saveUserData(name, birthDate, lifePath) {
+    const data = {
+      name: name,
+      birthDate: birthDate,
+      lifePath: lifePath,
+      calculatedAt: new Date().toISOString()
+    };
+    
+    storage.set('last_numerology_calc', data);
+    console.log('[Landing] User data saved to localStorage');
   },
   
   /**
@@ -66,9 +201,12 @@ export const landingRender = {
   },
   
   /**
-   * Start the WTF-Moment Flow
+   * Start the WTF-Moment Flow (NEW USERS ONLY)
    */
   async startAnalysis(name, birthDate) {
+    // Save for persistence
+    this.userData = { name, birthDate };
+    
     // 1. Hide Hook, Show Loader
     this.transitionTo('loader');
     
@@ -79,10 +217,13 @@ export const landingRender = {
     const lifePath = this.calculateLifePath(birthDate);
     const archetype = ARCHETYPES[lifePath];
     
-    // 4. Reveal
+    // 4. Save to localStorage for returning users
+    this.saveUserData(name, birthDate, lifePath);
+    
+    // 5. Reveal
     this.showReveal(lifePath, archetype);
     
-    // 5. After delay, show cliffhanger
+    // 6. After delay, show cliffhanger
     setTimeout(() => {
       this.transitionTo('cliffhanger');
     }, 3500);
@@ -146,7 +287,7 @@ export const landingRender = {
   },
   
   /**
-   * Show the reveal section with life path
+   * Show the reveal section with life path (for new users)
    */
   showReveal(lifePath, archetype) {
     this.transitionTo('reveal');
@@ -156,6 +297,12 @@ export const landingRender = {
     const descEl = document.getElementById('archetype-desc');
     const ringProgress = document.getElementById('ring-progress');
     
+    // Safety check
+    if (!numberEl || !titleEl || !descEl) {
+      console.error('[Landing] Required DOM elements not found');
+      return;
+    }
+    
     // Animate number
     this.animateNumber(numberEl, lifePath);
     
@@ -164,14 +311,16 @@ export const landingRender = {
     descEl.textContent = archetype.desc;
     
     // Animate SVG ring
-    const circumference = 2 * Math.PI * 90; // r=90
-    ringProgress.style.strokeDasharray = circumference;
-    ringProgress.style.strokeDashoffset = circumference;
-    
-    setTimeout(() => {
-      ringProgress.style.transition = 'stroke-dashoffset 1.5s ease-out';
-      ringProgress.style.strokeDashoffset = 0;
-    }, 100);
+    if (ringProgress) {
+      const circumference = 2 * Math.PI * 90; // r=90
+      ringProgress.style.strokeDasharray = circumference;
+      ringProgress.style.strokeDashoffset = circumference;
+      
+      setTimeout(() => {
+        ringProgress.style.transition = 'stroke-dashoffset 1.5s ease-out';
+        ringProgress.style.strokeDashoffset = 0;
+      }, 100);
+    }
   },
   
   /**
