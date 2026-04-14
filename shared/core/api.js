@@ -1,5 +1,4 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-import { ENV } from './env.js';
 
 /**
  * /shared/core/api.js
@@ -19,8 +18,17 @@ import { ENV } from './env.js';
 
 // --- CONFIGURATION ---
 // SECURITY: Credentials loaded from env.js (NOT in version control)
-const SUPABASE_URL = ENV.SUPABASE_URL;
-const SUPABASE_KEY = ENV.SUPABASE_ANON_KEY;
+// Falls env.js fehlt → Offline-Modus (graceful degradation)
+let SUPABASE_URL = null;
+let SUPABASE_KEY = null;
+
+try {
+  const { ENV } = await import('./env.js');
+  SUPABASE_URL = ENV.SUPABASE_URL;
+  SUPABASE_KEY = ENV.SUPABASE_ANON_KEY;
+} catch (err) {
+  console.warn('[API] env.js not found — operating in Offline-Only Mode.');
+}
 
 export const api = {
   client: null,
