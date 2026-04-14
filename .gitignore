@@ -9,5 +9,6 @@ MBRN_DEEP_DECODE_*.pdf
 .obsidian/
 
 # Security: Environment secrets
-shared/core/env.js
-.env
+# Note: env.js on GitHub contains NULL placeholders (safe)
+# Local env.js with real keys should NEVER be committed
+# .env
