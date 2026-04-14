@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synergy Engine — MBRN Hub</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- MBRN Design System -->
+  <link rel="stylesheet" href="../shared/ui/theme.css">
+  <link rel="stylesheet" href="../shared/ui/components.css">
+</head>
+<body class="void-bg bg-glow">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="nav-sidebar">
+    <div class="nav-brand">
+      <span class="logo-text">MBRN</span>
+    </div>
+    
+    <nav class="nav-menu">
+      <a class="nav-item" href="../index.html">
+        <span class="nav-icon">⌂</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a class="nav-item" href="../dashboard/">
+        <span class="nav-icon">◈</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a class="nav-item active" href="./">
+        <span class="nav-icon">◐</span>
+        <span class="nav-label">Synergy</span>
+      </a>
+      <a class="nav-item" href="../apps/numerology/">
+        <span class="nav-icon">○</span>
+        <span class="nav-label">Numerology</span>
+      </a>
+      <a class="nav-item" href="../apps/finance/">
+        <span class="nav-icon">◉</span>
+        <span class="nav-label">Finance</span>
+      </a>
+    </nav>
+    
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    
+    <!-- HERO SECTION -->
+    <section class="tool-hero reveal">
+      <div class="hero-eyebrow">✦ Dim 05 — Bindung</div>
+      <h1 class="hero-title">SYNERGY<br>ENGINE</h1>
+      <p class="hero-subtitle">Kompatibilitäts-Analyse zwischen zwei Operatoren</p>
+    </section>
+    
+    <!-- PLACEHOLDER CONTENT -->
+    <section class="tool-section reveal">
+      <div class="section-card text-center">
+        <h2 class="text-accent mb-24">Coming in Phase 5.0</h2>
+        <p class="text-secondary">Berechnung der Resonanz zwischen zwei Blueprints.</p>
+        <p class="text-muted mt-16">Backend: ✅ calculateSynergy() implementiert</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Render Modul -->
+  <script type="module" src="./render.js"></script>
+
+</body>
+</html>
