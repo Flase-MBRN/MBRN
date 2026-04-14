@@ -120,7 +120,7 @@ a {
 
 ::selection {
   background: rgba(124, 58, 237, 0.3);
-  color: #fff;
+  color: var(--text-primary);
 }
 
 /* ===== SCROLLBAR ===== */
@@ -203,7 +203,7 @@ aside[class*="nav"] {
 
 .nav-item.active {
   color: var(--accent);
-  background: rgba(124, 58, 237, 0.1);
+  background: var(--accent-dim);
   border-left: 2px solid var(--accent);
   margin-left: -2px;
 }
@@ -251,14 +251,14 @@ aside[class*="nav"] {
 .card,
 [class*="card"] {
   background: var(--bg-surface) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 20px !important;
   padding: 32px !important;
   box-shadow: none !important;
 }
 
 .card:hover {
-  border-color: rgba(124, 58, 237, 0.15) !important;
+  border-color: var(--border-accent) !important;
 }
 
 /* ===== INPUTS (Transparent, not Black) ===== */
@@ -368,7 +368,7 @@ button[type="submit"]:hover {
 }
 
 .text-glow {
-  text-shadow: 0 0 40px rgba(124, 58, 237, 0.3);
+  text-shadow: 0 0 40px var(--accent-glow);
 }
 
 /* ===== FORM GROUPS ===== */
@@ -522,7 +522,7 @@ input[style*="background:black"] {
   justify-content: space-between;
   align-items: center;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .result-row:last-child {
@@ -530,7 +530,7 @@ input[style*="background:black"] {
 }
 
 .result-label {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
   font-size: 15px;
 }
 

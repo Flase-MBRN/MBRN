@@ -19,45 +19,19 @@ html {
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 400;
-  background: #05050A;
-  color: #ffffff;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* ===== DESIGN TOKENS ===== */
-:root {
-  --bg-primary: #05050A;
-  --bg-card: #0A0A0F;
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-default: rgba(255, 255, 255, 0.12);
-  --accent: #7c3aed;
-  --accent-dim: rgba(124, 58, 237, 0.1);
-  --accent-glow: rgba(124, 58, 237, 0.3);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-dim: rgba(255, 255, 255, 0.4);
-  
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --radius-pill: 50px;
-  
-  --transition-fast: 150ms ease;
-  --transition-base: 300ms ease;
-  --transition-slow: 500ms ease;
-}
-
 /* ===== BACKGROUND LAYERS ===== */
 .bg-gradient {
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse at 30% 20%, #0F0F15 0%, #05050A 50%, #020205 100%);
+  background: radial-gradient(ellipse at 30% 20%, var(--bg-elevated) 0%, var(--bg-primary) 50%, #020205 100%);
   z-index: -3;
 }
 
@@ -67,7 +41,7 @@ body {
   height: 600px;
   top: -200px;
   right: -200px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
   filter: blur(60px);
   z-index: -2;
   /* Performance-Fix: GPU-Offloading */
@@ -82,7 +56,7 @@ body {
   height: 400px;
   bottom: -100px;
   left: -100px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
   filter: blur(40px);
   z-index: -2;
   transform: translateZ(0);
@@ -146,7 +120,7 @@ body {
 
 .nav-cta {
   background: var(--accent);
-  color: #fff;
+  color: var(--text-primary);
   border: none;
   padding: 12px 24px;
   border-radius: var(--radius-pill);
@@ -233,8 +207,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, var(--accent), #a78bfa);
-  color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: var(--text-primary);
   border: none;
   padding: 20px 40px;
   border-radius: var(--radius-pill);
@@ -246,13 +220,13 @@ body {
   text-decoration: none;
   margin-top: 40px;
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   animation: fadeUp 0.8s 0.5s ease both;
 }
 
 .hero-cta-main:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 16px 48px rgba(124, 58, 237, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 16px 48px var(--accent-hover), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .hero-subline {
@@ -455,15 +429,15 @@ body {
 }
 
 .card-category.finance {
-  color: #4fffb0;
+  color: var(--success);
   border-color: rgba(79, 255, 176, 0.3);
-  background: rgba(79, 255, 176, 0.06);
+  background: var(--success-dim);
 }
 
 .card-category.numerology {
-  color: #a78bfa;
+  color: var(--accent-light);
   border-color: rgba(167, 139, 250, 0.3);
-  background: rgba(167, 139, 250, 0.06);
+  background: var(--accent-dim);
 }
 
 .card-category.dashboard {
@@ -483,15 +457,15 @@ body {
 }
 
 .card-status.ready {
-  color: #4fffb0;
+  color: var(--success);
   border-color: rgba(79, 255, 176, 0.25);
-  background: rgba(79, 255, 176, 0.06);
+  background: var(--success-dim);
 }
 
 .card-status.beta {
-  color: #fbbf24;
+  color: var(--warning);
   border-color: rgba(251, 191, 36, 0.25);
-  background: rgba(251, 191, 36, 0.06);
+  background: var(--warning-dim);
 }
 
 .tool-icon {
@@ -564,14 +538,14 @@ body {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #4fffb0;
-  box-shadow: 0 0 5px #4fffb0;
+  background: var(--success);
+  box-shadow: 0 0 5px var(--success);
   animation: blink 2.5s ease-in-out infinite;
 }
 
 .live-dot.beta {
-  background: #fbbf24;
-  box-shadow: 0 0 5px #fbbf24;
+  background: var(--warning);
+  box-shadow: 0 0 5px var(--warning);
 }
 
 @keyframes blink {
@@ -726,7 +700,7 @@ body {
   gap: 10px;
   background: transparent;
   border: 1px solid rgba(255, 94, 91, 0.4);
-  color: #ff5e5b;
+  color: var(--kofi);
   padding: 14px 28px;
   border-radius: var(--radius-pill);
   font-size: 13px;
@@ -805,7 +779,7 @@ body {
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--text-dim);
   margin-top: 8px;
 }
 
@@ -977,11 +951,11 @@ body {
 }
 
 .glass-input {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
   border-radius: 12px !important;
   padding: 16px 18px !important;
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
   font-family: var(--font-body) !important;
   font-size: 16px !important;
   outline: none !important;
@@ -992,32 +966,32 @@ body {
 }
 
 .glass-input:focus {
-  border-color: rgba(124, 58, 237, 0.5) !important;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1), 0 0 20px rgba(124, 58, 237, 0.2) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--input-border-focus) !important;
+  box-shadow: 0 0 0 3px var(--focus-glow), 0 0 20px var(--accent-glow) !important;
+  background: var(--input-bg-focus) !important;
 }
 
 .glass-input::placeholder {
-  color: rgba(255, 255, 255, 0.25) !important;
+  color: var(--text-dim) !important;
 }
 
 /* Remove browser autofill white background */
 .glass-input:-webkit-autofill,
 .glass-input:-webkit-autofill:hover,
 .glass-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.04) inset !important;
-  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
 /* ===== PULSE CTA BUTTON ===== */
 .pulse-cta {
   position: relative;
-  background: linear-gradient(135deg, #6B4CE6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, var(--accent-gradient-start) 0%, var(--accent) 100%);
   border: none;
   border-radius: 50px;
   padding: 18px 32px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
@@ -1041,7 +1015,7 @@ body {
   position: absolute;
   inset: -2px;
   border-radius: 50px;
-  background: linear-gradient(135deg, #6B4CE6 0%, #9f7aea 50%, #6B4CE6 100%);
+  background: linear-gradient(135deg, var(--accent-gradient-start) 0%, var(--accent-gradient-end) 50%, var(--accent-gradient-start) 100%);
   background-size: 200% 200%;
   opacity: 0;
   z-index: -1;
@@ -1064,11 +1038,11 @@ body {
 .terminal-overlay {
   width: 100%;
   max-width: 420px;
-  background: rgba(10, 10, 15, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(124, 58, 237, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px var(--accent-dim);
 }
 
 .terminal-header {
@@ -1076,8 +1050,8 @@ body {
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--hover-bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .terminal-dot {
@@ -1086,9 +1060,9 @@ body {
   border-radius: 50%;
 }
 
-.terminal-dot.red { background: #ff5f56; }
-.terminal-dot.yellow { background: #ffbd2e; }
-.terminal-dot.green { background: #27c93f; }
+.terminal-dot.red { background: var(--terminal-red); }
+.terminal-dot.yellow { background: var(--terminal-yellow); }
+.terminal-dot.green { background: var(--terminal-green); }
 
 .terminal-title {
   margin-left: 12px;
@@ -1128,7 +1102,7 @@ body {
 
 .terminal-progress {
   height: 3px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--border-subtle);
   border-radius: 2px;
   margin-top: 20px;
   overflow: hidden;
@@ -1137,7 +1111,7 @@ body {
 .progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #6B4CE6, #9f7aea);
+  background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
   border-radius: 2px;
   transition: width 2.3s ease-out;
 }
@@ -1169,7 +1143,7 @@ body {
 
 .ring-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.05);
+  stroke: var(--border-subtle);
   stroke-width: 4;
 }
 
@@ -1376,7 +1350,7 @@ body {
 /* Note: This would typically be in the HTML SVG, but defined here for reference */
 /* <defs>
   <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#6B4CE6"/>
-    <stop offset="100%" stop-color="#9f7aea"/>
+    <stop offset="0%" stop-color="var(--accent-gradient-start)"/>
+    <stop offset="100%" stop-color="var(--accent-gradient-end)"/>
   </linearGradient>
 </defs> */
