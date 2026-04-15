@@ -46,61 +46,59 @@
 - ✅ Stripe Integration (eingefroren, `devBypass: true`)
 - ✅ Payment Verification: `api.verifySession()` via `transactions` table (DB-Schema aligned, Webhook → DB → API Kreislauf geschlossen)
 
----
-
-## 🎨 AKTIVE MISSION: DESIGN PHASE
-
-### D1 — Landing Page (root index.html)
-**Ziel:** WTF-Moment. Erster Eindruck ist nicht "schöne Website" sondern "was ist das."
-
-```
-Task D1.1: Syne Font laden (Google Fonts)
-Task D1.2: Hero-Section — riesiges MBRN (Syne 800, volle Viewport-Breite)
-Task D1.3: Hintergrund #05050A (nicht #0d0d1a, nicht #000000)
-Task D1.4: Metrics Bar (Tools live, 0 KB Data, ∞ Access)
-Task D1.5: Tool-Cards Grid (aktive + geplante Dimensionen)
-Task D1.6: Ko-fi Support CTA (freiwillig, kein Druck)
-Task D1.7: Footer minimal
-Task D1.8: DE + EN Toggle oder separate Routes
-```
-
-**Definition of Done:**
-Zeig die Seite einem Fremden. Erster Kommentar enthält nicht "schön" sondern "weird" oder "anders".
+### D1-D2: Design Phase (Phase 1.0 WTF-Moment)
+- ✅ Landing Page Sternenhimmel-Design (`index.html`)
+- ✅ Syne Font + #05050A Hintergrund implementiert
+- ✅ `theme.css` + `components.css` konsolidiert
+- ✅ WTF-Test bestanden (erste Reaktion: "was ist das")
 
 ---
 
-### D2 — Design System (theme.css + components.css)
-**Ziel:** Alle Tool-Seiten konsistent mit Landing Page.
+---
 
+## 🚀 AKTIVE MISSION: PHASE 5.0 — UI TSUNAMI & VERTICAL SLICE
+
+### 5.1 — GLOBAL UI OVERHAUL
 ```
-Task D2.1: theme.css — Sternenhimmel-Variablen
-  --bg-primary: #05050A
-  --bg-surface: #0A0A0F
-  --accent: #7B5CF5
-  --border: rgba(255,255,255,0.06)
-  --font-display: 'Syne', sans-serif
-  --font-body: 'Inter', sans-serif
-
-Task D2.2: components.css — Inputs dark
-  background: rgba(255,255,255,0.04)
-  border: 1px solid rgba(255,255,255,0.08)
-  color: #ffffff
-
-Task D2.3: Buttons — pill-shaped
-  border-radius: 50px (primary)
-  border-radius: 8px (secondary)
-
-Task D2.4: Cards — MBRN Standard
-  background: #0A0A0F
-  border: 1px solid rgba(255,255,255,0.06)
-  border-radius: 16px
+Task 5.1.1: Glassmorphism auf `apps/finance/index.html`
+Task 5.1.2: Glassmorphism auf `apps/numerology/index.html`
+Task 5.1.3: SVG Icon Set erstellen (statt Unicode-Icons)
+Task 5.1.4: `dashboard/index.html` Sternenhimmel-Migration
 ```
 
-**NUR CSS ändern. Kein JS anfassen.**
+### 5.2 — SÄULE 3 DATA ARBITRAGE SETUP
+```
+Task 5.2.1: Python-Scraper für [DATENQUELLE] bauen
+  - Library: requests + BeautifulSoup oder API-Wrapper
+  - Output: JSON mit definiertem Schema
+  - Speicherung: Lokales Verzeichnis (AI/models/data/)
+
+Task 5.2.2: Ollama-Anreicherung lokal
+  - Input: Rohdaten JSON
+  - Model: llama3.1 oder mistral (lokal via LM Studio)
+  - Output: Angereicherte Daten mit Sentiment-Score
+```
+
+### 5.3 — VERTICAL SLICE: MARKET SENTIMENT CHRONOS
+```
+Task 5.3.1: Supabase Edge Function für Daten-Import
+  - Input: JSON vom Python-Skript
+  - Auth: Service Role Key (lokal→Cloud)
+  - Table: `market_sentiment` (id, timestamp, source, sentiment_score, raw_data)
+
+Task 5.3.2: Dashboard Widget für Sentiment-Anzeige
+  - Location: `dashboard/index.html`
+  - Visual: Mini-Chart oder Score-Badge
+  - Real-time: Supabase Subscription oder Poll
+
+Task 5.3.3: SMOKE TEST
+  - Python-Skript läuft → Daten in DB → Sichtbar im Dashboard
+  - Zeit: < 5 Minuten End-to-End
+```
 
 ---
 
-## ⏳ PHASE 4.0: ECOSYSTEM EXPANSION
+## ⏳ PHASE 4.0: ECOSYSTEM EXPANSION (ARCHIVIERT)
 
 ### M13 — THE LOGIC CORE
 
@@ -207,12 +205,14 @@ Task 16.4: SMOKE TEST
 | Phase | Tasks | Status |
 |-------|-------|--------|
 | **M0-M12** | Alle abgeschlossen | ✅ Archiviert |
-| **D1: Landing Page** | 8 Tasks | 🔄 Aktiv |
-| **D2: Design System** | 4 Tasks | 🔄 Aktiv |
+| **D1-D2: Design Phase** | WTF-Moment erreicht | ✅ Archiviert |
 | **M13: Logic Core** | 4 Tasks | ✅ COMPLETE |
 | **M14: Synergy Engine** | 5 Tasks | ✅ COMPLETE |
 | **M15: Chronos Protocol** | 4 Tasks | ✅ COMPLETE |
 | **M16: Frequency Tuner** | 4 Tasks | ✅ COMPLETE |
+| **5.1** | Global UI Overhaul | 🔄 Aktiv |
+| **5.2** | Säule 3 Setup | 🔄 Aktiv |
+| **5.3** | Vertical Slice | 🔄 Aktiv |
 
 ---
 
@@ -240,5 +240,5 @@ NICHT anfassen: [Liste der Files die unverändert bleiben]
 
 ---
 
-**STATUS: PLAN_v5.0_ACTIVE**
+**STATUS: PLAN_v6.0_PHASE5_ACTIVE**
 *System Architect Out.*

@@ -17,29 +17,10 @@
 | **M10** | The Void: Visual Overhaul, Glassmorphism, Luxury Glow | ✅ Done |
 | **M11** | The Vault: Stripe Integration + Webhook Automation | ✅ Done (eingefroren) |
 | **M12** | The Artifact: Premium PDF v3.0 (Vision E: The Operator) | ✅ Done (bypass aktiv) |
+| **D1** | Landing Page: Sternenhimmel-Design, WTF-Moment erreicht | ✅ Done |
+| **D2** | Design System: theme.css + components.css Migration | ✅ Done |
 
 ---
-
-## 🎨 AKTUELLE MISSION: DESIGN PHASE (Pre-Launch)
-
-**Ziel:** Den WTF-Moment erreichen. Erst wenn das Design stimmt kommen echte User.
-
-### D1 — LANDING PAGE (root index.html)
-- [ ] Sternenhimmel-Ästhetik implementiert (`#05050A`, Syne Font)
-- [ ] Riesiges MBRN Hero-Headline
-- [ ] Kein Login-Zwang auf der Landing Page
-- [ ] DE + EN Version
-- [ ] WTF-Test bestanden: Fremde Person sagt "Was ist das?"
-
-### D2 — DESIGN SYSTEM VEREINHEITLICHUNG
-- [ ] `theme.css` auf Sternenhimmel-System migriert
-- [ ] `components.css` konsolidiert
-- [ ] Alle Tool-Seiten konsistent mit Landing Page
-- [ ] Input-Felder: kein weißer Background mehr
-- [ ] Navigation: klar, minimal, nicht generisch
-
-**Definition of Done:**
-> Landing Page geöffnet → erster Gedanke ist nicht "nice Website" sondern "was ist das"
 
 ---
 
@@ -102,13 +83,40 @@ Wobei `ΔV_i` = Differenz der Frequenzen (Mental, Emotional, Operativ) und `W_i`
 
 ---
 
-## 🌱 PHASE 5.0: COMMUNITY & ANERKENNUNG (Zukunft)
+## 🚀 PHASE 5.0: THE UI TSUNAMI & VERTICAL SLICE (AKTIV)
 
-> Wird geplant wenn echte Traffic-Daten vorliegen.
-> Kein Milestone ohne User-Feedback als Basis.
+**Ziel:** Design-System auf gesamtes Ökosystem ausrollen + Erster vertikaler Durchstich durch alle 4 Säulen.
+
+### 5.1 — GLOBAL UI OVERHAUL
+- [ ] Glassmorphism auf alle App-Seiten (finance, numerology)
+- [ ] Syne Font konsistent durchgesetzt
+- [ ] SVG Visuals statt generischer Icons
+- [ ] Dark Theme #05050A als Standard
+
+### 5.2 — SÄULE 3 SETUP (Data Arbitrage)
+- [ ] Erstes Python-Scraper Skript lokal (RX 7700 XT)
+- [ ] Datenquelle identifiziert (z.B. Google Trends, öffentliche Finanz-Metriken)
+- [ ] JSON-Output Struktur definiert
+- [ ] Lokale Ollama-Anreicherung getestet
+
+### 5.3 — VERTICAL SLICE INTEGRATION
+- [ ] Python-Skript → Supabase Edge Function Pipeline
+- [ ] Edge Function → MBRN Dashboard Visualisierung
+- [ ] Lokales LLM (Säule 1) wertet Daten aus
+- [ ] Use-Case: Market Sentiment Chronos operational
+
+**Definition of Done:**
+> Ein Button im Dashboard zeigt live Daten aus einem Python-Skript. Der User sieht nicht WHERE es herkommt — nur dass es funktioniert.
+
+---
+
+## 🌱 PHASE 6: COMMUNITY & ANERKENNUNG (Zukunft)
+
+> Wird geplant wenn der Vertical Slice stabil läuft.
+> Kein Milestone ohne echte Traffic-Daten als Basis.
 
 | Idee | Beschreibung | Trigger |
-|------|-------------|---------|
+|------|-------------|--------|
 | **AI Onboarding** | 3-Fragen Discovery statt Formular | Nach 2-3 Dimensionen live |
 | **MBRN Profil** | Öffentliche Kompetenzkarte ohne Zeugnisse | Nach Community-Entstehung |
 | **Anerkennung** | Beweis was jemand in 6 Monaten gelernt hat | Nach Stufe 3 (Community) |
@@ -120,9 +128,9 @@ Wobei `ΔV_i` = Differenz der Frequenzen (Mental, Emotional, Operativ) und `W_i`
 
 ```
 PHASE 0-3 (M0-M12):     ✅ ARCHIVIERT
-DESIGN PHASE (D1-D2):   🔄 AKTIV — PRIORITY
+DESIGN PHASE (D1-D2):   ✅ ARCHIVIERT
 PHASE 4.0 (M13-M16):    ✅ COMPLETE — 100% Script-Tag Compliance erreicht
-PHASE 5.0:              🌱 ZUKUNFT — nach Traffic
+PHASE 5.0:              🚀 AKTIV — UI TSUNAMI & VERTICAL SLICE
 ```
 
 ---
