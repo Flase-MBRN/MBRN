@@ -36,8 +36,15 @@ export const api = {
 
   /**
    * Initializes the Supabase client
+   * SINGLETON PATTERN: Prevents multiple GoTrueClient instances
    */
   init() {
+    // Guard: Return existing client if already initialized
+    if (this.client) {
+      console.log('[API] Reusing existing Supabase connection.');
+      return true;
+    }
+    
     if (!SUPABASE_URL || !SUPABASE_KEY) {
       console.warn('[API] Missing credentials. Operating in Offline-Mode.');
       return false;

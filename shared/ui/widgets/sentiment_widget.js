@@ -77,6 +77,12 @@ export const sentimentWidget = {
    * PATCH 5.1.4-C: Setup Supabase Realtime Channel
    */
   setupRealtime() {
+    // Guard: Graceful degradation if Supabase not initialized
+    if (!api.client) {
+      console.log('[Sentiment Widget] Supabase offline — realtime disabled.');
+      return;
+    }
+    
     // Create channel for market_sentiment table changes
     this.channel = supabase
       .channel('market_sentiment')
