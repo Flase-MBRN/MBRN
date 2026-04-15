@@ -50,7 +50,8 @@ class StateManager {
         try {
           callback(data);
         } catch (error) {
-          console.error(`[State Manager Error] Listener Crash bei Event '${event}':`, error);
+          console.error(`[State Manager] Event '${event}' crashed:`, error);
+          this._reportError(error, { event, data });
         }
       });
     }
@@ -71,6 +72,46 @@ class StateManager {
   set(event, data) {
     this.emit(event, data);
   }
+
+  /**
+   * Subscribe to global system errors
+   * @param {Function} handler - (error, context) => void
+   * @returns {Function} Unsubscribe function
+   */
+  subscribeToErrors(handler) {
+    if (!this.errorHandlers) {
+      this.errorHandlers = new Set();
+    }
+    this.errorHandlers.add(handler);
+    return () => this.errorHandlers.delete(handler);
+  }
+
+  /**
+   * Internal: Report error to all handlers and emit systemError event
+   */
+  _reportError(error, context = {}) {
+    console.error(`[State Manager] System Error:`, error, context);
+    
+    // Notify error handlers
+    if (this.errorHandlers) {
+      this.errorHandlers.forEach(handler => {
+        try {
+          handler(error, context);
+        } catch (e) {
+          console.error('[State Manager] Error handler failed:', e);
+        }
+      });
+    }
+    
+    // Emit system error event for UI handling
+    this.emit('systemError', { 
+      error: error?.message || String(error),
+      context,
+      timestamp: Date.now(),
+      type: 'state_error'
+    });
+  }
+
 }
 
 // Singleton-Export erzwingen

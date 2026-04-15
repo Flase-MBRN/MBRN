@@ -4,14 +4,11 @@
  *
  * Fix #2: Dynamische Root-Erkennung via getRepoRoot().
  * Funktioniert lokal (http://localhost:8080/) UND auf GitHub Pages (/MBRN/) ohne <base href>.
+ * 
+ * LAW 1 COMPLIANT: Routes imported from centralized config
  */
 
-const routes = {
-  dashboard:   'dashboard/index.html',
-  finance:     'apps/finance/index.html',
-  numerology:  'apps/numerology/index.html',
-  home:        'index.html'
-};
+import { MBRN_ROUTES } from '../core/config.js';
 
 /**
  * Ermittelt dynamisch den Repo-Root anhand bekannter Pfad-Segmente.
@@ -32,7 +29,7 @@ function getRepoRoot() {
 export const nav = {
   navigateTo(route) {
     const base = getRepoRoot();
-    window.location.href = base + (routes[route] ?? routes.home);
+    window.location.href = base + (MBRN_ROUTES[route] ?? MBRN_ROUTES.home);
   },
 
   bindNavigation() {

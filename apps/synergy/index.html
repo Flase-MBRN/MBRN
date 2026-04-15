@@ -11,8 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <!-- MBRN Design System -->
-  <link rel="stylesheet" href="../shared/ui/theme.css">
-  <link rel="stylesheet" href="../shared/ui/components.css">
+  <link rel="stylesheet" href="../../shared/ui/theme.css">
+  <link rel="stylesheet" href="../../shared/ui/components.css">
 </head>
 <body class="void-bg bg-glow">
 
@@ -60,14 +60,50 @@
       <p class="hero-subtitle">Kompatibilitäts-Analyse zwischen zwei Operatoren</p>
     </section>
     
-    <!-- PLACEHOLDER CONTENT -->
+    <!-- INPUT SECTION — Dual Operator Inputs -->
     <section class="tool-section reveal">
-      <div class="section-card text-center">
-        <h2 class="text-accent mb-24">Coming in Phase 5.0</h2>
-        <p class="text-secondary">Berechnung der Resonanz zwischen zwei Blueprints.</p>
-        <p class="text-muted mt-16">Backend: ✅ calculateSynergy() implementiert</p>
+      <div class="data-grid">
+        <!-- Operator A -->
+        <div class="glass-card">
+          <h3 class="section-eyebrow">
+            ◈ Operator A
+          </h3>
+          <div class="form-group mb-16">
+            <label for="syn-input-a">Vollständiger Name</label>
+            <input type="text" id="syn-input-a" placeholder="z.B. Max Mustermann">
+          </div>
+          <div class="form-group">
+            <label for="syn-date-a">Geburtsdatum (TT.MM.JJJJ)</label>
+            <input type="text" id="syn-date-a" placeholder="z.B. 15.08.1990">
+          </div>
+        </div>
+        
+        <!-- Operator B -->
+        <div class="glass-card">
+          <h3 class="section-eyebrow">
+            ◈ Operator B
+          </h3>
+          <div class="form-group mb-16">
+            <label for="syn-input-b">Vollständiger Name</label>
+            <input type="text" id="syn-input-b" placeholder="z.B. Anna Beispiel">
+          </div>
+          <div class="form-group">
+            <label for="syn-date-b">Geburtsdatum (TT.MM.JJJJ)</label>
+            <input type="text" id="syn-date-b" placeholder="z.B. 22.03.1992">
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-center mt-24">
+        <button class="btn-primary form-container-compact" id="syn-calc-btn">
+          Resonanz berechnen
+        </button>
+        <p id="syn-error" class="text-accent text-center mt-16"></p>
       </div>
     </section>
+
+    <!-- RESULTS AREA — Dynamically filled by render.js -->
+    <section class="tool-section reveal hidden" id="syn-results-area"></section>
 
   </main>
 

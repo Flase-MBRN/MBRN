@@ -56,27 +56,64 @@
       <p class="hero-subtitle">Dein persönliches Progress-Tracking</p>
     </section>
     
-    <!-- DASHBOARD CARD -->
+    <!-- DASHBOARD CARD — Premium Glass-Card Design -->
     <section class="tool-section reveal">
-      <div class="section-card text-center">
-        <h2 class="text-accent mb-24">Current Tier</h2>
-        <div class="tier-display">
-          <span id="dash-tier" class="tier-value">-</span>
+      <div class="glass-card text-center">
+        <h2 class="section-eyebrow-left">Current Tier</h2>
+        
+        <div class="tier-display mb-32">
+          <span id="dash-tier" class="value-massive accent">-</span>
+          <span class="value-label">Access Level</span>
         </div>
         
-        <div class="stats-grid my-24">
-          <div class="stat-item">
-            <span class="stat-label">🔥 Streak</span>
-            <span id="dash-streak" class="stat-value">0</span>
+        <div class="data-grid my-32">
+          <div class="stat-item stagger-fade" data-delay="1">
+            <span class="value-massive" id="dash-streak">0</span>
+            <span class="value-label">🔥 Streak</span>
           </div>
-          <div class="stat-item">
-            <span class="stat-label">🛡️ Shields</span>
-            <span id="dash-shields" class="stat-value">0</span>
+          <div class="stat-item stagger-fade" data-delay="2">
+            <span class="value-massive" id="dash-shields">0</span>
+            <span class="value-label">🛡️ Shields</span>
           </div>
         </div>
+        
+        <!-- Loader Container -->
+        <div id="dash-loader"></div>
         
         <button id="btn-checkin" class="btn-primary">Täglicher Check-In</button>
         <p id="dash-msg" class="text-accent text-center mt-16"></p>
+      </div>
+    </section>
+    
+    <!-- REALTIME SENTIMENT WIDGET -->
+    <section class="tool-section reveal">
+      <div id="sentiment-widget"></div>
+    </section>
+    
+    <!-- APP MODULES GRID -->
+    <section class="tool-section reveal">
+      <h3 class="section-eyebrow">Operative Module</h3>
+      <div class="data-grid">
+        <a href="../apps/numerology/" class="glass-card stagger-fade app-card-link" data-delay="1">
+          <div class="app-icon">◐</div>
+          <h4 class="card-title">Numerology</h4>
+          <p class="text-secondary status-text">Blueprint Analysis</p>
+        </a>
+        <a href="../apps/finance/" class="glass-card stagger-fade app-card-link" data-delay="2">
+          <div class="app-icon">◉</div>
+          <h4 class="card-title">Finance</h4>
+          <p class="text-secondary status-text">Quantum Calculator</p>
+        </a>
+        <a href="../apps/synergy/" class="glass-card stagger-fade app-card-link" data-delay="3">
+          <div class="app-icon">◈</div>
+          <h4 class="card-title">Synergy</h4>
+          <p class="text-secondary status-text">Compatibility Engine</p>
+        </a>
+        <a href="../apps/chronos/" class="glass-card stagger-fade app-card-link" data-delay="4">
+          <div class="app-icon">◷</div>
+          <h4 class="card-title">Chronos</h4>
+          <p class="text-secondary status-text">Time Protocol</p>
+        </a>
       </div>
     </section>
 

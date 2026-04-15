@@ -5,11 +5,12 @@
 
 import { state }  from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
-import { dom }    from '../../shared/ui/dom_utils.js';
+import { dom, animateValue, showTerminalLoader, createGlowRing } from '../../shared/ui/dom_utils.js';
 import { nav }    from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { generateShareCard, generateOperatorReport } from '../../shared/core/logic/orchestrator.js';
 import { MBRN_CONFIG } from '../../shared/core/config.js';
+import { errorBoundary } from '../../shared/ui/error_boundary.js';
 
 export const numerologyRender = {
   currentData: null,
@@ -18,10 +19,23 @@ export const numerologyRender = {
     // 1. Event Binding (Action Registration moved to Core)
     const calcBtn = document.getElementById('num-calc-btn');
     if (calcBtn) {
-      calcBtn.addEventListener('click', () => {
+      calcBtn.addEventListener('click', async () => {
         const name = document.getElementById('num-input-name').value.trim();
         const date = document.getElementById('num-input-date').value.trim();
+        
+        if (!name || !date) {
+          dom.setText('num-error', '⚠️ Bitte Name und Geburtsdatum eingeben');
+          return;
+        }
+        
+        // PATCH 3: Terminal Loader für psychologischen Delay
+        calcBtn.disabled = true;
+        calcBtn.textContent = 'DECRYPTING...';
+        await showTerminalLoader('num-results-area', 1500);
+        
         actions.dispatch('calculateFullProfile', { name, birthDate: date });
+        calcBtn.textContent = 'Berechne vollständiges Profil';
+        calcBtn.disabled = false;
       });
     }
 
@@ -142,68 +156,42 @@ export const numerologyRender = {
     const container = document.getElementById('num-quantum-gauge');
     if (!container) return;
 
-    // Gesetz 3 Compliance: DOM API statt innerHTML
+    // Phase 5.0: Glow Ring Visualization
     const score = quantum.score;
-    const rotation = -90 + (1.8 * score);
-    const arcLength = (Math.PI * 80) * (score / 100);
-
-    // Clear container
     container.replaceChildren();
-
-    // Create SVG
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 200 120');
-    svg.classList.add('svg-responsive');
-
-    // Background Track
-    const track = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    track.setAttribute('d', 'M20,100 A80,80 0 0,1 180,100');
-    track.setAttribute('fill', 'none');
-    track.setAttribute('stroke', '#333');
-    track.setAttribute('stroke-width', '12');
-    track.setAttribute('stroke-linecap', 'round');
-    svg.appendChild(track);
-
-    // Active Track
-    const activeTrack = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    activeTrack.setAttribute('d', 'M20,100 A80,80 0 0,1 180,100');
-    activeTrack.setAttribute('fill', 'none');
-    activeTrack.setAttribute('stroke', '#D3D3D3');
-    activeTrack.setAttribute('stroke-width', '12');
-    activeTrack.setAttribute('stroke-linecap', 'round');
-    activeTrack.setAttribute('stroke-dasharray', `${arcLength} 1000`);
-    activeTrack.classList.add('stroke-transition');
-    svg.appendChild(activeTrack);
-
-    // Needle Group
-    const needleGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    needleGroup.setAttribute('transform', 'translate(100, 100)');
-
-    // Needle Line
-    const needle = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    needle.setAttribute('x1', '0');
-    needle.setAttribute('y1', '0');
-    needle.setAttribute('x2', '0');
-    needle.setAttribute('y2', '-75');
-    needle.setAttribute('stroke', '#FFFFFF');
-    needle.setAttribute('stroke-width', '3');
-    needle.setAttribute('stroke-linecap', 'round');
-    needle.style.transform = `rotate(${rotation}deg)`;
-    needle.classList.add('needle-rotate');
-    needleGroup.appendChild(needle);
-
-    // Center Circle
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', '0');
-    circle.setAttribute('cy', '0');
-    circle.setAttribute('r', '8');
-    circle.setAttribute('fill', '#FFFFFF');
-    needleGroup.appendChild(circle);
-
-    svg.appendChild(needleGroup);
-    container.appendChild(svg);
-
-    dom.setText('num-quantum-score', `${score}%`);
+    
+    // Create glow ring container (LAW 9 COMPLIANT)
+    const ringContainer = document.createElement('div');
+    ringContainer.className = 'glow-ring pos-relative size-glow-ring mx-auto';
+    
+    // Create SVG glow ring
+    const svg = createGlowRing(score, 200);
+    ringContainer.appendChild(svg);
+    
+    // Add score text in center (LAW 2/9 COMPLIANT)
+    const scoreText = document.createElement('div');
+    scoreText.className = 'pos-center-absolute';
+    
+    const scoreValue = document.createElement('span');
+    scoreValue.id = 'num-quantum-score-value';
+    scoreValue.className = 'value-massive text-size-hero-sm text-no-shadow';
+    scoreValue.textContent = '0';
+    scoreText.appendChild(scoreValue);
+    
+    const percentSpan = document.createElement('span');
+    percentSpan.className = 'text-size-sm text-theme-accent';
+    percentSpan.textContent = '%';
+    scoreText.appendChild(percentSpan);
+    ringContainer.appendChild(scoreText);
+    
+    container.appendChild(ringContainer);
+    
+    // Animate the score value
+    const scoreEl = document.getElementById('num-quantum-score-value');
+    if (scoreEl) {
+      animateValue(scoreEl, 0, score, 1500);
+    }
+    
     dom.setText('num-quantum-label', quantum.interpretation);
   },
 
@@ -255,104 +243,110 @@ export const numerologyRender = {
   },
 
   renderAccordions(data) {
-    // Gesetz 3 Compliance: DOM API statt innerHTML
-    const createRow = (container, label, val) => {
-      const row = document.createElement('div');
-      row.className = 'flex-between mb-16 pb-4';
-      row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+    // Phase 5.0: Premium Data Grid Layout mit value-massive
+    const createDataCard = (container, label, value, delay = 0) => {
+      const card = document.createElement('div');
+      card.className = 'stagger-fade card-grid-item-sm';
+      if (delay) card.setAttribute('data-delay', delay);
       
-      const labelSpan = document.createElement('span');
-      labelSpan.className = 'opacity-70 text-base';
-      labelSpan.textContent = label;
+      const valueEl = document.createElement('span');
+      valueEl.className = 'value-massive text-size-lg';
+      valueEl.textContent = '0';
       
-      const valStrong = document.createElement('strong');
-      valStrong.className = 'text-accent';
-      valStrong.textContent = val;
+      const labelEl = document.createElement('span');
+      labelEl.className = 'value-label';
+      labelEl.textContent = label;
       
-      row.appendChild(labelSpan);
-      row.appendChild(valStrong);
-      container.appendChild(row);
+      card.appendChild(valueEl);
+      card.appendChild(labelEl);
+      container.appendChild(card);
+      
+      // Animate number if value is numeric
+      const numValue = parseInt(value);
+      if (!isNaN(numValue)) {
+        animateValue(valueEl, 0, numValue, 1500);
+      } else {
+        valueEl.textContent = value;
+      }
+      
+      // Trigger stagger animation
+      setTimeout(() => card.classList.add('visible'), delay * 100);
     };
 
     const createSectionHeader = (container, text) => {
       const header = document.createElement('div');
-      header.className = 'font-bold text-xs text-accent mb-8';
+      header.className = 'section-header-label';
       header.textContent = text;
       container.appendChild(header);
     };
 
-    // 1. Kernzahlen
+    // 1. Kernzahlen - Premium Data Grid
     const coreList = document.getElementById('acc-core-list');
     coreList.replaceChildren();
-    createRow(coreList, 'Lebenszahl', data.core.lifePath);
-    createRow(coreList, 'Seelenzahl', data.core.soulUrge);
-    createRow(coreList, 'Persönlichkeit', data.core.personality);
-    createRow(coreList, 'Ausdruckszahl', data.core.expression);
-    createRow(coreList, 'Reifezahl', data.additional.maturity);
-    createRow(coreList, 'Geburtstag', data.additional.birthday);
+    coreList.className = 'data-grid compact';
+    createDataCard(coreList, 'Lebenszahl', data.core.lifePath, 1);
+    createDataCard(coreList, 'Seelenzahl', data.core.soulUrge, 2);
+    createDataCard(coreList, 'Persönlichkeit', data.core.personality, 3);
+    createDataCard(coreList, 'Ausdruckszahl', data.core.expression, 4);
+    createDataCard(coreList, 'Reifezahl', data.additional.maturity, 5);
+    createDataCard(coreList, 'Geburtstag', data.additional.birthday, 6);
 
-    // 2. Phasen
+    // 2. Phasen - Premium Data Grid
     const phasesList = document.getElementById('acc-phases-list');
     phasesList.replaceChildren();
-    createSectionHeader(phasesList, 'LEBENSZYKLEN');
-    createRow(phasesList, 'Früher Zyklus', data.cycles.c1);
-    createRow(phasesList, 'Mittlerer Zyklus', data.cycles.c2);
-    createRow(phasesList, 'Später Zyklus', data.cycles.c3);
-    createSectionHeader(phasesList, 'HÖHEPUNKTE (PINNACLES)');
-    createRow(phasesList, 'Pinnacle 1', data.pinnacles.p1);
-    createRow(phasesList, 'Pinnacle 2', data.pinnacles.p2);
-    createRow(phasesList, 'Pinnacle 3', data.pinnacles.p3);
-    createRow(phasesList, 'Pinnacle 4', data.pinnacles.p4);
+    createSectionHeader(phasesList, 'Lebenszyklen');
+    const cyclesGrid = document.createElement('div');
+    cyclesGrid.className = 'data-grid compact';
+    createDataCard(cyclesGrid, 'Früher Zyklus', data.cycles.c1, 1);
+    createDataCard(cyclesGrid, 'Mittlerer Zyklus', data.cycles.c2, 2);
+    createDataCard(cyclesGrid, 'Später Zyklus', data.cycles.c3, 3);
+    phasesList.appendChild(cyclesGrid);
+    
+    createSectionHeader(phasesList, 'Höhepunkte (Pinnacles)');
+    const pinnaclesGrid = document.createElement('div');
+    pinnaclesGrid.className = 'data-grid compact';
+    createDataCard(pinnaclesGrid, 'Pinnacle 1', data.pinnacles.p1, 4);
+    createDataCard(pinnaclesGrid, 'Pinnacle 2', data.pinnacles.p2, 5);
+    createDataCard(pinnaclesGrid, 'Pinnacle 3', data.pinnacles.p3, 6);
+    createDataCard(pinnaclesGrid, 'Pinnacle 4', data.pinnacles.p4, 7);
+    phasesList.appendChild(pinnaclesGrid);
 
-    // 3. Karma
+    // 3. Karma & Challenges - Premium Data Grid
     const karmaList = document.getElementById('acc-karma-list');
     karmaList.replaceChildren();
-    createSectionHeader(karmaList, 'HERAUSFORDERUNGEN');
-    createRow(karmaList, 'Challenge 1', data.challenges.ch1);
-    createRow(karmaList, 'Challenge 2', data.challenges.ch2);
-    createRow(karmaList, 'Haupt-Challenge', data.challenges.ch3);
-    createRow(karmaList, 'Gespannte Challenge', data.challenges.ch4);
-    createSectionHeader(karmaList, 'KARMA');
-    createRow(karmaList, 'Karmische Lektionen', data.karma.lessons.join(', ') || 'Keine');
-    createRow(karmaList, 'Verborgene Passion', data.karma.passion.join(', '));
+    createSectionHeader(karmaList, 'Herausforderungen');
+    const challengesGrid = document.createElement('div');
+    challengesGrid.className = 'data-grid compact';
+    createDataCard(challengesGrid, 'Challenge 1', data.challenges.ch1, 1);
+    createDataCard(challengesGrid, 'Challenge 2', data.challenges.ch2, 2);
+    createDataCard(challengesGrid, 'Haupt-Challenge', data.challenges.ch3, 3);
+    createDataCard(challengesGrid, 'Gespannte Challenge', data.challenges.ch4, 4);
+    karmaList.appendChild(challengesGrid);
+    
+    createSectionHeader(karmaList, 'Karma');
+    const karmaGrid = document.createElement('div');
+    karmaGrid.className = 'data-grid compact';
+    createDataCard(karmaGrid, 'Karmische Lektionen', data.karma.lessons.join(', ') || 'Keine', 5);
+    createDataCard(karmaGrid, 'Verborgene Passion', data.karma.passion.join(', '), 6);
+    karmaList.appendChild(karmaGrid);
 
-    // 4. Brücken
+    // 4. Brücken - Premium Data Grid
     const bridgeList = document.getElementById('acc-bridge-list');
     bridgeList.replaceChildren();
-    createRow(bridgeList, 'Brücke Seele-Persönlichkeit', data.bridges.soulPers);
-    createRow(bridgeList, 'Brücke Leben-Ausdruck', data.bridges.lifeExpr);
+    const bridgesGrid = document.createElement('div');
+    bridgesGrid.className = 'data-grid compact';
+    createDataCard(bridgesGrid, 'Seele-Persönlichkeit', data.bridges.soulPers, 1);
+    createDataCard(bridgesGrid, 'Leben-Ausdruck', data.bridges.lifeExpr, 2);
+    bridgeList.appendChild(bridgesGrid);
     
     const bridgeNote = document.createElement('p');
-    bridgeNote.className = 'text-sm opacity-50 mt-16';
+    bridgeNote.className = 'text-sm opacity-50 mt-16 text-center';
     bridgeNote.textContent = 'Brücken zeigen an, wie viel Aufwand nötig ist, um gegensätzliche Anteile zu harmonisieren (0 = Harmonie, 9 = hohe Spannung).';
     bridgeList.appendChild(bridgeNote);
   }
 };
 
 // Auto-Init
+errorBoundary.init();
 numerologyRender.init();
-
-// ========================================
-// SCROLL REVEAL ANIMATION (Moved from index.html)
-// ========================================
-// Phase D2: Intersection Observer for reveal animations
-// Compliant with 000_plan.md Rule 4: Single Script-Tag
-
-const observerOptions = {
-  root: null,
-  rootMargin: '0px',
-  threshold: 0.1
-};
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    }
-  });
-}, observerOptions);
-
-document.querySelectorAll('.reveal').forEach(el => {
-  observer.observe(el);
-});
+dom.initScrollReveal();

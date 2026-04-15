@@ -10,7 +10,7 @@
 
 import { calculateNameFrequency } from './frequency.js';
 import { calculateChronos } from './chronos.js';
-import { calculateFullProfile as calculateLegacyProfile } from './legacy_numerology.js';
+import { calculateFullProfile as calculateLegacyProfile } from './numerology/index.js';
 
 /**
  * Builds a unified operator profile by orchestrating all available engines.
@@ -148,5 +148,5 @@ export function getLegacyProfile(name, birthDate) {
   };
 }
 
-// Re-export legacy generators for Core access
-export { generateShareCard, generateOperatorReport } from './legacy_numerology.js';
+// Re-export generators for Core access
+export { generateShareCard, generateOperatorReport } from './numerology/index.js';

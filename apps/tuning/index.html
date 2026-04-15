@@ -60,12 +60,60 @@
       <p class="hero-subtitle">Echtzeit-Abgleich von Namen mit der Hardware des Operators</p>
     </section>
     
-    <!-- PLACEHOLDER CONTENT -->
+    <!-- INPUT SECTION — Live Frequency Tuner -->
     <section class="tool-section reveal">
-      <div class="section-card text-center">
-        <h2 class="text-accent mb-24">Coming in Phase 5.0</h2>
-        <p class="text-secondary">Live-Namens-Analyse mit 300ms Debounce-Feedback.</p>
-        <p class="text-muted mt-16">Backend: ✅ calculateNameFrequency() implementiert</p>
+      <div class="glass-card text-center">
+        <h3 class="section-eyebrow">
+          ◎ Live Frequenz-Analyse
+        </h3>
+        
+        <div class="form-container mb-16">
+          <label for="tune-name-input">Name (Echtzeit-Analyse)</label>
+          <input type="text" id="tune-name-input" placeholder="Tippe einen Namen..." autocomplete="off">
+        </div>
+        
+        <div class="form-container mb-24">
+          <label for="tune-birthdate">Geburtsdatum (optional, für Alignment)</label>
+          <input type="text" id="tune-birthdate" placeholder="TT.MM.JJJJ">
+        </div>
+        
+        <p id="tune-status" class="text-secondary status-text mb-16">
+          Gib einen Namen ein...
+        </p>
+      </div>
+    </section>
+
+    <!-- RESULTS AREA — Live Frequency Visualization -->
+    <section class="tool-section reveal" id="tune-results">
+      <div class="glass-card text-center">
+        <h3 class="section-eyebrow">
+          Namens-Frequenz
+        </h3>
+        
+        <!-- Frequency Value Massive -->
+        <div class="stagger-fade mb-24" data-delay="1">
+          <span id="tune-frequency-value" class="value-massive accent">-</span>
+          <span class="value-label">Numerische Frequenz</span>
+        </div>
+        
+        <!-- Frequency Bar -->
+        <div class="stagger-fade form-container-compact mb-24" data-delay="2">
+          <div class="progress-bar-container">
+            <div id="tune-frequency-bar" class="progress-bar-fill" style="width: 0%; background: var(--text-muted);"></div>
+          </div>
+        </div>
+        
+        <!-- Resonance & Alignment -->
+        <div class="data-grid compact form-container-compact">
+          <div class="stagger-fade card-compact" data-delay="3">
+            <span id="tune-resonance" class="stat-value">-</span>
+            <span class="value-label">Resonanz</span>
+          </div>
+          <div class="stagger-fade card-compact" data-delay="4">
+            <span id="tune-alignment" class="stat-value-secondary">-</span>
+            <span class="value-label">Alignment</span>
+          </div>
+        </div>
       </div>
     </section>
 

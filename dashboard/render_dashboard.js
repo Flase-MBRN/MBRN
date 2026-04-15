@@ -6,10 +6,12 @@
 
 import { state } from '../shared/core/state.js';
 import { actions } from '../shared/core/actions.js';
-import { dom } from '../shared/ui/dom_utils.js';
+import { dom, animateValue, showTerminalLoader } from '../shared/ui/dom_utils.js';
 import { MBRN_CONFIG } from '../shared/core/config.js';
 import { nav } from '../shared/ui/navigation.js';
 import { renderAuth } from '../shared/ui/render_auth.js';
+import { sentimentWidget } from '../shared/ui/widgets/sentiment_widget.js';
+import { errorBoundary } from '../shared/ui/error_boundary.js';
 
 export const dashboardRender = {
   
@@ -19,9 +21,14 @@ export const dashboardRender = {
   init() {
     const btnCheckin = document.getElementById('btn-checkin');
     if (btnCheckin) {
-      btnCheckin.addEventListener('click', () => {
-        // Phase 9.3: Delegate an Action (Idempotency wird in streak_manager geprüft)
+      btnCheckin.addEventListener('click', async () => {
+        // PATCH 3: Terminal Loader für psychologischen Delay
+        btnCheckin.disabled = true;
+        await showTerminalLoader('dash-loader', 1500);
+        
+        // Phase 9.3: Delegate an Action
         actions.triggerCheckIn();
+        btnCheckin.disabled = false;
       });
     }
 
@@ -38,41 +45,49 @@ export const dashboardRender = {
       dom.setText('dash-msg', `⚠️ ${payload.message}`);
     });
 
-    // Phase 4.0: Scroll Reveal Animation (migrated from index.html)
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.1
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-    
-    document.querySelectorAll('.reveal').forEach(el => {
-      observer.observe(el);
-    });
+    // Phase 4.0: Scroll Reveal Animation (LAW 9 COMPLIANT - centralized)
+    dom.initScrollReveal();
 
     // initSystem nach allen Subscriptions — garantiert kein Event-Verlust
     console.log('[Dashboard Render] Initializing...');
+    
+    // DEBT-004: Initialize Global Error Boundary
+    errorBoundary.init();
+    
     actions.initSystem();
     nav.bindNavigation();
     renderAuth.init();
+    
+    // PATCH 5.1.4-C: Initialize Realtime Sentiment Widget
+    sentimentWidget.init('sentiment-widget');
   },
 
   /**
-   * Phase 9.2: Render Logik via dom_utils XSS-Safe Updates
+   * Phase 9.2: Render Logik via dom_utils.js XSS-Safe Updates
+   * PATCH 1 & 2: Number Ticker Animation + Stagger Fade
    */
   renderStatus(profile) {
     if (!profile) return;
 
-    dom.setText('dash-streak', profile.streak || 0);
-    dom.setText('dash-shields', profile.shields || 0);
+    // Number Ticker Animation für Streak und Shields
+    const streakEl = document.getElementById('dash-streak');
+    const shieldsEl = document.getElementById('dash-shields');
+    
+    if (streakEl) {
+      const currentStreak = parseInt(streakEl.textContent) || 0;
+      const newStreak = profile.streak || 0;
+      if (currentStreak !== newStreak) {
+        animateValue(streakEl, currentStreak, newStreak, 1500);
+      }
+    }
+    
+    if (shieldsEl) {
+      const currentShields = parseInt(shieldsEl.textContent) || 0;
+      const newShields = profile.shields || 0;
+      if (currentShields !== newShields) {
+        animateValue(shieldsEl, currentShields, newShields, 1500);
+      }
+    }
 
     // Finde den String-Namen des Tiers via Value aus der CONFIG
     let tierName = "FREE";
@@ -86,6 +101,13 @@ export const dashboardRender = {
     }
 
     dom.setText('dash-tier', tierName);
+    
+    // Stagger Fade Animation für Stat-Items
+    document.querySelectorAll('.stagger-fade').forEach((el, index) => {
+      setTimeout(() => {
+        el.classList.add('visible');
+      }, index * 100);
+    });
   }
 };
 

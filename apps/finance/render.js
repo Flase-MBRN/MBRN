@@ -8,7 +8,7 @@
 import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
 import { calculateCompoundInterest } from './logic.js';
-import { dom } from '../../shared/ui/dom_utils.js';
+import { dom, animateValue, showTerminalLoader } from '../../shared/ui/dom_utils.js';
 import { hasFeature } from '../../shared/loyalty/access_control.js';
 import { nav } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
@@ -23,14 +23,21 @@ export const financeRender = {
     const calcBtn = document.getElementById('calc-btn');
     
     if (calcBtn) {
-      calcBtn.addEventListener('click', () => {
+      calcBtn.addEventListener('click', async () => {
         const principal = parseFloat(document.getElementById('input-principal').value || 0);
         const rate = parseFloat(document.getElementById('input-rate').value || 0);
         const years = parseFloat(document.getElementById('input-years').value || 0);
         const monthly = parseFloat(document.getElementById('input-monthly').value || 0);
 
+        // PATCH 3: Terminal Loader für psychologischen Delay
+        calcBtn.disabled = true;
+        calcBtn.textContent = 'CALCULATING...';
+        await showTerminalLoader('results-section', 1500);
+
         // Strict Data Flow: UI -> Action -> Logic -> State -> UI
         actions.dispatch('calculateFinance', { principal, rate, years, monthlyAddition: monthly });
+        calcBtn.textContent = 'Jetzt Berechnen';
+        calcBtn.disabled = false;
       });
     }
 
@@ -87,25 +94,8 @@ export const financeRender = {
         return result;
     });
 
-    // Phase 4.0: Scroll Reveal Animation (aus index.html migriert)
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.1
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-    
-    document.querySelectorAll('.reveal').forEach(el => {
-      observer.observe(el);
-    });
+    // Phase 4.0: Scroll Reveal Animation (LAW 9 COMPLIANT - centralized)
+    dom.initScrollReveal();
 
     // Fix #2: Boot + Nav am Ende von init()
     console.log('[Finance Render] Initializing...');
@@ -116,15 +106,44 @@ export const financeRender = {
 
   /**
    * Phase 8.2: Ergebnisse via dom_utils.js anzeigen (Sanitized)
+   * Phase 5.0: Premium Value-Massive Styling + Number Ticker
    */
   renderResults(data) {
     // Fehler zurücksetzen
     dom.setText('finance-error', '');
 
-    // Werte sicher einfügen
-    dom.setText('res-final', `${data.finalBalance.toLocaleString('de-DE')} €`);
-    dom.setText('res-invested', `${data.totalInvested.toLocaleString('de-DE')} €`);
-    dom.setText('res-interest', `${data.totalInterest.toLocaleString('de-DE')} €`);
+    // Phase 5.0: Massive Value Cards mit Number Ticker
+    const finalEl = document.getElementById('res-final');
+    const investedEl = document.getElementById('res-invested');
+    const interestEl = document.getElementById('res-interest');
+    
+    // Update structure to value-massive layout
+    if (finalEl) {
+      finalEl.innerHTML = `
+        <span class="value-massive text-size-xl">0</span>
+        <span class="value-label">Endkapital</span>
+      `;
+      const valueEl = finalEl.querySelector('.value-massive');
+      animateValue(valueEl, 0, data.finalBalance, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
+    }
+    
+    if (investedEl) {
+      investedEl.innerHTML = `
+        <span class="value-massive secondary text-size-md">0</span>
+        <span class="value-label">Eingezahlt</span>
+      `;
+      const valueEl = investedEl.querySelector('.value-massive');
+      animateValue(valueEl, 0, data.totalInvested, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
+    }
+    
+    if (interestEl) {
+      interestEl.innerHTML = `
+        <span class="value-massive accent text-size-lg">0</span>
+        <span class="value-label">Zinsgewinn</span>
+      `;
+      const valueEl = interestEl.querySelector('.value-massive');
+      animateValue(valueEl, 0, data.totalInterest, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
+    }
 
     // Phase 8.3: Gatekeeper-Hook
     dom.clear('premium-features-container'); // Container sauber leeren
@@ -136,6 +155,11 @@ export const financeRender = {
       // Opt-in für Paywall Hook später
       dom.renderTemplate('pdf-locked-template', 'premium-features-container');
     }
+    
+    // Trigger stagger animation for result cards
+    document.querySelectorAll('.results-card .stagger-fade').forEach((el, index) => {
+      setTimeout(() => el.classList.add('visible'), index * 100);
+    });
   }
 };
 

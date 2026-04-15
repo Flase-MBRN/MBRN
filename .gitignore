@@ -9,8 +9,22 @@ MBRN_DEEP_DECODE_*.pdf
 .obsidian/
 
 # Security: Environment secrets - NEVER COMMIT REAL KEYS
+# Core environment files
 shared/core/env.js
 .env
 .env.*
 *.local
 config.local.js
+
+# Recursive protection for all .env files in subdirectories
+**/.env
+**/.env.*
+**/env.js
+!**/.env.example
+
+# Data Cache & Temp Files (SECURITY: Prevent data leaks)
+AI/models/data/*.json
+*.cache.json
+.temp/
+.supabase/
+coverage/

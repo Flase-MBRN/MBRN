@@ -559,6 +559,514 @@
 .w-full { width: 100%; }
 
 /* ========================================
+   PHASE 5.0: PREMIUM WTF-MOMENT COMPONENTS
+   ======================================== */
+
+/* PATCH 2: Glassmorphism Card — Ultra-Premium Cyber-Terminal Look */
+.glass-card {
+  background: rgba(10, 10, 15, 0.6) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-accent) !important;
+  border-radius: 20px !important;
+  padding: 32px !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 40px rgba(124, 58, 237, 0.1) !important;
+  transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 60px rgba(124, 58, 237, 0.2) !important;
+  transform: translateY(-2px);
+}
+
+/* PATCH 4: Fluid Data Grid — Mobile First, auto-responsive */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.data-grid.compact {
+  gap: 16px;
+}
+
+/* BUG 2 FIX: Accordion Grid — prevent ghost stretching */
+#num-accordions.data-grid,
+.data-grid.accordions {
+  align-items: start;
+}
+
+#num-accordions .acc-item,
+.data-grid.accordions .acc-item {
+  height: fit-content;
+  align-self: start;
+}
+
+/* PATCH 2: Value Massive — Anti-Jitter Typografie mit tabular-nums */
+.value-massive {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(48px, 10vw, 88px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  text-shadow: 0 0 40px var(--accent-glow);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  display: block;
+}
+
+.value-massive.accent {
+  color: var(--accent);
+  text-shadow: 0 0 60px rgba(124, 58, 237, 0.4);
+}
+
+.value-massive.secondary {
+  color: var(--text-secondary);
+  text-shadow: none;
+}
+
+/* Value Label für massive Zahlen */
+.value-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 8px;
+  display: block;
+}
+
+/* Glow Ring Container */
+.glow-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glow-ring-svg {
+  filter: drop-shadow(0 0 20px var(--accent-glow));
+}
+
+/* PATCH 3: Terminal Loader — Cyber-Terminal Styling */
+.terminal-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: 'Inter', monospace;
+  font-size: 13px;
+  color: var(--accent);
+  background: rgba(124, 58, 237, 0.05);
+  border: 1px solid var(--border-accent);
+  border-radius: 12px;
+  margin: 16px 0;
+}
+
+.terminal-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-prompt {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.terminal-text {
+  color: var(--text-secondary);
+}
+
+/* BUG 1 FIX: Hide number input spinners (Windows XP arrows) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.terminal-cursor {
+  animation: blink 1s step-end infinite;
+  color: var(--accent);
+}
+
+/* Stagger Fade Animation Base */
+.stagger-fade {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.stagger-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger Delay Variants */
+.stagger-fade[data-delay="1"] { transition-delay: 0.1s; }
+.stagger-fade[data-delay="2"] { transition-delay: 0.2s; }
+.stagger-fade[data-delay="3"] { transition-delay: 0.3s; }
+.stagger-fade[data-delay="4"] { transition-delay: 0.4s; }
+.stagger-fade[data-delay="5"] { transition-delay: 0.5s; }
+
+/* ========================================
+   KEYFRAME ANIMATIONS (Phase 5.0)
+   ======================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(124, 58, 237, 0.3);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes ringProgress {
+  from {
+    stroke-dashoffset: var(--circumference);
+  }
+  to {
+    stroke-dashoffset: var(--offset);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Animation Utility Classes */
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(124, 58, 237, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAW 9 COMPLIANCE: Centralized Utility Classes
+   Replacing all inline styles from HTML sprint mode
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Section Headers (formerly inline style="font-size: 11px; letter-spacing: 0.3em...") */
+.section-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.section-eyebrow-left {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+/* Form Container Utilities */
+.form-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form-container-compact {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-container-sm {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Spacing Utilities */
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.pt-16 { padding-top: 16px; }
+.p-24 { padding: 24px; }
+
+/* Form Container with bottom margin variant */
+.form-container.mb-16 {
+  margin-bottom: 16px;
+}
+
+/* Card Background Variants */
+.card-sunken {
+  text-align: center;
+  padding: 24px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+/* Value Massive Size Variants */
+.value-massive-lg {
+  font-size: 42px;
+}
+
+.value-massive-md {
+  font-size: 36px;
+}
+
+.value-massive-sm {
+  font-size: 32px;
+}
+
+/* Progress Bar Container */
+.progress-bar-container {
+  background: var(--bg-elevated);
+  border-radius: 50px;
+  height: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 50px;
+  transition: all 0.4s ease;
+}
+
+/* Card Compact Variant */
+.card-compact {
+  text-align: center;
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+/* Stat Value Display */
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.stat-value-secondary {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* App Card Links (Dashboard) */
+.app-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+/* Accordion Trigger */
+.acc-trigger-full {
+  width: 100%;
+}
+
+/* App Icon Display */
+.app-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.app-icon-lg {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* Card Typography */
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.card-title-sm {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+/* Status/Helper Text */
+.status-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.status-text-sm {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TASK 4: UX Polish — Button States
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn-primary:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.3);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+.btn-secondary:disabled,
+.btn-secondary.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Focus States for Accessibility */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Sentiment Widget Specific Classes
+   ═══════════════════════════════════════════════════════════════ */
+
+.sentiment-container {
+  position: relative;
+  margin: 24px auto;
+  width: 160px;
+  height: 160px;
+}
+
+.sentiment-ring-svg {
+  transform: rotate(-90deg);
+}
+
+#sentiment-ring {
+  transition: stroke-dashoffset 0.8s ease, stroke 0.4s ease;
+}
+
+.sentiment-score-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.sentiment-score-massive {
+  font-size: 42px;
+  text-shadow: none;
+}
+
+.sentiment-verdict {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.sentiment-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.sentiment-status {
+  margin-top: 12px;
+  font-size: 10px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.status-dot.live {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+.status-dot.offline {
+  background: var(--error);
+}
+
+.status-dot.connecting {
+  background: var(--warning);
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ========================================
    LEGACY SUPPORT
    ======================================== */
 
@@ -570,4 +1078,229 @@
 /* Ensure all buttons get pill style */
 button[class*="btn"] {
   border-radius: 50px !important;
+}
+
+/* ========================================
+   UTILITY CLASSES — LAW 9 COMPLIANT
+   Replacing inline styles from render files
+   ======================================== */
+
+/* Typography Sizes */
+.text-size-hero { font-size: 56px; }
+.text-size-hero-sm { font-size: 48px; }
+.text-size-xl { font-size: 42px; }
+.text-size-lg { font-size: 36px; }
+.text-size-md { font-size: 32px; }
+.text-size-sm { font-size: 24px; }
+.text-size-xs { font-size: 18px; }
+.text-size-micro { font-size: 16px; }
+.text-size-tiny { font-size: 14px; }
+.text-size-pico { font-size: 12px; }
+.text-size-nano { font-size: 11px; }
+
+/* Section Eyebrow (repeated pattern) */
+.section-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Status Text (repeated pattern) */
+.status-text {
+  margin-top: 16px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+/* Card Grid Item (repeated pattern) */
+.card-grid-item {
+  text-align: center;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.card-grid-item-sm {
+  text-align: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+/* Card Title */
+.card-title-syne {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.card-title-syne-sm {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+/* Interpretation Text */
+.interpretation-text {
+  text-align: center;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* No shadow override */
+.text-no-shadow { text-shadow: none; }
+
+/* Theme text colors */
+.text-theme-accent { color: var(--accent); }
+.text-theme-muted { color: var(--text-muted); }
+
+/* Tiny info text */
+.info-text-tiny {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ========================================
+   POSITIONING UTILITIES — LAW 9 COMPLIANT
+   ======================================== */
+
+/* Center absolutely positioned element */
+.pos-center-absolute {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Relative positioning container */
+.pos-relative {
+  position: relative;
+}
+
+/* Fixed sizing */
+.size-glow-ring {
+  width: 200px;
+  height: 200px;
+}
+
+.size-glow-ring-lg {
+  width: 220px;
+  height: 220px;
+}
+
+/* Margin utilities */
+.mx-auto {
+  margin: 0 auto;
+}
+
+/* Section header styling */
+.section-header-label {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 16px;
+  margin-top: 24px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Text alignment */
+.text-center {
+  text-align: center;
+}
+
+/* Display utilities */
+.block {
+  display: block;
+}
+
+/* ========================================
+   FREQUENCY TUNER — Dynamic States
+   ======================================== */
+
+/* Bar alignment states */
+.bar-alignment-high {
+  background: var(--accent) !important;
+  box-shadow: 0 0 20px var(--accent-glow) !important;
+}
+
+.bar-alignment-medium {
+  background: var(--warning) !important;
+  box-shadow: none !important;
+}
+
+.bar-alignment-low {
+  background: var(--text-muted) !important;
+  box-shadow: none !important;
+}
+
+/* Resonance text colors */
+.text-resonance-high {
+  color: var(--accent);
+}
+
+.text-resonance-good {
+  color: var(--success);
+}
+
+.text-resonance-neutral {
+  color: var(--warning);
+}
+
+.text-resonance-low {
+  color: var(--text-muted);
+}
+
+/* ========================================
+   ERROR BOUNDARY — Global Error Display
+   ======================================== */
+
+.error-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 59, 48, 0.95);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  max-width: 90vw;
+}
+
+.error-banner.hidden {
+  display: none;
+}
+
+.error-banner button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.error-banner button:hover {
+  opacity: 1;
 }
