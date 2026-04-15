@@ -57,8 +57,10 @@ export async function calculateChronos(birthDate) {
 
     // Task 14.2: Real Chronos Calculation (Numerological Time Cycles)
     // Formula: Personal cycles based on birth date + target date
-
-    const targetDate = new Date();
+    
+    // LAW 15 COMPLIANT: UTC-only date construction to eliminate timezone bugs
+    const now = new Date();
+    const targetDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     const targetYear = targetDate.getUTCFullYear();
     const targetMonth = targetDate.getUTCMonth() + 1; // 1-12
     const targetDay = targetDate.getUTCDate();

@@ -148,16 +148,16 @@ export const landingRender = {
       revealText.insertBefore(welcomeMsg, revealText.firstChild);
     }
     
-    // Animate ring (still show animation for visual delight)
+    // Animate ring (still show animation for visual delight) — LAW 9 COMPLIANT
     if (ringProgress) {
       const circumference = 2 * Math.PI * 90;
-      ringProgress.style.strokeDasharray = circumference;
-      ringProgress.style.strokeDashoffset = circumference;
+      ringProgress.style.strokeDasharray = circumference;  // Dynamic: allowed
+      ringProgress.style.strokeDashoffset = circumference; // Dynamic: allowed
+      ringProgress.classList.add('ring-progress-animate-fast'); // Static: CSS class
       
       // Small delay for visual effect
       requestAnimationFrame(() => {
-        ringProgress.style.transition = 'stroke-dashoffset 1s ease-out';
-        ringProgress.style.strokeDashoffset = 0;
+        ringProgress.style.strokeDashoffset = 0; // Dynamic: allowed
       });
     }
     
@@ -241,9 +241,10 @@ export const landingRender = {
       const totalDuration = 2500;
       const messageInterval = totalDuration / TERMINAL_MESSAGES.length;
       
-      // Animate progress bar
+      // Animate progress bar — LAW 9 COMPLIANT
+      progressBar.classList.add('progress-bar-animate');
       setTimeout(() => {
-        progressBar.style.width = '100%';
+        progressBar.style.width = '100%'; // Dynamic: allowed
       }, 100);
       
       // Type messages
@@ -310,15 +311,15 @@ export const landingRender = {
     titleEl.textContent = archetype.title;
     descEl.textContent = archetype.desc;
     
-    // Animate SVG ring
+    // Animate SVG ring — LAW 9 COMPLIANT
     if (ringProgress) {
       const circumference = 2 * Math.PI * 90; // r=90
-      ringProgress.style.strokeDasharray = circumference;
-      ringProgress.style.strokeDashoffset = circumference;
+      ringProgress.style.strokeDasharray = circumference;  // Dynamic: allowed
+      ringProgress.style.strokeDashoffset = circumference; // Dynamic: allowed
+      ringProgress.classList.add('ring-progress-animate'); // Static: CSS class
       
       setTimeout(() => {
-        ringProgress.style.transition = 'stroke-dashoffset 1.5s ease-out';
-        ringProgress.style.strokeDashoffset = 0;
+        ringProgress.style.strokeDashoffset = 0; // Dynamic: allowed
       }, 100);
     }
   },

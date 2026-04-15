@@ -112,35 +112,32 @@ export const financeRender = {
     // Fehler zurücksetzen
     dom.setText('finance-error', '');
 
-    // Phase 5.0: Massive Value Cards mit Number Ticker
+    // Phase 5.0: Massive Value Cards mit Number Ticker (LAW 3 COMPLIANT)
     const finalEl = document.getElementById('res-final');
     const investedEl = document.getElementById('res-invested');
     const interestEl = document.getElementById('res-interest');
     
-    // Update structure to value-massive layout
+    // Update structure to value-massive layout using dom.createEl
     if (finalEl) {
-      finalEl.innerHTML = `
-        <span class="value-massive text-size-xl">0</span>
-        <span class="value-label">Endkapital</span>
-      `;
+      dom.clear('res-final');
+      dom.createEl('span', { className: 'value-massive text-size-xl', text: '0', parent: finalEl });
+      dom.createEl('span', { className: 'value-label', text: 'Endkapital', parent: finalEl });
       const valueEl = finalEl.querySelector('.value-massive');
       animateValue(valueEl, 0, data.finalBalance, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
     }
     
     if (investedEl) {
-      investedEl.innerHTML = `
-        <span class="value-massive secondary text-size-md">0</span>
-        <span class="value-label">Eingezahlt</span>
-      `;
+      dom.clear('res-invested');
+      dom.createEl('span', { className: 'value-massive secondary text-size-md', text: '0', parent: investedEl });
+      dom.createEl('span', { className: 'value-label', text: 'Eingezahlt', parent: investedEl });
       const valueEl = investedEl.querySelector('.value-massive');
       animateValue(valueEl, 0, data.totalInvested, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
     }
     
     if (interestEl) {
-      interestEl.innerHTML = `
-        <span class="value-massive accent text-size-lg">0</span>
-        <span class="value-label">Zinsgewinn</span>
-      `;
+      dom.clear('res-interest');
+      dom.createEl('span', { className: 'value-massive accent text-size-lg', text: '0', parent: interestEl });
+      dom.createEl('span', { className: 'value-label', text: 'Zinsgewinn', parent: interestEl });
       const valueEl = interestEl.querySelector('.value-massive');
       animateValue(valueEl, 0, data.totalInterest, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
     }

@@ -132,8 +132,7 @@ export const renderAuth = {
   showAuthError(form, message) {
     this.clearAuthError(form);
     const errorBox = document.createElement('div');
-    errorBox.className = 'auth-error-box';
-    errorBox.style.cssText = 'margin-top: 12px; padding: 12px; border: 1px solid var(--accent-color); border-radius: 8px; background: rgba(255,59,48,0.1); color: var(--accent-color); font-size: 0.85rem; text-align: left;';
+    errorBox.className = 'auth-error-box'; // LAW 9 COMPLIANT: Styles in CSS
     errorBox.textContent = message;
     form.parentNode.insertBefore(errorBox, form.nextSibling);
     setTimeout(() => this.clearAuthError(form), 8000);

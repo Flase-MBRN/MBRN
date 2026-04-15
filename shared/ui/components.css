@@ -1226,6 +1226,21 @@ button[class*="btn"] {
 }
 
 /* ========================================
+   AUTH ERROR BOX — LAW 9 COMPLIANT
+   ======================================== */
+
+.auth-error-box {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--accent-color);
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+/* ========================================
    FREQUENCY TUNER — Dynamic States
    ======================================== */
 
@@ -1260,6 +1275,60 @@ button[class*="btn"] {
 
 .text-resonance-low {
   color: var(--text-muted);
+}
+
+/* ========================================
+   SENTIMENT WIDGET — LAW 9 COMPLIANT
+   ======================================== */
+
+/* Sentiment verdict colors */
+.sentiment-verdict-extreme-greed { color: var(--accent); }
+.sentiment-verdict-greed { color: var(--success); }
+.sentiment-verdict-neutral { color: var(--warning); }
+.sentiment-verdict-fear { color: var(--error); }
+.sentiment-verdict-extreme-fear { color: #ef4444; }
+
+/* Pulse animation for card updates */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 20px var(--accent-glow); }
+}
+
+.pulse-glow {
+  animation: pulseGlow 0.6s ease;
+}
+
+/* Status dot states */
+.status-dot-online {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+
+.status-dot-offline {
+  background: var(--error);
+  box-shadow: none;
+}
+
+.status-dot-connecting {
+  background: var(--warning);
+  box-shadow: none;
+}
+
+/* ========================================
+   LANDING PAGE — Ring Animation (LAW 9)
+   ======================================== */
+
+.ring-progress-animate {
+  transition: stroke-dashoffset 1.5s ease-out;
+}
+
+.ring-progress-animate-fast {
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+/* Progress bar animation */
+.progress-bar-animate {
+  transition: width 2.5s ease-out;
 }
 
 /* ========================================

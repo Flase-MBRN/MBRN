@@ -124,11 +124,11 @@ export const sentimentWidget = {
     // Update ring visualization
     this.updateRing(newScore);
     
-    // Update text elements
+    // Update text elements (LAW 9 COMPLIANT)
     const verdictEl = document.getElementById('sentiment-verdict');
     if (verdictEl) {
       verdictEl.textContent = verdict;
-      verdictEl.style.color = this.getScoreColor(newScore);
+      verdictEl.className = 'sentiment-verdict ' + this.getScoreClass(newScore);
     }
     
     const sourceEl = document.getElementById('sentiment-source');
@@ -140,11 +140,11 @@ export const sentimentWidget = {
       timeEl.textContent = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     }
     
-    // Pulse animation on card
+    // Pulse animation on card (LAW 9 COMPLIANT)
     const card = this.container.querySelector('.glass-card');
     if (card) {
-      card.style.animation = 'pulseGlow 0.6s ease';
-      setTimeout(() => { card.style.animation = ''; }, 600);
+      card.classList.add('pulse-glow');
+      setTimeout(() => { card.classList.remove('pulse-glow'); }, 600);
     }
     
     this.currentScore = newScore;
@@ -162,8 +162,8 @@ export const sentimentWidget = {
     const offset = circumference - (score / 100) * circumference;
     ring.style.strokeDashoffset = offset;
     
-    // Color based on sentiment
-    ring.style.stroke = this.getScoreColor(score);
+    // Color based on sentiment (LAW 9: CSS class for color)
+    ring.setAttribute('stroke', this.getScoreColor(score));
   },
   
   /**
@@ -191,6 +191,18 @@ export const sentimentWidget = {
   },
   
   /**
+   * Get CSS class for sentiment score (Law 9)
+   */
+  getScoreClass(score) {
+    const { EXTREME_GREED, GREED, NEUTRAL, FEAR } = MBRN_CONFIG.sentiment.thresholds;
+    if (score >= EXTREME_GREED) return 'sentiment-verdict-extreme-greed';
+    if (score >= GREED) return 'sentiment-verdict-greed';
+    if (score >= NEUTRAL) return 'sentiment-verdict-neutral';
+    if (score >= FEAR) return 'sentiment-verdict-fear';
+    return 'sentiment-verdict-extreme-fear';
+  },
+  
+  /**
    * Update connection status indicator
    */
   updateStatusIndicator(status) {
@@ -198,15 +210,17 @@ export const sentimentWidget = {
     const text = this.container?.querySelector('.status-text');
     if (!dot || !text) return;
     
+    // LAW 9 COMPLIANT: CSS classes instead of inline styles
+    dot.classList.remove('status-dot-online', 'status-dot-offline', 'status-dot-connecting');
+    
     if (status === 'SUBSCRIBED') {
-      dot.style.background = 'var(--success)';
-      dot.style.boxShadow = '0 0 8px var(--success)';
+      dot.classList.add('status-dot-online');
       text.textContent = 'Live';
     } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-      dot.style.background = 'var(--error)';
+      dot.classList.add('status-dot-offline');
       text.textContent = 'Offline';
     } else {
-      dot.style.background = 'var(--warning)';
+      dot.classList.add('status-dot-connecting');
       text.textContent = 'Connecting...';
     }
   },

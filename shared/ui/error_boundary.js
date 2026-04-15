@@ -62,9 +62,9 @@ export const errorBoundary = {
       messageEl.id = 'global-error-message';
       container.appendChild(messageEl);
       
-      // Create close button
+      // Create close button (LAW 3 COMPLIANT: textContent not innerHTML)
       const closeBtn = document.createElement('button');
-      closeBtn.innerHTML = '×';
+      closeBtn.textContent = '×';
       closeBtn.onclick = () => this.hideError();
       container.appendChild(closeBtn);
       
