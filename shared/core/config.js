@@ -31,13 +31,190 @@ export const MBRN_CONFIG = {
       FEAR: 25
     }
   },
-  
-  // DEV FLAGS (Phase 4.0: Local Development Overrides)
-  // ⚠️ WICHTIG: Diese Flags auf FALSE setzen vor Production-Release!
+
+  // LAW 8: INTERNATIONALIZATION (i18n) — Centralized Translations
+  // Automatic language detection via navigator.language (DE/EN)
+  i18n: {
+    de: {
+      // Loading states
+      loading: 'Berechne...',
+      loadingTerminal: 'BERECHNE...',
+      loadingTimeline: 'BERECHNE ZEITLINIE...',
+      loadingResonance: 'BERECHNE RESONANZ...',
+      loadingDecrypt: 'ENTSCHLÜSSELE...',
+      analyzing: 'Analysiere Frequenz...',
+      initializing: 'Initialisiere...',
+
+      // Auth
+      logout: 'Logout',
+      login: 'Login / Registrieren',
+      authErrorTitle: 'System Login',
+      authRegisterTitle: 'System Registrierung',
+      authLoginBtn: 'Anmelden',
+      authRegisterBtn: 'Konto erstellen',
+      noAccount: 'Noch kein Konto? Registrieren',
+      hasAccount: 'Bereits ein Konto? Login',
+
+      // Security
+      securityBlock: '🛡️ SICHERHEITSBLOCKADE',
+      invalidEmail: 'Ungültige E-Mail-Adresse.',
+      blockedDomain: 'Domain ist gesperrt.',
+      disposableEmail: 'E-Mail sieht nach einer Wegwerf-Adresse aus.',
+      useRealEmail: 'Bitte nutze eine echte E-Mail oder einen Gmail-Alias (name+test@gmail.com).',
+
+      // Terminal sequence
+      terminal: {
+        sequence: [
+          '> Verbinde mit MBRN Core...',
+          '> Authentifiziere Frequenz-Node...',
+          '> Syncing Chronos Engine...',
+          '> Decodierung der Lebensmatrix...',
+          '> Berechne numerische Resonanz...',
+          '> Extrahiere Primärfrequenz...',
+          '> Analyse abgeschlossen.'
+        ]
+      },
+
+      // Validation
+      enterNameDate: '⚠️ Bitte Name und Geburtsdatum eingeben',
+      enterBothOperators: '⚠️ Bitte beide Operatoren vollständig eingeben',
+      enterBirthdate: '⚠️ Bitte Geburtsdatum eingeben',
+      invalidDate: 'Bitte prüfe dein Geburtsdatum — dieses Datum existiert nicht im Kalender.',
+      dateNotExist: 'Ungültiges Datum: Das eingegebene Datum existiert nicht. Bitte prüfe Tag und Monat.',
+      nameTooShort: 'Name muss mindestens 2 Zeichen haben.',
+      invalidNumber: 'Bitte eine gültige Zahl eingeben.',
+
+      // Success
+      checkinSuccess: '✅ Check-In erfolgreich! Streak +1',
+
+      // Errors
+      pdfError: 'Fehler bei der PDF-Erstellung. Bitte versuche es erneut.',
+      offlineMode: 'Offline',
+      paywallActive: 'Zahlung erforderlich',
+      
+      // Routes
+      routes: {
+        dashboard: 'Dashboard',
+        finance: 'Finance',
+        numerology: 'Numerologie',
+        synergy: 'Synergy',
+        chronos: 'Chronos',
+        tuning: 'Tuner'
+      }
+    },
+    en: {
+      // Loading states
+      loading: 'Calculating...',
+      loadingTerminal: 'CALCULATING...',
+      loadingTimeline: 'CALCULATING TIMELINE...',
+      loadingResonance: 'CALCULATING RESONANCE...',
+      loadingDecrypt: 'DECRYPTING...',
+      analyzing: 'Analyzing frequency...',
+      initializing: 'Initializing...',
+
+      // Auth
+      logout: 'Logout',
+      login: 'Login / Register',
+      authErrorTitle: 'System Login',
+      authRegisterTitle: 'System Registration',
+      authLoginBtn: 'Sign In',
+      authRegisterBtn: 'Create Account',
+      noAccount: "Don't have an account? Register",
+      hasAccount: 'Already have an account? Login',
+
+      // Security
+      securityBlock: '🛡️ SECURITY BLOCK',
+      invalidEmail: 'Invalid email address.',
+      blockedDomain: 'Domain is blocked.',
+      disposableEmail: 'Email appears to be a disposable address.',
+      useRealEmail: 'Please use a real email or Gmail alias (name+test@gmail.com).',
+
+      // Terminal sequence
+      terminal: {
+        sequence: [
+          '> Connecting to MBRN Core...',
+          '> Authenticating Frequency Node...',
+          '> Syncing Chronos Engine...',
+          '> Decoding Life Matrix...',
+          '> Calculating Numerical Resonance...',
+          '> Extracting Primary Frequency...',
+          '> Analysis complete.'
+        ]
+      },
+
+      // Validation
+      enterNameDate: '⚠️ Please enter name and birthdate',
+      enterBothOperators: '⚠️ Please enter both operators completely',
+      enterBirthdate: '⚠️ Please enter birthdate',
+      invalidDate: 'Please check your birthdate — this date does not exist in the calendar.',
+      dateNotExist: 'Invalid date: The entered date does not exist. Please check day and month.',
+      nameTooShort: 'Name must be at least 2 characters.',
+      invalidNumber: 'Please enter a valid number.',
+
+      // Success
+      checkinSuccess: '✅ Check-In successful! Streak +1',
+
+      // Errors
+      pdfError: 'Error creating PDF. Please try again.',
+      offlineMode: 'Offline',
+      paywallActive: 'Payment required',
+      
+      // Routes
+      routes: {
+        dashboard: 'Dashboard',
+        finance: 'Finance',
+        numerology: 'Numerology',
+        synergy: 'Synergy',
+        chronos: 'Chronos',
+        tuning: 'Tuner'
+      }
+    }
+  },
+
+  // LAW 8: UI CONFIG (Deprecated - use i18n)
+  ui: {
+    // Legacy support - redirects to i18n
+    labels: null // Removed - use i18n.t('key') instead
+  },
+
+  // Dev bypass for testing
   dev: {
-    bypassPayment: false, // ← DEV ONLY: Auf true setzen für lokale Tests ohne Payment
+    bypassPayment: false
+  },
+
+  // LAW 8: VALIDATION CONSTANTS - Centralized thresholds, no magic numbers
+  validation: {
+    date: {
+      MIN_MONTH: 1,
+      MAX_MONTH: 12,
+      MIN_DAY: 1,
+      MAX_DAY: 31,
+      MIN_YEAR: 1900,
+      MAX_YEAR: 2100
+    },
+    name: {
+      MIN_LENGTH: 2,
+      MAX_LENGTH: 100
+    },
+    email: {
+      MIN_LOCAL_LENGTH: 2,
+      MAX_LOCAL_LENGTH: 64,
+      MAX_TOTAL_LENGTH: 254
+    },
+    finance: {
+      MAX_YEARS: 100,
+      MAX_RATE_PERCENT: 100,
+      MAX_PRINCIPAL: 100_000_000,
+      MAX_MONTHLY_ADDITION: 100_000_000
+    }
   }
 };
+
+/**
+ * Master Numbers — Centralized numerological constants (Law 8: No Magic Numbers)
+ * Used across all numerology engines for consistent Master Number handling
+ */
+export const MASTER_NUMBERS = Object.freeze([11, 22, 33]);
 
 /**
  * Navigation Routes — Centralized for easy extension

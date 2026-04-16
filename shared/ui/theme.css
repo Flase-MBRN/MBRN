@@ -142,6 +142,42 @@ a {
   background: var(--border-default);
 }
 
+/* ===== SIDEBAR BACKDROP (Mobile Touch Excellence) ===== */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 199;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Mobile optimizations for backdrop */
+@media (max-width: 768px) {
+  .sidebar-backdrop {
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-backdrop.active {
+    cursor: pointer;
+  }
+}
+
 /* ===== SIDEBAR (Landing Page Navy Style) ===== */
 .nav-sidebar,
 .nav-container,
@@ -630,3 +666,75 @@ input[style*="background:black"] {
 .mb-24 { margin-bottom: 24px; }
 .my-24 { margin-top: 24px; margin-bottom: 24px; }
 .text-center { text-align: center !important; }
+
+/* ========================================
+   TOAST NOTIFICATION SYSTEM - LAW 9 COMPLIANT
+   No inline styles - all toast styling centralized here
+   ======================================== */
+
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-accent);
+  border-radius: 12px;
+  padding: 16px 24px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  max-width: 400px;
+  text-align: center;
+  animation: toastSlideUp 0.3s ease;
+}
+
+.toast-notification.toast-info {
+  border-color: var(--border-accent);
+}
+
+.toast-notification.toast-validation {
+  border-color: var(--warning);
+}
+
+.toast-notification.toast-sync {
+  border-color: var(--accent);
+}
+
+.toast-close-btn {
+  margin-left: 12px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.toast-close-btn:hover {
+  color: var(--text-primary);
+}
+
+@keyframes toastSlideUp {
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideDown {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+}
+
+.toast-exit {
+  animation: toastSlideDown 0.3s ease forwards;
+}

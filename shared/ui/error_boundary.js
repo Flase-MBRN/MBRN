@@ -104,30 +104,65 @@ export const errorBoundary = {
   },
 
   /**
-   * Display error to user (only critical errors)
+   * Display error to user (critical errors only in banner, non-critical as toast)
    */
   displayError(errorInfo) {
     if (!this._container) return;
     
-    // Only show critical errors to user
     const isCritical = errorInfo.type === 'unhandled_promise' || 
                        errorInfo.type === 'uncaught_exception' ||
                        errorInfo.severity === 'critical';
     
-    if (!isCritical) return;
-    
     const message = errorInfo.error || errorInfo.message || 'Systemfehler';
     
-    if (this._messageEl) {
-      this._messageEl.textContent = `Systemfehler: ${message}. Bitte Seite neu laden.`;
+    if (isCritical) {
+      // Critical: Full banner
+      if (this._messageEl) {
+        this._messageEl.textContent = `Systemfehler: ${message}. Bitte Seite neu laden.`;
+      }
+      this._container.classList.remove('hidden');
+      setTimeout(() => this.hideError(), 10000);
+    } else {
+      // Non-critical: Toast notification (Law 4: User feedback without blocking)
+      this._showToast(message, errorInfo.type);
     }
-    
-    this._container.classList.remove('hidden');
-    
-    // Auto-hide after 10 seconds
+  },
+
+  /**
+   * Show toast notification for non-critical errors
+   * LAW 2 & LAW 9 COMPLIANT: Dynamic creation, CSS classes only (no inline styles)
+   */
+  _showToast(message, type = 'info') {
+    // Remove existing toast if present
+    const existingToast = document.getElementById('mbrn-toast');
+    if (existingToast) existingToast.remove();
+
+    // Create toast container - LAW 9: All styles via CSS classes
+    const toast = document.createElement('div');
+    toast.id = 'mbrn-toast';
+    toast.className = `toast-notification toast-${type}`;
+    // NOTE: All styling centralized in theme.css - no inline styles per LAW 9
+
+    // Icon based on type
+    const icon = type === 'validation' ? '⚠️' : type === 'sync' ? '🔄' : 'ℹ️';
+    toast.textContent = `${icon} ${message}`;
+
+    // Close button - LAW 9: Styled via CSS class
+    const closeBtn = document.createElement('span');
+    closeBtn.textContent = ' ×';
+    closeBtn.className = 'toast-close-btn';
+    closeBtn.onclick = () => toast.remove();
+    toast.appendChild(closeBtn);
+
+    document.body.appendChild(toast);
+
+    // Auto-hide after 5 seconds - LAW 9: Use CSS class for exit animation
     setTimeout(() => {
-      this.hideError();
-    }, 10000);
+      if (toast.parentNode) {
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 300);
+      }
+    }, 5000);
   },
 
   /**

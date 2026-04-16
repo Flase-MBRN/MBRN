@@ -1,16 +1,14 @@
-// SECURITY ISOLATION: Supabase Credentials
-// ⚠️  DO NOT COMMIT THIS FILE WITH REAL KEYS ⚠️
-// This file separates secrets from version control
-// True security requires backend/edge functions for sensitive operations
+// SECURITY NOTICE: Supabase Anon-Key (Public Client-Side Key)
+// ⚠️  THIS FILE IS TRACKED - Contains PUBLIC Supabase Anon-Key ⚠️
+//
+// The Anon-Key is PUBLIC BY DESIGN. It is safe to expose in frontend code.
+// Security is enforced via Supabase Row Level Security (RLS) policies, not key secrecy.
+// For sensitive operations, use Supabase Edge Functions (server-side).
+//
+// DO NOT add Secret Keys (sk_live_, sk_test_) or Service Role Keys here!
+// Those belong ONLY in backend Edge Functions or secure .env files.
 
-// INSTRUCTIONS:
-// 1. Copy env.example.js to env.js (if not exists)
-// 2. Replace placeholders below with your actual Supabase credentials
-// 3. Verify env.js is in .gitignore (already configured)
-
-// SECURITY: New Publishable Key (replaces exposed Anon Key)
-// Generated: 2026-04-14 after security incident
 export const ENV = {
   SUPABASE_URL: 'https://wqfijgzlxypqftwwoxxp.supabase.co',
-  SUPABASE_ANON_KEY: 'sb_publishable_cIhJVYJlF-QIxuNHrOuxxQ_Q_DSiZDj'
+  SUPABASE_ANON_KEY: 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO'
 };

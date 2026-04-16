@@ -15,15 +15,15 @@ MBRN_DEEP_DECODE_*.pdf
 *.local
 config.local.js
 
-# Recursive protection for all .env files in subdirectories
-**/.env
-**/.env.*
-**/env.js
-!**/env.example.js
-!shared/core/env.js
+# Backend/Script Environment Secrets (NEVER commit these)
+# Only backend .env files with real secrets are ignored
+scripts/**/.env
+scripts/**/.env.*
+**/*.local
+config.local.js
 
-# EMERGENCY DEPLOYMENT: env.js required for GitHub Pages frontend
-# ⚠️  This file contains publishable keys only - rotate if compromised
+# NOTE: Frontend env.js is TRACKED and contains PUBLIC Supabase Anon-Key
+# This is required for static GitHub Pages hosting - NOT a secret!
 
 # Data Cache & Temp Files (SECURITY: Prevent data leaks)
 AI/models/data/*.json
@@ -31,3 +31,6 @@ AI/models/data/*.json
 .temp/
 .supabase/
 coverage/
+
+# Backup files (SECURITY: Prevent code/secret leaks via backups)
+**/*.bak

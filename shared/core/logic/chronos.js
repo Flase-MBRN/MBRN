@@ -11,7 +11,7 @@
  * Future extensions: Pinnacles, Life Cycle phases, Challenges
  */
 
-import { reduceToDigit } from './helpers.js';
+import { reduceToDigit, safeReduceToDigit } from './helpers.js';
 
 /**
  * Calculates temporal positioning and cycle analysis.
@@ -47,12 +47,38 @@ export async function calculateChronos(birthDate) {
       };
     }
 
-    // Check for invalid date
+    // P0 SECURITY: STRICT DATE VALIDATION
+    // Prevent JS auto-correction (e.g., 31.02 -> March 3rd)
     if (isNaN(dateObj.getTime())) {
       return {
         success: false,
-        error: 'Validation failed: birthDate is invalid'
+        error: 'Bitte prüfe dein Geburtsdatum — dieses Datum existiert nicht im Kalender.'
       };
+    }
+
+    // STRICT CHECK: Compare input values with resulting Date object
+    // If JS "corrected" an invalid date, the values won't match
+    const inputStr = typeof birthDate === 'string' ? birthDate : null;
+    if (inputStr) {
+      // Parse input components (handle formats like YYYY-MM-DD or ISO)
+      const inputMatch = inputStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (inputMatch) {
+        const inputYear = parseInt(inputMatch[1], 10);
+        const inputMonth = parseInt(inputMatch[2], 10); // 1-12
+        const inputDay = parseInt(inputMatch[3], 10);
+
+        const resultYear = dateObj.getUTCFullYear();
+        const resultMonth = dateObj.getUTCMonth() + 1; // 1-12
+        const resultDay = dateObj.getUTCDate();
+
+        // If any component differs, JS auto-corrected the date (invalid!)
+        if (inputYear !== resultYear || inputMonth !== resultMonth || inputDay !== resultDay) {
+          return {
+            success: false,
+            error: `Ungültiges Datum: ${inputDay}.${inputMonth}.${inputYear} existiert nicht. Bitte prüfe Tag und Monat.`
+          };
+        }
+      }
     }
 
     // Task 14.2: Real Chronos Calculation (Numerological Time Cycles)
@@ -69,14 +95,15 @@ export async function calculateChronos(birthDate) {
     const birthMonth = dateObj.getUTCMonth() + 1; // 1-12
     const birthDay = dateObj.getUTCDate();
 
+    // P0 SECURITY: Use safeReduceToDigit for all calculations
     // Calculate Personal Year (PY): birthMonth + birthDay + targetYear
-    const personalYear = reduceToDigit(birthMonth + birthDay + targetYear);
+    const personalYear = safeReduceToDigit(birthMonth + birthDay + targetYear);
 
     // Calculate Personal Month (PM): PY + targetMonth
-    const personalMonth = reduceToDigit(personalYear + targetMonth);
+    const personalMonth = safeReduceToDigit(personalYear + targetMonth);
 
     // Calculate Personal Day (PD): PM + targetDay
-    const personalDay = reduceToDigit(personalMonth + targetDay);
+    const personalDay = safeReduceToDigit(personalMonth + targetDay);
 
     // Determine Cycle Phase based on Personal Year
     const cyclePhases = {
@@ -118,9 +145,14 @@ export async function calculateChronos(birthDate) {
       universalMonth,
       universalDay,
 
-      // Phase 2 Extensions (bewusst null — UI-Adapter sollte diese ausblenden)
-      // NOTE: pinnacles/challenges werden in Phase 5.0 UI nicht gerendert.
-      // Adapter-Logik: if (data.pinnacles.p1) render(...) else hideSection()
+      /**
+       * @todo Phase 5.0: Implement pinnacles calculation (4 life cycles)
+       * @todo Phase 5.0: Implement challenges calculation (4 obstacles)
+       * @todo Phase 5.0: Implement full life cycle phases
+       *
+       * Current: Placeholders return null - UI must check before rendering
+       * Adapter pattern: if (data.pinnacles.p1) render(...) else hideSection()
+       */
       cycle: null,
       phase: null,
       pinnacles: { p1: null, p2: null, p3: null, p4: null },
