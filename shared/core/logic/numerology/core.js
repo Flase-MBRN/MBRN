@@ -38,10 +38,10 @@ export function reduceForceSingle(n) {
 
 export function reducePreserveMaster(n) {
   if (n === 0) return 0;
-  if (MASTER_NUMBERS.has(n)) return n;
+  if (MASTER_NUMBERS_SET.has(n)) return n;
   while (n > 9) { 
     n = digitSum(n); 
-    if (MASTER_NUMBERS.has(n)) break; 
+    if (MASTER_NUMBERS_SET.has(n)) break; 
   }
   return n;
 }
@@ -49,7 +49,7 @@ export function reducePreserveMaster(n) {
 export function formatValue(raw) {
   const normal = reduceForceSingle(raw);
   const master = reducePreserveMaster(raw);
-  if (MASTER_NUMBERS.has(master) && master !== normal) return `${normal}/${master}`;
+  if (MASTER_NUMBERS_SET.has(master) && master !== normal) return `${normal}/${master}`;
   return String(normal);
 }
 
