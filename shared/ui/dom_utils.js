@@ -74,6 +74,94 @@ export const dom = {
   },
 
   /**
+   * Show skeleton loading placeholder
+   * LAW 2 COMPLIANT: Dynamic creation, XSS-safe
+   * LAW 5 COMPLIANT: Idempotent - no duplicate skeletons
+   * 
+   * @param {string} containerId - Container element ID
+   * @param {string} type - 'card', 'lines', 'circle', 'custom'
+   * @returns {Function} Cleanup function to remove skeleton
+   */
+  showSkeleton: (containerId, type = 'card') => {
+    const container = document.getElementById(containerId);
+    if (!container) return () => {};
+
+    // LAW 5: Idempotency check - remove any existing skeletons first
+    const existingSkeletons = container.querySelectorAll('[data-skeleton="true"]');
+    existingSkeletons.forEach(el => el.remove());
+
+    // Clear existing content only if no skeleton was present
+    if (existingSkeletons.length === 0) {
+      container.replaceChildren();
+    }
+    
+    const skeletonWrapper = document.createElement('div');
+    skeletonWrapper.className = 'skeleton-container';
+    skeletonWrapper.dataset.skeleton = 'true';
+    
+    switch (type) {
+      case 'card':
+        skeletonWrapper.innerHTML = `
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line skeleton-line-sm"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        `;
+        break;
+      case 'lines':
+        skeletonWrapper.innerHTML = `
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line skeleton-line-lg"></div>
+          <div class="skeleton-line skeleton-line-sm"></div>
+          <div class="skeleton-line"></div>
+        `;
+        break;
+      case 'circle':
+        skeletonWrapper.innerHTML = `
+          <div class="skeleton-circle"></div>
+        `;
+        break;
+      case 'result-cards':
+        skeletonWrapper.innerHTML = `
+          <div class="skeleton-card">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line"></div>
+          </div>
+          <div class="skeleton-card">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        `;
+        break;
+      default:
+        skeletonWrapper.innerHTML = `<div class="skeleton" style="height: 100px;"></div>`;
+    }
+    
+    container.appendChild(skeletonWrapper);
+    
+    // Return cleanup function
+    return () => {
+      if (skeletonWrapper.parentNode) {
+        skeletonWrapper.remove();
+      }
+    };
+  },
+
+  /**
+   * Remove all skeletons from a container
+   * @param {string} containerId - Container element ID
+   */
+  removeSkeleton: (containerId) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const skeletons = container.querySelectorAll('[data-skeleton="true"]');
+    skeletons.forEach(el => el.remove());
+  },
+
+  /**
    * Initialize IntersectionObserver for scroll reveal animations.
    * LAW 2 & 9 COMPLIANT: Single source for all scroll animations.
    * 
@@ -115,32 +203,52 @@ export const dom = {
  * @param {function} formatter - Optional: Format-Funktion für die Zahl
  */
 export function animateValue(element, start, end, duration = 1500, suffix = '', formatter = null) {
+  // P1 SECURITY: Validate target value (end) for NaN or Infinity
+  if (Number.isNaN(end) || !Number.isFinite(end)) {
+    console.error(`[animateValue] SECURITY: Invalid target value detected: ${end}. Setting to 0 to prevent UI freeze.`);
+    element.textContent = '0' + suffix;
+    return () => {}; // Return no-op cleanup
+  }
+
+  // P1 SECURITY: Validate start value as well
+  const safeStart = Number.isNaN(start) || !Number.isFinite(start) ? 0 : start;
+
   const startTime = performance.now();
-  
+  let rafId = null; // OMEGA FIX: Store rAF ID for cancellation
+
   function easeOutExpo(t) {
     return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
   }
-  
+
   function update(currentTime) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
     const easedProgress = easeOutExpo(progress);
-    const currentValue = start + (end - start) * easedProgress;
-    
+    const currentValue = safeStart + (end - safeStart) * easedProgress;
+
     let displayValue = formatter ? formatter(currentValue) : Math.round(currentValue).toLocaleString('de-DE');
     element.textContent = displayValue + suffix;
-    
+
     if (progress < 1) {
-      requestAnimationFrame(update);
+      rafId = requestAnimationFrame(update); // OMEGA FIX: Store ID
     }
   }
-  
-  requestAnimationFrame(update);
+
+  rafId = requestAnimationFrame(update);
+
+  // OMEGA FIX: Return cleanup function to cancel animation
+  return () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  };
 }
 
 /**
  * PATCH 1 (Phase 5.0): Terminal Loader mit psychologischem Delay
  * Zeigt einen Cyber-Terminal-Loader für eine feste Dauer
+ * Respektiert prefers-reduced-motion für Accessibility (Law 2 Compliance)
  * @param {string} containerId - Container für den Loader
  * @param {number} duration - Dauer in ms (default: 1500)
  * @returns {Promise} - Löst sich auf, wenn Loader fertig
@@ -148,6 +256,15 @@ export function animateValue(element, start, end, duration = 1500, suffix = '', 
 export function showTerminalLoader(containerId, duration = 1500) {
   const container = document.getElementById(containerId);
   if (!container) return Promise.resolve();
+  
+  // LAW 8 COMPLIANT: Respect user motion preferences
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const skipLoader = localStorage.getItem('mbrn_skip_loader') === 'true';
+  
+  if (prefersReducedMotion || skipLoader) {
+    // Instant resolve for accessibility or power users
+    return Promise.resolve();
+  }
   
   const messages = [
     'Syncing MBRN Core...',
@@ -176,18 +293,39 @@ export function showTerminalLoader(containerId, duration = 1500) {
   cursor.className = 'terminal-cursor';
   cursor.textContent = '_';
   
+  // UX Enhancement: Click to skip
+  const skipHint = document.createElement('span');
+  skipHint.className = 'terminal-skip-hint';
+  skipHint.textContent = '(Klick zum Überspringen)';
+  skipHint.style.cssText = 'margin-left: 12px; font-size: 11px; color: var(--text-muted); cursor: pointer;';
+  
   line.appendChild(prompt);
   line.appendChild(text);
   line.appendChild(cursor);
+  line.appendChild(skipHint);
   loader.appendChild(line);
   
   container.appendChild(loader);
   
   return new Promise(resolve => {
-    setTimeout(() => {
-      loader.remove();
-      resolve();
-    }, duration);
+    let resolved = false;
+    
+    const cleanup = () => {
+      if (!resolved) {
+        resolved = true;
+        loader.remove();
+        resolve();
+      }
+    };
+    
+    // Auto-resolve after duration
+    const timer = setTimeout(cleanup, duration);
+    
+    // Click to skip for power users
+    loader.addEventListener('click', () => {
+      clearTimeout(timer);
+      cleanup();
+    });
   });
 }
 

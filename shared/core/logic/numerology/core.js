@@ -6,6 +6,8 @@
  * Responsibility: All base mathematical operations and identity calculations
  */
 
+import { MASTER_NUMBERS } from '../../config.js';
+
 /* ─── CONSTANTS ────────────────────────────────────────────────────────── */
 
 export const PYTHAGORAS = {
@@ -15,7 +17,9 @@ export const PYTHAGORAS = {
 };
 
 export const VOWELS = new Set(['A','E','I','O','U']);
-export const MASTER_NUMBERS = new Set([11, 22, 33]);
+
+// Convert to Set for O(1) lookups while using central definition
+export const MASTER_NUMBERS_SET = new Set(MASTER_NUMBERS);
 
 /* ─── MATHEMATICAL CORE FUNCTIONS ─────────────────────────────────────── */
 

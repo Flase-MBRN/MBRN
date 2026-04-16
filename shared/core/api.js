@@ -1,4 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { errorBoundary } from '../ui/error_boundary.js';
+import { withCircuitBreaker, circuits } from './circuit_breaker.js';
 
 /**
  * /shared/core/api.js
@@ -78,14 +80,20 @@ export const api = {
 
   async signUp(email, password) {
     if (!this.client) return { success: false, error: 'Offline' };
-    const { data, error } = await this.client.auth.signUp({ email, password });
-    return error ? { success: false, error: error.message } : { success: true, data };
+    return withCircuitBreaker('supabase', async () => {
+      const { data, error } = await this.client.auth.signUp({ email, password });
+      if (error) throw error;
+      return data;
+    });
   },
 
   async signIn(email, password) {
     if (!this.client) return { success: false, error: 'Offline' };
-    const { data, error } = await this.client.auth.signInWithPassword({ email, password });
-    return error ? { success: false, error: error.message } : { success: true, data };
+    return withCircuitBreaker('supabase', async () => {
+      const { data, error } = await this.client.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      return data;
+    });
   },
 
   async signOut() {
@@ -105,32 +113,38 @@ export const api = {
    */
   async saveProfile(profileData) {
     if (!this.isOnline || !this.client) {
-      return { success: false, error: 'Offline' };
+      return { success: false, error: 'Offline', offline: true };
     }
-
-    const { data, error } = await this.client
-      .from('profiles')
-      .upsert({ 
-        id: profileData.id,
-        display_name: profileData.display_name || profileData.name,
-        access_level: profileData.access_level || profileData.level,
-        current_streak: profileData.current_streak || profileData.streak,
-        shields: profileData.shields,
-        last_sync: new Date().toISOString()
-      })
-      .select();
-
-    return error ? { success: false, error: error.message } : { success: true, data: data[0] };
+    
+    return withCircuitBreaker('supabase', async () => {
+      const { data, error } = await this.client
+        .from('profiles')
+        .upsert({ 
+          id: profileData.id,
+          display_name: profileData.display_name || profileData.name,
+          access_level: profileData.access_level || profileData.level,
+          current_streak: profileData.current_streak || profileData.streak,
+          shields: profileData.shields,
+          last_sync: new Date().toISOString()
+        })
+        .select();
+      
+      if (error) throw error;
+      return data[0];
+    });
   },
 
   async getProfile(userId) {
-    if (!this.isOnline || !this.client) return { success: false, error: 'Offline' };
-    const { data, error } = await this.client
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    return error ? { success: false, error: error.message } : { success: true, data };
+    if (!this.isOnline || !this.client) return { success: false, error: 'Offline', offline: true };
+    return withCircuitBreaker('supabase', async () => {
+      const { data, error } = await this.client
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (error) throw error;
+      return data;
+    });
   },
 
   /**
@@ -179,8 +193,14 @@ export const api = {
         created_at: new Date().toISOString()
       });
     } catch (err) {
-      // Slient fail for analytics to not disturb UX
-      console.warn('[Analytics] Remote log failed, event cached in console.');
+      // Report to error boundary with low severity - don't disturb UX but track failures
+      errorBoundary.displayError({
+        type: 'analytics_log_failed',
+        error: `Analytics logging failed: ${err.message}`,
+        severity: 'low',
+        context: { event: eventData.event, source: eventData.source }
+      });
+      console.warn('[Analytics] Remote log failed:', err);
     }
   },
 

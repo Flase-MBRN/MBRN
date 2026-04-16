@@ -1,90 +1,77 @@
 /**
  * /shared/core/logic/numerology/pdf/canvas.js
- * CANVAS GENERATOR — Share Card Creation
+ * CANVAS DATA GENERATOR — Pure Logic Layer
  * 
- * Responsibility: Browser-only Canvas API for viral share cards
+ * Responsibility: Calculate canvas rendering parameters
+ * LAW 13 COMPLIANT: No DOM access - returns data only
+ * UI Layer must use shared/ui/helpers/canvas_renderer.js for actual rendering
  */
 
 /**
- * Generates a shareable canvas card for social media (9:16 format)
+ * Generates canvas rendering data structure
  * @param {Object} data - Numerology profile data
- * @returns {HTMLCanvasElement} - Canvas element (1080x1920)
+ * @returns {Object} - Canvas rendering parameters for UI layer
  */
 export function generateShareCard(data) {
-  if (typeof document === 'undefined') {
-    throw new Error('generateShareCard is browser-only');
-  }
-  
-  const canvas = document.createElement('canvas');
-  canvas.width = 1080; 
-  canvas.height = 1920;
-  const ctx = canvas.getContext('2d');
-  
-  // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, 1920);
-  grad.addColorStop(0, '#000');
-  grad.addColorStop(0.5, '#111');
-  grad.addColorStop(1, '#000');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 1080, 1920);
-  
-  // Header
-  ctx.fillStyle = '#FFF';
-  ctx.textAlign = 'center';
-  ctx.font = 'bold 40px sans-serif';
-  ctx.fillText('MBRN HUB — MASTERPLAN', 540, 120);
-  
-  // Name
-  ctx.font = '300 80px sans-serif';
-  ctx.fillText(data.meta.name.toUpperCase(), 540, 300);
-  
-  // Score arc visualization
   const score = data.quantum.score;
-  ctx.strokeStyle = '#B7B7B7';
-  ctx.lineWidth = 15;
-  ctx.beginPath();
-  ctx.arc(540, 800, 300, 0.8 * Math.PI, 2.2 * Math.PI);
-  ctx.stroke();
   
-  ctx.strokeStyle = '#FFF';
-  ctx.lineWidth = 25;
-  const end = 0.8 * Math.PI + (1.4 * Math.PI * (score / 100));
-  ctx.beginPath();
-  ctx.arc(540, 800, 300, 0.8 * Math.PI, end);
-  ctx.stroke();
-  
-  // Score text
-  ctx.fillStyle = '#FFF';
-  ctx.font = 'bold 150px sans-serif';
-  ctx.fillText(`${score}%`, 540, 850);
-  ctx.font = '300 40px sans-serif';
-  ctx.fillText('SYSTEM-IMPULS', 540, 930);
-  
-  // Core numbers grid
-  const core = [
-    { label: 'LEBENSZAHL', val: data.core.lifePath },
-    { label: 'SEELENZAHL', val: data.core.soulUrge },
-    { label: 'PERSÖNLICHKEIT', val: data.core.personality },
-    { label: 'AUSDRUCKSZAHL', val: data.core.expression }
-  ];
-  
-  ctx.textAlign = 'left';
-  core.forEach((c, i) => {
-    const x = i % 2 === 0 ? 150 : 580;
-    const y = 1150 + Math.floor(i / 2) * 250;
-    ctx.fillStyle = '#B7B7B7';
-    ctx.font = 'bold 30px sans-serif';
-    ctx.fillText(c.label, x, y);
-    ctx.fillStyle = '#FFF';
-    ctx.font = 'bold 100px sans-serif';
-    ctx.fillText(String(c.val), x, y + 100);
-  });
-  
-  // Footer
-  ctx.fillStyle = '#D3D3D3';
-  ctx.textAlign = 'center';
-  ctx.font = '300 35px sans-serif';
-  ctx.fillText('Entschlüssele deinen digitalen Bauplan auf MBRN-HUB.com', 540, 1800);
-  
-  return canvas;
+  return {
+    width: 1080,
+    height: 1920,
+    background: {
+      stops: [
+        { position: 0, color: '#000' },
+        { position: 0.5, color: '#111' },
+        { position: 1, color: '#000' }
+      ]
+    },
+    header: {
+      text: 'MBRN HUB — MASTERPLAN',
+      x: 540,
+      y: 120,
+      font: 'bold 40px sans-serif',
+      color: '#FFF'
+    },
+    name: {
+      text: data.meta.name,
+      x: 540,
+      y: 300,
+      font: '300 80px sans-serif',
+      color: '#FFF'
+    },
+    score: {
+      value: score,
+      arcX: 540,
+      arcY: 800,
+      arcRadius: 300,
+      arcStart: 0.8 * Math.PI,
+      arcEnd: 2.2 * Math.PI,
+      arcRange: 1.4 * Math.PI,
+      arcBgColor: '#B7B7B7',
+      arcBgWidth: 15,
+      arcColor: '#FFF',
+      arcWidth: 25,
+      textX: 540,
+      textY: 850,
+      textColor: '#FFF',
+      font: 'bold 150px sans-serif',
+      label: 'SYSTEM-IMPULS',
+      labelX: 540,
+      labelY: 930,
+      labelFont: '300 40px sans-serif'
+    },
+    coreNumbers: [
+      { label: 'LEBENSZAHL', value: data.core.lifePath, x: 150, y: 1150, labelColor: '#B7B7B7', labelFont: 'bold 30px sans-serif', valueColor: '#FFF', valueFont: 'bold 100px sans-serif' },
+      { label: 'SEELENZAHL', value: data.core.soulUrge, x: 580, y: 1150, labelColor: '#B7B7B7', labelFont: 'bold 30px sans-serif', valueColor: '#FFF', valueFont: 'bold 100px sans-serif' },
+      { label: 'PERSÖNLICHKEIT', value: data.core.personality, x: 150, y: 1400, labelColor: '#B7B7B7', labelFont: 'bold 30px sans-serif', valueColor: '#FFF', valueFont: 'bold 100px sans-serif' },
+      { label: 'AUSDRUCKSZAHL', value: data.core.expression, x: 580, y: 1400, labelColor: '#B7B7B7', labelFont: 'bold 30px sans-serif', valueColor: '#FFF', valueFont: 'bold 100px sans-serif' }
+    ],
+    footer: {
+      text: 'Entschlüssele deinen digitalen Bauplan auf MBRN-HUB.com',
+      x: 540,
+      y: 1800,
+      font: '300 35px sans-serif',
+      color: '#D3D3D3'
+    }
+  };
 }

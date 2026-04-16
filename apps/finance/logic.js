@@ -14,9 +14,41 @@
  * @param {number} monthlyAddition - Monatliche Sparrate
  * @returns {object} { success: boolean, data: object, error: string }
  */
+// P0 SECURITY: Hard limits for finance calculations
+export const FINANCE_LIMITS = {
+  MAX_YEARS: 100,
+  MAX_RATE_PERCENT: 100,
+  MAX_PRINCIPAL: 100_000_000, // 100 Million
+  MAX_MONTHLY_ADDITION: 100_000_000
+};
+
 export function calculateCompoundInterest(principal, rate, years, monthlyAddition = 0) {
+  // P0 SECURITY: NaN checks for all inputs
+  if (Number.isNaN(principal) || Number.isNaN(rate) || Number.isNaN(years) || Number.isNaN(monthlyAddition)) {
+    return { success: false, error: 'Ungültige Eingabe: NaN detected.' };
+  }
+
+  // P0 SECURITY: isFinite checks for all inputs
+  if (!Number.isFinite(principal) || !Number.isFinite(rate) || !Number.isFinite(years) || !Number.isFinite(monthlyAddition)) {
+    return { success: false, error: 'Ungültige Eingabe: Infinity oder unendlicher Wert detected.' };
+  }
+
   if (principal < 0 || rate < 0 || years < 0 || monthlyAddition < 0) {
     return { success: false, error: 'Werte müssen positiv sein.' };
+  }
+
+  // P0 SECURITY: Hard limits enforcement
+  if (years > FINANCE_LIMITS.MAX_YEARS) {
+    return { success: false, error: `Maximale Laufzeit: ${FINANCE_LIMITS.MAX_YEARS} Jahre überschritten.` };
+  }
+  if (rate > FINANCE_LIMITS.MAX_RATE_PERCENT) {
+    return { success: false, error: `Maximaler Zinssatz: ${FINANCE_LIMITS.MAX_RATE_PERCENT}% überschritten.` };
+  }
+  if (principal > FINANCE_LIMITS.MAX_PRINCIPAL) {
+    return { success: false, error: `Maximales Startkapital: ${FINANCE_LIMITS.MAX_PRINCIPAL.toLocaleString('de-DE')} € überschritten.` };
+  }
+  if (monthlyAddition > FINANCE_LIMITS.MAX_MONTHLY_ADDITION) {
+    return { success: false, error: `Maximale Sparrate: ${FINANCE_LIMITS.MAX_MONTHLY_ADDITION.toLocaleString('de-DE')} € überschritten.` };
   }
 
   const r = rate / 100;

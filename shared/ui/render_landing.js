@@ -15,6 +15,7 @@
 
 import { nav } from './navigation.js';
 import { storage } from '../core/storage.js';
+import { i18n } from '../core/i18n.js';
 
 // Archetype definitions for life path numbers 1-9
 const ARCHETYPES = {
@@ -29,16 +30,8 @@ const ARCHETYPES = {
   9: { title: 'Der Humanist', desc: 'Idealist. Lehrer. Der, der für das Große Ganze eintritt.' }
 };
 
-// Terminal loading messages
-const TERMINAL_MESSAGES = [
-  '> Verbinde mit MBRN Core...',
-  '> Authentifiziere Frequenz-Node...',
-  '> Syncing Chronos Engine...',
-  '> Decodierung der Lebensmatrix...',
-  '> Berechne numerische Resonanz...',
-  '> Extrahiere Primärfrequenz...',
-  '> Analyse abgeschlossen.'
-];
+// Terminal loading messages - LAW 8: Centralized in config
+const TERMINAL_MESSAGES = i18n.getArray('terminal.sequence');
 
 export const landingRender = {
   currentSection: 'hook', // hook → loader → reveal → cliffhanger
@@ -151,13 +144,14 @@ export const landingRender = {
     // Animate ring (still show animation for visual delight) — LAW 9 COMPLIANT
     if (ringProgress) {
       const circumference = 2 * Math.PI * 90;
-      ringProgress.style.strokeDasharray = circumference;  // Dynamic: allowed
-      ringProgress.style.strokeDashoffset = circumference; // Dynamic: allowed
-      ringProgress.classList.add('ring-progress-animate-fast'); // Static: CSS class
+      // Use CSS custom properties for dynamic SVG values
+      ringProgress.style.setProperty('--ring-circumference', circumference);
+      ringProgress.style.setProperty('--ring-offset', circumference);
+      ringProgress.classList.add('ring-progress-animate-fast');
       
       // Small delay for visual effect
       requestAnimationFrame(() => {
-        ringProgress.style.strokeDashoffset = 0; // Dynamic: allowed
+        ringProgress.style.setProperty('--ring-offset', 0);
       });
     }
     
@@ -376,12 +370,12 @@ export const landingRender = {
   bindUnlockButtons() {
     const btnUnlock = document.getElementById('btn-unlock');
     const btnDeepDive = document.getElementById('btn-deep-dive');
-    
+
     const handleUnlock = () => {
-      // For now, redirect to numerology app
-      window.location.href = './apps/numerology/';
+      // LAW 1 COMPLIANT: All navigation must go through router
+      nav.navigateTo('numerology');
     };
-    
+
     if (btnUnlock) btnUnlock.addEventListener('click', handleUnlock);
     if (btnDeepDive) btnDeepDive.addEventListener('click', handleUnlock);
   }

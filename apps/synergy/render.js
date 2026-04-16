@@ -11,8 +11,13 @@ import { actions } from '../../shared/core/actions.js';
 import { dom, animateValue, showTerminalLoader, createGlowRing } from '../../shared/ui/dom_utils.js';
 import { nav } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
+import { i18n } from '../../shared/core/i18n.js';
 
 export const synergyRender = {
+  // Cleanup tracking
+  _unsubscribers: [],
+  _listeners: [],
+  _timers: [],
   
   /**
    * Initialize Synergy App — Phase 5.0 Full UI
@@ -23,20 +28,20 @@ export const synergyRender = {
     // Event Binding für Calculate Button
     const calcBtn = document.getElementById('syn-calc-btn');
     if (calcBtn) {
-      calcBtn.addEventListener('click', async () => {
+      const clickHandler = async () => {
         const nameA = document.getElementById('syn-input-a').value.trim();
         const dateA = document.getElementById('syn-date-a').value.trim();
         const nameB = document.getElementById('syn-input-b').value.trim();
         const dateB = document.getElementById('syn-date-b').value.trim();
         
         if (!nameA || !dateA || !nameB || !dateB) {
-          dom.setText('syn-error', '⚠️ Bitte beide Operatoren vollständig eingeben');
+          dom.setText('syn-error', i18n.t('enterBothOperators'));
           return;
         }
-        
+
         // PATCH 3: Terminal Loader für psychologischen Delay
         calcBtn.disabled = true;
-        calcBtn.textContent = 'CALCULATING RESONANCE...';
+        calcBtn.textContent = i18n.t('loadingResonance');
         await showTerminalLoader('syn-results-area', 1500);
         
         // Dispatch to backend
@@ -47,21 +52,43 @@ export const synergyRender = {
         
         calcBtn.textContent = 'Resonanz berechnen';
         calcBtn.disabled = false;
-      });
+      };
+      calcBtn.addEventListener('click', clickHandler);
+      this._listeners.push({ element: calcBtn, type: 'click', handler: clickHandler });
     }
     
     // State Subscriptions
-    state.subscribe('synergyDone', (result) => this.renderResults(result.data));
-    state.subscribe('synergyFailed', (result) => {
-      dom.setText('syn-error', `⚠️ ${result.error}`);
-    });
+    this._unsubscribers.push(
+      state.subscribe('synergyCalculated', (result) => this.renderResults(result.data))
+    );
+    this._unsubscribers.push(
+      state.subscribe('synergyFailed', (result) => {
+        dom.setText('syn-error', `⚠️ ${result.error}`);
+      })
+    );
     
     // Initialize Navigation
     nav.bindNavigation();
+    nav.registerCurrentApp(this);
     renderAuth.init();
     
     // Scroll Reveal Animation
     this.initScrollReveal();
+  },
+  
+  /**
+   * Destroy: Cleanup all subscriptions, listeners, and timers
+   */
+  destroy() {
+    this._unsubscribers.forEach(unsub => unsub && unsub());
+    this._unsubscribers = [];
+    this._listeners.forEach(({ element, type, handler }) => {
+      element.removeEventListener(type, handler);
+    });
+    this._listeners = [];
+    this._timers.forEach(id => clearTimeout(id));
+    this._timers = [];
+    console.log('[Synergy Engine] Destroyed — All listeners removed');
   },
   
   renderResults(data) {
@@ -72,22 +99,32 @@ export const synergyRender = {
     container.style.display = 'block';
     dom.clear('syn-results');
     
-    // Compatibility Score Card
-    const scoreCard = document.createElement('div');
-    scoreCard.className = 'glass-card text-center mb-24';
-    scoreCard.innerHTML = `
-      <h3 class="section-eyebrow">
-        Kompatibilitäts-Score
-      </h3>
-      <div id="syn-score-ring"></div>
-      <div id="syn-compatibility-score" class="status-text">
-        Berechne Resonanz...
-      </div>
-    `;
-    container.appendChild(scoreCard);
+    // Compatibility Score Card (LAW 3 COMPLIANT)
+    const scoreCard = dom.createEl('div', {
+      className: 'glass-card text-center mb-24',
+      parent: container
+    });
     
-    // Create Glow Ring for Score
-    const scoreRing = document.getElementById('syn-score-ring');
+    dom.createEl('h3', {
+      className: 'section-eyebrow',
+      text: 'Kompatibilitäts-Score',
+      parent: scoreCard
+    });
+    
+    const scoreRing = dom.createEl('div', {
+      id: 'syn-score-ring',
+      parent: scoreCard
+    });
+    
+    dom.createEl('div', {
+      id: 'syn-compatibility-score',
+      className: 'status-text',
+      text: i18n.t('loading'),
+      parent: scoreCard
+    });
+    
+    // Create Glow Ring for Score - use existing scoreRing reference
+    const scoreRingEl = document.getElementById('syn-score-ring');
     const score = data.compatibilityScore || 0;
     const svg = createGlowRing(score, 220);
     
@@ -110,26 +147,32 @@ export const synergyRender = {
     ringContainer.className = 'glow-ring pos-relative size-glow-ring-lg mx-auto';
     ringContainer.appendChild(svg);
     ringContainer.appendChild(centerText);
-    scoreRing.appendChild(ringContainer);
+    scoreRingEl.appendChild(ringContainer);
     
     // Animate score
     const scoreEl = document.getElementById('syn-score-value');
     animateValue(scoreEl, 0, score, 1500);
     dom.setText('syn-compatibility-score', this.getCompatibilityLabel(score));
     
-    // Data Grid für Detail-Analyse
-    const detailsCard = document.createElement('div');
-    detailsCard.className = 'glass-card';
-    detailsCard.innerHTML = `
-      <h3 class="section-eyebrow">
-        Resonanz-Analyse
-      </h3>
-      <div class="data-grid compact" id="syn-details-grid"></div>
-    `;
-    container.appendChild(detailsCard);
+    // Data Grid für Detail-Analyse (LAW 3 COMPLIANT)
+    const detailsCard = dom.createEl('div', {
+      className: 'glass-card',
+      parent: container
+    });
     
-    // Fill detail grid
-    const grid = document.getElementById('syn-details-grid');
+    dom.createEl('h3', {
+      className: 'section-eyebrow',
+      text: 'Resonanz-Analyse',
+      parent: detailsCard
+    });
+    
+    const grid = dom.createEl('div', {
+      className: 'data-grid compact',
+      id: 'syn-details-grid',
+      parent: detailsCard
+    });
+    
+    // Fill detail grid - use existing grid reference
     const details = [
       { label: 'Lebenszahl-Resonanz', value: data.lifePathResonance || 0 },
       { label: 'Seelenzahl-Resonanz', value: data.soulUrgeResonance || 0 },
@@ -162,22 +205,28 @@ export const synergyRender = {
       const valueEl = item.querySelector('.value-massive');
       animateValue(valueEl, 0, detail.value, 1500, '', (v) => Math.round(v) + '%');
       
-      setTimeout(() => item.classList.add('visible'), (index + 1) * 100);
+      const timerId = setTimeout(() => item.classList.add('visible'), (index + 1) * 100);
+      this._timers.push(timerId);
     });
     
-    // Interpretation Card
+    // Interpretation Card (LAW 3 COMPLIANT)
     if (data.interpretation) {
-      const interpCard = document.createElement('div');
-      interpCard.className = 'glass-card mt-24';
-      interpCard.innerHTML = `
-        <h4 class="card-title-syne">
-          Bindungs-Interpretation
-        </h4>
-        <p class="interpretation-text">
-          ${data.interpretation}
-        </p>
-      `;
-      container.appendChild(interpCard);
+      const interpCard = dom.createEl('div', {
+        className: 'glass-card mt-24',
+        parent: container
+      });
+      
+      dom.createEl('h4', {
+        className: 'card-title-syne',
+        text: 'Bindungs-Interpretation',
+        parent: interpCard
+      });
+      
+      dom.createEl('p', {
+        className: 'interpretation-text',
+        text: data.interpretation,
+        parent: interpCard
+      });
     }
   },
   

@@ -11,10 +11,15 @@ import { actions } from '../../shared/core/actions.js';
 import { dom, animateValue } from '../../shared/ui/dom_utils.js';
 import { nav } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
+import { i18n } from '../../shared/core/i18n.js';
 
 export const tuningRender = {
   debounceTimer: null,
   currentData: null,
+  // Cleanup tracking
+  _unsubscribers: [],
+  _listeners: [],
+  _timers: [],
   
   /**
    * Initialize Frequency Tuner App — Phase 5.0 Full UI
@@ -27,7 +32,7 @@ export const tuningRender = {
     const birthDateInput = document.getElementById('tune-birthdate');
     
     if (nameInput) {
-      nameInput.addEventListener('input', () => {
+      const inputHandler = () => {
         clearTimeout(this.debounceTimer);
         
         const name = nameInput.value.trim();
@@ -37,30 +42,56 @@ export const tuningRender = {
         }
         
         // Show loading indicator
-        dom.setText('tune-status', 'Analysiere Frequenz...');
+        dom.setText('tune-status', i18n.t('analyzing'));
         
         this.debounceTimer = setTimeout(() => {
           const birthDate = birthDateInput ? birthDateInput.value.trim() : '';
           actions.dispatch('calculateNameFrequency', { name, birthDate });
         }, 300);
-      });
+      };
+      nameInput.addEventListener('input', inputHandler);
+      this._listeners.push({ element: nameInput, type: 'input', handler: inputHandler });
     }
     
     // State Subscriptions
-    state.subscribe('frequencyDone', (result) => {
-      this.currentData = result.data;
-      this.renderResults(result.data);
-    });
-    state.subscribe('frequencyFailed', (result) => {
-      dom.setText('tune-status', `⚠️ ${result.error}`);
-    });
+    this._unsubscribers.push(
+      state.subscribe('frequencyCalculated', (result) => {
+        this.currentData = result.data;
+        this.renderResults(result.data);
+      })
+    );
+    this._unsubscribers.push(
+      state.subscribe('frequencyFailed', (result) => {
+        dom.setText('tune-status', `⚠️ ${result.error}`);
+      })
+    );
     
     // Initialize Navigation
     nav.bindNavigation();
+    nav.registerCurrentApp(this);
     renderAuth.init();
     
     // Scroll Reveal Animation
     this.initScrollReveal();
+  },
+  
+  /**
+   * Destroy: Cleanup all subscriptions, listeners, and timers
+   */
+  destroy() {
+    // Clear debounce timer
+    clearTimeout(this.debounceTimer);
+    this.debounceTimer = null;
+    
+    this._unsubscribers.forEach(unsub => unsub && unsub());
+    this._unsubscribers = [];
+    this._listeners.forEach(({ element, type, handler }) => {
+      element.removeEventListener(type, handler);
+    });
+    this._listeners = [];
+    this._timers.forEach(id => clearTimeout(id));
+    this._timers = [];
+    console.log('[Frequency Tuner] Destroyed — All listeners removed');
   },
   
   clearResults() {
@@ -70,7 +101,7 @@ export const tuningRender = {
     dom.setText('tune-alignment', '');
     
     const bar = document.getElementById('tune-frequency-bar');
-    if (bar) bar.style.width = '0%';
+    if (bar) bar.style.setProperty('--bar-width', '0%');
   },
   
   renderResults(data) {
@@ -85,7 +116,7 @@ export const tuningRender = {
     const bar = document.getElementById('tune-frequency-bar');
     if (bar) {
       const percentage = Math.min((data.frequency || 0) / 100 * 100, 100);
-      bar.style.width = percentage + '%';
+      bar.style.setProperty('--bar-width', percentage + '%');
       
       // Color feedback basierend auf Alignment (LAW 9 COMPLIANT)
       const alignment = data.alignment || 0;
@@ -132,7 +163,8 @@ export const tuningRender = {
     
     // Trigger stagger animation
     document.querySelectorAll('#tune-results .stagger-fade').forEach((el, index) => {
-      setTimeout(() => el.classList.add('visible'), index * 100);
+      const timerId = setTimeout(() => el.classList.add('visible'), index * 100);
+      this._timers.push(timerId);
     });
   },
   

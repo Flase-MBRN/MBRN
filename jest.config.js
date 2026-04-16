@@ -6,16 +6,17 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   collectCoverageFrom: [
-    'shared/core/logic/**/*.js',
-    '!shared/core/logic/**/*.test.js',
-    '!shared/core/logic/numerology/pdf/**/*.js'
+    'shared/core/**/*.js',
+    'apps/finance/logic.js',
+    '!shared/core/**/*.test.js',
+    '!**/node_modules/**'
   ],
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
     }
   },
   testMatch: [

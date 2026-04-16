@@ -13,6 +13,24 @@ import { calculateChronos } from './chronos.js';
 import { calculateFullProfile as calculateLegacyProfile } from './numerology/index.js';
 
 /**
+ * LAW 15 COMPLIANT: UTC-only timestamp generation
+ * Eliminates timezone bugs by using explicit UTC construction
+ */
+function getUTCTimestamp() {
+  const now = new Date();
+  const utcDate = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds(),
+    now.getUTCMilliseconds()
+  ));
+  return utcDate.toISOString();
+}
+
+/**
  * Builds a unified operator profile by orchestrating all available engines.
  * 
  * M15 (Chronos): Temporal cycles and positioning
@@ -80,7 +98,7 @@ export async function getUnifiedProfile(name, birthDate) {
         pdf_config: {
           title: 'MBRN Operator Report',
           version: '3.0-unified',
-          generatedAt: new Date().toISOString()
+          generatedAt: getUTCTimestamp() // LAW 15 COMPLIANT
         }
       },
 
@@ -88,7 +106,7 @@ export async function getUnifiedProfile(name, birthDate) {
       meta: {
         name: name.trim(),
         birthDate: normalizedDate,
-        calculatedAt: new Date().toISOString(),
+        calculatedAt: getUTCTimestamp(), // LAW 15 COMPLIANT
         version: '3.0-unified',
         enginesUsed: ['legacy_v2.5', 'm15_chronos', 'm16_frequency']
       }
@@ -134,13 +152,13 @@ export function getLegacyProfile(name, birthDate) {
         pdf_config: {
           title: 'MBRN Operator Report',
           version: '2.5-legacy-only',
-          generatedAt: new Date().toISOString()
+          generatedAt: getUTCTimestamp() // LAW 15 COMPLIANT
         }
       },
       meta: {
         name: name.trim(),
         birthDate,
-        calculatedAt: new Date().toISOString(),
+        calculatedAt: getUTCTimestamp(), // LAW 15 COMPLIANT
         version: '2.5-legacy-only',
         enginesUsed: ['legacy_v2.5']
       }

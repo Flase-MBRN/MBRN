@@ -208,6 +208,56 @@
   margin-top: 6px;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   INPUT VALIDATION STATES (Phase 10/10)
+   ═══════════════════════════════════════════════════════════════ */
+
+.input-valid {
+  border-color: var(--success) !important;
+  box-shadow: 0 0 0 3px rgba(79, 255, 176, 0.1) !important;
+}
+
+.input-valid:focus {
+  border-color: var(--success) !important;
+  box-shadow: 0 0 0 3px rgba(79, 255, 176, 0.2) !important;
+}
+
+.input-invalid {
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
+}
+
+.input-invalid:focus {
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2) !important;
+}
+
+.input-error-message {
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 6px;
+  display: none;
+  animation: fadeInUp 0.2s ease;
+}
+
+.input-error-message:not(:empty) {
+  display: block;
+}
+
+/* Validation indicator icons (optional enhancement) */
+.input-validation-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.form-group {
+  position: relative;
+}
+
 /* Toggle Switch */
 .toggle {
   position: relative;
@@ -691,6 +741,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .terminal-cursor {
@@ -716,6 +767,126 @@ input[type="number"] {
 .stagger-fade[data-delay="3"] { transition-delay: 0.3s; }
 .stagger-fade[data-delay="4"] { transition-delay: 0.4s; }
 .stagger-fade[data-delay="5"] { transition-delay: 0.5s; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SKELETON LOADING STATES (Phase 10/10 - Mobile Excellence)
+   ═══════════════════════════════════════════════════════════════ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface) 0%,
+    var(--bg-elevated) 50%,
+    var(--bg-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeleton-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: var(--border);
+  border-radius: 6px;
+  margin: 8px 0;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line-sm {
+  height: 8px;
+  width: 60%;
+}
+
+.skeleton-line-lg {
+  height: 16px;
+  width: 80%;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 40%;
+  margin-bottom: 16px;
+}
+
+.skeleton-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--border);
+  animation: shimmer 1.5s infinite;
+}
+
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Pulse animation for simple skeletons */
+.skeleton-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS (Fix 3: Non-Critical Error Feedback)
+   ======================================== */
+
+@keyframes toastSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes toastSlideDown {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+
+.toast-notification {
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+.toast-validation {
+  border-color: var(--warning) !important;
+  background: rgba(251, 191, 36, 0.05) !important;
+}
+
+.toast-sync {
+  border-color: var(--accent) !important;
+}
 
 /* ========================================
    KEYFRAME ANIMATIONS (Phase 5.0)
@@ -1064,6 +1235,132 @@ input[type="number"] {
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* ========================================
+   MOBILE TOUCH TARGETS — LAW 9 COMPLIANCE
+   Minimum 44x44px hit areas for all interactive elements
+   ======================================== */
+
+@media (max-width: 768px) {
+  /* Buttons must be at least 44px tall */
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Navigation items need touch-friendly sizing */
+  .nav-item,
+  .nav-link {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  /* Status dots are too small - expand touch area with pseudo-element */
+  .status-dot {
+    position: relative;
+  }
+
+  .status-dot::before {
+    content: '';
+    position: absolute;
+    inset: -18px; /* Expands 8px dot to 44px touch area (8 + 18*2 = 44) */
+    background: transparent;
+  }
+
+  /* Toggle switch must be at least 44px tall */
+  .toggle-slider {
+    min-height: 44px;
+    width: 56px; /* Slightly wider for better control */
+  }
+
+  .toggle-slider::after {
+    width: 24px;
+    height: 24px;
+    top: 10px; /* Centered in 44px height */
+    left: 10px;
+  }
+
+  .toggle-input:checked + .toggle-slider::after {
+    transform: translateX(12px);
+  }
+
+  /* Card badges need larger touch area */
+  .card-badge {
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+  }
+
+  /* Input fields must be at least 44px tall */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="tel"],
+  textarea,
+  select {
+    min-height: 44px;
+  }
+
+  /* Form labels should be clickable and have larger touch area */
+  .form-label {
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Result rows need touch-friendly height */
+  .result-row {
+    min-height: 44px;
+    padding: 12px 0;
+  }
+
+  /* Spec items need minimum touch height */
+  .spec-item {
+    min-height: 44px;
+    padding: 8px 0;
+  }
+
+  /* Ensure all clickable cards have minimum touch height */
+  .card-hover,
+  .card-primary,
+  .card-secondary {
+    min-height: 44px;
+  }
+
+  /* Modal buttons must be touch-friendly */
+  .modal-footer .btn-primary,
+  .modal-footer .btn-secondary {
+    min-height: 44px;
+  }
+
+  /* Nav toggle button (mobile hamburger) - already has padding but ensure minimums */
+  .nav-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  /* Live badge touch expansion */
+  .live-badge {
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+  }
+
+  /* Error banner buttons need touch-friendly sizing */
+  .error-banner button {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 /* ========================================

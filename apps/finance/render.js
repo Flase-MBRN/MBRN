@@ -12,8 +12,13 @@ import { dom, animateValue, showTerminalLoader } from '../../shared/ui/dom_utils
 import { hasFeature } from '../../shared/loyalty/access_control.js';
 import { nav } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
+import { i18n } from '../../shared/core/i18n.js';
 
 export const financeRender = {
+  // Cleanup tracking
+  _unsubscribers: [],
+  _listeners: [],
+  _timers: [],
   
   /**
    * Phase 8.1: Bindet Event-Listener und UI-Subscribers
@@ -23,7 +28,7 @@ export const financeRender = {
     const calcBtn = document.getElementById('calc-btn');
     
     if (calcBtn) {
-      calcBtn.addEventListener('click', async () => {
+      const clickHandler = async () => {
         const principal = parseFloat(document.getElementById('input-principal').value || 0);
         const rate = parseFloat(document.getElementById('input-rate').value || 0);
         const years = parseFloat(document.getElementById('input-years').value || 0);
@@ -31,33 +36,41 @@ export const financeRender = {
 
         // PATCH 3: Terminal Loader für psychologischen Delay
         calcBtn.disabled = true;
-        calcBtn.textContent = 'CALCULATING...';
+        calcBtn.textContent = i18n.t('loadingTerminal');
         await showTerminalLoader('results-section', 1500);
 
         // Strict Data Flow: UI -> Action -> Logic -> State -> UI
         actions.dispatch('calculateFinance', { principal, rate, years, monthlyAddition: monthly });
         calcBtn.textContent = 'Jetzt Berechnen';
         calcBtn.disabled = false;
-      });
+      };
+      calcBtn.addEventListener('click', clickHandler);
+      this._listeners.push({ element: calcBtn, type: 'click', handler: clickHandler });
     }
 
     // Phase 11: Paywall Delegation (locked Buttons triggern Action)
     const premiumContainer = document.getElementById('premium-features-container');
     if (premiumContainer) {
-      premiumContainer.addEventListener('click', (e) => {
+      const clickHandler = (e) => {
         const lockedBtn = e.target.closest('.locked-feature-btn');
         if (lockedBtn) {
           const feature = lockedBtn.getAttribute('data-feature') || 'premium';
           actions.showPaywall(feature);
         }
-      });
+      };
+      premiumContainer.addEventListener('click', clickHandler);
+      this._listeners.push({ element: premiumContainer, type: 'click', handler: clickHandler });
     }
 
     // State Subscribers binden
-    state.subscribe('calculationDone', (result) => this.renderResults(result.data));
-    state.subscribe('calculationFailed', (result) => {
-      dom.setText('finance-error', `❌ Fehler: ${result.error}`);
-    });
+    this._unsubscribers.push(
+      state.subscribe('calculationDone', (result) => this.renderResults(result.data))
+    );
+    this._unsubscribers.push(
+      state.subscribe('calculationFailed', (result) => {
+        dom.setText('finance-error', `❌ Fehler: ${result.error}`);
+      })
+    );
 
     // Phase 18.4: Paywall Event Renderer
     state.subscribe('paywallRequested', (payload) => {
@@ -101,7 +114,23 @@ export const financeRender = {
     console.log('[Finance Render] Initializing...');
     actions.initSystem();
     nav.bindNavigation();
+    nav.registerCurrentApp(this);
     renderAuth.init();
+  },
+  
+  /**
+   * Destroy: Cleanup all subscriptions, listeners, and timers
+   */
+  destroy() {
+    this._unsubscribers.forEach(unsub => unsub && unsub());
+    this._unsubscribers = [];
+    this._listeners.forEach(({ element, type, handler }) => {
+      element.removeEventListener(type, handler);
+    });
+    this._listeners = [];
+    this._timers.forEach(id => clearTimeout(id));
+    this._timers = [];
+    console.log('[Finance Render] Destroyed — All listeners removed');
   },
 
   /**
@@ -155,7 +184,8 @@ export const financeRender = {
     
     // Trigger stagger animation for result cards
     document.querySelectorAll('.results-card .stagger-fade').forEach((el, index) => {
-      setTimeout(() => el.classList.add('visible'), index * 100);
+      const timerId = setTimeout(() => el.classList.add('visible'), index * 100);
+      this._timers.push(timerId);
     });
   }
 };

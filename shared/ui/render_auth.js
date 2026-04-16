@@ -1,6 +1,7 @@
 import { state } from '../core/state.js';
 import { actions } from '../core/actions.js';
 import { dom } from './dom_utils.js';
+import { i18n } from '../core/i18n.js';
 
 /**
  * /shared/ui/render_auth.js
@@ -8,23 +9,45 @@ import { dom } from './dom_utils.js';
  */
 
 export const renderAuth = {
+  // Cleanup tracking
+  _unsubscribers: [],
+  _timers: [],
   
   init() {
     // Listen for auth changes to update navigation
-    state.subscribe('userAuthChanged', (user) => {
-      this.updateNavigation(user);
-    });
+    this._unsubscribers.push(
+      state.subscribe('userAuthChanged', (user) => {
+        this.updateNavigation(user);
+      })
+    );
 
     // Handle initial state (Phase 14 Hotfix)
     this.updateNavigation(state.get('user'));
 
     // Phase 15: Sync Indicator
-    state.subscribe('syncStarted', () => this.setSyncing(true));
-    state.subscribe('syncSuccess', () => this.setSyncing(false));
-    state.subscribe('syncFailed', () => this.setSyncing(false));
+    this._unsubscribers.push(
+      state.subscribe('syncStarted', () => this.setSyncing(true))
+    );
+    this._unsubscribers.push(
+      state.subscribe('syncSuccess', () => this.setSyncing(false))
+    );
+    this._unsubscribers.push(
+      state.subscribe('syncFailed', () => this.setSyncing(false))
+    );
 
     // Handle Login/Register Form if present
     this.bindAuthForms();
+  },
+  
+  /**
+   * Destroy: Cleanup all subscriptions and timers
+   */
+  destroy() {
+    this._unsubscribers.forEach(unsub => unsub && unsub());
+    this._unsubscribers = [];
+    this._timers.forEach(id => clearTimeout(id));
+    this._timers = [];
+    console.log('[RenderAuth] Destroyed — All listeners removed');
   },
 
   setSyncing(isSyncing) {
@@ -65,7 +88,7 @@ export const renderAuth = {
       const logoutBtn = dom.createEl('button', {
         className: 'btn-secondary',
         id: 'auth-logout-btn',
-        text: 'Logout',
+        text: i18n.t('logout'),
         parent: navRight
       });
       logoutBtn.addEventListener('click', () => actions.logout());
@@ -74,7 +97,7 @@ export const renderAuth = {
       const loginBtn = dom.createEl('button', {
         className: 'btn-primary',
         id: 'auth-login-btn',
-        text: 'Login / Register',
+        text: i18n.t('login'),
         parent: navRight
       });
       loginBtn.addEventListener('click', () => {
@@ -98,7 +121,7 @@ export const renderAuth = {
 
       const btn = loginForm.querySelector('button[type="submit"]');
       const originalText = btn.textContent;
-      btn.textContent = 'Berechne...';
+      btn.textContent = i18n.t('loading');
       btn.disabled = true;
 
       const res = (mode === 'login') 
@@ -122,9 +145,9 @@ export const renderAuth = {
       toggleBtn.addEventListener('click', () => {
         const mode = loginForm.dataset.mode === 'register' ? 'login' : 'register';
         loginForm.dataset.mode = mode;
-        dom.setText('auth-title', mode === 'login' ? 'System Login' : 'System Registrierung');
-        dom.setText('auth-submit-text', mode === 'login' ? 'Anmelden' : 'Konto erstellen');
-        toggleBtn.textContent = mode === 'login' ? 'Noch kein Konto? Registrieren' : 'Bereits ein Konto? Login';
+        dom.setText('auth-title', mode === 'login' ? i18n.t('authErrorTitle') : i18n.t('authRegisterTitle'));
+        dom.setText('auth-submit-text', mode === 'login' ? i18n.t('authLoginBtn') : i18n.t('authRegisterBtn'));
+        toggleBtn.textContent = mode === 'login' ? i18n.t('noAccount') : i18n.t('hasAccount');
       });
     }
   },
@@ -135,7 +158,8 @@ export const renderAuth = {
     errorBox.className = 'auth-error-box'; // LAW 9 COMPLIANT: Styles in CSS
     errorBox.textContent = message;
     form.parentNode.insertBefore(errorBox, form.nextSibling);
-    setTimeout(() => this.clearAuthError(form), 8000);
+    const timerId = setTimeout(() => this.clearAuthError(form), 8000);
+    this._timers.push(timerId);
   },
 
   clearAuthError(form) {

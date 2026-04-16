@@ -9,56 +9,66 @@ import { dom, animateValue, showTerminalLoader, createGlowRing } from '../../sha
 import { nav }    from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { generateShareCard, generateOperatorReport } from '../../shared/core/logic/orchestrator.js';
-import { MBRN_CONFIG } from '../../shared/core/config.js';
+import { i18n } from '../../shared/core/i18n.js';
 import { errorBoundary } from '../../shared/ui/error_boundary.js';
 
 export const numerologyRender = {
   currentData: null,
+  // Cleanup tracking - MEMORY LEAK FIX
+  _unsubscribers: [],
+  _listeners: [],
+  _timers: [],
 
   init() {
     // 1. Event Binding (Action Registration moved to Core)
     const calcBtn = document.getElementById('num-calc-btn');
     if (calcBtn) {
-      calcBtn.addEventListener('click', async () => {
+      const clickHandler = async () => {
         const name = document.getElementById('num-input-name').value.trim();
         const date = document.getElementById('num-input-date').value.trim();
         
         if (!name || !date) {
-          dom.setText('num-error', '⚠️ Bitte Name und Geburtsdatum eingeben');
+          dom.setText('num-error', i18n.t('enterNameDate'));
           return;
         }
-        
+
         // PATCH 3: Terminal Loader für psychologischen Delay
         calcBtn.disabled = true;
-        calcBtn.textContent = 'DECRYPTING...';
+        calcBtn.textContent = i18n.t('loadingDecrypt');
         await showTerminalLoader('num-results-area', 1500);
         
         actions.dispatch('calculateFullProfile', { name, birthDate: date });
         calcBtn.textContent = 'Berechne vollständiges Profil';
         calcBtn.disabled = false;
-      });
+      };
+      calcBtn.addEventListener('click', clickHandler);
+      this._listeners.push({ element: calcBtn, type: 'click', handler: clickHandler });
     }
 
     const shareBtn = document.getElementById('num-share-btn');
     if (shareBtn) {
-      shareBtn.addEventListener('click', () => {
+      const shareHandler = () => {
         state.emit('analyticsTrack', { event: 'share_card_generated', source: 'numerology' });
         this.handleShare();
-      });
+      };
+      shareBtn.addEventListener('click', shareHandler);
+      this._listeners.push({ element: shareBtn, type: 'click', handler: shareHandler });
     }
 
     const bridgeBtn = document.getElementById('num-bridge-btn');
     if (bridgeBtn) {
-      bridgeBtn.addEventListener('click', () => {
+      const bridgeHandler = () => {
         state.emit('analyticsTrack', { event: 'lead_bridge_crossed', source: 'numerology' });
         nav.navigateTo('finance');
-      });
+      };
+      bridgeBtn.addEventListener('click', bridgeHandler);
+      this._listeners.push({ element: bridgeBtn, type: 'click', handler: bridgeHandler });
     }
 
     // Phase 19.3: Premium PDF Export Trigger
     const pdfBtn = document.getElementById('num-pdf-btn');
     if (pdfBtn) {
-      pdfBtn.addEventListener('click', async () => {
+      const pdfHandler = async () => {
         const user = state.get('user');
         const accessLevel = user ? (user.access_level || 0) : 0;
 
@@ -77,42 +87,51 @@ export const numerologyRender = {
           // Pass legacy data format to generator (unified format compatibility)
           const legacyData = this.currentData.legacy?.full_profile || this.currentData;
           const doc = await generateOperatorReport(legacyData);
-          doc.save(`MBRN_CONFIG_${legacyData.meta.name.replace(/\s+/g, '_')}.pdf`);
+          doc.save(`MBRN_${legacyData.meta.name.replace(/\s+/g, '_')}.pdf`);
           state.emit('analyticsTrack', { event: 'pdf_artifact_generated', source: 'numerology' });
         } catch (err) {
           console.error('[PDF Engine] Generation failed:', err);
-          alert('Fehler bei der PDF-Erstellung.');
+          errorBoundary.displayError({
+            type: 'pdf_generation_failed',
+            error: 'Fehler bei der PDF-Erstellung. Bitte versuche es erneut.',
+            severity: 'critical'
+          });
         } finally {
           pdfBtn.textContent = 'ARTEFAKT ERSTELLEN';
           pdfBtn.disabled = false;
         }
-      });
+      };
+      pdfBtn.addEventListener('click', pdfHandler);
+      this._listeners.push({ element: pdfBtn, type: 'click', handler: pdfHandler });
     }
 
     // Accordion Toggles
+    this._accordionHandlers = [];
     document.querySelectorAll('.acc-trigger').forEach(btn => {
-      btn.addEventListener('click', () => {
+      const accordionHandler = () => {
         const item = btn.parentElement;
         const wasActive = item.classList.contains('active');
         // Close others
         document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('active'));
         if (!wasActive) item.classList.add('active');
-      });
+      };
+      btn.addEventListener('click', accordionHandler);
+      this._accordionHandlers.push({ element: btn, handler: accordionHandler });
     });
 
     // 3. State Subscriptions
-    state.subscribe('numerologyDone', (res) => {
+    this._unsubscribers.push(state.subscribe('numerologyDone', (res) => {
       this.currentData = res.data; // Store unified data
       this.showResultsPanel();
       this.renderAll(res.data.legacy.full_profile); // Use legacy format for rendering
-    });
+    }));
 
-    state.subscribe('numerologyFailed', (res) => {
+    this._unsubscribers.push(state.subscribe('numerologyFailed', (res) => {
       dom.setText('num-error', `⚠️ ${res.error}`);
-    });
+    }));
 
     // Phase 18.4: Paywall Event Renderer (Synchronized across Hub)
-    state.subscribe('paywallRequested', (payload) => {
+    this._unsubscribers.push(state.subscribe('paywallRequested', (payload) => {
       dom.clear('modal-container');
       dom.renderTemplate('paywall-template', 'modal-container', (clone) => {
         const nameSpan = clone.querySelector('.paywall-feature-name');
@@ -130,13 +149,44 @@ export const numerologyRender = {
           });
         }
       });
-    });
+    }));
 
     // 4. Boot System
     console.log('[Numerology Render] Initializing...');
     actions.initSystem();
     nav.bindNavigation();
+    nav.registerCurrentApp(this);
     renderAuth.init();
+  },
+
+  /**
+   * Destroy: Cleanup all subscriptions, listeners, and timers
+   * MEMORY LEAK FIX: Complete cleanup pattern
+   */
+  destroy() {
+    // Unsubscribe from state
+    this._unsubscribers.forEach(unsub => unsub && unsub());
+    this._unsubscribers = [];
+
+    // Remove event listeners
+    this._listeners.forEach(({ element, type, handler }) => {
+      element.removeEventListener(type, handler);
+    });
+    this._listeners = [];
+
+    // Remove accordion handlers
+    if (this._accordionHandlers) {
+      this._accordionHandlers.forEach(({ element, handler }) => {
+        element.removeEventListener('click', handler);
+      });
+      this._accordionHandlers = [];
+    }
+
+    // Clear all timers
+    this._timers.forEach(id => clearTimeout(id));
+    this._timers = [];
+
+    console.log('[Numerology Render] Destroyed — All listeners removed');
   },
 
   showResultsPanel() {
@@ -293,7 +343,7 @@ export const numerologyRender = {
 
     // 2. Phasen - Premium Data Grid
     const phasesList = document.getElementById('acc-phases-list');
-    phasesList.replaceChildren();
+    if (!phasesList) return;
     createSectionHeader(phasesList, 'Lebenszyklen');
     const cyclesGrid = document.createElement('div');
     cyclesGrid.className = 'data-grid compact';
@@ -332,7 +382,7 @@ export const numerologyRender = {
 
     // 4. Brücken - Premium Data Grid
     const bridgeList = document.getElementById('acc-bridge-list');
-    bridgeList.replaceChildren();
+    if (!bridgeList) return;
     const bridgesGrid = document.createElement('div');
     bridgesGrid.className = 'data-grid compact';
     createDataCard(bridgesGrid, 'Seele-Persönlichkeit', data.bridges.soulPers, 1);

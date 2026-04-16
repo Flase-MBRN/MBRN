@@ -6,12 +6,14 @@
  */
 
 import { supabase } from '../../core/supabase_client.js';
+import { api } from '../../core/api.js';
 import { animateValue } from '../dom_utils.js';
 import { MBRN_CONFIG } from '../../core/config.js';
 
 export const sentimentWidget = {
   channel: null,
   currentScore: 50,
+  _timers: [],
   
   /**
    * Initialize Sentiment Widget with Realtime
@@ -144,7 +146,8 @@ export const sentimentWidget = {
     const card = this.container.querySelector('.glass-card');
     if (card) {
       card.classList.add('pulse-glow');
-      setTimeout(() => { card.classList.remove('pulse-glow'); }, 600);
+      const timerId = setTimeout(() => { card.classList.remove('pulse-glow'); }, 600);
+      this._timers.push(timerId);
     }
     
     this.currentScore = newScore;
@@ -157,10 +160,10 @@ export const sentimentWidget = {
     const ring = document.getElementById('sentiment-ring');
     if (!ring) return;
     
-    // Calculate stroke-dashoffset (440 is full circumference)
+    // Calculate stroke-dashoffset (440 is full circumference) — LAW 9 COMPLIANT
     const circumference = 440;
     const offset = circumference - (score / 100) * circumference;
-    ring.style.strokeDashoffset = offset;
+    ring.style.setProperty('--ring-offset', offset);
     
     // Color based on sentiment (LAW 9: CSS class for color)
     ring.setAttribute('stroke', this.getScoreColor(score));
@@ -262,9 +265,15 @@ export const sentimentWidget = {
    * Cleanup
    */
   destroy() {
+    // Clear all timers
+    this._timers.forEach(id => clearTimeout(id));
+    this._timers = [];
+    
+    // Remove realtime channel
     if (this.channel) {
       supabase.removeChannel(this.channel);
       this.channel = null;
     }
+    console.log('[Sentiment Widget] Destroyed — All timers and channels cleared');
   }
 };

@@ -10,6 +10,7 @@ import { storage } from './storage.js';
 import { streakManager } from '../loyalty/streak_manager.js';
 import { api } from './api.js';
 import { MBRN_CONFIG } from './config.js';
+import { i18n } from './i18n.js';
 import { calculateSynergy } from './logic/synergy.js';
 import { calculateChronos } from './logic/chronos.js';
 import { calculateNameFrequency } from './logic/frequency.js';
@@ -18,6 +19,10 @@ import { calculateNameFrequency } from './logic/frequency.js';
 const _registry = new Map();
 let _syncDebounceTimer = null;
 let _systemInitialized = false;  // Idempotency Guard
+
+// P1 SECURITY: Global dispatch lock for request deduplication
+// Prevents duplicate concurrent requests of the same action type
+const _dispatchingLocks = new Map();
 
 // Fix #3 (Phase 0.7): Private Hilfsfunktion — kein this, kein export, reine Closure
 function resolveCurrentProfile() {
@@ -35,11 +40,21 @@ export const actions = {
   },
 
   dispatch(actionName, payload) {
+    // P1 SECURITY: Deduplication - reject if same action type already running
+    if (_dispatchingLocks.get(actionName)) {
+      console.warn(`[Actions] DEDUPLICATION: Action '${actionName}' already dispatching. Request ignored.`);
+      return { success: false, error: 'Action already in progress', deduplicated: true };
+    }
+
     const handler = _registry.get(actionName);
     if (!handler) {
       console.warn(`[Actions] Action '${actionName}' not found in registry`);
       return { success: false, error: 'Action not registered' };
     }
+
+    // Set dispatch lock
+    _dispatchingLocks.set(actionName, true);
+
     // Error-Boundary: crashende Handler werden isoliert (sync + async)
     try {
       const result = handler(payload);
@@ -55,13 +70,19 @@ export const actions = {
       }
       // Handle async handlers (Promise rejection catching)
       if (typeof result.then === 'function') {
-        return result.catch(error => {
-          console.error(`[Actions] Async handler for '${actionName}' rejected:`, error);
-          return { success: false, error: error.message };
-        });
+        return result
+          .catch(error => {
+            console.error(`[Actions] Async handler for '${actionName}' rejected:`, error);
+            return { success: false, error: error.message };
+          })
+          .finally(() => {
+            _dispatchingLocks.delete(actionName);
+          });
       }
+      _dispatchingLocks.delete(actionName);
       return result;
     } catch (error) {
+      _dispatchingLocks.delete(actionName);
       console.error(`[Actions] Handler for '${actionName}' threw:`, error);
       return { success: false, error: error.message };
     }
@@ -101,18 +122,22 @@ export const actions = {
 
     // Phase 14: Session Hydration
     if (apiInitialized) {
-      api.getSession().then(res => {
-        if (res.success && res.data) {
-          state.set('user', res.data.user);
-          state.emit('userAuthChanged', res.data.user);
-          console.log('[System Boot] Active session restored:', res.data.user.email);
-          // Phase 15: Perform initial cloud mirroring
-          this.pullCloudData(res.data.user.id);
-        }
-      });
+      api.getSession()
+        .then(res => {
+          if (res.success && res.data) {
+            state.set('user', res.data.user);
+            state._authorizedEmit('userAuthChanged', res.data.user);
+            console.log('[System Boot] Active session restored:', res.data.user.email);
+            // Phase 15: Perform initial cloud mirroring
+            this.pullCloudData(res.data.user.id);
+          }
+        })
+        .catch(err => {
+          console.warn('[System Boot] Session hydration failed:', err.message);
+        });
     }
 
-    state.emit('systemInitialized', initialProfile);
+    state._authorizedEmit('systemInitialized', initialProfile);
 
     // Phase 15: Reactive Sync Hooks
     state.subscribe('streakUpdated', () => this.debouncedSync());
@@ -164,7 +189,7 @@ export const actions = {
     if (result.success) {
       const newProfile = result.data.profile;
       storage.set('user_profile', newProfile);
-      state.emit('systemInitialized', newProfile);
+      state._authorizedEmit('systemInitialized', newProfile);
       state.emit('streakUpdated', result.data);
       return { success: true, data: result.data };
     } else {
@@ -186,21 +211,21 @@ export const actions = {
    * Network Sync (Phase 12)
    */
   async syncProfileToCloud() {
-    state.emit('syncStarted');
+    state._authorizedEmit('syncStarted');
 
     const currentProfile = resolveCurrentProfile();
     if (!currentProfile) {
-      state.emit('syncFailed', { error: 'No profile locally available' });
+      state._authorizedEmit('syncFailed', { error: 'No profile locally available' });
       return { success: false, error: 'No profile' };
     }
 
     const response = await api.saveProfile(currentProfile);
 
     if (response.success) {
-      state.emit('syncSuccess', response.data);
+      state._authorizedEmit('syncSuccess', response.data);
       return { success: true, data: response.data };
     } else {
-      state.emit('syncFailed', { error: response.error });
+      state._authorizedEmit('syncFailed', { error: response.error });
       return { success: false, error: response.error };
     }
   },
@@ -218,19 +243,19 @@ export const actions = {
 
   _validateEmail(email) {
     if (!email || !email.includes('@')) {
-      return { valid: false, reason: 'Ungültige E-Mail-Adresse.' };
+      return { valid: false, reason: i18n.t('invalidEmail') };
     }
     const domain = email.split('@')[1]?.toLowerCase();
     const local = email.split('@')[0]?.toLowerCase();
 
     // Block known disposable/fake domains
     if (this._blockedDomains.includes(domain)) {
-      return { valid: false, reason: `Domain "${domain}" ist gesperrt.` };
+      return { valid: false, reason: `${i18n.t('blockedDomain').replace('Domain', `Domain "${domain}"`)}` };
     }
 
     // Block obvious trash patterns (asd@asd.com, a@b.com, etc.)
     if (local.length <= 2 && domain.length <= 6) {
-      return { valid: false, reason: 'E-Mail sieht nach einer Wegwerf-Adresse aus.' };
+      return { valid: false, reason: i18n.t('disposableEmail') };
     }
 
     return { valid: true };
@@ -242,14 +267,14 @@ export const actions = {
     if (!validation.valid) {
       return {
         success: false,
-        error: `🛡️ SECURITY BLOCK: ${validation.reason} Bitte nutze eine echte E-Mail oder einen Gmail-Alias (name+test@gmail.com).`
+        error: `${i18n.t('securityBlock')}: ${validation.reason} ${i18n.t('useRealEmail')}`
       };
     }
 
     const res = await api.signUp(email, password);
     if (res.success) {
       state.set('user', res.data.user);
-      state.emit('userAuthChanged', res.data.user);
+      state._authorizedEmit('userAuthChanged', res.data.user);
       return { success: true, data: res.data.user };
     }
     return res;
@@ -259,7 +284,7 @@ export const actions = {
     const res = await api.signIn(email, password);
     if (res.success) {
       state.set('user', res.data.user);
-      state.emit('userAuthChanged', res.data.user);
+      state._authorizedEmit('userAuthChanged', res.data.user);
       return { success: true, data: res.data.user };
     }
     return res;
@@ -269,7 +294,7 @@ export const actions = {
     const res = await api.signOut();
     if (res.success) {
       state.set('user', null);
-      state.emit('userAuthChanged', null);
+      state._authorizedEmit('userAuthChanged', null);
       return { success: true };
     }
     return res;
@@ -318,20 +343,20 @@ export const actions = {
       this.syncProfileToCloud();
     }
 
-    state.emit('syncSuccess');
+    state._authorizedEmit('syncSuccess');
   },
 
   async syncAppData(appId, data) {
     const user = state.get('user');
     if (!user) return;
-    
-    state.emit('syncStarted');
+
+    state._authorizedEmit('syncStarted');
     const res = await api.saveAppData(user.id, appId, data);
     if (res.success) {
-      state.emit('syncSuccess');
+      state._authorizedEmit('syncSuccess');
       console.log(`[Sync Engine] App data synced: ${appId}`);
     } else {
-      state.emit('syncFailed');
+      state._authorizedEmit('syncFailed');
     }
   },
 
@@ -346,7 +371,7 @@ export const actions = {
       return { success: false, error: 'Auth required' };
     }
 
-    state.emit('syncStarted'); // Show loader
+    state._authorizedEmit('syncStarted'); // Show loader
     const priceId = productId === 'artifact' 
       ? MBRN_CONFIG.stripe.priceIdArtifact 
       : MBRN_CONFIG.stripe.priceIdArtifact; // Default for now
@@ -357,7 +382,7 @@ export const actions = {
       console.log('[The Vault] Redirecting to Stripe Checkout...');
       window.location.href = res.data.url;
     } else {
-      state.emit('syncFailed');
+      state._authorizedEmit('syncFailed');
       return res;
     }
   },
@@ -365,14 +390,14 @@ export const actions = {
   async handlePaymentSuccess(sessionId) {
     // Phase 18.3: Verify payment with Cloud Fortress
     const res = await api.verifySession(sessionId);
-    
+
     if (res.success) {
-      state.emit('paymentVerified', res.data);
+      state._authorizedEmit('paymentVerified', res.data);
       return { success: true, data: res.data };
     }
-    
+
     // Verification failed — payment not confirmed
-    state.emit('paymentFailed', { sessionId, error: res.error, code: res.code });
+    state._authorizedEmit('paymentFailed', { sessionId, error: res.error, code: res.code });
     return { success: false, error: res.error || 'Payment verification failed' };
   }
 };
