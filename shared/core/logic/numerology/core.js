@@ -10,6 +10,9 @@ import { MASTER_NUMBERS } from '../../config.js';
 
 /* ─── CONSTANTS ────────────────────────────────────────────────────────── */
 
+// Re-export for downstream consumers ( barrel export compatibility )
+export { MASTER_NUMBERS };
+
 export const PYTHAGORAS = {
   1: ['A','J','S'], 2: ['B','K','T'], 3: ['C','L','U'],
   4: ['D','M','V'], 5: ['E','N','W'], 6: ['F','O','X'],
