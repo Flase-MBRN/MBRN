@@ -103,7 +103,11 @@ export const renderAuth = {
       loginBtn.addEventListener('click', () => {
         const authSection = document.getElementById('auth-section');
         if (authSection) {
+          // On landing page: scroll to auth section
           authSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          // On app pages: navigate to landing page with auth hash
+          window.location.href = '/MBRN/index.html#auth';
         }
       });
     }
