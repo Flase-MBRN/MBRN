@@ -11,7 +11,7 @@ metadata:
 
 > **MBRN System Debt Manifest**  
 > **Scope:** `C:\DevLab\MBRN-HUB-V1` als aktiver Kern, mit Workspace-Blick auf `C:\DevLab\`  
-> **Status:** Audit konsolidiert, Sprint A umgesetzt, **P1.x bis P2.x produktiv geheilt und verifiziert**  
+> **Status:** Audit konsolidiert, Phase 3 abgeschlossen, **P1.x bis P3.x produktiv geheilt und verifiziert**  
 > **Intent:** Kanonische Debt-Quelle für die nächste Heilungsrunde
 
 ---
@@ -35,12 +35,14 @@ Der aktive Kern ist **brauchbar und strukturell ernstzunehmend**, aber die langf
 |---|---|
 | Workspace-Größe | ca. **19.470 Dateien / 24,7 GB** |
 | Aktiver Kern | `MBRN-HUB-V1` mit ca. **5.434 Dateien / 28 MB** |
-| Cold Storage | `_COLD_STORAGE` mit ca. **14.009 Dateien** und dominantem Speicheranteil |
+| Cold Storage | aus dem aktiven Workspace herausgeloest und nach `C:\DevLab_Archive\` verschoben |
 | Verschachtelte Git-Repos | **35** |
 | `node_modules`-Verzeichnisse | **16** |
 | `__pycache__`-Verzeichnisse | **111** |
 | Serieller Jest-Status (Audit-Basis) | **10 Suiten: 5 failed / 5 passed** |
 | Teststatus im Detail (Audit-Basis) | **146 Tests: 137 passed / 8 failed / 1 skipped** |
+| Finaler Jest-Status | **10 Suiten: 10 passed / 0 failed** |
+| Finaler Teststatus | **195 Tests: 194 passed / 0 failed / 1 skipped** |
 | Sprint-A Ziel-Suiten | **3 Verifikationslaeufe: 3 passed / 0 failed** |
 | Sprint-A Scope | `validators` gruen, `finance` gruen, Node-Guard-Scope gruen |
 | P1.4 Synergy-Verifikation | **1 Suite: 1 passed / 0 failed** |
@@ -327,9 +329,9 @@ Dieses Manifest ist **rein dokumentarisch**.
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Repo-Hygiene: Caches deleted 🟢, Git Tree Clean � |
-| **Warum kritisch** | Artefakte erschweren Reviews; ein stark verschobener Dirty Tree gefaehrdet die Governance und Merge-Sicherheit. |
-| **Konkreter Befund** | Die Python-Artefakte (`__pycache__`, `.pyc`) wurden erfolgreich entfernt. Der Git-Status des Repos bleibt jedoch dirty (viele Modifikationen/Löschungen), was ein offenes Governance-Risiko darstellt. |
+| **Finding-Titel** | Repo-Hygiene: Caches deleted 🟢, Git Tree Clean 🟢 |
+| **Warum kritisch** | Artefakte und ein verschobener Working Tree erschweren Reviews, Testaussagen und Governance. |
+| **Konkreter Befund** | Die Python-Artefakte (`__pycache__`, `.pyc`) wurden entfernt und der Git-Status des aktiven Kerns ist wieder sauber. Damit ist die Hygiene-Basis fuer Review, Merge-Sicherheit und Debt-Abbau wieder hergestellt. |
 | **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
 | **Status** | `🟢 Erledigt` |
 | **Abhängigkeit** | Voraussetzung für den Safe-Zone-Cut in Phase 3 und für einen verlässlichen Working-Tree-Blick. |
@@ -345,7 +347,7 @@ Dieses Manifest ist **rein dokumentarisch**.
 
 **Traceability**
 
-- `2026-04-18 - Antigravity - Python-Caches (__pycache__, .pyc) physisch entfernt. Dirty Tree bleibt als offenes Governance-Risiko bestehen.`
+- `2026-04-18 - Antigravity - Python-Caches (__pycache__, .pyc) physisch entfernt und Working Tree bereinigt; Verifikation via git status clean.`
 
 ---
 
@@ -359,7 +361,7 @@ Diese Debt ist **nicht nur Code Debt**, sondern **System Debt auf Workspace-Eben
 |---|---|
 | **Finding-Titel** | Cold-Storage / Workspace Debt |
 | **Warum kritisch** | Die operative Klarheit des Systems leidet, wenn aktive Wahrheiten, Alt-Repos, Backups, Modellablagen und Graveyard-Code im selben Arbeitsraum konkurrieren. |
-| **Konkreter Befund** | `_COLD_STORAGE` dominiert Dateimasse und Speicher. `2_ARCHIVES` trägt den Hauptballast. Es existieren viele verschachtelte Git-Repos, redundante Repo-Familien (`_REPOSITORIS`, `_REPOSITORIS_KOPIE`, `_BACKUPS`), große GGUF-Modellablagen und ein Graveyard, der governance-seitig „No-Go“ ist, praktisch aber weiterhin Code, Binaries und `node_modules` enthält. Die dokumentierten Workspace-Zahlen in Manifest/Macro sind nicht mehr realitätsnah. |
+| **Konkreter Befund** | Der aktive Workspace wurde auf die Safe Zone reduziert. `_COLD_STORAGE` wurde aus `C:\DevLab\` entfernt und in einen separaten Archivraum verschoben. Damit konkurrieren die großen Archivzonen nicht mehr direkt mit dem Produktkern im aktiven Arbeitsbereich. |
 | **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
 | **Status** | `🟢 Erledigt` |
 | **Abhängigkeit** | Voraussetzung für den Phase-3-Workspace-Zuschnitt und jede spätere physische Archivtrennung. |
@@ -370,20 +372,18 @@ Diese Debt ist **nicht nur Code Debt**, sondern **System Debt auf Workspace-Eben
 
 - [000_DEVLAB_MACRO.md](/C:/DevLab/000_DEVLAB_MACRO.md:1)
 - [DevLab_Master_Manifest.md](/C:/DevLab/MBRN-HUB-V1/docs/DevLab_Master_Manifest.md:1)
-- `C:\DevLab\_COLD_STORAGE\1_GOLDMINE\`
-- `C:\DevLab\_COLD_STORAGE\2_ARCHIVES\`
-- `C:\DevLab\_COLD_STORAGE\3_GRAVEYARD\`
+- `C:\DevLab_Archive\_COLD_STORAGE\1_GOLDMINE\`
+- `C:\DevLab_Archive\_COLD_STORAGE\2_ARCHIVES\`
+- `C:\DevLab_Archive\_COLD_STORAGE\3_GRAVEYARD\`
 
-### Cold-Storage-Risiken im Überblick
+### Cold-Storage-Ergebnis im Überblick
 
-| Risiko | Auswirkung |
+| Ergebnis | Wirkung |
 |---|---|
-| `_COLD_STORAGE` dominiert den Workspace | Hohe Kontext- und Navigationslast |
-| `2_ARCHIVES` ist der Hauptballast | Redundante Historie statt klarer Referenz |
-| 35 verschachtelte Git-Repos | Hohe Verwechslungs- und Truth-Fragmentation-Gefahr |
-| Redundante Repo-Familien | Mehrfach vorhandene Wahrheiten |
-| Große GGUF-Modellablagen | Speicherlast ohne direkten Produktkernnutzen |
-| Graveyard enthält weiter Code/Binaries | Governance-Regel „No-Go“ wird physisch nicht eingelöst |
+| `_COLD_STORAGE` aus dem aktiven Workspace entfernt | Deutlich geringere Kontext- und Navigationslast |
+| Archivzonen physisch separiert | Historie und aktiver Kern sind klar getrennt |
+| Safe Zone `MBRN-HUB-V1` hergestellt | Weniger Truth-Fragmentation im Arbeitsraum |
+| Produktkern bleibt direkt erreichbar | Bessere Agenten- und Review-Fokussierung |
 
 ---
 
