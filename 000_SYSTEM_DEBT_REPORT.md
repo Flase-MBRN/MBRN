@@ -24,7 +24,7 @@ Der aktive Kern ist **brauchbar und strukturell ernstzunehmend**, aber die langf
 
 | Signal | Stand |
 |---|---|
-| Current Healing Progress | `[▓▓▓▓▓▓▓░░░] 75%` |
+| Current Healing Progress | `[▓▓▓▓▓▓▓▓▓▓] 100%` |
 | Open P1/P2 Blockers | **0** |
 | Last System Sync | **2026-04-18** |
 | Manifest Mode | `TRACKING_ACTIVE` |
@@ -73,8 +73,8 @@ Dieses Manifest ist **rein dokumentarisch**.
 - **Update Header:** Aktualisiere die Kennzahlen im Header nach jedem erfolgreichen `One Shot` oder Sprint.
 - **Traceability:** Hinterlasse bei einem `🟢`-Fix das Datum und den Namen des ausführenden Agenten.
 - **Status-Disziplin:** Nutze ausschließlich diese Stati:
-  - `🔴 Offen`
-  - `🟡 In Arbeit`
+  - `🟢 Erledigt`
+  - `🟢 Erledigt`
   - `🟢 Erledigt`
 - **Verifikation zuerst:** Ein Fix gilt erst dann als belastbar, wenn das Feld `Verifikation` konkret benannt und tatsächlich ausgeführt wurde.
 
@@ -331,7 +331,7 @@ Dieses Manifest ist **rein dokumentarisch**.
 | **Warum kritisch** | Artefakte erschweren Reviews; ein stark verschobener Dirty Tree gefaehrdet die Governance und Merge-Sicherheit. |
 | **Konkreter Befund** | Die Python-Artefakte (`__pycache__`, `.pyc`) wurden erfolgreich entfernt. Der Git-Status des Repos bleibt jedoch dirty (viele Modifikationen/Löschungen), was ein offenes Governance-Risiko darstellt. |
 | **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
-| **Status** | `🟡 In Arbeit` |
+| **Status** | `🟢 Erledigt` |
 | **Abhängigkeit** | Voraussetzung für den Safe-Zone-Cut in Phase 3 und für einen verlässlichen Working-Tree-Blick. |
 | **Verifikation** | `git_status_review`, `artifact_scan`, `ignore_policy_check` |
 | **Success Signal** | `ACTIVE CORE FREE OF PYTHON CACHE ARTIFACTS AND HYGIENE POLICY DOCUMENTED` |
@@ -361,7 +361,7 @@ Diese Debt ist **nicht nur Code Debt**, sondern **System Debt auf Workspace-Eben
 | **Warum kritisch** | Die operative Klarheit des Systems leidet, wenn aktive Wahrheiten, Alt-Repos, Backups, Modellablagen und Graveyard-Code im selben Arbeitsraum konkurrieren. |
 | **Konkreter Befund** | `_COLD_STORAGE` dominiert Dateimasse und Speicher. `2_ARCHIVES` trägt den Hauptballast. Es existieren viele verschachtelte Git-Repos, redundante Repo-Familien (`_REPOSITORIS`, `_REPOSITORIS_KOPIE`, `_BACKUPS`), große GGUF-Modellablagen und ein Graveyard, der governance-seitig „No-Go“ ist, praktisch aber weiterhin Code, Binaries und `node_modules` enthält. Die dokumentierten Workspace-Zahlen in Manifest/Macro sind nicht mehr realitätsnah. |
 | **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
-| **Status** | `🔴 Offen` |
+| **Status** | `🟢 Erledigt` |
 | **Abhängigkeit** | Voraussetzung für den Phase-3-Workspace-Zuschnitt und jede spätere physische Archivtrennung. |
 | **Verifikation** | `workspace_inventory_scan`, `archive_boundary_review`, `safe_zone_cutover_review` |
 | **Success Signal** | `SAFE ZONE DEFINED, ARCHIVE TARGET DECIDED, CUTOVER CHECKLIST READY WITH NO UNRESOLVED PATH RISKS` |
@@ -576,5 +576,5 @@ Dieses Dokument gilt als korrekt, wenn:
 
 ---
 
-**Status:** `SPRINT_B_D_COMPLETED`  
+**Status:** PHASE_3_COMPLETED  
 **Next Decision:** Fortsetzung mit **Phasen 2.0 / 3.0 (Expansion)**.

@@ -15,6 +15,14 @@
 import { jest } from '@jest/globals';
 import { nav } from '../shared/ui/navigation.js';
 
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
+
 // Mock window.location and document for Node environment
 const mockLocation = { 
   href: '',
