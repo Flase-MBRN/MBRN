@@ -64,7 +64,7 @@ Der Architect ist unsichtbar. Die Marke trägt alles.
 
 13. **Logic Isolation:** Komplexe Algorithmen (Synergy, Chronos, Frequency) bleiben in isolierten Modulen. Web-Worker wenn nötig.
 14. **Design Consistency:** Jedes Modul folgt dem MBRN Design-Code. Keine Ausnahmen.
-15. **Temporal Precision:** Chronologische Berechnungen sind deterministisch und zeitzonen-akkurat (UTC-Mapping).
+15. **Die "No-Build" & "NPM-Strict" Policy:** MBRN ist eine No-Build Architektur. Es gibt kein Webpack, kein Vite, kein Babel. NPM und package.json existieren AUSSCHLIESSLICH für Dev-Tooling (wie Jest-Tests). Es ist strengstens verboten, npm-Packages im Produktionscode (/apps/, /shared/) zu importieren. Die Apps müssen als reines Vanilla JS (<script type="module">) direkt im Browser laufen.
 
 ### UNIVERSE PROTOCOL (Philosophie)
 
