@@ -24,12 +24,26 @@ import { withCircuitBreaker, circuits } from './circuit_breaker.js';
 let SUPABASE_URL = null;
 let SUPABASE_KEY = null;
 
-try {
-  const { ENV } = await import('./env.js');
-  SUPABASE_URL = ENV.SUPABASE_URL;
-  SUPABASE_KEY = ENV.SUPABASE_ANON_KEY;
-} catch (err) {
-  // env.js not found — operating in Offline-Only Mode
+// Umgebungserkennung: Nur lokal env.js laden (verhindert 404/MIME-Fehler auf GitHub Pages)
+const isLocalEnv = () => {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1' || host.includes('.local');
+};
+
+// Nur lokal versuchen, env.js zu laden
+if (isLocalEnv()) {
+  try {
+    const { ENV } = await import('./env.js');
+    SUPABASE_URL = ENV.SUPABASE_URL;
+    SUPABASE_KEY = ENV.SUPABASE_ANON_KEY;
+  } catch (err) {
+    // env.js not found — operating in Offline-Only Mode
+    console.log('[API] env.js not found, running in offline mode');
+  }
+} else {
+  // Live-Umgebung: Kein env.js vorhanden, direkt Offline-Modus
+  console.log('[API] Live environment detected, skipping env.js import');
 }
 
 export const api = {
