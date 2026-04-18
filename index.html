@@ -14,46 +14,110 @@
   <link rel="stylesheet" href="shared/ui/components.css">
   <link rel="stylesheet" href="shared/ui/landing.css">
 </head>
-<body>
-  <section id="hook-section" class="hook-section">
-    <div class="bg-glow"></div>
+<body class="void-bg bg-grid">
 
-    <nav class="nav-minimal">
-      <div class="nav-brand">MBRN</div>
-    </nav>
-
-    <div class="hook-content">
-      <h1 class="hook-headline">MBRN</h1>
-      <p class="hook-subtitle">built to be used</p>
-
-      <form id="frequency-form" class="frequency-form">
-        <div class="input-group">
-          <label class="input-label" for="input-name">Vollständiger Name</label>
-          <input type="text" id="input-name" class="glass-input" placeholder="Max Mustermann" required>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="input-date">Geburtsdatum</label>
-          <input type="date" id="input-date" class="glass-input" required>
-        </div>
-
-        <div class="hook-actions">
-          <button type="submit" class="pulse-cta">
-            <span class="cta-text">Los geht's</span>
-          </button>
-          <a href="./dashboard/" id="skip-dashboard-link" class="skip-link">Ueberspringen</a>
-        </div>
-      </form>
+  <!-- Sidebar Navigation -->
+  <aside class="nav-sidebar">
+    <div class="nav-brand">
+      <span class="logo-text">MBRN</span>
     </div>
-  </section>
 
-  <section id="loader-section" class="loader-section hidden">
-    <div class="terminal-overlay">
+    <nav class="nav-menu" id="nav-menu"></nav>
+
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
+    </div>
+  </aside>
+
+  <!-- Background Glow -->
+  <div class="bg-glow"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ===== HERO SECTION ===== -->
+    <section id="hero-section" class="tool-hero reveal">
+      <div class="hero-eyebrow">Pattern Intelligence</div>
+      <h1 class="hero-title">Entschlüssele<br>deine Muster</h1>
+      <p class="hero-subtitle">Datenbasierte Numerologie ohne Esoterik. Kenne dein Timing. Nutze deine Chancen.</p>
+    </section>
+
+    <!-- ===== ARCHITECTURE SECTION ===== -->
+    <section id="architecture-section" class="tool-section reveal">
+      <div class="section-header">
+        <span class="section-eyebrow">Architektur der Klarheit</span>
+        <h2 class="section-title">Keine Mystik. Reine Mathematik.</h2>
+        <p class="section-subtitle">Vollständige Privatsphäre. Hardcoded Quality. Offline-First.</p>
+      </div>
+
+      <!-- Metrics Grid -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value text-accent">90%</div>
+          <div class="metric-label">Test-Coverage</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value text-accent">0ms</div>
+          <div class="metric-label">Server-Latenz</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value text-accent">∞</div>
+          <div class="metric-label">Offline-Nutzung</div>
+        </div>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="features-grid">
+        <div class="glass-card feature-card">
+          <span class="feature-icon">◈</span>
+          <h3 class="feature-title">Lebenspfad-Analyse</h3>
+          <p class="feature-desc">Deine Kernzahl. Deine Archetypen. In Sekunden berechnet. Keine Ratekunst, nur Algorithmus.</p>
+        </div>
+        <div class="glass-card feature-card">
+          <span class="feature-icon">◉</span>
+          <h3 class="feature-title">Zyklus-Tracking</h3>
+          <p class="feature-desc">9-Jahres-Zyklen, Pinnacles, Challenges — alles visuell. Timing ist alles.</p>
+        </div>
+        <div class="glass-card feature-card">
+          <span class="feature-icon">◊</span>
+          <h3 class="feature-title">Ghost-Mode Standard</h3>
+          <p class="feature-desc">Keine Cloud. Keine Datenbank. Keine Tracking-Pixel. Nur dein Browser.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ENTRY SECTION (FORM) ===== -->
+    <section id="entry-section" class="tool-section reveal">
+      <div id="hook-section" class="section-card">
+        <h2 class="text-accent mb-24">Deine Angaben</h2>
+        <p class="text-secondary mb-24">Gib Name und Geburtsdatum ein. Sofortige Analyse. Kein Login nötig.</p>
+
+        <form id="frequency-form" class="input-grid grid-1fr">
+          <div class="form-group">
+            <label for="input-name">Vollständiger Name</label>
+            <input type="text" id="input-name" placeholder="z.B. Max Mustermann" required>
+          </div>
+
+          <div class="form-group">
+            <label for="input-date">Geburtsdatum (TT.MM.JJJJ)</label>
+            <input type="text" id="input-date" placeholder="z.B. 15.08.1990" required>
+          </div>
+
+          <button type="submit" class="btn-primary mt-24">Analyse starten</button>
+          <a href="./dashboard/" id="skip-dashboard-link" class="skip-link text-center mt-16">Überspringen →</a>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== LOADER OVERLAY ===== -->
+  <section id="loader-section" class="loader-overlay hidden">
+    <div class="glass-card loader-card">
       <div class="terminal-header">
         <span class="terminal-dot red"></span>
         <span class="terminal-dot yellow"></span>
         <span class="terminal-dot green"></span>
-        <span class="terminal-title">MBRN</span>
+        <span class="terminal-title">MBRN // SYSTEM INITIALIZATION</span>
       </div>
       <div class="terminal-body">
         <div id="terminal-text" class="terminal-text"></div>
@@ -64,8 +128,9 @@
     </div>
   </section>
 
-  <section id="reveal-section" class="reveal-section hidden">
-    <div class="reveal-content">
+  <!-- ===== REVEAL OVERLAY ===== -->
+  <section id="reveal-section" class="reveal-overlay hidden">
+    <div class="glass-card reveal-card text-center">
       <div class="number-display">
         <svg class="number-ring" viewBox="0 0 200 200">
           <defs>
@@ -81,16 +146,17 @@
       </div>
 
       <div class="reveal-text">
-        <p class="reveal-label">Dein erster Eindruck</p>
-        <h2 id="archetype-title" class="archetype-title">Der Architekt</h2>
-        <p id="archetype-desc" class="archetype-desc">Hier bekommst du einen schnellen Blick auf dein Muster.</p>
-        <p class="reveal-note">Alles Weitere kannst du in Ruhe im Dashboard ansehen oder später nachreichen.</p>
+        <p class="section-eyebrow">Dein erster Eindruck</p>
+        <h2 id="archetype-title" class="card-title mb-16">Der Architekt</h2>
+        <p id="archetype-desc" class="text-secondary mb-16">Hier bekommst du einen schnellen Blick auf dein Muster.</p>
+        <p class="text-muted text-sm">Alles Weitere kannst du in Ruhe im Dashboard ansehen oder später nachreichen.</p>
       </div>
 
-      <button id="btn-dashboard" class="unlock-cta-primary">Zum Dashboard</button>
+      <button id="btn-dashboard" class="btn-primary mt-24">Zum Dashboard</button>
     </div>
   </section>
 
+  <!-- Scripts -->
   <script type="module" src="shared/ui/render_landing.js"></script>
 </body>
 </html>

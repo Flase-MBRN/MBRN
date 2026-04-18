@@ -3,10 +3,11 @@
  * Landing-Flow fuer Einstieg, Skip und ersten Blick aufs Muster.
  */
 
-import { nav } from './navigation.js';
+import { nav, renderNavigation } from './navigation.js';
 import { storage } from '../core/storage.js';
 import { i18n } from '../core/i18n.js';
 import { calculateLifePathTotal, formatValue } from '../core/logic/numerology/index.js';
+import { renderAuth } from './render_auth.js';
 
 const ARCHETYPES = {
   1: { title: 'Der Initiator', desc: 'Du gehst am besten voran, wenn du selbst den ersten Schritt setzt.' },
@@ -35,8 +36,35 @@ export const landingRender = {
       return;
     }
 
+    // Initialize navigation like other apps
+    renderNavigation('nav-menu');
+    nav.bindNavigation();
+    nav.registerCurrentApp(this);
+    renderAuth.init();
+
     this.bindForm();
     this.bindButtons();
+    this.initScrollReveal();
+  },
+
+
+  initScrollReveal() {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
   },
 
   checkExistingProfile() {
@@ -103,6 +131,7 @@ export const landingRender = {
     this.saveUserData(name, birthDate, lifePath);
     this.showReveal(lifePath, false);
   },
+
 
   saveUserData(name, birthDate, lifePath) {
     storage.set('last_numerology_calc', {
@@ -193,18 +222,33 @@ export const landingRender = {
   },
 
   transitionTo(section) {
-    ['hook', 'loader', 'reveal'].forEach((key) => {
-      const element = document.getElementById(`${key}-section`);
-      if (!element) return;
-      element.classList.add('hidden');
-      element.classList.remove('visible');
-    });
+    // Show/hide main content sections (hero, architecture, entry)
+    if (section === 'hero' || section === 'architecture' || section === 'entry') {
+      ['hero', 'architecture', 'entry'].forEach((key) => {
+        const element = document.getElementById(`${key}-section`);
+        if (!element) return;
+        if (key === section) {
+          element.classList.remove('hidden');
+        } else {
+          element.classList.add('hidden');
+        }
+      });
+      
+      // Hide overlays
+      const loader = document.getElementById('loader-section');
+      const reveal = document.getElementById('reveal-section');
+      if (loader) loader.classList.add('hidden');
+      if (reveal) reveal.classList.add('hidden');
+      return;
+    }
 
-    const target = document.getElementById(`${section}-section`);
-    if (target) {
-      target.classList.remove('hidden');
-      void target.offsetWidth;
-      target.classList.add('visible');
+    // Show loader or reveal overlay
+    if (section === 'loader' || section === 'reveal') {
+      const target = document.getElementById(`${section}-section`);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('visible');
+      }
     }
   }
 };
