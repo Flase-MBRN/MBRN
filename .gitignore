@@ -14,6 +14,8 @@ MBRN_DEEP_DECODE_*.pdf
 .env.*
 *.local
 config.local.js
+env.js
+shared/core/env.js
 
 # Backend/Script Environment Secrets (NEVER commit these)
 # Only backend .env files with real secrets are ignored
@@ -22,8 +24,9 @@ scripts/**/.env.*
 **/*.local
 config.local.js
 
-# NOTE: Frontend env.js is TRACKED and contains PUBLIC Supabase Anon-Key
-# This is required for static GitHub Pages hosting - NOT a secret!
+# NOTE: Frontend env.js contains PUBLIC Supabase Anon-Key in some deployments,
+# but it is kept out of global version control to prevent credential leakage.
+# Users should use env.example.js as a template.
 
 # Data Cache & Temp Files (SECURITY: Prevent data leaks)
 AI/models/data/*.json

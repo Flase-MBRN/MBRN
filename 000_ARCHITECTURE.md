@@ -66,6 +66,14 @@ Der Architect ist unsichtbar. Die Marke trägt alles.
 14. **Design Consistency:** Jedes Modul folgt dem MBRN Design-Code. Keine Ausnahmen.
 15. **Temporal Precision:** Chronologische Berechnungen sind deterministisch und zeitzonen-akkurat (UTC-Mapping).
 
+### UNIVERSE PROTOCOL (Philosophie)
+
+**Directive 16: Professionalität vor Sichtbarkeit**
+Das System wird vollständig gebaut, bevor der erste externe Kontakt stattfindet. Kein MVP. Kein „Lean Start“. Kein halbfertiges System vor echten Menschen. Alle Apps müssen zu 100% funktionsfähig, stabil und im MBRN-Design-Standard finalisiert sein, bevor Reichweite erzeugt wird. KI-Agenten dürfen niemals „frühe User“, „Marketing-Tests“ oder „schnell shippen“ empfehlen.
+
+**Directive 17: Modular Infinity**
+Baue jede Komponente so, als wäre sie Teil eines Systems, das 100 Jahre wächst. Jede App muss so entkoppelt sein, dass sie unabhängig existieren kann, aber die globale Infrastruktur (Auth, Storage, Logic-Bridges) nutzt. Das System erreicht niemals einen finalen Endzustand, sondern expandiert unendlich.
+
 ---
 
 ## 04 — DESIGN CODE: STERNENHIMMEL-SYSTEM
@@ -169,14 +177,21 @@ Labels:   Space Mono oder Inter Caps + Letter-spacing — wie Koordinaten
 
 ## 07 — MONETARISIERUNG (PHILOSOPHIE)
 
-**Grundprinzip:** Geld kommt durch Freiwilligkeit mehr zusammen als durch Druck.
+**Grundprinzip:** Geld kommt durch Freiwilligkeit mehr zusammen als durch Druck.  
+**Universe Protocol:** Monetarisierung ist eine Phase-3-Entscheidung. Davor: **bauen, nicht verkaufen.**
 
 ```
-Basis:          Kostenlos — immer und ohne Einschränkung
-Optional:       Ko-fi / Spenden für die die geben wollen
-Später:         Premium Features wenn Traffic-Daten zeigen was User wirklich wollen
-Stripe:         Im Code vorhanden, eingefroren bis Community-Entscheidung
-Gewerbe:        Wenn sich das System selbst trägt
+Phase 1:        Bauen — keine Monetarisierung, kein Marketing, kein Traffic-Fokus
+Phase 2:        Strategischer Launch des fertigen Systems + organische Reichweite
+Phase 3:        Monetarisierung basierend auf echten Community-Daten
+
+Modell:
+  Basis:        Kostenlos — immer und ohne Einschränkung
+  Optional:     Ko-fi / Spenden für die die geben wollen
+  Premium:      Features wenn Community-Nachfrage bewiesen ist
+  Stripe:       Im Code vorhanden, eingefroren bis Phase 3
+  B2B API:      Logik-Module als Service für externe Entwickler (Phase 3+)
+  Gewerbe:      Wenn sich das System selbst trägt
 ```
 
 **Was MBRN nie tut:**
@@ -184,6 +199,7 @@ Gewerbe:        Wenn sich das System selbst trägt
 - Features wegnehmen die man hatte
 - Daten verkaufen
 - Parasoziale Bindung aufbauen
+- **Ein halbfertiges System veröffentlichen um "schnell zu validieren"**
 
 ---
 
@@ -208,5 +224,43 @@ Antwort "anderes Zeitalter" → rein damit.
 
 ---
 
-**STATUS: MASTER_DIRECTIVE_v5.0_ACTIVE**
+## 10 — LAW OF PILLAR ISOLATION (Zero-Tolerance)
+
+**Gesetz:** "Logik ist Pillar 2 (API) und muss strikt von Pillar 4 (UI/Render) getrennt sein."
+
+> **Vollständige Formulierung:** "Logik darf niemals direkt in render.js leben, sondern muss als Modul in shared/core/logic/ liegen, um API-ready zu sein."
+
+### Enforcement
+
+| Regel | Konsequenz bei Verletzung |
+|-------|---------------------------|
+| **Pillar 4 imports ONLY from Pillar 2** | `render.js` dateien importieren ausschließlich aus `shared/core/logic/` |
+| **Pillar 2 exports pure functions** | Kein DOM-Zugriff, keine Framework-Dependencies, strukturierte Returns |
+| **Violation Detection** | Direkte Berechnung in `render.js` = Sofort-Refactoring erforderlich |
+| **API-Ready Standard** | Jedes Logik-Modul muss als Supabase Edge Function deploybar sein |
+
+### Die 4 Säulen-Verzeichnisstruktur
+
+```
+/MBRN-HUB-V1
+│
+├── /apps                     # 🟦 SÄULE 4: ECOSYSTEM (Frontend)
+│   └── /[app-name]           # Nur UI, Render, keine Berechnungslogik
+│
+├── /shared/core/logic        # 🟧 SÄULE 2: B2B API FOUNDATION
+│   └── [domain].js           # Pure Algorithmen, API-ready
+│
+├── /scripts/pipelines        # 🟨 SÄULE 3: DATA ARBITRAGE
+│   └── [topic]_fetcher.py    # Python + Ollama lokale Verarbeitung
+│
+├── /supabase/functions       # 🟪 SÄULE 2: API DEPLOYMENT
+│   └── [logic]-api.js        # Edge Functions für B2B-Zugriff
+│
+└── /templates                # 🟩 SÄULE 1: META-GENERATOR
+    └── [pattern].json        # Baupläne für KI-generierte Apps
+```
+
+---
+
+**STATUS: MASTER_DIRECTIVE_v7.0_UNIVERSE_PROTOCOL_ACTIVE**
 *System Architect Out.*
