@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { generateShareCard } from '../shared/core/logic/numerology/pdf/canvas.js';
+import { generateShareCard, generateTeaserAsset } from '../shared/core/logic/numerology/pdf/canvas.js';
 import { __resetJsPDFMock, __setJsPDFImpl } from './mocks/jspdf-esm.js';
 
 const fakeDocs = [];
@@ -89,6 +89,28 @@ describe('pdf/canvas + report outputs', () => {
       label: 'REIFE',
       value: '-'
     }));
+  });
+
+  test('generateTeaserAsset returns a reduced mystery-teaser payload', () => {
+    const card = generateTeaserAsset(createProfile({
+      meta: { name: 'Erik Klauss' },
+      quantum: { score: 91 }
+    }));
+
+    expect(card).toEqual(expect.objectContaining({
+      width: 1080,
+      height: 1920,
+      header: expect.objectContaining({ text: 'PATTERN SIGNAL DETECTED' }),
+      name: expect.objectContaining({ text: 'ERIK' }),
+      score: expect.objectContaining({ value: 91 }),
+      hook: expect.objectContaining({
+        primary: 'What is your pattern?',
+        secondary: 'Calculate yours at MBRN'
+      }),
+      footer: expect.objectContaining({ text: 'M B R N  —  PATTERN INTELLIGENCE' })
+    }));
+    expect(card.name.font).toContain('Syne');
+    expect(card.score.font).toContain('Syne');
   });
 
   test('generateDeepReport builds a jsPDF document with multiple pages', async () => {

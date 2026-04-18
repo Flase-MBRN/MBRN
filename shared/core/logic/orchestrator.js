@@ -126,4 +126,4 @@ export async function getUnifiedProfile(name, birthDate) {
 }
 
 // Re-export generators for Core access
-export { generateShareCard, generateOperatorReport } from './numerology/index.js';
+export { generateShareCard, generateTeaserAsset, generateOperatorReport } from './numerology/index.js';

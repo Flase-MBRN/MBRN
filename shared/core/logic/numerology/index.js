@@ -48,7 +48,7 @@ export {
 } from './metadata.js';
 
 // PDF generation
-export { generateShareCard } from './pdf/canvas.js';
+export { generateShareCard, generateTeaserAsset } from './pdf/canvas.js';
 export { generateDeepReport, generateOperatorReport } from './pdf/report.js';
 
 // Import for main orchestrator

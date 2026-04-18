@@ -266,6 +266,39 @@ function drawFooter(ctx, footer) {
   });
 }
 
+function drawTeaserHeader(ctx, header) {
+  withContext(ctx, () => {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = header.color || WHITE_MUTE;
+    ctx.font = header.font;
+    ctx.fillText(header.text, header.x, header.y);
+  });
+}
+
+function drawTeaserName(ctx, name) {
+  withContext(ctx, () => {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = name.color || WHITE;
+    ctx.font = name.font;
+    ctx.shadowColor = name.glowColor || 'rgba(123, 92, 245, 0.4)';
+    ctx.shadowBlur = name.glowBlur || 30;
+    ctx.fillText(name.text, name.x, name.y);
+  });
+}
+
+function drawTeaserHook(ctx, hook) {
+  withContext(ctx, () => {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = hook.primaryColor || WHITE_SOFT;
+    ctx.font = hook.primaryFont;
+    ctx.fillText(hook.primary, hook.x, hook.primaryY);
+
+    ctx.fillStyle = hook.secondaryColor || WHITE_MUTE;
+    ctx.font = hook.secondaryFont;
+    ctx.fillText(hook.secondary, hook.x, hook.secondaryY);
+  });
+}
+
 /**
  * Renders share card data to a canvas element.
  * @param {HTMLCanvasElement} canvas - Pre-created canvas element
@@ -306,5 +339,42 @@ export function renderShareCardToCanvas(canvas, cardData) {
   drawScore(ctx, score);
   drawCoreNumbers(ctx, coreNumbers);
   drawHudCrosses(ctx, hud.crosses);
+  drawFooter(ctx, footer);
+}
+
+/**
+ * Renders the mystery-teaser score asset to a canvas element.
+ * @param {HTMLCanvasElement} canvas - Pre-created canvas element
+ * @param {Object} teaserData - Pre-calculated teaser data from logic layer
+ */
+export function renderTeaserCardToCanvas(canvas, teaserData) {
+  if (!canvas || !teaserData) {
+    throw new Error('Canvas and teaserData are required');
+  }
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('2D canvas context is required');
+  }
+
+  const {
+    width,
+    height,
+    background,
+    header,
+    score,
+    name,
+    hook,
+    footer
+  } = teaserData;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  drawVoidBackground(ctx, width, height, background);
+  drawTeaserHeader(ctx, header);
+  drawScore(ctx, score);
+  drawTeaserName(ctx, name);
+  drawTeaserHook(ctx, hook);
   drawFooter(ctx, footer);
 }

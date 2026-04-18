@@ -16,6 +16,13 @@ const PALETTE = Object.freeze({
   arcTrack: 'rgba(255, 255, 255, 0.12)'
 });
 
+function getFirstName(name = '') {
+  return String(name)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)[0] || 'YOU';
+}
+
 function formatCoreNumber(value, fallback = '-') {
   return value ?? fallback;
 }
@@ -168,6 +175,96 @@ export function generateShareCard(data) {
         height: 226
       }
     ],
+    footer: {
+      text: 'M B R N  —  PATTERN INTELLIGENCE',
+      x: 540,
+      y: 1768,
+      font: '600 22px Inter, sans-serif',
+      color: PALETTE.whiteMute
+    }
+  };
+}
+
+export function generateTeaserAsset(data) {
+  const score = Number(data?.quantum?.score ?? 0);
+  const firstName = getFirstName(data?.meta?.name).toUpperCase();
+
+  return {
+    width: 1080,
+    height: 1920,
+    palette: PALETTE,
+    background: {
+      baseColor: PALETTE.void,
+      glow: {
+        x: 540,
+        y: 760,
+        innerRadius: 24,
+        outerRadius: 760,
+        colorInner: 'rgba(123, 92, 245, 0.48)',
+        colorMid: 'rgba(123, 92, 245, 0.18)',
+        colorOuter: 'rgba(123, 92, 245, 0)'
+      },
+      vignette: {
+        colorInner: 'rgba(5, 5, 10, 0)',
+        colorOuter: 'rgba(5, 5, 10, 0.9)'
+      }
+    },
+    header: {
+      text: 'PATTERN SIGNAL DETECTED',
+      x: 540,
+      y: 164,
+      font: '600 24px Inter, sans-serif',
+      color: PALETTE.whiteMute
+    },
+    score: {
+      value: score,
+      arcX: 540,
+      arcY: 760,
+      arcRadius: 320,
+      arcStart: 0.78 * Math.PI,
+      arcEnd: 2.22 * Math.PI,
+      arcRange: 1.44 * Math.PI,
+      trackColor: PALETTE.arcTrack,
+      trackWidth: 20,
+      accentColor: PALETTE.violet,
+      accentGlowColor: 'rgba(123, 92, 245, 0.72)',
+      accentWidth: 28,
+      tickCount: 30,
+      tickColor: PALETTE.whiteMute,
+      tickWidth: 2,
+      tickLength: 16,
+      textX: 540,
+      textY: 798,
+      textColor: PALETTE.white,
+      font: '700 172px Syne, sans-serif',
+      textGlowColor: 'rgba(123, 92, 245, 0.5)',
+      textGlowBlur: 48,
+      label: 'SCORE',
+      labelX: 540,
+      labelY: 874,
+      labelFont: '600 28px Inter, sans-serif',
+      labelColor: PALETTE.whiteSoft
+    },
+    name: {
+      text: firstName,
+      x: 540,
+      y: 1156,
+      font: '700 126px Syne, sans-serif',
+      color: PALETTE.white,
+      glowColor: 'rgba(123, 92, 245, 0.4)',
+      glowBlur: 30
+    },
+    hook: {
+      primary: 'What is your pattern?',
+      secondary: 'Calculate yours at MBRN',
+      x: 540,
+      primaryY: 1316,
+      secondaryY: 1362,
+      primaryFont: '600 36px Inter, sans-serif',
+      secondaryFont: '500 24px Inter, sans-serif',
+      primaryColor: PALETTE.whiteSoft,
+      secondaryColor: PALETTE.whiteMute
+    },
     footer: {
       text: 'M B R N  —  PATTERN INTELLIGENCE',
       x: 540,
