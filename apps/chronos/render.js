@@ -273,4 +273,3 @@ export const chronosRender = {
 };
 
 chronosRender.init();
-dom.initScrollReveal();

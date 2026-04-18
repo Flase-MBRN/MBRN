@@ -8,19 +8,8 @@
  * Usage: i18n.t('key') or i18n.t('key.namespace')
  */
 
+import { getBrowserLanguage, getBrowserLocalStorage } from './browser_runtime.js';
 import { MBRN_CONFIG } from './config.js';
-
-function getNavigatorLanguage() {
-  if (typeof globalThis === 'undefined' || !globalThis.navigator) {
-    return 'en';
-  }
-
-  return globalThis.navigator.language || globalThis.navigator.userLanguage || 'en';
-}
-
-function canUseLocalStorage() {
-  return typeof globalThis !== 'undefined' && !!globalThis.localStorage;
-}
 
 class I18nEngine {
   constructor() {
@@ -35,7 +24,7 @@ class I18nEngine {
    * Fallback: 'en'
    */
   _detectLanguage() {
-    const browserLang = getNavigatorLanguage();
+    const browserLang = getBrowserLanguage('en');
     const langCode = browserLang.split('-')[0].toLowerCase();
     
     // Supported languages
@@ -55,8 +44,9 @@ class I18nEngine {
     
     if (this.currentLang !== lang) {
       this.currentLang = lang;
-      if (canUseLocalStorage()) {
-        globalThis.localStorage.setItem('mbrn_lang', lang);
+      const storageRef = getBrowserLocalStorage();
+      if (storageRef) {
+        storageRef.setItem('mbrn_lang', lang);
       }
       this._notifyListeners();
     }

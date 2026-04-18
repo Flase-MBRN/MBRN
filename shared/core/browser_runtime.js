@@ -13,6 +13,11 @@ export function getBrowserNavigator() {
   return globalThis.navigator || null;
 }
 
+export function getBrowserLocalStorage() {
+  if (typeof globalThis === 'undefined') return null;
+  return globalThis.localStorage || null;
+}
+
 export function hasBrowserWindow() {
   return !!getBrowserWindow();
 }

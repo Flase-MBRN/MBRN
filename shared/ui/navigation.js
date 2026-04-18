@@ -9,6 +9,7 @@
  */
 
 import { MBRN_ROUTE_META, MBRN_ROUTES } from '../core/config.js';
+import { state } from '../core/state.js';
 import { touchManager } from './touch_manager.js';
 import { dom } from './dom_utils.js';
 
@@ -143,11 +144,11 @@ export const nav = {
     // 3. Visibility Change Handler
     this._handlers.visibilitychange = () => {
       if (document.hidden && this._currentApp) {
-        if (typeof state !== 'undefined' && state.emit) {
+        if (state?.emit) {
           state.emit('appPaused', { timestamp: Date.now() });
         }
       } else if (!document.hidden && this._currentApp) {
-        if (typeof state !== 'undefined' && state.emit) {
+        if (state?.emit) {
           state.emit('appResumed', { timestamp: Date.now() });
         }
       }
@@ -161,7 +162,7 @@ export const nav = {
           const estimate = await navigator.storage.estimate();
           if (estimate.usage && estimate.quota && estimate.usage > estimate.quota * 0.8) {
             console.warn('[Navigation] Memory pressure detected - triggering cleanup');
-            if (typeof state !== 'undefined' && state.emit) {
+            if (state?.emit) {
               state.emit('memoryPressure', { 
                 usage: estimate.usage, 
                 quota: estimate.quota,

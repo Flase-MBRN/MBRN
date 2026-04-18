@@ -274,33 +274,34 @@ class ErrorLogger {
     if (!hasBrowserRuntime() || !isBrowserOnline() || !api.isOnline) return;
 
     this._syncInProgress = true;
-    
-    const queue = this._getQueue();
-    if (queue.length === 0) {
-      this._syncInProgress = false;
-      return;
-    }
 
-    const unsynced = [];
-    let synced = 0;
-
-    for (const error of queue) {
-      if (error.synced) continue;
-
-      const result = await this._sendToSupabase(error);
-      if (result.success) {
-        synced++;
-        error.synced = true;
-      } else {
-        unsynced.push(error);
+    try {
+      const queue = this._getQueue();
+      if (queue.length === 0) {
+        return;
       }
-    }
 
-    // Keep only unsynced errors
-    this._saveQueue(unsynced);
-    state.emit('errorQueueSync', { synced, remaining: unsynced.length });
-    
-    this._syncInProgress = false;
+      const unsynced = [];
+      let synced = 0;
+
+      for (const error of queue) {
+        if (error.synced) continue;
+
+        const result = await this._sendToSupabase(error);
+        if (result.success) {
+          synced++;
+          error.synced = true;
+        } else {
+          unsynced.push(error);
+        }
+      }
+
+      // Keep only unsynced errors
+      this._saveQueue(unsynced);
+      state.emit('errorQueueSync', { synced, remaining: unsynced.length });
+    } finally {
+      this._syncInProgress = false;
+    }
   }
 
   /**
