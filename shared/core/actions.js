@@ -11,12 +11,11 @@ import { streakManager } from '../loyalty/streak_manager.js';
 import { api } from './api.js';
 import { MBRN_CONFIG } from './config.js';
 import { i18n } from './i18n.js';
-import { calculateSynergy } from './logic/synergy.js';
-import { calculateChronos } from './logic/chronos.js';
-import { calculateNameFrequency } from './logic/frequency.js';
 
 // Fix #2 (Phase 0.5): Private Registry — nicht exportiert, nicht von außen erreichbar
 const _registry = new Map();
+
+// Removed immediate actions registry to satisfy Law 17 (Inversion of Control)
 let _syncDebounceTimer = null;
 let _systemInitialized = false;  // Idempotency Guard
 
@@ -95,11 +94,9 @@ export const actions = {
    */
   initSystem() {
     if (_systemInitialized) {
-      console.log('[System Boot] Already initialized — skipping.');
       return { success: true, data: state.get('systemInitialized') };
     }
     _systemInitialized = true;
-    console.log('[System Boot] Initializing...');
 
     // Phase 13.2: Initialize Cloud Gateway
     const apiInitialized = api.init();
@@ -109,7 +106,6 @@ export const actions = {
 
     if (storedUserData.success && storedUserData.data) {
       initialProfile = storedUserData.data;
-      console.log('[System Boot] Existing data restored.');
     } else {
       initialProfile = {
         isNewUser: true,
@@ -117,7 +113,6 @@ export const actions = {
         shields: 0,
         unlocked_tools: []
       };
-      console.log('[System Boot] Clean slate initialized.');
     }
 
     // Phase 14: Session Hydration
@@ -127,7 +122,6 @@ export const actions = {
           if (res.success && res.data) {
             state.set('user', res.data.user);
             state._authorizedEmit('userAuthChanged', res.data.user);
-            console.log('[System Boot] Active session restored:', res.data.user.email);
             // Phase 15: Perform initial cloud mirroring
             this.pullCloudData(res.data.user.id);
           }
@@ -145,36 +139,8 @@ export const actions = {
     // Phase 16.4: Global Analytics Listener
     state.subscribe('analyticsTrack', (eventData) => api.logEvent(eventData));
 
-    // Phase 4.0: Register new Logic Engines (M14-M16)
-    this.register('calculateSynergy', async (payload) => {
-      const res = await calculateSynergy(payload.operatorA, payload.operatorB);
-      state.emit('synergyCalculated', res);
-      return res;
-    });
-
-    this.register('calculateChronos', async (payload) => {
-      const res = await calculateChronos(payload.birthDate);
-      state.emit('chronosCalculated', res);
-      return res;
-    });
-
-    this.register('calculateNameFrequency', (payload) => {
-      const res = calculateNameFrequency(payload.fullName);
-      state.emit('frequencyCalculated', res);
-      return res;
-    });
-
-    // Phase 4.0: Unified Numerology Orchestrator (Migrated from App)
-    this.register('calculateFullProfile', async (payload) => {
-      const { getUnifiedProfile } = await import('./logic/orchestrator.js');
-      const res = await getUnifiedProfile(payload.name, payload.birthDate);
-      if (res.success) {
-        state.emit('numerologyDone', res);
-      } else {
-        state.emit('numerologyFailed', res);
-      }
-      return res;
-    });
+    // NOTE: Actions are now registered immediately on module load (see top of file)
+    // This ensures actions work even if initSystem hasn't been called yet.
 
     return { success: true, data: initialProfile };
   },
@@ -202,7 +168,6 @@ export const actions = {
    * Monetization Hooks (Phase 11)
    */
   showPaywall(featureName) {
-    console.log(`[Gatekeeper] Paywall triggered for feature: ${featureName}`);
     state.emit('paywallRequested', { feature: featureName });
     return { success: false, error: 'paywall_active', data: { feature: featureName } };
   },
@@ -311,7 +276,6 @@ export const actions = {
 
   async pullCloudData(userId) {
     state.emit('syncStarted');
-    console.log('[Sync Engine] Mirroring from cloud...');
 
     const cloudRes = await api.getProfile(userId);
     if (!cloudRes.success || !cloudRes.data) {
@@ -328,7 +292,6 @@ export const actions = {
     const cloudTime = new Date(cloudProfile.last_sync).getTime();
 
     if (cloudTime > localTime) {
-      console.log('[Sync Engine] Cloud is newer. Updating local state.');
       storage.set('user_profile', {
         ...localProfile,
         level: cloudProfile.access_level,
@@ -339,7 +302,6 @@ export const actions = {
       });
       state.set('systemInitialized', storage.get('user_profile').data);
     } else if (localTime > cloudTime) {
-      console.log('[Sync Engine] Local is newer. Triggering push.');
       this.syncProfileToCloud();
     }
 
@@ -354,7 +316,6 @@ export const actions = {
     const res = await api.saveAppData(user.id, appId, data);
     if (res.success) {
       state._authorizedEmit('syncSuccess');
-      console.log(`[Sync Engine] App data synced: ${appId}`);
     } else {
       state._authorizedEmit('syncFailed');
     }
@@ -379,8 +340,9 @@ export const actions = {
     const res = await api.createCheckoutSession(priceId);
 
     if (res.success && res.data?.url) {
-      console.log('[The Vault] Redirecting to Stripe Checkout...');
-      window.location.href = res.data.url;
+      // P2.4 Cleanup: Delegate redirect logic to UI layer via event emit
+      state.emit('checkoutRedirectRequested', { url: res.data.url });
+      return { success: true, redirecting: true };
     } else {
       state._authorizedEmit('syncFailed');
       return res;

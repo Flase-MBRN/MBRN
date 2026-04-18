@@ -2,6 +2,7 @@ import { state } from '../core/state.js';
 import { actions } from '../core/actions.js';
 import { dom } from './dom_utils.js';
 import { i18n } from '../core/i18n.js';
+import { getRepoRoot } from './navigation.js';
 
 /**
  * /shared/ui/render_auth.js
@@ -47,7 +48,6 @@ export const renderAuth = {
     this._unsubscribers = [];
     this._timers.forEach(id => clearTimeout(id));
     this._timers = [];
-    console.log('[RenderAuth] Destroyed — All listeners removed');
   },
 
   setSyncing(isSyncing) {
@@ -107,7 +107,7 @@ export const renderAuth = {
           authSection.scrollIntoView({ behavior: 'smooth' });
         } else {
           // On app pages: navigate to landing page with auth hash
-          window.location.href = '/MBRN/index.html#auth';
+          window.location.href = getRepoRoot() + 'index.html#auth';
         }
       });
     }

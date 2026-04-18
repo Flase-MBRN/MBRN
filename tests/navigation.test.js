@@ -24,6 +24,7 @@ Object.defineProperty(global, 'window', {
   value: {
     location: mockLocation,
     addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
     innerWidth: 1024
   },
   writable: true
@@ -32,10 +33,21 @@ Object.defineProperty(global, 'window', {
 Object.defineProperty(global, 'document', {
   value: {
     addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    createElement: jest.fn(() => ({
+      setAttribute: jest.fn(),
+      classList: { toggle: jest.fn() },
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    })),
     querySelector: jest.fn(() => null),
     querySelectorAll: jest.fn(() => []),
     hidden: false,
-    body: { contains: jest.fn(() => true) }
+    body: { 
+      contains: jest.fn(() => true),
+      appendChild: jest.fn(),
+      removeChild: jest.fn()
+    }
   },
   writable: true
 });
@@ -66,11 +78,13 @@ jest.mock('../shared/core/config.js', () => ({
 describe('Navigation - App Lifecycle Cleanup', () => {
   beforeEach(() => {
     // Reset nav state
-    nav._currentApp = null;
-    nav._cleanupListenersInitialized = false;
-    nav._navigationBound = false;
+    nav.destroy(); // Clear any existing handles before test
     jest.clearAllMocks();
     mockLocation.href = '';
+  });
+
+  afterEach(() => {
+    nav.destroy(); // Cleanup handles after each test
   });
 
   describe('navigateTo() Cleanup Verification', () => {

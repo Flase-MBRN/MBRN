@@ -15,9 +15,16 @@ import { touchManager } from './touch_manager.js';
  * Ermittelt dynamisch den Repo-Root anhand bekannter Pfad-Segmente.
  * Lokal: /  → GitHub Pages: /MBRN/
  */
-function getRepoRoot() {
+export function getRepoRoot() {
   const path = window.location.pathname;
-  const knownSegments = ['/dashboard/', '/apps/finance/', '/apps/numerology/'];
+  const knownSegments = [
+    '/dashboard/',
+    '/apps/finance/',
+    '/apps/numerology/',
+    '/apps/chronos/',
+    '/apps/tuning/',
+    '/apps/synergy/'
+  ];
   for (const segment of knownSegments) {
     const idx = path.indexOf(segment);
     if (idx !== -1) return path.slice(0, idx) + '/';
@@ -35,6 +42,9 @@ export const nav = {
   // OMEGA FIX: Store interval IDs for cleanup
   _memoryCheckInterval: null,
   _cleanupInterval: null,
+  _mobileMenuOpen: false,
+  _hamburgerElement: null,
+  _handlers: {}, // Registry for named handlers to allow removeEventListener
 
   /**
    * Register the current app instance for cleanup on navigation
@@ -53,39 +63,37 @@ export const nav = {
     if (this._cleanupListenersInitialized) return;
     this._cleanupListenersInitialized = true;
 
-    // Cleanup on browser back/forward button
-    window.addEventListener('popstate', () => {
+    // 1. Browser Navigation Handler
+    this._handlers.popstate = () => {
       if (this._currentApp && typeof this._currentApp.destroy === 'function') {
-        console.log('[Navigation] Emergency cleanup on popstate (back/forward)');
         this._currentApp.destroy();
         this._currentApp = null;
       }
-    });
+    };
+    window.addEventListener('popstate', this._handlers.popstate);
 
-    // Cleanup on page unload/refresh
-    window.addEventListener('beforeunload', () => {
+    // 2. Unload Handler
+    this._handlers.beforeunload = () => {
       if (this._currentApp && typeof this._currentApp.destroy === 'function') {
-        console.log('[Navigation] Emergency cleanup on beforeunload');
         this._currentApp.destroy();
         this._currentApp = null;
       }
-    });
+    };
+    window.addEventListener('beforeunload', this._handlers.beforeunload);
     
-    // MEMORY LEAK FIX: Handle tab visibility changes
-    document.addEventListener('visibilitychange', () => {
+    // 3. Visibility Change Handler
+    this._handlers.visibilitychange = () => {
       if (document.hidden && this._currentApp) {
-        console.log('[Navigation] Tab hidden - pausing expensive operations');
-        // Emit pause event for app to handle
         if (typeof state !== 'undefined' && state.emit) {
           state.emit('appPaused', { timestamp: Date.now() });
         }
       } else if (!document.hidden && this._currentApp) {
-        console.log('[Navigation] Tab visible - resuming operations');
         if (typeof state !== 'undefined' && state.emit) {
           state.emit('appResumed', { timestamp: Date.now() });
         }
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this._handlers.visibilitychange);
     
     // MEMORY PRESSURE DETECTION (Mobile browsers)
     if ('storage' in navigator && 'estimate' in navigator.storage) {
@@ -112,8 +120,6 @@ export const nav = {
     this._cleanupInterval = setInterval(() => {
       this._cleanupOrphanedElements();
     }, 60000); // Every minute
-
-    console.log('[Navigation] Emergency cleanup listeners initialized');
   },
   
   /**
@@ -145,7 +151,6 @@ export const nav = {
   navigateTo(route) {
     // Cleanup current app before navigating
     if (this._currentApp && typeof this._currentApp.destroy === 'function') {
-      console.log(`[Navigation] Cleaning up current app before navigating to ${route}`);
       this._currentApp.destroy();
       this._currentApp = null;
     }
@@ -157,7 +162,6 @@ export const nav = {
   bindNavigation() {
     // Law 5: Idempotency - prevent duplicate listeners if called multiple times
     if (this._navigationBound) {
-      console.log('[Navigation] bindNavigation() already called, skipping duplicate listener registration');
       return;
     }
     this._navigationBound = true;
@@ -172,8 +176,11 @@ export const nav = {
     // Initialize touch gestures for mobile (idempotent internal check)
     touchManager.init();
 
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', (e) => {
+    // Initialize mobile hamburger menu
+    this.initMobileMenu();
+
+    // 4. Outside Sidebar Click Handler
+    this._handlers.outsideClick = (e) => {
       const sidebar = document.querySelector('.nav-sidebar');
       const isClickInsideSidebar = sidebar?.contains(e.target);
       const isClickOnNavToggle = e.target.closest('.nav-toggle');
@@ -184,9 +191,8 @@ export const nav = {
           document.body.style.overflow = '';
         }
       }
-    });
-
-    console.log('[Navigation] Navigation bindings established (idempotent)');
+    };
+    document.addEventListener('click', this._handlers.outsideClick);
   },
 
   /**
@@ -195,32 +201,99 @@ export const nav = {
    */
   resetNavigationBinding() {
     this._navigationBound = false;
-    console.log('[Navigation] Navigation binding state reset');
   },
 
   /**
    * OMEGA FIX: Destroy - Cleanup all intervals and references
    * Prevents memory leaks from setInterval timers
    */
+  /**
+   * Initialize mobile hamburger menu for responsive navigation
+   * Starry Sky Design: subtiler Glow, #05050A background
+   */
+  initMobileMenu() {
+    // Check if hamburger already exists
+    let hamburger = document.querySelector('.nav-hamburger');
+    
+    if (!hamburger) {
+      hamburger = document.createElement('button');
+      hamburger.className = 'nav-hamburger';
+      hamburger.setAttribute('aria-label', 'Menu');
+      hamburger.textContent = '☰';
+      document.body.appendChild(hamburger);
+    }
+    
+    this._hamburgerElement = hamburger;
+    
+    // 5. Mobile Toggle Handler
+    this._handlers.mobileToggle = () => {
+      const sidebar = document.querySelector('.nav-sidebar');
+      this._mobileMenuOpen = !this._mobileMenuOpen;
+      sidebar?.classList.toggle('mobile-open', this._mobileMenuOpen);
+      hamburger.classList.toggle('active', this._mobileMenuOpen);
+      hamburger.textContent = this._mobileMenuOpen ? '✕' : '☰';
+    };
+    hamburger.addEventListener('click', this._handlers.mobileToggle);
+    
+    // 6. Escape Key Handler
+    this._handlers.keydownEscape = (e) => {
+      if (e.key === 'Escape' && this._mobileMenuOpen) {
+        this._handlers.mobileToggle();
+      }
+    };
+    document.addEventListener('keydown', this._handlers.keydownEscape);
+  },
+
   destroy() {
-    // Clear memory pressure check interval
+    // 1. Clear Intervals
     if (this._memoryCheckInterval) {
       clearInterval(this._memoryCheckInterval);
       this._memoryCheckInterval = null;
     }
     
-    // Clear orphaned element cleanup interval
     if (this._cleanupInterval) {
       clearInterval(this._cleanupInterval);
       this._cleanupInterval = null;
     }
     
-    // Clear current app reference
+    // 2. Remove Global Listeners
+    if (this._handlers.popstate) {
+      window.removeEventListener('popstate', this._handlers.popstate);
+    }
+    if (this._handlers.beforeunload) {
+      window.removeEventListener('beforeunload', this._handlers.beforeunload);
+    }
+    if (this._handlers.visibilitychange) {
+      document.removeEventListener('visibilitychange', this._handlers.visibilitychange);
+    }
+    if (this._handlers.outsideClick) {
+      document.removeEventListener('click', this._handlers.outsideClick);
+    }
+    if (this._handlers.keydownEscape) {
+      document.removeEventListener('keydown', this._handlers.keydownEscape);
+    }
+    
+    // 3. Mobile UI Cleanup
+    if (this._hamburgerElement) {
+      if (this._handlers.mobileToggle) {
+        this._hamburgerElement.removeEventListener('click', this._handlers.mobileToggle);
+      }
+      if (this._hamburgerElement.parentNode) {
+        this._hamburgerElement.parentNode.removeChild(this._hamburgerElement);
+      }
+      this._hamburgerElement = null;
+    }
+    
+    // 4. State Reset
+    this._handlers = {};
+    this._cleanupListenersInitialized = false;
+    this._navigationBound = false;
+    this._mobileMenuOpen = false;
+    
+    // 5. App Instance Teardown
     if (this._currentApp && typeof this._currentApp.destroy === 'function') {
       this._currentApp.destroy();
     }
     this._currentApp = null;
-    
-    console.log('[Navigation] Destroyed - All intervals cleared');
   }
 };
