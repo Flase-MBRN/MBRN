@@ -69,12 +69,15 @@ describe('pdf/canvas + report outputs', () => {
     expect(card).toEqual(expect.objectContaining({
       width: 1080,
       height: 1920,
-      header: expect.objectContaining({ text: 'MBRN' }),
-      name: expect.objectContaining({ text: 'Erik Klauss' }),
+      palette: expect.objectContaining({ void: '#05050A', violet: '#7B5CF5' }),
+      header: expect.objectContaining({ title: 'M B R N' }),
+      name: expect.objectContaining({ text: 'ERIK KLAUSS' }),
       score: expect.objectContaining({ value: 88 }),
-      footer: expect.objectContaining({ text: 'built to be used' })
+      footer: expect.objectContaining({ text: 'M B R N  —  PATTERN INTELLIGENCE' })
     }));
     expect(card.coreNumbers).toHaveLength(4);
+    expect(card.name.font).toContain('Syne');
+    expect(card.score.font).toContain('Syne');
   });
 
   test('generateShareCard falls back to "-" when maturity is missing', () => {
