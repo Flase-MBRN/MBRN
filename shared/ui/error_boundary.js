@@ -32,7 +32,7 @@ export const errorBoundary = {
     // Subscribe via error handler for non-event errors
     if (state.subscribeToErrors) {
       state.subscribeToErrors((error, context) => {
-        console.log('[ErrorBoundary] Caught:', error?.message || error, context);
+        // Error caught and handled silently
       });
     }
     
@@ -40,7 +40,6 @@ export const errorBoundary = {
     this._setupGlobalHandlers();
     
     this._initialized = true;
-    console.log('[ErrorBoundary] Initialized - Dynamic container created');
   },
 
   /**

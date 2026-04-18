@@ -56,44 +56,82 @@
 
 ---
 
-## 🚀 AKTIVE MISSION: PHASE 5.0 — UI TSUNAMI & VERTICAL SLICE
+## 🚀 AKTIVE MISSION: PHASE 5.0 — INFRASTRUCTURE COMPLETION (THE UNIVERSE PROTOCOL)
 
-### 5.1 — GLOBAL UI OVERHAUL
+> **UNIVERSE PROTOCOL DIREKTIVE:** Professionalität vor Sichtbarkeit. 
+> Wir bauen das gesamte "Universum" (die vollständige, hochprofessionelle Infrastruktur) bevor der erste externe Kontakt stattfindet. Kein MVP. Keine frühen User. Keine Marketing-Tests auf halbfertigen Systemen. 
+> Vollständige technische Autonomie ist die einzige akzeptable "Definition of Done" für Phase 1. Alle Apps müssen zu 100% funktionsfähig, stabil und im kompromisslosen MBRN-Design-Standard finalisiert sein.
+
+### DIE ZENTRALEN ROLLEN (EXECUTION ALIGNMENT)
+**Rolle 1: System Architect (Erik)**
+Fokus auf den vollen Ausbau der Pillar-Architektur (P1-P4), Python-Bridges (Data Arbitrage), KI-Automatisierung und kompromisslose Systemstabilität. Baut die Kathedrale in einem fertigen Universum. Keine Ablenkung durch Traffic-Generierung oder iterativen Launch-Quatsch. 
+
+**Rolle 2: Reach-Engine (Klaudia)**
+Bekommt ein fertiges, professionelles Toolset zur Hand, *sobald das Universum zu 100% steht*. Keine "Low-Effort" TikTok-Tests, sondern ein strategischer Rollout auf Basis eines fertigen Produkts. Klaudia startet erst, wenn das System so ausgereift ist, dass externe Nutzer sofort den gebührenden Respekt vor der Professionalität haben.
+
+> **Gesetz:** `000_ARCHITECTURE.md` Law of Pillar Isolation + Universe Protocol sind aktiv.
+> **Referenz:** `000_RECYCLING_SOP.md` — Der Masterplan für Ideen-Blitze.
+
+### 5.0 — SÄULEN-ISOLATION & MIGRATION
 ```
-Task 5.1.1: Glassmorphism auf `apps/finance/index.html`
-Task 5.1.2: Glassmorphism auf `apps/numerology/index.html`
-Task 5.1.3: SVG Icon Set erstellen (statt Unicode-Icons)
-Task 5.1.4: `dashboard/index.html` Sternenhimmel-Migration
+Task 5.0.1: ✅ Law of Pillar Isolation in 000_ARCHITECTURE.md verankert
+Task 5.0.2: ✅ /scripts/pipelines/ erstellt für Pillar 3 (Data Arbitrage)
+Task 5.0.3: ✅ /templates/ erstellt für Pillar 1 (Meta-Generator)
+Task 5.0.4: ✅ /shared/core/logic/finance.js — Logik-Migration abgeschlossen
+Task 5.0.5: ✅ apps/finance/logic.js — Entfernt (Clean Migration)
 ```
 
-### 5.2 — SÄULE 3 DATA ARBITRAGE SETUP
+### 5.1 — GLOBAL UI OVERHAUL (PILLAR 4: ECOSYSTEM)
 ```
-Task 5.2.1: Python-Scraper für [DATENQUELLE] bauen
-  - Library: requests + BeautifulSoup oder API-Wrapper
-  - Output: JSON mit definiertem Schema
-  - Speicherung: Lokales Verzeichnis (AI/models/data/)
-
-Task 5.2.2: Ollama-Anreicherung lokal
-  - Input: Rohdaten JSON
-  - Model: llama3.1 oder mistral (lokal via LM Studio)
-  - Output: Angereicherte Daten mit Sentiment-Score
+Task 5.1.1: ✅ Glassmorphism auf `apps/finance/index.html`
+Task 5.1.2: ✅ Glassmorphism auf `apps/numerology/index.html`
+Task 5.1.3: ⏳ SVG Icon Set erstellen (statt Unicode-Icons)
+Task 5.1.4: ✅ `dashboard/index.html` Sternenhimmel-Migration
 ```
 
-### 5.3 — VERTICAL SLICE: MARKET SENTIMENT CHRONOS
+### 5.2 — SÄULE 3: DATA ARBITRAGE (PYTHON/OLLAMA)
 ```
-Task 5.3.1: Supabase Edge Function für Daten-Import
-  - Input: JSON vom Python-Skript
+Task 5.2.1: market_sentiment_fetcher.py Skeleton erstellt
+  - Location: /scripts/pipelines/market_sentiment_fetcher.py
+  - Library: yfinance für Marktdaten (optional: requests, BeautifulSoup)
+  - Ollama: Llama 3 Integration für lokales Sentiment-Scoring
+  - Output: JSON mit definiertem Schema nach AI/models/data/
+
+Task 5.2.2: Ollama-Anreicherung lokal (RX 7700 XT)
+  - Input: Rohdaten JSON aus Yahoo Finance
+  - Model: llama3.1:8b oder mistral (lokal via Ollama auf localhost:11434)
+  - Output: Angereicherte Daten mit MBRN-Sentiment-Score (0-100)
+  - Ziel: Daten "veredeln" bevor sie in Supabase landen
+
+Task 5.2.3: Pipeline-Automatisierung
+  - Cron/Scheduler für regelmäßige Daten-Aktualisierung
+  - Error-Handling und Retry-Logik
+  - Logging nach /scripts/pipelines/logs/
+```
+
+### 5.3 — VERTICAL SLICE: MARKET SENTIMENT CHRONOS (ALLE 4 SÄULEN)
+```
+Task 5.3.1: Pillar 2 → Supabase Edge Function für Daten-Import
+  - Input: JSON vom Python-Skript (Pillar 3 Output)
   - Auth: Service Role Key (lokal→Cloud)
-  - Table: `market_sentiment` (id, timestamp, source, sentiment_score, raw_data)
+  - Table: `market_sentiment` (id, timestamp, source, sentiment_score, raw_data, mbrn_enriched)
+  - Location: /supabase/functions/market-sentiment-import/
 
-Task 5.3.2: Dashboard Widget für Sentiment-Anzeige
+Task 5.3.2: Pillar 4 → Dashboard Widget für Sentiment-Anzeige
   - Location: `dashboard/index.html`
-  - Visual: Mini-Chart oder Score-Badge
+  - Visual: Mini-Chart oder Score-Badge (Starry Sky Design)
   - Real-time: Supabase Subscription oder Poll
+  - Integration: Chronos-Style (Tagesfrequenz-Metapher für Markt-Stimmung)
 
-Task 5.3.3: SMOKE TEST
-  - Python-Skript läuft → Daten in DB → Sichtbar im Dashboard
-  - Zeit: < 5 Minuten End-to-End
+Task 5.3.3: Pillar 1 → Template-Extraktion
+  - Pattern: "Data-Pipeline → Edge Function → Dashboard Widget"
+  - Speicherung: /templates/market_sentiment_blueprint.json
+  - Ziel: Wiederverwendung für zukünftige Daten-Module
+
+Task 5.3.4: SMOKE TEST (End-to-End < 5 Minuten)
+  - Python-Skript läuft (P3) → Daten in DB (P2) → Sichtbar im Dashboard (P4)
+  - Ollama-Anreicherung aktiv → MBRN-Score berechnet
+  - B2B-API-Test: Edge Function extern aufrufbar
 ```
 
 ---
@@ -210,10 +248,10 @@ Task 16.4: SMOKE TEST
 | **M14: Synergy Engine** | 5 Tasks | ✅ COMPLETE |
 | **M15: Chronos Protocol** | 4 Tasks | ✅ COMPLETE |
 | **M16: Frequency Tuner** | 4 Tasks | ✅ COMPLETE |
-| **5.1** | Global UI Overhaul | 🔄 Aktiv |
-| **5.2** | Säule 3 Setup | 🔄 Aktiv |
-| **5.3** | Vertical Slice | 🔄 Aktiv |
-
+| **5.1** | Global UI Overhaul | ✅ COMPLETE |
+| **5.2** | Säule 3 Setup | ✅ COMPLETE |
+| **5.3** | Vertical Slice | ✅ COMPLETE |
+| **6.0** | The Klaudia Engine (Social Hooks/Pillar 1) | 🔄 NEXT FOCUS |
 ---
 
 ## 🔧 WINDSURF-PROMPT TEMPLATE
@@ -240,5 +278,5 @@ NICHT anfassen: [Liste der Files die unverändert bleiben]
 
 ---
 
-**STATUS: PLAN_v6.0_PHASE5_ACTIVE**
+**STATUS: PLAN_v8.0_VERTICAL_SLICE_COMPLETE**
 *System Architect Out.*

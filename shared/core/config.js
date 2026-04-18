@@ -6,23 +6,21 @@
 export const MBRN_CONFIG = {
   accessLevels: {
     FREE: 0,
-    SPARK: 1,      // 7 Tage: Kleine Anerkennung, erster Status
-    BUILDER: 2,    // 30 Tage: 1 Tool nach Wahl dauerhaft freigeschaltet
-    OPERATOR: 3,   // 90 Tage: 3 Tools + erweiterte Funktionen
-    MEMBER: 4,     // 365 Tage: Full Hub Access, Beta, Voting
-    PAID_PRO: 10   // Premium Features (Depth & Comfort)
+    SPARK: 1,
+    BUILDER: 2,
+    OPERATOR: 3,
+    MEMBER: 4,
+    PAID_PRO: 10
   },
   tiers: { spark: 7, builder: 30, operator: 90, member: 365 },
-  shields: { earnRate: 7, max: 3 }, // Streak Shield: Schutz vor Rückfall
-  powerPass: { triggerDay: 15, durationHours: 48 }, // Vorgeschmack auf Premium
-  
-  // STRIPE CONFIGURATION (Phase 18.1)
+  shields: { earnRate: 7, max: 3 },
+  powerPass: { triggerDay: 15, durationHours: 48 },
+
   stripe: {
     publicKey: 'pk_test_REPLACE_WITH_YOUR_KEY',
     priceIdArtifact: 'price_REPLACE_WITH_YOUR_PRICE_ID'
   },
-  
-  // SENTIMENT WIDGET THRESHOLDS (Law 8: No Magic Numbers)
+
   sentiment: {
     thresholds: {
       EXTREME_GREED: 75,
@@ -32,157 +30,133 @@ export const MBRN_CONFIG = {
     }
   },
 
-  // LAW 8: INTERNATIONALIZATION (i18n) — Centralized Translations
-  // Automatic language detection via navigator.language (DE/EN)
   i18n: {
     de: {
-      // Loading states
-      loading: 'Berechne...',
-      loadingTerminal: 'BERECHNE...',
-      loadingTimeline: 'BERECHNE ZEITLINIE...',
-      loadingResonance: 'BERECHNE RESONANZ...',
-      loadingDecrypt: 'ENTSCHLÜSSELE...',
-      analyzing: 'Analysiere Frequenz...',
-      initializing: 'Initialisiere...',
+      loading: 'Ich ordne gerade alles.',
+      loadingTerminal: 'ICH ORDNE GERADE ALLES.',
+      loadingTimeline: 'ICH SORTIERE DEINE ZEIT.',
+      loadingResonance: 'ICH SCHAUE MIR EUREN VIBE AN.',
+      loadingDecrypt: 'ICH ORDNE DEIN MUSTER.',
+      analyzing: 'Ich schaue gerade nach.',
+      initializing: 'Einen Moment...',
 
-      // Auth
-      logout: 'Logout',
-      login: 'Login / Registrieren',
-      authErrorTitle: 'System Login',
-      authRegisterTitle: 'System Registrierung',
+      logout: 'Abmelden',
+      login: 'ANMELDEN',
+      authErrorTitle: 'Login',
+      authRegisterTitle: 'Registrierung',
       authLoginBtn: 'Anmelden',
       authRegisterBtn: 'Konto erstellen',
-      noAccount: 'Noch kein Konto? Registrieren',
-      hasAccount: 'Bereits ein Konto? Login',
+      noAccount: 'Noch kein Konto? Hier registrieren',
+      hasAccount: 'Bereits ein Konto? Hier anmelden',
 
-      // Security
-      securityBlock: '🛡️ SICHERHEITSBLOCKADE',
+      securityBlock: 'SICHERHEITSBLOCKADE',
       invalidEmail: 'Ungültige E-Mail-Adresse.',
       blockedDomain: 'Domain ist gesperrt.',
       disposableEmail: 'E-Mail sieht nach einer Wegwerf-Adresse aus.',
       useRealEmail: 'Bitte nutze eine echte E-Mail oder einen Gmail-Alias (name+test@gmail.com).',
 
-      // Terminal sequence
       terminal: {
         sequence: [
-          '> Verbinde mit MBRN Core...',
-          '> Authentifiziere Frequenz-Node...',
-          '> Syncing Chronos Engine...',
-          '> Decodierung der Lebensmatrix...',
-          '> Berechne numerische Resonanz...',
-          '> Extrahiere Primärfrequenz...',
-          '> Analyse abgeschlossen.'
+          '> Ich sammle deine Angaben.',
+          '> Ich ordne dein Muster.',
+          '> Ich sortiere deine Phasen.',
+          '> Ich bringe alles in eine klare Reihenfolge.',
+          '> Fast fertig.',
+          '> Dein erster Blick ist bereit.'
         ]
       },
 
-      // Validation
-      enterNameDate: '⚠️ Bitte Name und Geburtsdatum eingeben',
-      enterBothOperators: '⚠️ Bitte beide Operatoren vollständig eingeben',
-      enterBirthdate: '⚠️ Bitte Geburtsdatum eingeben',
-      invalidDate: 'Bitte prüfe dein Geburtsdatum — dieses Datum existiert nicht im Kalender.',
-      dateNotExist: 'Ungültiges Datum: Das eingegebene Datum existiert nicht. Bitte prüfe Tag und Monat.',
+      enterNameDate: 'Bitte Name und Geburtsdatum eingeben.',
+      enterBothOperators: 'Bitte beide Daten vollständig eingeben.',
+      enterBirthdate: 'Bitte Geburtsdatum eingeben.',
+      invalidDate: 'Bitte prüfe dein Geburtsdatum. Dieses Datum gibt es nicht im Kalender.',
+      dateNotExist: 'Dieses Datum gibt es nicht. Bitte prüfe Tag und Monat.',
       nameTooShort: 'Name muss mindestens 2 Zeichen haben.',
       invalidNumber: 'Bitte eine gültige Zahl eingeben.',
 
-      // Success
-      checkinSuccess: '✅ Check-In erfolgreich! Streak +1',
+      checkinSuccess: 'Check-in erfolgreich. Dein Puls bleibt dran.',
 
-      // Errors
       pdfError: 'Fehler bei der PDF-Erstellung. Bitte versuche es erneut.',
       offlineMode: 'Offline',
       paywallActive: 'Zahlung erforderlich',
-      
-      // Routes
+
       routes: {
         dashboard: 'Dashboard',
-        finance: 'Finance',
-        numerology: 'Numerologie',
-        synergy: 'Synergy',
-        chronos: 'Chronos',
-        tuning: 'Tuner'
+        finance: 'Wachstum',
+        numerology: 'Mustererkennung',
+        synergy: 'Vibe Check',
+        chronos: 'Zeit',
+        tuning: 'Feinschliff'
       }
     },
     en: {
-      // Loading states
-      loading: 'Calculating...',
-      loadingTerminal: 'CALCULATING...',
-      loadingTimeline: 'CALCULATING TIMELINE...',
-      loadingResonance: 'CALCULATING RESONANCE...',
-      loadingDecrypt: 'DECRYPTING...',
-      analyzing: 'Analyzing frequency...',
-      initializing: 'Initializing...',
+      loading: 'Putting it in order...',
+      loadingTerminal: 'PUTTING IT IN ORDER...',
+      loadingTimeline: 'LOOKING AT YOUR TIMING...',
+      loadingResonance: 'CHECKING YOUR VIBE...',
+      loadingDecrypt: 'READING YOUR PATTERN...',
+      analyzing: 'Looking into it...',
+      initializing: 'One moment...',
 
-      // Auth
       logout: 'Logout',
       login: 'Login / Register',
-      authErrorTitle: 'System Login',
-      authRegisterTitle: 'System Registration',
+      authErrorTitle: 'Login',
+      authRegisterTitle: 'Register',
       authLoginBtn: 'Sign In',
       authRegisterBtn: 'Create Account',
       noAccount: "Don't have an account? Register",
       hasAccount: 'Already have an account? Login',
 
-      // Security
-      securityBlock: '🛡️ SECURITY BLOCK',
+      securityBlock: 'SECURITY BLOCK',
       invalidEmail: 'Invalid email address.',
       blockedDomain: 'Domain is blocked.',
-      disposableEmail: 'Email appears to be a disposable address.',
-      useRealEmail: 'Please use a real email or Gmail alias (name+test@gmail.com).',
+      disposableEmail: 'Email appears to be disposable.',
+      useRealEmail: 'Please use a real email or a Gmail alias (name+test@gmail.com).',
 
-      // Terminal sequence
       terminal: {
         sequence: [
-          '> Connecting to MBRN Core...',
-          '> Authenticating Frequency Node...',
-          '> Syncing Chronos Engine...',
-          '> Decoding Life Matrix...',
-          '> Calculating Numerical Resonance...',
-          '> Extracting Primary Frequency...',
-          '> Analysis complete.'
+          '> I am gathering your details.',
+          '> I am sorting your pattern.',
+          '> I am checking your phases.',
+          '> I am putting everything in order.',
+          '> Almost there.',
+          '> Your first view is ready.'
         ]
       },
 
-      // Validation
-      enterNameDate: '⚠️ Please enter name and birthdate',
-      enterBothOperators: '⚠️ Please enter both operators completely',
-      enterBirthdate: '⚠️ Please enter birthdate',
-      invalidDate: 'Please check your birthdate — this date does not exist in the calendar.',
-      dateNotExist: 'Invalid date: The entered date does not exist. Please check day and month.',
+      enterNameDate: 'Please enter name and birthdate.',
+      enterBothOperators: 'Please enter both dates completely.',
+      enterBirthdate: 'Please enter a birthdate.',
+      invalidDate: 'Please check your birthdate. That date does not exist in the calendar.',
+      dateNotExist: 'That date does not exist. Please check day and month.',
       nameTooShort: 'Name must be at least 2 characters.',
       invalidNumber: 'Please enter a valid number.',
 
-      // Success
-      checkinSuccess: '✅ Check-In successful! Streak +1',
+      checkinSuccess: 'Check-in complete. Your pulse stays active.',
 
-      // Errors
       pdfError: 'Error creating PDF. Please try again.',
       offlineMode: 'Offline',
       paywallActive: 'Payment required',
-      
-      // Routes
+
       routes: {
         dashboard: 'Dashboard',
-        finance: 'Finance',
-        numerology: 'Numerology',
-        synergy: 'Synergy',
-        chronos: 'Chronos',
-        tuning: 'Tuner'
+        finance: 'Growth',
+        numerology: 'Pattern',
+        synergy: 'Vibe Check',
+        chronos: 'Time',
+        tuning: 'Fine Tune'
       }
     }
   },
 
-  // LAW 8: UI CONFIG (Deprecated - use i18n)
   ui: {
-    // Legacy support - redirects to i18n
-    labels: null // Removed - use i18n.t('key') instead
+    labels: null
   },
 
-  // Dev bypass for testing
   dev: {
     bypassPayment: false
   },
 
-  // LAW 8: VALIDATION CONSTANTS - Centralized thresholds, no magic numbers
   validation: {
     date: {
       MIN_MONTH: 1,
@@ -210,34 +184,24 @@ export const MBRN_CONFIG = {
   }
 };
 
-/**
- * Master Numbers — Centralized numerological constants (Law 8: No Magic Numbers)
- * Used across all numerology engines for consistent Master Number handling
- */
 export const MASTER_NUMBERS = Object.freeze([11, 22, 33]);
 
-/**
- * Navigation Routes — Centralized for easy extension
- * LAW 1 COMPLIANT: Single source for navigation
- */
 export const MBRN_ROUTES = {
-  home:        'index.html',
-  dashboard:   'dashboard/index.html',
-  finance:     'apps/finance/index.html',
-  numerology:  'apps/numerology/index.html',
-  synergy:     'apps/synergy/index.html',      // Ready for future
-  chronos:     'apps/chronos/index.html',      // Ready for future
-  tuning:      'apps/tuning/index.html'        // Ready for future
+  home: 'index.html',
+  dashboard: 'dashboard/index.html',
+  finance: 'apps/finance/index.html',
+  numerology: 'apps/numerology/index.html',
+  synergy: 'apps/synergy/index.html',
+  chronos: 'apps/chronos/index.html',
+  tuning: 'apps/tuning/index.html'
 };
 
-/**
- * Route metadata for dynamic navigation generation
- */
 export const MBRN_ROUTE_META = {
-  dashboard:   { icon: '◈', label: 'Dashboard', tier: 0 },
-  finance:     { icon: '◉', label: 'Finance', tier: 0 },
-  numerology:  { icon: '◐', label: 'Numerologie', tier: 0 },
-  synergy:     { icon: '◷', label: 'Synergy', tier: 10 },
-  chronos:     { icon: '◫', label: 'Chronos', tier: 10 },
-  tuning:      { icon: '◎', label: 'Tuner', tier: 10 }
+  home: { icon: 'S', label: 'Start', tier: 0 },
+  dashboard: { icon: 'D', label: 'Dashboard', tier: 0 },
+  finance: { icon: 'G', label: 'Wachstum', tier: 0 },
+  numerology: { icon: 'M', label: 'Muster', tier: 0 },
+  synergy: { icon: 'V', label: 'Vibe', tier: 0 },
+  chronos: { icon: 'Z', label: 'Zeit', tier: 0 },
+  tuning: { icon: 'F', label: 'Feinschliff', tier: 0 }
 };

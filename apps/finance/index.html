@@ -3,142 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finance App - MBRN Hub</title>
-  
+  <title>Wachstum - MBRN Hub</title>
+
   <link rel="stylesheet" href="../../shared/ui/theme.css">
   <link rel="stylesheet" href="../../shared/ui/components.css">
-  
-  <!-- Fonts: Syne (Display) + Inter (Body) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="void-bg bg-grid">
 
-  <!-- SIDEBAR NAVIGATION -->
   <aside class="nav-sidebar">
     <div class="nav-brand">
       <span class="logo-text">MBRN</span>
     </div>
-    
-    <nav class="nav-menu">
-      <a class="nav-item" data-route="home">
-        <span class="nav-icon">⌂</span>
-        <span class="nav-label">Home</span>
-      </a>
-      <a class="nav-item" data-route="dashboard">
-        <span class="nav-icon">◈</span>
-        <span class="nav-label">Dashboard</span>
-      </a>
-      <a class="nav-item active" data-route="finance">
-        <span class="nav-icon">◉</span>
-        <span class="nav-label">Finance</span>
-      </a>
-      <a class="nav-item" data-route="numerology">
-        <span class="nav-icon">◐</span>
-        <span class="nav-label">Numerologie</span>
-      </a>
-    </nav>
-    
+
+    <nav class="nav-menu" id="nav-menu"></nav>
+
     <div class="nav-footer">
       <div id="nav-auth-container"></div>
     </div>
   </aside>
 
-  <!-- Background Glow -->
   <div class="bg-glow"></div>
 
-  <!-- MAIN CONTENT -->
   <main class="main-content">
-    
-    <!-- HERO SECTION -->
     <section class="tool-hero reveal">
-      <div class="hero-eyebrow">✦ Financial Intelligence</div>
-      <h1 class="hero-title">QUANTUM<br>FINANCE</h1>
-      <p class="hero-subtitle">Deine Mathe-Maschine für Vermögensaufbau</p>
+      <div class="hero-eyebrow">Dein Wachstum</div>
+      <h1 class="hero-title">WACHS<br>TUM</h1>
+      <p class="hero-subtitle">Hier siehst du, was aus deinem Geld werden kann, wenn Zeit, Zins und Regelmaessigkeit zusammenarbeiten.</p>
     </section>
-    
-    <!-- INPUT SECTION -->
+
     <section class="tool-section reveal">
       <div class="section-card">
-        <h2 class="text-accent mb-24">Eingabe</h2>
-        
+        <h2 class="text-accent mb-24">Deine Angaben</h2>
+
         <div class="input-grid">
           <div class="form-group">
-            <label for="input-principal">Startkapital (€)</label>
+            <label for="input-principal">Startkapital (EUR)</label>
             <input type="number" id="input-principal" value="10000">
+            <p class="text-sm opacity-70 mt-8">Das ist das Geld, mit dem du losgehst.</p>
           </div>
           <div class="form-group">
             <label for="input-rate">Zinssatz (%)</label>
             <input type="number" id="input-rate" value="5">
+            <p class="text-sm opacity-70 mt-8">So stark waechst dein Geld pro Jahr im Schnitt.</p>
           </div>
           <div class="form-group">
             <label for="input-years">Laufzeit (Jahre)</label>
             <input type="number" id="input-years" value="10">
+            <p class="text-sm opacity-70 mt-8">So lange laesst du dein Geld arbeiten.</p>
           </div>
           <div class="form-group">
-            <label for="input-monthly">Monatliche Rate (€)</label>
+            <label for="input-monthly">Monatliche Rate (EUR)</label>
             <input type="number" id="input-monthly" value="100">
+            <p class="text-sm opacity-70 mt-8">Das legst du jeden Monat extra nach.</p>
           </div>
         </div>
-        
-        <button class="btn-primary" id="calc-btn">Jetzt Berechnen</button>
+
+        <button class="btn-primary" id="calc-btn">Zeig es mir</button>
         <p id="finance-error" class="text-accent text-center mt-16"></p>
       </div>
     </section>
 
-    <!-- RESULTS SECTION — Premium Glass Card with Data Grid -->
     <section class="tool-section reveal" id="results-section">
       <div class="glass-card results-card">
-        <h2 class="section-eyebrow">Ergebnis</h2>
+        <h2 class="section-eyebrow">Dein Ergebnis</h2>
         <div class="data-grid compact">
-          <div class="stagger-fade card-sunken" data-delay="1" id="res-final">
-            <span class="value-massive value-massive-lg">-</span>
-            <span class="value-label">Endkapital</span>
-          </div>
-          <div class="stagger-fade card-sunken" data-delay="2" id="res-invested">
-            <span class="value-massive secondary value-massive-sm">-</span>
-            <span class="value-label">Eingezahlt</span>
-          </div>
-          <div class="stagger-fade card-sunken" data-delay="3" id="res-interest">
-            <span class="value-massive accent value-massive-md">-</span>
-            <span class="value-label">Zinsgewinn</span>
-          </div>
+          <div class="card-sunken" data-delay="1" id="res-final"></div>
+          <div class="card-sunken" data-delay="2" id="res-invested"></div>
+          <div class="card-sunken" data-delay="3" id="res-interest"></div>
         </div>
       </div>
     </section>
 
-    <!-- PREMIUM FEATURES -->
-    <section class="tool-section reveal">
-      <div id="premium-features-container"></div>
+    <section class="tool-section reveal hidden" id="finance-story-section">
+      <div class="glass-card text-center">
+        <h3 class="card-title mb-16">Fuer Story teilen</h3>
+        <p class="text-base mb-20 text-secondary">Lade dir ein klares Bild mit deinem Ergebnis herunter.</p>
+        <button class="btn-primary" id="finance-story-btn">Bild laden</button>
+      </div>
     </section>
-
-    <!-- Templates -->
-    <template id="pdf-btn-template">
-      <button class="btn-primary">📄 PDF Generieren</button>
-    </template>
-    
-    <template id="pdf-locked-template">
-      <button class="btn-secondary locked-feature-btn" data-feature="pdf_export" title="Nur ab Level 10 verfügbar">🔒 PDF (Premium Feature)</button>
-    </template>
-
   </main>
 
-  <!-- Modal Container -->
-  <div id="modal-container"></div>
-
-  <!-- Paywall Template -->
-  <template id="paywall-template">
-    <div class="modal-overlay">
-      <div class="modal-content">
-        <h2 class="text-accent">Premium Feature</h2>
-        <p class="my-16">Das Modul '<span class="paywall-feature-name"></span>' ist nur für Member (Level 10) verfügbar.</p>
-        <button class="btn-primary w-full">🌟 Jetzt Upgraden</button>
-        <button class="btn-secondary modal-close w-full mt-8">Vielleicht später</button>
-      </div>
-    </div>
-  </template>
-
-  <!-- Render Modul übernimmt Boot + Nav + Animation -->
   <script type="module" src="./render.js"></script>
-
 </body>
 </html>

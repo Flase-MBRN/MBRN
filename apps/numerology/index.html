@@ -3,66 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Numerologie Rechner - MBRN Hub</title>
+  <title>Mustererkennung - MBRN Hub</title>
 
   <link rel="stylesheet" href="../../shared/ui/theme.css">
   <link rel="stylesheet" href="../../shared/ui/components.css">
-  
-  <!-- Fonts: Syne (Display) + Inter (Body) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- App-Specific Styles -->
-  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="void-bg bg-grid">
 
-  <!-- SIDEBAR NAVIGATION -->
   <aside class="nav-sidebar">
     <div class="nav-brand">
       <span class="logo-text">MBRN</span>
     </div>
-    
-    <nav class="nav-menu">
-      <a class="nav-item" data-route="home">
-        <span class="nav-icon">⌂</span>
-        <span class="nav-label">Home</span>
-      </a>
-      <a class="nav-item" data-route="dashboard">
-        <span class="nav-icon">◈</span>
-        <span class="nav-label">Dashboard</span>
-      </a>
-      <a class="nav-item" data-route="finance">
-        <span class="nav-icon">◉</span>
-        <span class="nav-label">Finance</span>
-      </a>
-      <a class="nav-item active" data-route="numerology">
-        <span class="nav-icon">◐</span>
-        <span class="nav-label">Numerologie</span>
-      </a>
-    </nav>
-    
+
+    <nav class="nav-menu" id="nav-menu"></nav>
+
     <div class="nav-footer">
       <div id="nav-auth-container"></div>
     </div>
   </aside>
 
-  <!-- Background Glow -->
   <div class="bg-glow"></div>
 
-  <!-- MAIN CONTENT -->
   <main class="main-content">
-    
-    <!-- HERO SECTION -->
     <section class="tool-hero reveal">
-      <div class="hero-eyebrow">✦ Pattern Analysis</div>
-      <h1 class="hero-title">QUANTUM<br>DECODE</h1>
-      <p class="hero-subtitle">Analysiere dein vollständiges Schwingungsprofil</p>
+      <div class="hero-eyebrow">Dein Muster</div>
+      <h1 class="hero-title">MUSTER<br>ERKENNUNG</h1>
+      <p class="hero-subtitle">Sie zeigt dir, was dich im Kern antreibt und wo dein Leben gerade Druck oder Klarheit aufbaut.</p>
     </section>
 
-    <!-- INPUT SECTION -->
     <section class="tool-section reveal">
       <div class="section-card">
-        <h2 class="text-accent mb-24">Eingabe</h2>
+        <h2 class="text-accent mb-24">Deine Angaben</h2>
 
         <div class="input-grid grid-1fr">
           <div class="form-group">
@@ -75,136 +47,85 @@
           </div>
         </div>
 
-        <button class="btn-primary" id="num-calc-btn">Berechne vollständiges Profil</button>
+        <button class="btn-primary" id="num-calc-btn">Muster ansehen</button>
         <p id="num-error" class="text-accent text-center mt-16"></p>
       </div>
     </section>
 
-    <!-- MAIN RESULTS (Only visible after calculation) -->
     <div id="num-results-area" class="hidden">
-      
-      <!-- Quantum Score Card — Premium Glass Card -->
       <section class="tool-section reveal">
         <div class="glass-card text-center">
-          <h3 class="section-eyebrow">Quantum Vibrations-Score</h3>
-          <div id="num-quantum-gauge" class="mb-24">
-            <!-- Glow Ring injected by render.js -->
-          </div>
-          <div id="num-quantum-label" class="text-accent mb-24 status-text">—</div>
-          
-          <button class="btn-primary" id="num-share-btn">
-            📸 Share to Story
-          </button>
-          <p class="text-sm opacity-50 mt-8">Generiere deine 9:16 Share-Card für Social Media.</p>
-          <a id="num-download-link" class="hidden"></a>
+          <h3 class="section-eyebrow">Dein Gesamtbild</h3>
+          <div id="num-balance-gauge" class="mb-24"></div>
+          <div id="num-balance-label" class="text-accent mb-24 status-text">-</div>
+
+          <button class="btn-primary" id="num-share-btn">Für Story teilen</button>
+          <p class="text-sm opacity-50 mt-8">Lade ein Bild herunter, das du direkt weitergeben kannst.</p>
         </div>
       </section>
 
-      <!-- Deep Decode Artifact — Premium Glass Card -->
       <section class="tool-section reveal">
-        <div class="glass-card text-center relative overflow-hidden">
-          <div class="absolute top-10 right-10 text-xs opacity-60">LVL 10</div>
-          <h3 class="card-title mb-16">Deep Decode Artefakt</h3>
-          <p class="text-base mb-20 text-secondary">Generiere eine 10-seitige, systemische Tiefen-Analyse deines Codes.</p>
-          <button class="btn-primary" id="num-pdf-btn">
-            ARTEFAKT ERSTELLEN
-          </button>
+        <div class="glass-card text-center relative overflow-hidden" id="num-auswertung-card">
+          <h3 class="card-title mb-16">Für später sichern</h3>
+          <p class="text-base mb-20 text-secondary">Hol dir deine Uebersicht als PDF. Ohne Sperre, ohne Upgrade.</p>
+          <button class="btn-primary" id="num-pdf-btn">PDF laden</button>
         </div>
       </section>
 
-      <!-- Lo-Shu Grid Card — Premium Glass Card -->
       <section class="tool-section reveal">
         <div class="glass-card text-center">
-          <h3 class="section-eyebrow">Lo-Shu Psychomatrix</h3>
-          <div class="loshu-grid" id="num-loshu-grid">
-            <!-- Dynamically filled -->
-          </div>
+          <h3 class="section-eyebrow">Dein Zahlen-Raster</h3>
+          <div class="loshu-grid" id="num-loshu-grid"></div>
           <p id="num-loshu-lines" class="text-md opacity-70 mt-16"></p>
         </div>
       </section>
 
-      <!-- Accordion System — Premium Glass Cards -->
       <section class="tool-section reveal">
-        <div id="num-accordions" class="data-grid compact">
-          
-          <!-- Gruppe 1: Kernzahlen -->
-          <div class="acc-item glass-card">
-            <button class="btn-secondary acc-trigger acc-trigger-full">
-              <span>🧬 Kern-Zahlen</span>
-              <span>▼</span>
+        <div id="num-accordions" class="grid-1fr gap-16">
+          <div class="glass-card">
+            <button class="btn-secondary acc-trigger-full">
+              <span>Kernzahlen</span>
+              <span>v</span>
             </button>
             <div class="acc-content pt-16">
               <div id="acc-core-list"></div>
             </div>
           </div>
 
-          <!-- Gruppe 2: Lebensphasen -->
-          <div class="acc-item glass-card">
-            <button class="btn-secondary acc-trigger acc-trigger-full">
-              <span>⏳ Lebensphasen & Umbrüche</span>
-              <span>▼</span>
+          <div class="glass-card">
+            <button class="btn-secondary acc-trigger-full">
+              <span>Lebensphasen</span>
+              <span>v</span>
             </button>
             <div class="acc-content pt-16">
               <div id="acc-phases-list"></div>
             </div>
           </div>
 
-          <!-- Gruppe 3: Herausforderungen & Karma -->
-          <div class="acc-item glass-card">
-            <button class="btn-secondary acc-trigger acc-trigger-full">
-              <span>⚖️ Herausforderungen & Karma</span>
-              <span>▼</span>
+          <div class="glass-card">
+            <button class="btn-secondary acc-trigger-full">
+              <span>Herausforderungen</span>
+              <span>v</span>
             </button>
             <div class="acc-content pt-16">
               <div id="acc-karma-list"></div>
             </div>
           </div>
 
-          <!-- Gruppe 4: Analyse & Brücken -->
-          <div class="acc-item glass-card">
-            <button class="btn-secondary acc-trigger acc-trigger-full">
-              <span>🌉 Psychologie & Brücken</span>
-              <span>▼</span>
+          <div class="glass-card">
+            <button class="btn-secondary acc-trigger-full">
+              <span>Innere Verbindungen</span>
+              <span>v</span>
             </button>
             <div class="acc-content pt-16">
               <div id="acc-bridge-list"></div>
             </div>
           </div>
-
         </div>
       </section>
-
-      <!-- Lead Bridge CTA — Premium Glass Card -->
-      <section class="tool-section reveal">
-        <div class="glass-card text-center">
-          <h4 class="card-title mb-8">Dein Code steht.</h4>
-          <p class="text-lg mb-16 text-secondary">Maximiere jetzt dein Potenzial.</p>
-          <button class="btn-primary" id="num-bridge-btn">
-            Zum Finanz-Hub
-          </button>
-        </div>
-      </section>
-
     </div>
-
   </main>
 
-  <!-- Modal Container (Phase 18.4) -->
-  <div id="modal-container"></div>
-
-  <!-- Paywall Template (Phase 18.4) -->
-  <template id="paywall-template">
-    <div class="modal-overlay">
-      <div class="modal-content">
-        <h2 class="text-accent text-glow font-weight-200">PREMIUM UPGRADE</h2>
-        <p class="my-16 text-dim">Das Modul <span class="paywall-feature-name text-accent"></span> erfordert eine Entschlüsselung auf Level 10.</p>
-        <button class="btn-primary w-full">🌟 Jetzt Entschlüsseln</button>
-        <button class="btn-secondary modal-close w-full mt-8">Vielleicht später</button>
-      </div>
-    </div>
-  </template>
-
   <script type="module" src="./render.js"></script>
-
 </body>
 </html>

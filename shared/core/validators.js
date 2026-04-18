@@ -21,8 +21,15 @@ const { validation: V } = MBRN_CONFIG;
  * @returns {Object} - { success: boolean, data?: Date, error?: string }
  */
 export function validateDateFormat(dateStr) {
+  if (typeof dateStr !== 'string') {
+    return {
+      success: false,
+      error: i18n.t('invalidDate')
+    };
+  }
+
   // Check format pattern
-  const formatMatch = dateStr.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  const formatMatch = dateStr.trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
   if (!formatMatch) {
     return {
       success: false,
@@ -166,7 +173,7 @@ export function validateEmail(email) {
   // Domain validation
   const domain = trimmed.split('@')[1];
   const blockedDomains = MBRN_CONFIG.blockedDomains || [
-    'test.com', 'example.com', 'fake.com', 'asdf.com', 
+    'test.com', 'fake.com', 'asdf.com',
     'mailinator.com', 'tempmail.com', 'throwaway.email',
     'yopmail.com', 'guerrillamail.com'
   ];

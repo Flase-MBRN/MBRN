@@ -9,7 +9,7 @@
  */
 
 import { calculateNameFrequency } from './frequency.js';
-import { calculateChronos } from './chronos.js';
+import { calculateChronos } from './chronos_v2.js';
 import { calculateFullProfile as calculateLegacyProfile } from './numerology/index.js';
 
 /**

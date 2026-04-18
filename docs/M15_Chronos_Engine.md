@@ -1,49 +1,23 @@
-# M15 — Chronos Engine
+# M15 — Chronos Engine v2
 
 > **System:** MBRN-HUB-V1  
-> **Context:** Task 14.2 — Temporal Cycle Calculation  
-> **Module:** `shared/core/modular_logic.js`  
-> **Date:** 14.04.2026  
-> **Status:** ✅ IMPLEMENTED
+> **Pillar:** P1 (Logic) — Unified Temporal Analysis  
+> **Module:** `shared/core/logic/chronos_v2.js`  
+> **Date:** 18.04.2026  
+> **Status:** ✅ IMPLEMENTED (P1.1 Chronos-Merge)
 
 ---
 
 ## System Core
 
 ### What is the Chronos Engine?
-The **Chronos Engine** calculates **numerological time cycles** (Personal Year, Month, Day) based on birth date and target date. It answers the question: *"Where am I in my personal timeline?"*
+The **Chronos Engine v2** is the **single source of truth** for all temporal calculations in MBRN. It merges two previously separate domains:
 
-### Core Concept: Personal vs Universal Cycles
-- **Personal Cycles** — Individual energy based on birth date
-- **Universal Cycles** — World energy affecting everyone
-- **Chronos** — The intersection point where personal meets universal
+1. **Biographical Time** — 7-year life cycle phases, lived days counter, next cycle date
+2. **Numerological Time** — Personal Year/Month/Day cycles, universal cycles, cycle phase interpretations
 
-### Formulas (Numerological Mathematics)
-
-#### Personal Year (PY)
-```
-PY = reduceToDigit(birthMonth + birthDay + targetYear)
-```
-Represents the **annual theme** — the overarching energy of the current year.
-
-#### Personal Month (PM)
-```
-PM = reduceToDigit(PY + targetMonth)
-```
-Represents the **monthly flavor** — how the annual theme manifests this month.
-
-#### Personal Day (PD)
-```
-PD = reduceToDigit(PM + targetDay)
-```
-Represents the **daily energy** — the specific vibration of today.
-
-#### Universal Cycles (World Energy)
-```
-UY = reduceToDigit(targetYear)          // Universal Year
-UM = reduceToDigit(UY + targetMonth)    // Universal Month
-UD = reduceToDigit(UM + targetDay)      // Universal Day
-```
+### History
+Prior to v2, these domains were split across `chronos_engine.js` (biographical) and `chronos.js` (numerological), causing inconsistent outputs between the App UI, Orchestrator, and Supabase API. P1.1 merged both into a single module.
 
 ---
 
@@ -52,214 +26,181 @@ UD = reduceToDigit(UM + targetDay)      // Universal Day
 | Aspect | Implementation |
 |--------|----------------|
 | **Language** | Vanilla JavaScript (ES6+) |
-| **Location** | `shared/core/modular_logic.js` |
-| **Export** | `logic.calculateChronos(birthDate)` |
-| **Return** | `{success: true, data: {...}}` per Gesetz 4 |
-| **Helper** | `reduceToDigit(num)` — numerological reduction |
-| **Master Numbers** | 11, 22, 33 preserved (not reduced) |
+| **Location** | `shared/core/logic/chronos_v2.js` |
+| **Export** | `calculateChronos(birthdateInput)` |
+| **Return** | `{success, data, error}` per Law 4 |
+| **Pillar** | P1 (Logic — pure calculation, no DOM) |
+| **Async** | No — synchronous (no async work needed) |
+| **Dependencies** | `helpers.js` → `reduceToDigit`, `safeReduceToDigit` |
 
-### Key Implementation Details
+### Key Output Fields
 
-#### reduceToDigit() Algorithm
-```javascript
-function reduceToDigit(num) {
-  if (num === 0) return 0;
-  if (num < 0) num = Math.abs(num);
-
-  const MASTER_NUMBERS = new Set([11, 22, 33]);
-
-  // Keep reducing until single digit OR master number
-  while (num > 9 && !MASTER_NUMBERS.has(num)) {
-    num = String(num).split('').reduce((sum, digit) => sum + parseInt(digit, 10), 0);
-  }
-
-  return num;
-}
-```
-
-**Important:** Master Numbers (11, 22, 33) are preserved as they carry amplified spiritual significance.
-
-#### UTC Compliance (Gesetz 15)
-All calculations use UTC to ensure:
-- Timezone-independent results
-- Consistent calculations across global deployments
-- No daylight-saving-time edge cases
+| Field | Type | Domain | Description |
+|-------|------|--------|-------------|
+| `livedDays` | Integer | Biographical | Total days lived (UTC-based) |
+| `currentPhase` | Integer | Biographical | Current 7-year phase (1, 2, 3...) |
+| `nextCycleStartUTC` | ISO String | Biographical | Exact UTC timestamp of next phase start |
+| `birthdateUTC` | ISO String | Biographical | Normalized birthdate in UTC |
+| `personalYear` | Integer | Numerological | PY cycle (1-9 or 11/22/33) |
+| `personalMonth` | Integer | Numerological | PM cycle (1-9 or 11/22/33) |
+| `personalDay` | Integer | Numerological | PD cycle (1-9 or 11/22/33) |
+| `cycle_phase` | String | Numerological | Human-readable phase interpretation |
+| `universalYear` | Integer | Numerological | World energy — year |
+| `universalMonth` | Integer | Numerological | World energy — month |
+| `universalDay` | Integer | Numerological | World energy — day |
+| `birth_date` | String | Metadata | Normalized YYYY-MM-DD |
+| `target_date` | String | Metadata | Today YYYY-MM-DD |
+| `timezone` | String | Metadata | Always "UTC" |
+| `pinnacles` | Object | Placeholder | Phase 5.0 — all null |
+| `challenges` | Object | Placeholder | Phase 5.0 — all null |
 
 ---
 
-## Extractable Logic
+## UTC Compliance (Law 15)
 
-### Vanilla JS Port (modular_logic.js)
+All calculations use **UTC exclusively**:
+- Birthdates normalized to UTC midnight
+- Leap years handled via `addUTCYearsClamped()` (February 29 → February 28)
+- No timezone drift, no daylight-saving issues
+
 ```javascript
-/**
- * Calculates Chronos (Personal Time Cycles)
- * @param {string} birthDate - Birth date 'YYYY-MM-DD'
- * @returns {Promise<Object>} Personal Year, Month, Day, Phase
- */
-async function calculateChronos(birthDate) {
-  // Parse birth date
-  const dateObj = new Date(birthDate);
-  const birthMonth = dateObj.getUTCMonth() + 1;
-  const birthDay = dateObj.getUTCDate();
-
-  // Get target date (today or specified)
-  const targetDate = new Date();
-  const targetYear = targetDate.getUTCFullYear();
-  const targetMonth = targetDate.getUTCMonth() + 1;
-  const targetDay = targetDate.getUTCDate();
-
-  // Calculate cycles
-  const personalYear = reduceToDigit(birthMonth + birthDay + targetYear);
-  const personalMonth = reduceToDigit(personalYear + targetMonth);
-  const personalDay = reduceToDigit(personalMonth + targetDay);
-
-  // Determine phase
-  const cyclePhases = {
-    1: "Neubeginn & Initiation",
-    2: "Kooperation & Balance",
-    3: "Kreativität & Expansion",
-    4: "Stabilität & Fundament",
-    5: "Veränderung & Freiheit",
-    6: "Verantwortung & Harmonie",
-    7: "Analyse & Spiritualität",
-    8: "Macht & Manifestation",
-    9: "Abschluss & Transformation",
-    11: "Intuition & Meister-Initiation",
-    22: "Baumeister & Manifestation",
-    33: "Meister-Lehrer & Heilung"
-  };
-
-  return {
-    success: true,
-    data: {
-      personalYear,
-      personalMonth,
-      personalDay,
-      cycle_phase: cyclePhases[personalYear] || "Allgemeine Phase"
-    }
-  };
-}
+// UTC-normalized birthdate creation
+new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0))
 ```
 
 ---
 
-## MBRN Mapping
+## Input Formats
 
-| Dimension | Relevance |
-|-----------|-----------|
-| **DIM 06 — CHRONOS** | ✅ Primary — Temporal cycles, life phases |
-| **DIM 03 — FREQUENZ** | ⚠️ Indirect — Master Numbers carry frequency |
-| **DIM 07 — MIND** | ⚠️ Indirect — Self-awareness through cycles |
+The engine accepts multiple date formats:
 
-**Integration:** The Chronos Engine provides the temporal awareness layer for the MBRN ecosystem. It enables:
-- Personal timing recommendations
-- Life phase awareness
-- Cycle-appropriate actions
+| Format | Example | Notes |
+|--------|---------|-------|
+| `DD.MM.YYYY` | `11.12.2005` | German format — MBRN native |
+| `YYYY-MM-DD` | `2005-12-11` | ISO format |
+| `YYYY/MM/DD` | `2005/12/11` | Flexible format |
+| `Date` object | `new Date(...)` | JavaScript Date |
 
----
-
-## Cycle Phase Meanings
-
-| PY | Phase (DE) | Meaning |
-|----|-----------|---------|
-| 1 | Neubeginn & Initiation | New starts, independence, leadership |
-| 2 | Kooperation & Balance | Partnerships, diplomacy, patience |
-| 3 | Kreativität & Expansion | Self-expression, joy, communication |
-| 4 | Stabilität & Fundament | Hard work, organization, building |
-| 5 | Veränderung & Freiheit | Change, adventure, flexibility |
-| 6 | Verantwortung & Harmonie | Home, family, service, healing |
-| 7 | Analyse & Spiritualität | Inner growth, research, wisdom |
-| 8 | Macht & Manifestation | Abundance, authority, achievement |
-| 9 | Abschluss & Transformation | Completion, letting go, humanitarianism |
-| 11 | Intuition & Meister-Initiation | Spiritual illumination, nervous tension |
-| 22 | Baumeister & Manifestation | Master builder, large-scale projects |
-| 33 | Meister-Lehrer & Heilung | Christ consciousness, unconditional love |
+All formats produce identical output for the same date. Invalid dates (e.g., Feb 30, future dates) are rejected with descriptive error messages.
 
 ---
 
-## Smoke Test Results
+## Algorithms
 
-### Test Case: 11. Dezember 2005 → 14. April 2026
+### Biographical Time: 7-Year Cycles
 
-**Manual Calculation:**
-```
-Birth: 2005-12-11
-Target: 2026-04-14
-
-Step 1: Personal Year (PY)
-- Formula: birthMonth + birthDay + targetYear
-- Calc: 12 + 11 + 2026 = 2049
-- Reduce: 2+0+4+9 = 15 → 1+5 = 6
-- Result: PY = 6
-
-Step 2: Personal Month (PM)
-- Formula: PY + targetMonth
-- Calc: 6 + 4 = 10
-- Reduce: 1+0 = 1
-- Result: PM = 1
-
-Step 3: Personal Day (PD)
-- Formula: PM + targetDay
-- Calc: 1 + 14 = 15
-- Reduce: 1+5 = 6
-- Result: PD = 6
-
-Step 4: Cycle Phase
-- PY = 6 → "Verantwortung & Harmonie"
-```
-
-**Expected Output:**
 ```javascript
-{
-  success: true,
-  data: {
-    personalYear: 6,
-    personalMonth: 1,
-    personalDay: 6,
-    cycle_phase: "Verantwortung & Harmonie",
-    birth_date: "2005-12-11",
-    target_date: "2026-04-14"
-  }
-}
+const livedDays = Math.floor((now - birthDate) / MS_PER_DAY);
+const completedYears = getCompletedUTCYears(birthDate, now);
+const currentPhase = Math.floor(completedYears / 7) + 1;
+const nextCycleStart = addUTCYearsClamped(birthDate, currentPhase * 7);
 ```
 
-**Verification Command:**
+### Numerological Time: Personal Cycles
+
 ```javascript
-await logic.calculateChronos('2005-12-11')
+// PY = reduceToDigit(birthMonth + birthDay + targetYear)
+const personalYear = safeReduceToDigit(birthMonth + birthDay + targetYear);
+// PM = reduceToDigit(PY + targetMonth)
+const personalMonth = safeReduceToDigit(personalYear + targetMonth);
+// PD = reduceToDigit(PM + targetDay)
+const personalDay = safeReduceToDigit(personalMonth + targetDay);
 ```
+
+Master Numbers (11, 22, 33) are preserved during reduction.
+
+### Cycle Phase Interpretations
+
+| PY | Phase |
+|----|-------|
+| 1 | Neubeginn & Initiation |
+| 2 | Kooperation & Balance |
+| 3 | Kreativität & Expansion |
+| 4 | Stabilität & Fundament |
+| 5 | Veränderung & Freiheit |
+| 6 | Verantwortung & Harmonie |
+| 7 | Analyse & Spiritualität |
+| 8 | Macht & Manifestation |
+| 9 | Abschluss & Transformation |
+| 11 | Intuition & Meister-Initiation |
+| 22 | Baumeister & Manifestation |
+| 33 | Meister-Lehrer & Heilung |
+
+---
+
+## Test Cases (Verified 2026-04-18)
+
+### Erik: 11.12.2005
+
+```javascript
+calculateChronos("11.12.2005");
+```
+
+**Expected (as of 18.04.2026):**
+- `livedDays`: ~7433 days
+- `currentPhase`: 3 (Years 14-21)
+- `nextCycleStartUTC`: "2026-12-11T00:00:00.000Z"
+- `personalYear`: 6
+- `cycle_phase`: "Verantwortung & Harmonie"
+
+### Klaudia: 28.03.2008
+
+```javascript
+calculateChronos("28.03.2008");
+```
+
+**Expected (as of 18.04.2026):**
+- `livedDays`: ~6595 days
+- `currentPhase`: 3
+- `nextCycleStartUTC`: "2029-03-28T00:00:00.000Z"
+- `personalYear`: 5
+
+---
+
+## Integration Points
+
+### All consumers point to `chronos_v2.js`:
+
+| Consumer | File | Import |
+|----------|------|--------|
+| Orchestrator | `orchestrator.js` | `import { calculateChronos } from './chronos_v2.js'` |
+| App UI | `apps/chronos/render.js` | `import { calculateChronos } from '../../shared/core/logic/chronos_v2.js'` |
+| Supabase API | `supabase/functions/mbrn_compute/index.ts` | `import { calculateChronos } from "../../../shared/core/logic/chronos_v2.js"` |
+| Barrel Module | `modular_logic.js` | `export { calculateChronos } from './logic/chronos_v2.js'` |
+| Tests | `chronos.test.js` | `import { calculateChronos } from './chronos_v2.js'` |
+
+### Deprecated Stubs
+
+`chronos.js` and `chronos_engine.js` are now thin re-export stubs for backward compatibility. Scheduled for removal in Sprint D.
 
 ---
 
 ## Architecture Compliance
 
-| Gesetz | Compliance |
-|--------|------------|
-| **Gesetz 1** | ✅ Pure calculation, no side effects |
-| **Gesetz 2** | ✅ No DOM manipulation |
-| **Gesetz 4** | ✅ Structured returns `{success, data}` |
-| **Gesetz 13** | ✅ Logic isolated in modular_logic.js |
-| **Gesetz 15** | ✅ UTC-based temporal calculations |
+| Law | Compliance |
+|-----|------------|
+| **Law 1** | ✅ Pure calculation module, single purpose |
+| **Law 2** | ✅ No DOM manipulation |
+| **Law 3** | ✅ No innerHTML (enforced in UI layer) |
+| **Law 4** | ✅ Structured returns `{success, data, error}` |
+| **Law 15** | ✅ UTC-based temporal calculations |
+| **Law 16** | ✅ Clear, consolidated documentation |
 
 ---
 
-## Dependencies
+## Future Extensions (P3/P4)
 
-- None (pure Vanilla JS)
-- Uses native `Date` object with UTC methods
-- No external libraries required
-
----
-
-## Future Extensions
-
-- [ ] Pinnacle calculations (long-term cycles)
-- [ ] Challenge numbers (obstacles per cycle)
-- [ ] Life Cycle phases (early/middle/late)
-- [ ] Universal cycle integration
-- [ ] Target date parameter (not just "today")
+- [ ] P3: Visual timeline rendering of all phases
+- [ ] P3: Life themes per phase (energetic interpretation)
+- [ ] P4: Integration with Supabase (save calculations per user)
+- [ ] P4: Historical cycle lookup (past phases)
+- [ ] P5: Pinnacles calculation (4 life cycles)
+- [ ] P5: Challenges calculation (4 obstacles)
+- [ ] UI: Display personalYear and cycle_phase in the Chronos App (currently biographical only)
 
 ---
 
-**Module Version:** 14.2.0 (Chronos Real Implementation)  
+**Module Version:** 3.0.0 (P1.1 — Unified Chronos-Merge)  
 **Status:** ✅ PRODUCTION READY  
-**Documentation First:** ✅ Compliant
+**Last Audit:** 18.04.2026 — P1.1 Chronos-Merge verification passed  
+**Documentation:** ✅ Pillar-compliant (P1 Logic)

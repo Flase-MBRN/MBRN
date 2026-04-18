@@ -77,5 +77,19 @@ describe('Synergy Engine (M14)', () => {
       
       expect(result.data.synergy_score).toBe(100);
     });
+
+    test('normalizes raw operator inputs with name and birthDate', async () => {
+      const result = await calculateSynergy(
+        { name: 'Erik Klauss', birthDate: '11.12.2005' },
+        { name: 'Mila Stern', birthDate: '28.03.2008' }
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.data).toHaveProperty('compatibilityScore');
+      expect(result.data).toHaveProperty('expressionResonance');
+      expect(result.data.operators.a).toHaveProperty('life_path');
+      expect(result.data.operators.a).toHaveProperty('expression');
+      expect(result.data.operators.a).toHaveProperty('soul');
+    });
   });
 });

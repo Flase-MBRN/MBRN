@@ -3,64 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MBRN · Entschlüssle deinen Frequenz-Code</title>
-  <meta name="description" content="Kein Login. Keine Datenweitergabe. Entschlüssle deine Kernfrequenz in 3 Sekunden.">
-  
-  <!-- Fonts: Syne (Display) + Inter (Body) -->
+  <title>MBRN - built to be used</title>
+  <meta name="description" content="MBRN zeigt dir dein Muster, dein Wachstum und deine Phasen. Klar, direkt und ohne Umwege.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- MBRN Design System -->
+
   <link rel="stylesheet" href="shared/ui/theme.css">
   <link rel="stylesheet" href="shared/ui/components.css">
   <link rel="stylesheet" href="shared/ui/landing.css">
 </head>
 <body>
-  <!-- === 1. THE HOOK (Above the Fold) === -->
   <section id="hook-section" class="hook-section">
     <div class="bg-glow"></div>
-    
+
     <nav class="nav-minimal">
       <div class="nav-brand">MBRN</div>
-      <a href="./dashboard/" class="nav-link">Dashboard</a>
     </nav>
-    
+
     <div class="hook-content">
-      <h1 class="hook-headline">
-        Entschlüssle<br>deinen<br><span class="text-glow">Frequenz-Code</span>
-      </h1>
-      
-      <p class="hook-subtitle">Kein Login. Keine Datenweitergabe. <br>3 Sekunden. Ein Ergebnis.</p>
-      
-      <!-- Glassmorphism Input Form -->
+      <h1 class="hook-headline">MBRN</h1>
+      <p class="hook-subtitle">built to be used</p>
+
       <form id="frequency-form" class="frequency-form">
         <div class="input-group">
-          <label class="input-label">Vollständiger Name</label>
+          <label class="input-label" for="input-name">Vollständiger Name</label>
           <input type="text" id="input-name" class="glass-input" placeholder="Max Mustermann" required>
         </div>
-        
+
         <div class="input-group">
           <label class="input-label" for="input-date">Geburtsdatum</label>
-          <input type="date" id="input-date" class="glass-input" placeholder="TT.MM.JJJJ" title="Geburtsdatum eingeben" required>
+          <input type="date" id="input-date" class="glass-input" required>
         </div>
-        
-        <button type="submit" class="pulse-cta">
-          <span class="cta-text">Frequenz analysieren</span>
-          <span class="cta-glow"></span>
-        </button>
+
+        <div class="hook-actions">
+          <button type="submit" class="pulse-cta">
+            <span class="cta-text">Los geht's</span>
+          </button>
+          <a href="./dashboard/" id="skip-dashboard-link" class="skip-link">Ueberspringen</a>
+        </div>
       </form>
     </div>
   </section>
 
-  <!-- === 2. THE ANTICIPATION (Terminal Loader) === -->
   <section id="loader-section" class="loader-section hidden">
     <div class="terminal-overlay">
       <div class="terminal-header">
         <span class="terminal-dot red"></span>
         <span class="terminal-dot yellow"></span>
         <span class="terminal-dot green"></span>
-        <span class="terminal-title">MBRN_CORE_v5.0</span>
+        <span class="terminal-title">MBRN</span>
       </div>
       <div class="terminal-body">
         <div id="terminal-text" class="terminal-text"></div>
@@ -71,7 +64,6 @@
     </div>
   </section>
 
-  <!-- === 3. THE REVEAL (Life Path Display) === -->
   <section id="reveal-section" class="reveal-section hidden">
     <div class="reveal-content">
       <div class="number-display">
@@ -87,83 +79,18 @@
         </svg>
         <div id="life-path-number" class="life-path-number">-</div>
       </div>
-      
+
       <div class="reveal-text">
-        <p class="reveal-label">Deine Kernfrequenz</p>
+        <p class="reveal-label">Dein erster Eindruck</p>
         <h2 id="archetype-title" class="archetype-title">Der Architekt</h2>
-        <p id="archetype-desc" class="archetype-desc">Baumeister. Stratege. Der, der fundamentale Strukturen schafft.</p>
+        <p id="archetype-desc" class="archetype-desc">Hier bekommst du einen schnellen Blick auf dein Muster.</p>
+        <p class="reveal-note">Alles Weitere kannst du in Ruhe im Dashboard ansehen oder später nachreichen.</p>
       </div>
-      
-      <button id="btn-unlock" class="unlock-cta">
-        Vollständiges MBRN-Profil freischalten
-      </button>
+
+      <button id="btn-dashboard" class="unlock-cta-primary">Zum Dashboard</button>
     </div>
   </section>
 
-  <!-- === 4. THE CLIFFHANGER (Blurred Features) === -->
-  <section id="cliffhanger-section" class="cliffhanger-section hidden">
-    <h3 class="cliffhanger-title">Die 11 Dimensionen</h3>
-    
-    <div class="dimension-grid">
-      <div class="dimension-card blurred">
-        <div class="dimension-icon">◷</div>
-        <h4>Chronos</h4>
-        <p>Zeit-Zyklen als Navigation</p>
-        <div class="lock-overlay">
-          <span class="lock-icon">🔒</span>
-        </div>
-      </div>
-      
-      <div class="dimension-card blurred">
-        <div class="dimension-icon">◐</div>
-        <h4>Synergy</h4>
-        <p>Kompatibilitäts-Analyse</p>
-        <div class="lock-overlay">
-          <span class="lock-icon">🔒</span>
-        </div>
-      </div>
-      
-      <div class="dimension-card blurred">
-        <div class="dimension-icon">◎</div>
-        <h4>Tuner</h4>
-        <p>Namens-Frequenz Alignment</p>
-        <div class="lock-overlay">
-          <span class="lock-icon">🔒</span>
-        </div>
-      </div>
-      
-      <div class="dimension-card">
-        <div class="dimension-icon">◉</div>
-        <h4>Finance</h4>
-        <p>Investitions-Projektion</p>
-        <a href="./apps/finance/" class="dimension-link">Start →</a>
-      </div>
-      
-      <div class="dimension-card">
-        <div class="dimension-icon">○</div>
-        <h4>Numerology</h4>
-        <p>36 Kennzahlen Profil</p>
-        <a href="./apps/numerology/" class="dimension-link">Start →</a>
-      </div>
-      
-      <div class="dimension-card">
-        <div class="dimension-icon">◈</div>
-        <h4>Dashboard</h4>
-        <p>Command Center</p>
-        <a href="./dashboard/" class="dimension-link">Start →</a>
-      </div>
-    </div>
-    
-    <div class="cliffhanger-cta">
-      <p class="cliffhanger-teaser">Über 30 weitere Kennzahlen warten.</p>
-      <button id="btn-deep-dive" class="pulse-cta">
-        Komplettes Profil freischalten
-      </button>
-    </div>
-  </section>
-
-  <!-- === RENDER MODULE === -->
   <script type="module" src="shared/ui/render_landing.js"></script>
-
 </body>
 </html>

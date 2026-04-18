@@ -173,8 +173,8 @@ class StateManager {
       });
     }
     
-    // Emit system error event for UI handling
-    this.emit('systemError', { 
+    // Emit system error event for UI handling (AUTHORIZED to prevent infinite loop)
+    this._authorizedEmit('systemError', {
       error: error?.message || String(error),
       context,
       timestamp: Date.now(),

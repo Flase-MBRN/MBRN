@@ -63,7 +63,6 @@ export class CircuitBreaker {
       // Check if we should try half-open
       if (now >= this.nextAttempt) {
         this.state = STATE.HALF_OPEN;
-        console.log(`[CircuitBreaker:${this.name}] Testing half-open state`);
       } else {
         // Circuit still open - IMMEDIATE LocalStorage fallback (Law 7)
         // NO network timeout delay - serve cached data instantly
@@ -74,7 +73,6 @@ export class CircuitBreaker {
         const fallbackResult = storage.get(fallbackKey);
 
         if (fallbackResult.success && fallbackResult.data !== null && fallbackResult.data.data !== undefined) {
-          console.log(`[CircuitBreaker:${this.name}] Serving LocalStorage fallback immediately (no network delay)`);
           return {
             success: true,
             data: fallbackResult.data.data,
@@ -138,7 +136,6 @@ export class CircuitBreaker {
     this.metrics.lastSuccess = new Date().toISOString();
 
     if (this.state === STATE.HALF_OPEN) {
-      console.log(`[CircuitBreaker:${this.name}] Service recovered, closing circuit`);
       this.state = STATE.CLOSED;
       state.emit('circuitClosed', { name: this.name });
     }
@@ -165,8 +162,6 @@ export class CircuitBreaker {
     this.lastFailureTime = Date.now();
     this.metrics.failures++;
     this.metrics.lastFailure = new Date().toISOString();
-    
-    console.warn(`[CircuitBreaker:${this.name}] Failure ${this.failureCount}/${this.failureThreshold}: ${error.message}`);
     
     if (this.failureCount >= this.failureThreshold) {
       this.openCircuit();
@@ -197,7 +192,6 @@ export class CircuitBreaker {
     this.state = STATE.CLOSED;
     this.failureCount = 0;
     this.nextAttempt = null;
-    console.log(`[CircuitBreaker:${this.name}] Manually reset`);
     state.emit('circuitClosed', { name: this.name, manual: true });
   }
   
@@ -251,7 +245,6 @@ export const circuits = {
 export async function withCircuitBreaker(circuitName, fn) {
   const circuit = circuits[circuitName];
   if (!circuit) {
-    console.warn(`[CircuitBreaker] Unknown circuit: ${circuitName}`);
     // Execute without protection
     try {
       const result = await fn();

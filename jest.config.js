@@ -7,7 +7,7 @@ export default {
   },
   collectCoverageFrom: [
     'shared/core/**/*.js',
-    'apps/finance/logic.js',
+    'shared/core/logic/finance.js',
     '!shared/core/**/*.test.js',
     '!**/node_modules/**'
   ],

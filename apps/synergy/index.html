@@ -2,113 +2,22 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="1;url=../../dashboard/">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Synergy Engine — MBRN Hub</title>
-  
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- MBRN Design System -->
+  <title>Vibe Check - MBRN Hub</title>
+
   <link rel="stylesheet" href="../../shared/ui/theme.css">
   <link rel="stylesheet" href="../../shared/ui/components.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body class="void-bg bg-glow">
-
-  <!-- SIDEBAR NAVIGATION -->
-  <aside class="nav-sidebar">
-    <div class="nav-brand">
-      <span class="logo-text">MBRN</span>
+<body class="void-bg bg-grid">
+  <main class="main-content" style="margin-left:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;">
+    <div class="glass-card text-center" style="max-width:480px;">
+      <div class="hero-eyebrow">Vibe Check</div>
+      <h1 class="hero-title" style="font-size:clamp(42px,8vw,72px);">Dashboard</h1>
+      <p class="text-secondary mt-16">Der Vibe Check lebt jetzt direkt im Dashboard. Du wirst gleich weitergeleitet.</p>
+      <a href="../../dashboard/" class="btn-primary mt-24" style="display:inline-flex; text-decoration:none;">Zum Dashboard</a>
     </div>
-    
-    <nav class="nav-menu">
-      <a class="nav-item" href="../index.html">
-        <span class="nav-icon">⌂</span>
-        <span class="nav-label">Home</span>
-      </a>
-      <a class="nav-item" href="../dashboard/">
-        <span class="nav-icon">◈</span>
-        <span class="nav-label">Dashboard</span>
-      </a>
-      <a class="nav-item active" href="./">
-        <span class="nav-icon">◐</span>
-        <span class="nav-label">Synergy</span>
-      </a>
-      <a class="nav-item" href="../apps/numerology/">
-        <span class="nav-icon">○</span>
-        <span class="nav-label">Numerology</span>
-      </a>
-      <a class="nav-item" href="../apps/finance/">
-        <span class="nav-icon">◉</span>
-        <span class="nav-label">Finance</span>
-      </a>
-    </nav>
-    
-    <div class="nav-footer">
-      <div id="nav-auth-container"></div>
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT -->
-  <main class="main-content">
-    
-    <!-- HERO SECTION -->
-    <section class="tool-hero reveal">
-      <div class="hero-eyebrow">✦ Dim 05 — Bindung</div>
-      <h1 class="hero-title">SYNERGY<br>ENGINE</h1>
-      <p class="hero-subtitle">Kompatibilitäts-Analyse zwischen zwei Operatoren</p>
-    </section>
-    
-    <!-- INPUT SECTION — Dual Operator Inputs -->
-    <section class="tool-section reveal">
-      <div class="data-grid">
-        <!-- Operator A -->
-        <div class="glass-card">
-          <h3 class="section-eyebrow">
-            ◈ Operator A
-          </h3>
-          <div class="form-group mb-16">
-            <label for="syn-input-a">Vollständiger Name</label>
-            <input type="text" id="syn-input-a" placeholder="z.B. Max Mustermann">
-          </div>
-          <div class="form-group">
-            <label for="syn-date-a">Geburtsdatum (TT.MM.JJJJ)</label>
-            <input type="text" id="syn-date-a" placeholder="z.B. 15.08.1990">
-          </div>
-        </div>
-        
-        <!-- Operator B -->
-        <div class="glass-card">
-          <h3 class="section-eyebrow">
-            ◈ Operator B
-          </h3>
-          <div class="form-group mb-16">
-            <label for="syn-input-b">Vollständiger Name</label>
-            <input type="text" id="syn-input-b" placeholder="z.B. Anna Beispiel">
-          </div>
-          <div class="form-group">
-            <label for="syn-date-b">Geburtsdatum (TT.MM.JJJJ)</label>
-            <input type="text" id="syn-date-b" placeholder="z.B. 22.03.1992">
-          </div>
-        </div>
-      </div>
-      
-      <div class="text-center mt-24">
-        <button class="btn-primary form-container-compact" id="syn-calc-btn">
-          Resonanz berechnen
-        </button>
-        <p id="syn-error" class="text-accent text-center mt-16"></p>
-      </div>
-    </section>
-
-    <!-- RESULTS AREA — Dynamically filled by render.js -->
-    <section class="tool-section reveal hidden" id="syn-results-area"></section>
-
   </main>
-
-  <!-- Render Modul -->
-  <script type="module" src="./render.js"></script>
-
 </body>
 </html>

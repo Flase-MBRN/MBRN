@@ -120,7 +120,6 @@ class ErrorLogger {
     }
 
     this._initialized = true;
-    console.log('[ErrorLogger] Initialized — Global Monitoring Active');
   }
 
   /**
@@ -168,7 +167,6 @@ class ErrorLogger {
     if (navigator.onLine && api.isOnline) {
       const result = await this._sendToSupabase(errorEntry);
       if (result.success) {
-        console.log(`[ErrorLogger] Logged: ${errorEntry.type} (${errorEntry.id})`);
         return { success: true, id: errorEntry.id };
       }
       // If send failed, queue it
@@ -224,7 +222,6 @@ class ErrorLogger {
     );
     
     if (recentDuplicate) {
-      console.log(`[ErrorLogger] Duplicate suppressed: ${errorEntry.type}`);
       return { success: false, queued: false, reason: 'duplicate' };
     }
 
@@ -235,8 +232,6 @@ class ErrorLogger {
 
     queue.push(errorEntry);
     this._saveQueue(queue);
-    
-    console.log(`[ErrorLogger] Queued: ${errorEntry.type} (${queue.length} in queue)`);
     return { success: false, queued: true, id: errorEntry.id };
   }
 
@@ -270,8 +265,6 @@ class ErrorLogger {
       return;
     }
 
-    console.log(`[ErrorLogger] Syncing ${queue.length} queued errors...`);
-    
     const unsynced = [];
     let synced = 0;
 
@@ -289,9 +282,6 @@ class ErrorLogger {
 
     // Keep only unsynced errors
     this._saveQueue(unsynced);
-    
-    console.log(`[ErrorLogger] Synced ${synced} errors, ${unsynced.length} remaining`);
-    
     state.emit('errorQueueSync', { synced, remaining: unsynced.length });
     
     this._syncInProgress = false;
@@ -321,7 +311,6 @@ class ErrorLogger {
    */
   clearQueue() {
     storage.remove(ERROR_QUEUE_KEY);
-    console.log('[ErrorLogger] Queue cleared');
   }
 
   /**

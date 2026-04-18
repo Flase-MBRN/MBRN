@@ -9,6 +9,12 @@ const PREFIX = 'mbrn_';
 const _queue = [];
 let _processing = false;
 
+function getStorageBackend() {
+  return typeof globalThis !== 'undefined' && globalThis.localStorage
+    ? globalThis.localStorage
+    : null;
+}
+
 async function _processQueue() {
   if (_processing) return;
   _processing = true;
@@ -51,10 +57,15 @@ export const storage = {
     return new Promise((resolve, reject) => {
       _queue.push({
         execute: async () => {
+          const backend = getStorageBackend();
+          if (!backend) {
+            return { success: false, error: 'LocalStorage unavailable' };
+          }
+
           try {
             const prefixedKey = `${PREFIX}${key}`;
             const serializedValue = JSON.stringify(value);
-            localStorage.setItem(prefixedKey, serializedValue);
+            backend.setItem(prefixedKey, serializedValue);
             return { success: true, data: null };
           } catch (error) {
             console.error('[Storage Set Error]', error);
@@ -78,9 +89,14 @@ export const storage = {
    * @returns {success: boolean, data?: any, error?: string}
    */
   get(key) {
+    const backend = getStorageBackend();
+    if (!backend) {
+      return { success: true, data: null, unavailable: true };
+    }
+
     try {
       const prefixedKey = `${PREFIX}${key}`;
-      const item = localStorage.getItem(prefixedKey);
+      const item = backend.getItem(prefixedKey);
       
       if (item === null) {
         // Explizites Definieren, wenn nichts gefunden wurde
@@ -101,9 +117,14 @@ export const storage = {
    * @returns {success: boolean, data?: any, error?: string}
    */
   remove(key) {
+    const backend = getStorageBackend();
+    if (!backend) {
+      return { success: false, error: 'LocalStorage unavailable' };
+    }
+
     try {
       const prefixedKey = `${PREFIX}${key}`;
-      localStorage.removeItem(prefixedKey);
+      backend.removeItem(prefixedKey);
       return { success: true, data: null };
     } catch (error) {
       console.error('[Storage Remove Error]', error);

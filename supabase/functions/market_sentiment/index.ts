@@ -78,12 +78,36 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-// Expected JSON Schema:
-// { "source": "reddit_crypto", "sentiment_score": 85, "verdict": "Extreme Greed" }
+// Legacy V1 payload shape:
+// { "source": "market_sentiment_pipeline", "sentiment_score": 85, "verdict": "Extreme Greed" }
 interface SentimentPayload {
   source: string;
   sentiment_score: number;
   verdict: string;
+}
+
+interface GenericSignalPayload {
+  timestamp?: string;
+  source: string;
+  signal_type: "market_sentiment" | "credibility" | "impact" | "alert_level";
+  normalized_score: number;
+  verdict: string;
+  confidence?: number;
+  summary?: string;
+  dimensions?: Record<string, unknown>;
+  raw_data?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+interface NormalizedPayload extends SentimentPayload {
+  timestamp: string;
+  signal_type: GenericSignalPayload["signal_type"];
+  normalized_score: number;
+  confidence?: number;
+  summary?: string;
+  dimensions?: Record<string, unknown>;
+  raw_data: Record<string, unknown>;
+  metadata: Record<string, unknown>;
 }
 
 // Structured Return Pattern (MBRN Law 4)
@@ -121,14 +145,31 @@ const VALIDATION = {
   MAX_VERDICT_LENGTH: 50,
 };
 
-const ALLOWED_SOURCES = [
-  "reddit_crypto",
-  "twitter_crypto",
-  "fear_greed_index",
-  "custom_feed",
-];
+const SOURCE_PATTERN = /^[a-z0-9][a-z0-9_-]{2,99}$/;
+const ALLOWED_SIGNAL_TYPES = [
+  "market_sentiment",
+  "credibility",
+  "impact",
+  "alert_level",
+] as const;
 
-function validatePayload(body: unknown): { valid: true; data: SentimentPayload } | { valid: false; error: string; code: string } {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function validateScore(score: number): { valid: true } | { valid: false; error: string; code: string } {
+  if (score < VALIDATION.MIN_SCORE || score > VALIDATION.MAX_SCORE) {
+    return {
+      valid: false,
+      error: `Score must be between ${VALIDATION.MIN_SCORE} and ${VALIDATION.MAX_SCORE}`,
+      code: "SCORE_OUT_OF_RANGE",
+    };
+  }
+
+  return { valid: true };
+}
+
+function normalizePayload(body: unknown): { valid: true; data: NormalizedPayload } | { valid: false; error: string; code: string } {
   if (!body || typeof body !== "object") {
     return { valid: false, error: "Invalid JSON body", code: "INVALID_BODY" };
   }
@@ -140,26 +181,21 @@ function validatePayload(body: unknown): { valid: true; data: SentimentPayload }
     return { valid: false, error: "Field 'source' must be a string", code: "MISSING_SOURCE" };
   }
 
-  if (typeof payload.sentiment_score !== "number") {
-    return { valid: false, error: "Field 'sentiment_score' must be a number", code: "MISSING_SCORE" };
-  }
-
   if (typeof payload.verdict !== "string") {
     return { valid: false, error: "Field 'verdict' must be a string", code: "MISSING_VERDICT" };
   }
 
   // Validate source
-  if (!ALLOWED_SOURCES.includes(payload.source)) {
-    return { valid: false, error: `Unknown source. Allowed: ${ALLOWED_SOURCES.join(", ")}`, code: "INVALID_SOURCE" };
-  }
-
   if (payload.source.length > VALIDATION.MAX_SOURCE_LENGTH) {
     return { valid: false, error: `Source too long (max ${VALIDATION.MAX_SOURCE_LENGTH} chars)`, code: "SOURCE_TOO_LONG" };
   }
 
-  // Validate sentiment_score range
-  if (payload.sentiment_score < VALIDATION.MIN_SCORE || payload.sentiment_score > VALIDATION.MAX_SCORE) {
-    return { valid: false, error: `Score must be between ${VALIDATION.MIN_SCORE} and ${VALIDATION.MAX_SCORE}`, code: "SCORE_OUT_OF_RANGE" };
+  if (!SOURCE_PATTERN.test(payload.source)) {
+    return {
+      valid: false,
+      error: "Source must match /^[a-z0-9][a-z0-9_-]{2,99}$/",
+      code: "INVALID_SOURCE",
+    };
   }
 
   // Validate verdict
@@ -167,12 +203,93 @@ function validatePayload(body: unknown): { valid: true; data: SentimentPayload }
     return { valid: false, error: `Verdict too long (max ${VALIDATION.MAX_VERDICT_LENGTH} chars)`, code: "VERDICT_TOO_LONG" };
   }
 
+  const timestamp = typeof payload.timestamp === "string"
+    ? payload.timestamp
+    : new Date().toISOString();
+
+  const rawData = isRecord(payload.raw_data)
+    ? payload.raw_data
+    : payload;
+
+  const metadata = isRecord(payload.metadata)
+    ? payload.metadata
+    : {};
+
+  const confidence = typeof payload.confidence === "number"
+    ? payload.confidence
+    : undefined;
+
+  const summary = typeof payload.summary === "string"
+    ? payload.summary
+    : undefined;
+
+  const dimensions = isRecord(payload.dimensions)
+    ? payload.dimensions
+    : undefined;
+
+  if (typeof payload.signal_type === "string" || typeof payload.normalized_score === "number") {
+    if (typeof payload.signal_type !== "string") {
+      return { valid: false, error: "Field 'signal_type' must be a string", code: "MISSING_SIGNAL_TYPE" };
+    }
+
+    if (!ALLOWED_SIGNAL_TYPES.includes(payload.signal_type as GenericSignalPayload["signal_type"])) {
+      return {
+        valid: false,
+        error: `Unsupported signal_type. Allowed: ${ALLOWED_SIGNAL_TYPES.join(", ")}`,
+        code: "INVALID_SIGNAL_TYPE",
+      };
+    }
+
+    if (typeof payload.normalized_score !== "number") {
+      return { valid: false, error: "Field 'normalized_score' must be a number", code: "MISSING_SCORE" };
+    }
+
+    const scoreValidation = validateScore(payload.normalized_score);
+    if (!scoreValidation.valid) {
+      return scoreValidation;
+    }
+
+    return {
+      valid: true,
+      data: {
+        timestamp,
+        source: payload.source,
+        signal_type: payload.signal_type as GenericSignalPayload["signal_type"],
+        normalized_score: payload.normalized_score,
+        sentiment_score: payload.normalized_score,
+        verdict: payload.verdict,
+        confidence,
+        summary,
+        dimensions,
+        raw_data: rawData,
+        metadata,
+      },
+    };
+  }
+
+  if (typeof payload.sentiment_score !== "number") {
+    return { valid: false, error: "Field 'sentiment_score' must be a number", code: "MISSING_SCORE" };
+  }
+
+  const legacyScoreValidation = validateScore(payload.sentiment_score);
+  if (!legacyScoreValidation.valid) {
+    return legacyScoreValidation;
+  }
+
   return {
     valid: true,
     data: {
+      timestamp,
       source: payload.source,
+      signal_type: "market_sentiment",
+      normalized_score: payload.sentiment_score,
       sentiment_score: payload.sentiment_score,
       verdict: payload.verdict,
+      confidence,
+      summary,
+      dimensions,
+      raw_data: rawData,
+      metadata,
     },
   };
 }
@@ -295,8 +412,8 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    // Validate payload
-    const validation = validatePayload(body);
+    // Validate + normalize payload
+    const validation = normalizePayload(body);
     if (!validation.valid) {
       console.error(`[PAYLOAD] Validation failed: ${validation.error} (code: ${validation.code})`);
       const response: ErrorResponse = createErrorResponse(validation.error, validation.code);
@@ -308,13 +425,32 @@ serve(async (req: Request): Promise<Response> => {
 
     // Database Insert - Cloud-Lockdown
     const supabase = getSupabaseAdmin();
+    const originalBody = isRecord(body) ? body : {};
 
     const dbRecord: Omit<DatabaseRecord, "id"> = {
-      timestamp: new Date().toISOString(),
+      timestamp: validation.data.timestamp,
       source: validation.data.source,
       sentiment_score: validation.data.sentiment_score,
       verdict: validation.data.verdict,
-      raw_data: body as Record<string, unknown>,
+      raw_data: {
+        ...originalBody,
+        _signal_v2: {
+          timestamp: validation.data.timestamp,
+          source: validation.data.source,
+          signal_type: validation.data.signal_type,
+          normalized_score: validation.data.normalized_score,
+          verdict: validation.data.verdict,
+          confidence: validation.data.confidence,
+          summary: validation.data.summary,
+          dimensions: validation.data.dimensions,
+          metadata: validation.data.metadata,
+        },
+        _compat: {
+          sentiment_score: validation.data.sentiment_score,
+          signal_type: validation.data.signal_type,
+          legacy_table: "market_sentiment",
+        },
+      },
     };
 
     const { data: insertedData, error: dbError } = await supabase

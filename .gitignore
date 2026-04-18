@@ -37,3 +37,20 @@ coverage/
 
 # Backup files (SECURITY: Prevent code/secret leaks via backups)
 **/*.bak
+# Workspace & Agent Clutter
+scratch/
+templates/
+.cursorrules
+.windsurfrules
+AGENT_SYNC.md
+AI_MASTER_RULES.md
+AUDIT_REPORT_PHASE_5_1_FINAL.md
+START_HEARTBEAT.bat
+
+# Archive Clutter
+docs/ARCHIVE_ENTERPRISE/
+docs/S1_S2_Logic/
+docs/S3_Data/
+docs/S4_Ecosystem/
+docs/_ARCHIVE_VAULTS/
+docs/OPTION_A_QUICKSTART.md

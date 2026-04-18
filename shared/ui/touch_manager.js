@@ -38,14 +38,11 @@ export class TouchManager {
     this.mainContent = document.querySelector('.main-content');
     
     if (!this.sidebar || !this.mainContent) {
-      console.warn('[TouchManager] Sidebar or main content not found');
       return;
     }
     
     this._createBackdrop();
     this._bindEvents();
-    
-    console.log('[TouchManager] Touch gestures initialized');
   }
   
   /**

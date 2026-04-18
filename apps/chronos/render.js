@@ -1,301 +1,280 @@
 /**
  * /apps/chronos/render.js
- * CHRONOS PROTOCOL — Phase 5.0 FULL IMPLEMENTATION
- * 
- * Dim 06: Chronos — Zeit-Zyklen als Navigation
- * Backend: shared/core/logic/chronos.js (calculateChronos)
+ * Zeit-Seite fuer Phasen und 7-Jahres-Zyklen.
  */
 
 import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
-import { dom, animateValue, showTerminalLoader } from '../../shared/ui/dom_utils.js';
+import { storage } from '../../shared/core/storage.js';
+import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../../shared/ui/dom_utils.js';
 import { nav } from '../../shared/ui/navigation.js';
+import { renderNavigation } from '../../shared/ui/render_nav.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
-import { i18n } from '../../shared/core/i18n.js';
+import { calculateChronos } from '../../shared/core/logic/chronos_v2.js';
+
+console.log('[Zeit] render.js geladen.');
+console.log('[Zeit] calculateChronos verfuegbar:', typeof calculateChronos);
 
 export const chronosRender = {
-  // Cleanup tracking
   _unsubscribers: [],
   _listeners: [],
   _timers: [],
-  
-  /**
-   * Initialize Chronos App — Phase 5.0 Full UI
-   */
-  init() {
-    console.log('[Chronos Protocol] Initialized — Phase 5.0 Full UI');
-    
-    // Event Binding für Calculate Button
-    const calcBtn = document.getElementById('chrono-calc-btn');
-    if (calcBtn) {
-      const clickHandler = async () => {
-        const birthDate = document.getElementById('chrono-birthdate').value.trim();
-        
-        if (!birthDate) {
-          dom.setText('chrono-error', i18n.t('enterBirthdate'));
-          return;
-        }
 
-        // PATCH 3: Terminal Loader für psychologischen Delay
-        calcBtn.disabled = true;
-        calcBtn.textContent = i18n.t('loadingTimeline');
-        await showTerminalLoader('chrono-results-area', 1500);
-        
-        // Dispatch to backend
-        actions.dispatch('calculateChronos', { birthDate });
-        
-        calcBtn.textContent = 'Zeit-Zyklen berechnen';
-        calcBtn.disabled = false;
-      };
-      calcBtn.addEventListener('click', clickHandler);
-      this._listeners.push({ element: calcBtn, type: 'click', handler: clickHandler });
-    }
-    
-    // State Subscriptions
-    this._unsubscribers.push(
-      state.subscribe('chronosCalculated', (result) => this.renderResults(result.data))
-    );
-    this._unsubscribers.push(
-      state.subscribe('chronosFailed', (result) => {
-        dom.setText('chrono-error', `⚠️ ${result.error}`);
-      })
-    );
-    
-    // Initialize Navigation
+  init() {
+    actions.register('calculateChronos', async (payload) => {
+      const res = calculateChronos(payload.birthDate);
+      state.emit('chronosCalculated', res);
+      return res;
+    });
+
+    renderNavigation('nav-menu');
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
-    
-    // Scroll Reveal Animation
+
+    this.autoRenderLifeCycles();
     this.initScrollReveal();
   },
-  
-  /**
-   * Destroy: Cleanup all subscriptions, listeners, and timers
-   */
-  destroy() {
-    // Unsubscribe from state
-    this._unsubscribers.forEach(unsub => unsub && unsub());
-    this._unsubscribers = [];
-    
-    // Remove event listeners
-    this._listeners.forEach(({ element, type, handler }) => {
-      element.removeEventListener(type, handler);
-    });
-    this._listeners = [];
-    
-    // Clear all timers
-    this._timers.forEach(id => clearTimeout(id));
-    this._timers = [];
-    
-    console.log('[Chronos Protocol] Destroyed — All listeners removed');
+
+  autoRenderLifeCycles() {
+    const userBirthdateResult = storage.get('user_birthdate');
+    if (userBirthdateResult.success && userBirthdateResult.data) {
+      this.renderLifeCycles(userBirthdateResult.data);
+      return;
+    }
+
+    const profile = state.get('systemInitialized');
+    let birthDate = profile?.birthDate || profile?.birth_date;
+
+    if (!birthDate) {
+      const stored = storage.get('last_numerology_calc');
+      birthDate = stored?.data?.birthDate || stored?.data?.birth_date;
+    }
+
+    if (birthDate) {
+      this.renderLifeCycles(birthDate);
+    } else {
+      this.renderInputForm();
+    }
   },
-  
-  renderResults(data) {
-    const container = document.getElementById('chrono-results-area');
+
+  renderInputForm() {
+    const container = document.getElementById('chrono-content-area');
     if (!container) return;
-    
-    // Clear and show (LAW 3 COMPLIANT)
-    container.style.display = 'block';
-    dom.clear(container.id || 'chrono-results-area');
-    container.className = 'tool-section reveal';
-    
-    // Current Date Reference
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1;
-    const currentDay = now.getDate();
-    
-    // Personal Year / Month / Day Cards (LAW 3 COMPLIANT)
+
+    dom.clear(container.id);
+
+    const card = dom.createEl('div', {
+      className: 'glass-card text-center',
+      parent: container
+    });
+
+    dom.createEl('h3', {
+      className: 'section-eyebrow',
+      text: 'Dein Startpunkt',
+      parent: card
+    });
+
+    dom.createEl('p', {
+      className: 'text-secondary mb-16',
+      text: 'Gib dein Geburtsdatum ein. Ich zeige dir, in welcher Phase du gerade bist.',
+      parent: card
+    });
+
+    const formGroup = dom.createEl('div', {
+      className: 'form-group form-container-compact',
+      parent: card
+    });
+
+    dom.createEl('label', {
+      text: 'Geburtsdatum (TT.MM.JJJJ)',
+      parent: formGroup
+    });
+
+    const input = dom.createEl('input', {
+      type: 'text',
+      id: 'chrono-birthdate',
+      placeholder: 'z.B. 15.08.1990',
+      parent: formGroup
+    });
+
+    dom.createEl('p', {
+      id: 'chrono-error',
+      className: 'text-accent text-center mt-16',
+      parent: card
+    });
+
+    const btn = dom.createEl('button', {
+      className: 'btn-primary mt-24 form-container-compact',
+      id: 'chrono-calc-btn',
+      text: 'Zeit ansehen',
+      parent: card
+    });
+
+    bindSmartDateInput('chrono-birthdate');
+
+    const clickHandler = async () => {
+      const birthDate = input.value.trim();
+
+      if (!birthDate) {
+        dom.setText('chrono-error', 'Bitte gib ein Geburtsdatum ein.');
+        return;
+      }
+
+      const dateRegex = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$|^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(birthDate)) {
+        dom.setText('chrono-error', 'Bitte nutze TT.MM.JJJJ oder YYYY-MM-DD.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Ich schaue gerade nach.';
+      await showTerminalLoader('chrono-content-area', 1000);
+
+      storage.set('user_birthdate', birthDate);
+
+      this.renderLifeCycles(birthDate);
+    };
+
+    btn.addEventListener('click', clickHandler);
+    this._listeners.push({ element: btn, type: 'click', handler: clickHandler });
+
+    const timerId = setTimeout(() => card.classList.add('visible'), 100);
+    this._timers.push(timerId);
+  },
+
+  renderLifeCycles(birthDate) {
+    const result = calculateChronos(birthDate);
+
+    if (!result.success) {
+      console.warn('[Zeit] Berechnung fehlgeschlagen:', result.error);
+      this.renderInputForm();
+      const timerId = setTimeout(() => {
+        dom.setText('chrono-error', 'Das gespeicherte Datum passt nicht. Gib es bitte neu ein.');
+      }, 50);
+      this._timers.push(timerId);
+      return;
+    }
+
+    const container = document.getElementById('chrono-content-area');
+    if (!container) return;
+
+    dom.clear(container.id);
+
+    const data = result.data;
+    const nextCycleDate = new Date(data.nextCycleStartUTC);
+    const formattedNextCycle = `${String(nextCycleDate.getUTCDate()).padStart(2, '0')}.${String(nextCycleDate.getUTCMonth() + 1).padStart(2, '0')}.${nextCycleDate.getUTCFullYear()}`;
+
     const cyclesCard = dom.createEl('div', {
       className: 'glass-card mb-24',
       parent: container
     });
-    
+
     dom.createEl('h3', {
       className: 'section-eyebrow',
-      text: `Aktuelle Zeit-Zyklen — ${currentDay}.${currentMonth}.${currentYear}`,
+      text: 'Deine Phasen im Blick',
       parent: cyclesCard
     });
-    
+
+    dom.createEl('p', {
+      className: 'text-secondary mb-24',
+      text: 'Hier siehst du, wie lange dein bisheriger Weg schon läuft und wann die nächste Phase beginnt.',
+      parent: cyclesCard
+    });
+
     const dataGrid = dom.createEl('div', {
       className: 'data-grid compact',
       parent: cyclesCard
     });
-    
-    // Personal Year
-    const yearItem = dom.createEl('div', {
+
+    const daysItem = dom.createEl('div', {
       className: 'stagger-fade card-grid-item',
       parent: dataGrid
     });
-    yearItem.setAttribute('data-delay', '1');
-    dom.createEl('span', {
-      className: 'value-massive accent text-size-hero-sm',
+    daysItem.setAttribute('data-delay', '1');
+    const daysValue = dom.createEl('span', {
+      className: 'value-massive accent value-massive-sm',
       text: '0',
-      parent: yearItem
+      parent: daysItem
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Personal Year',
-      parent: yearItem
+      text: 'Tage bis heute',
+      parent: daysItem
     });
-    dom.createEl('p', {
-      className: 'text-size-pico text-theme-muted mt-4',
-      text: data.personalYearTheme || 'Thema lädt...',
-      parent: yearItem
-    });
-    
-    // Personal Month
-    const monthItem = dom.createEl('div', {
+
+    const phaseItem = dom.createEl('div', {
       className: 'stagger-fade card-grid-item',
       parent: dataGrid
     });
-    monthItem.setAttribute('data-delay', '2');
+    phaseItem.setAttribute('data-delay', '2');
     dom.createEl('span', {
       className: 'value-massive text-size-xl',
-      text: '0',
-      parent: monthItem
+      text: String(data.currentPhase),
+      parent: phaseItem
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Personal Month',
-      parent: monthItem
+      text: 'Aktuelle Phase',
+      parent: phaseItem
     });
-    dom.createEl('p', {
-      className: 'text-size-pico text-theme-muted mt-4',
-      text: data.personalMonthTheme || 'Thema lädt...',
-      parent: monthItem
-    });
-    
-    // Personal Day
-    const dayItem = dom.createEl('div', {
+
+    const nextItem = dom.createEl('div', {
       className: 'stagger-fade card-grid-item',
       parent: dataGrid
     });
-    dayItem.setAttribute('data-delay', '3');
+    nextItem.setAttribute('data-delay', '3');
     dom.createEl('span', {
-      className: 'value-massive secondary text-size-lg',
-      text: '0',
-      parent: dayItem
+      className: 'value-massive secondary text-size-sm',
+      text: formattedNextCycle,
+      parent: nextItem
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Personal Day',
-      parent: dayItem
+      text: 'Nächste Phase ab',
+      parent: nextItem
     });
-    dom.createEl('p', {
-      className: 'text-size-pico text-theme-muted mt-4',
-      text: data.personalDayTheme || 'Thema lädt...',
-      parent: dayItem
+
+    animateValue(daysValue, 0, data.livedDays, 1500);
+
+    const daysTimer = setTimeout(() => daysItem.classList.add('visible'), 100);
+    const phaseTimer = setTimeout(() => phaseItem.classList.add('visible'), 200);
+    const nextTimer = setTimeout(() => nextItem.classList.add('visible'), 300);
+    this._timers.push(daysTimer, phaseTimer, nextTimer);
+
+    const resetBtn = dom.createEl('button', {
+      className: 'btn-secondary mt-24 text-size-sm',
+      text: 'Neu eingeben',
+      parent: cyclesCard
     });
-    
-    // Animate the cycle values
-    const yearEl = cyclesCard.querySelector('.value-massive.accent');
-    const monthEl = cyclesCard.querySelectorAll('.value-massive')[1];
-    const dayEl = cyclesCard.querySelector('.value-massive.secondary');
-    
-    animateValue(yearEl, 0, data.personalYear || 0, 1500);
-    animateValue(monthEl, 0, data.personalMonth || 0, 1500);
-    animateValue(dayEl, 0, data.personalDay || 0, 1500);
-    
-    // Timeline Grid — Past, Present, Future (LAW 3 COMPLIANT)
-    const timelineCard = dom.createEl('div', {
-      className: 'glass-card',
-      parent: container
-    });
-    
-    dom.createEl('h3', {
-      className: 'section-eyebrow',
-      text: 'Zeitlinie — Lebenszyklen',
-      parent: timelineCard
-    });
-    
-    const timelineGrid = dom.createEl('div', {
-      className: 'data-grid compact',
-      id: 'chrono-timeline-grid',
-      parent: timelineCard
-    });
-    
-    // Fill timeline grid with life cycles
-    // Use existing timelineGrid reference from line 180
-    const cycles = [
-      { label: 'Früher Zyklus', value: data.earlyCycle, years: data.earlyCycleYears, delay: 1 },
-      { label: 'Mittlerer Zyklus', value: data.middleCycle, years: data.middleCycleYears, delay: 2 },
-      { label: 'Später Zyklus', value: data.lateCycle, years: data.lateCycleYears, delay: 3 },
-      { label: 'Aktuelle Pinnacle', value: data.currentPinnacle, years: data.currentPinnacleYears, delay: 4 }
-    ];
-    
-    cycles.forEach((cycle) => {
-      const item = dom.createEl('div', {
-        className: 'stagger-fade card-grid-item-sm',
-        parent: timelineGrid
-      });
-      item.setAttribute('data-delay', cycle.delay);
-      
-      dom.createEl('span', {
-        className: 'value-massive text-size-md',
-        text: '0',
-        parent: item
-      });
-      
-      dom.createEl('span', {
-        className: 'value-label',
-        text: cycle.label,
-        parent: item
-      });
-      
-      if (cycle.years) {
-        dom.createEl('p', {
-          className: 'text-size-pico text-theme-muted mt-4',
-          text: cycle.years,
-          parent: item
-        });
-      }
-      
-      const valueEl = item.querySelector('.value-massive');
-      animateValue(valueEl, 0, cycle.value || 0, 1500);
-      
-      setTimeout(() => item.classList.add('visible'), cycle.delay * 100);
-    });
-    
-    // Next Transition Countdown (LAW 3 COMPLIANT)
-    if (data.nextTransition) {
-      const countdownCard = dom.createEl('div', {
-        className: 'glass-card mt-24 text-center',
-        parent: container
-      });
-      
-      dom.createEl('h4', {
-        className: 'card-title-syne-sm',
-        text: '⏱️ Nächster Zyklus-Wechsel',
-        parent: countdownCard
-      });
-      
-      dom.createEl('p', {
-        className: 'text-size-tiny text-theme-secondary',
-        text: data.nextTransition.description || 'Berechne...',
-        parent: countdownCard
-      });
-      
-      dom.createEl('div', {
-        className: 'info-text-tiny',
-        text: data.nextTransition.date || '',
-        parent: countdownCard
-      });
-    }
-    
-    // Trigger stagger animations
-    document.querySelectorAll('#chrono-results-area .stagger-fade').forEach((el, index) => {
-      const timerId = setTimeout(() => el.classList.add('visible'), (index + 1) * 100);
-      this._timers.push(timerId);
-    });
+
+    const resetHandler = () => {
+      storage.remove('user_birthdate');
+      dom.clear(container.id);
+      this.renderInputForm();
+    };
+
+    resetBtn.addEventListener('click', resetHandler);
+    this._listeners.push({ element: resetBtn, type: 'click', handler: resetHandler });
   },
-  
+
+  destroy() {
+    this._unsubscribers.forEach((unsub) => unsub && unsub());
+    this._unsubscribers = [];
+
+    this._listeners.forEach(({ element, type, handler }) => {
+      element.removeEventListener(type, handler);
+    });
+    this._listeners = [];
+
+    this._timers.forEach((id) => clearTimeout(id));
+    this._timers = [];
+  },
+
   initScrollReveal() {
     dom.initScrollReveal();
   }
 };
 
-// Auto-Init
 chronosRender.init();
 dom.initScrollReveal();

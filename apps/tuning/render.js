@@ -10,6 +10,7 @@ import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
 import { dom, animateValue } from '../../shared/ui/dom_utils.js';
 import { nav } from '../../shared/ui/navigation.js';
+import { renderNavigation } from '../../shared/ui/render_nav.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { i18n } from '../../shared/core/i18n.js';
 
@@ -25,7 +26,13 @@ export const tuningRender = {
    * Initialize Frequency Tuner App — Phase 5.0 Full UI
    */
   init() {
-    console.log('[Frequency Tuner] Initialized — Phase 5.0 Full UI');
+    // Law 17: Local action registration
+    actions.register('calculateNameFrequency', async (payload) => {
+      const { calculateNameFrequency } = await import('../../shared/core/logic/frequency.js');
+      const res = calculateNameFrequency(payload.name);
+      state.emit('frequencyCalculated', res);
+      return res;
+    });
     
     // Live Input mit 300ms Debounce
     const nameInput = document.getElementById('tune-name-input');
@@ -67,6 +74,7 @@ export const tuningRender = {
     );
     
     // Initialize Navigation
+    renderNavigation('nav-menu');  // Dynamische Navigation aus config.js
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
@@ -91,7 +99,6 @@ export const tuningRender = {
     this._listeners = [];
     this._timers.forEach(id => clearTimeout(id));
     this._timers = [];
-    console.log('[Frequency Tuner] Destroyed — All listeners removed');
   },
   
   clearResults() {

@@ -1,385 +1,218 @@
 /**
  * /shared/ui/render_landing.js
- * LANDING PAGE RENDERER — v3.0 STATE PERSISTENCE
- * 
- * 1. The Hook → Glassmorphism Form (NEW USERS)
- * 2. The Anticipation → Terminal Loader (2.5s)
- * 3. The Reveal → Life Path Display with SVG Ring
- * 4. The Cliffhanger → Blurred Dimensions Grid
- * 
- * v3.0: Added State Persistence for Returning Users
- * - Checks localStorage for existing profile
- * - Skips loader for returning users
- * - Shows "Welcome back" message
+ * Landing-Flow fuer Einstieg, Skip und ersten Blick aufs Muster.
  */
 
 import { nav } from './navigation.js';
 import { storage } from '../core/storage.js';
 import { i18n } from '../core/i18n.js';
 
-// Archetype definitions for life path numbers 1-9
 const ARCHETYPES = {
-  1: { title: 'Der Initiator', desc: 'Pionier. Macher. Der, der Wege bahnt wo keine sind.' },
-  2: { title: 'Der Diplomat', desc: 'Brückenbauer. Empath. Der, der Harmonie schafft.' },
-  3: { title: 'Der Kreative', desc: 'Expressionist. Kommunikator. Der, der Farbe ins Leben bringt.' },
-  4: { title: 'Der Architekt', desc: 'Baumeister. Stratege. Der, der fundamentale Strukturen schafft.' },
-  5: { title: 'Der Freigeist', desc: 'Entdecker. Veränderer. Der, der Grenzen überschreitet.' },
-  6: { title: 'Der Nurturer', desc: 'Versorger. Heiler. Der, der für andere da ist.' },
-  7: { title: 'Der Sucher', desc: 'Analytiker. Philosoph. Der, der tiefe Wahrheiten sucht.' },
-  8: { title: 'Der Magnat', desc: 'Anführer. Organisator. Der, der materielle Reichtümer manifestiert.' },
-  9: { title: 'Der Humanist', desc: 'Idealist. Lehrer. Der, der für das Große Ganze eintritt.' }
+  1: { title: 'Der Initiator', desc: 'Du gehst am besten voran, wenn du selbst den ersten Schritt setzt.' },
+  2: { title: 'Der Verbinder', desc: 'Du bringst Ruhe, Feingefühl und Verbindung in Gruppen und Beziehungen.' },
+  3: { title: 'Der Kreative', desc: 'Du wirkst stark, wenn du dich zeigst und deiner Stimme Raum gibst.' },
+  4: { title: 'Der Architekt', desc: 'Du baust gern mit Struktur, Klarheit und einem langen Atem.' },
+  5: { title: 'Der Freigeist', desc: 'Du brauchst Bewegung und Freiheit, damit deine Kraft wach bleibt.' },
+  6: { title: 'Der Träger', desc: 'Du gibst Halt, übernimmst Verantwortung und schaust auf dein Umfeld.' },
+  7: { title: 'Der Analytiker', desc: 'Du erkennst Muster schnell und willst die Dinge wirklich verstehen.' },
+  8: { title: 'Der Macher', desc: 'Du willst Wirkung, klare Ergebnisse und greifbare Bewegung sehen.' },
+  9: { title: 'Der Weitblicker', desc: 'Du siehst das große Ganze und denkst oft über dich selbst hinaus.' },
+  11: { title: 'Der Wegweiser', desc: 'Du nimmst viel fein wahr und hast ein starkes Gespür für das, was gerade dran ist.' },
+  22: { title: 'Der Baumeister', desc: 'Du kannst groß denken und Dinge so bauen, dass sie lange tragen.' },
+  33: { title: 'Der Mentor', desc: 'Du wirkst am stärksten, wenn du andere ruhig führst und ihnen Orientierung gibst.' }
 };
 
-// Terminal loading messages - LAW 8: Centralized in config
 const TERMINAL_MESSAGES = i18n.getArray('terminal.sequence');
 
 export const landingRender = {
-  currentSection: 'hook', // hook → loader → reveal → cliffhanger
-  userData: null, // Stores name + birthDate for persistence
-  
-  /**
-   * Initialize Landing Page
-   * v3.0: Check for returning users FIRST (before showing form)
-   */
+  userData: null,
+
   init() {
-    this.bindForm();
-    this.bindUnlockButtons();
-    nav.bindNavigation();
-    
-    // CRITICAL: Check for returning user BEFORE showing form
     const existingData = this.checkExistingProfile();
-    
     if (existingData) {
-      // RETURNING USER: Skip hook, go directly to reveal
-      this.userData = existingData;
-      this.showReturningUserReveal();
-      console.log('[Landing Render] v3.0 Welcome back,', existingData.firstName);
-    } else {
-      // NEW USER: Show normal flow
-      console.log('[Landing Render] v3.0 State Persistence Active — New User Flow');
-    }
-  },
-  
-  /**
-   * Check if user has existing profile in localStorage
-   * @returns {Object|null} { name, birthDate, lifePath, firstName } or null
-   */
-  checkExistingProfile() {
-    // Check for last numerology calculation data
-    const lastCalc = storage.get('last_numerology_calc');
-    
-    if (lastCalc.success && lastCalc.data) {
-      const data = lastCalc.data;
-      
-      // Validate we have all required fields
-      if (data.name && data.birthDate && data.lifePath) {
-        // Extract first name for welcome message
-        const firstName = data.name.split(' ')[0];
-        
-        return {
-          name: data.name,
-          birthDate: data.birthDate,
-          lifePath: data.lifePath,
-          firstName: firstName
-        };
-      }
-    }
-    
-    // Also check legacy profile format
-    const profile = storage.get('profile');
-    if (profile.success && profile.data && profile.data.name) {
-      // Try to extract birthdate from profile
-      const legacyData = profile.data;
-      if (legacyData.birthDate || legacyData.birth_date) {
-        const birthDate = legacyData.birthDate || legacyData.birth_date;
-        const lifePath = this.calculateLifePath(birthDate);
-        
-        return {
-          name: legacyData.name,
-          birthDate: birthDate,
-          lifePath: lifePath,
-          firstName: legacyData.name.split(' ')[0]
-        };
-      }
-    }
-    
-    return null;
-  },
-  
-  /**
-   * Show reveal for returning users (NO loader, instant)
-   */
-  showReturningUserReveal() {
-    const { lifePath, firstName } = this.userData;
-    const archetype = ARCHETYPES[lifePath];
-    
-    // INSTANT transition (no loader for returning users)
-    this.transitionTo('reveal');
-    
-    // Update DOM with data
-    const numberEl = document.getElementById('life-path-number');
-    const titleEl = document.getElementById('archetype-title');
-    const descEl = document.getElementById('archetype-desc');
-    const ringProgress = document.getElementById('ring-progress');
-    
-    if (!numberEl || !titleEl || !descEl) {
-      console.error('[Landing] DOM elements missing for reveal');
+      window.location.href = './dashboard/index.html';
       return;
     }
-    
-    // Show number immediately (no animation for returning users)
-    numberEl.textContent = lifePath;
-    titleEl.textContent = archetype.title;
-    descEl.textContent = archetype.desc;
-    
-    // Add welcome back message
-    const revealText = document.querySelector('.reveal-text');
-    if (revealText) {
-      const welcomeMsg = document.createElement('p');
-      welcomeMsg.className = 'welcome-back';
-      welcomeMsg.textContent = `Willkommen zurück, ${firstName}`;
-      revealText.insertBefore(welcomeMsg, revealText.firstChild);
-    }
-    
-    // Animate ring (still show animation for visual delight) — LAW 9 COMPLIANT
-    if (ringProgress) {
-      const circumference = 2 * Math.PI * 90;
-      // Use CSS custom properties for dynamic SVG values
-      ringProgress.style.setProperty('--ring-circumference', circumference);
-      ringProgress.style.setProperty('--ring-offset', circumference);
-      ringProgress.classList.add('ring-progress-animate-fast');
-      
-      // Small delay for visual effect
-      requestAnimationFrame(() => {
-        ringProgress.style.setProperty('--ring-offset', 0);
-      });
-    }
-    
-    // After short delay, show cliffhanger
-    setTimeout(() => {
-      this.transitionTo('cliffhanger');
-    }, 2500);
+
+    this.bindForm();
+    this.bindButtons();
   },
-  
-  /**
-   * Save user data to localStorage after analysis
-   */
-  saveUserData(name, birthDate, lifePath) {
-    const data = {
-      name: name,
-      birthDate: birthDate,
-      lifePath: lifePath,
-      calculatedAt: new Date().toISOString()
-    };
-    
-    storage.set('last_numerology_calc', data);
-    console.log('[Landing] User data saved to localStorage');
+
+  checkExistingProfile() {
+    const lastCalc = storage.get('last_numerology_calc');
+    if (lastCalc.success && lastCalc.data?.name && lastCalc.data?.birthDate && lastCalc.data?.lifePath) {
+      return {
+        name: lastCalc.data.name,
+        birthDate: lastCalc.data.birthDate,
+        lifePath: lastCalc.data.lifePath,
+        firstName: lastCalc.data.name.split(' ')[0]
+      };
+    }
+
+    const profile = storage.get('profile');
+    if (profile.success && profile.data?.name && (profile.data.birthDate || profile.data.birth_date)) {
+      const birthDate = profile.data.birthDate || profile.data.birth_date;
+      return {
+        name: profile.data.name,
+        birthDate,
+        lifePath: this.calculateLifePath(birthDate),
+        firstName: profile.data.name.split(' ')[0]
+      };
+    }
+
+    return null;
   },
-  
-  /**
-   * Bind the frequency form submit
-   */
+
   bindForm() {
     const form = document.getElementById('frequency-form');
     if (!form) return;
-    
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const name = document.getElementById('input-name').value;
-      const date = document.getElementById('input-date').value;
-      
+      const name = document.getElementById('input-name')?.value.trim();
+      const date = document.getElementById('input-date')?.value;
+
       if (name && date) {
         this.startAnalysis(name, date);
       }
     });
   },
-  
-  /**
-   * Start the WTF-Moment Flow (NEW USERS ONLY)
-   */
-  async startAnalysis(name, birthDate) {
-    // Save for persistence
-    this.userData = { name, birthDate };
-    
-    // 1. Hide Hook, Show Loader
-    this.transitionTo('loader');
-    
-    // 2. Terminal Animation (2.5s total)
-    await this.runTerminalSequence();
-    
-    // 3. Calculate Life Path
-    const lifePath = this.calculateLifePath(birthDate);
-    const archetype = ARCHETYPES[lifePath];
-    
-    // 4. Save to localStorage for returning users
-    this.saveUserData(name, birthDate, lifePath);
-    
-    // 5. Reveal
-    this.showReveal(lifePath, archetype);
-    
-    // 6. After delay, show cliffhanger
-    setTimeout(() => {
-      this.transitionTo('cliffhanger');
-    }, 3500);
+
+  bindButtons() {
+    const btnDashboard = document.getElementById('btn-dashboard');
+    if (btnDashboard) {
+      btnDashboard.addEventListener('click', () => nav.navigateTo('dashboard'));
+    }
+
+    const skipLink = document.getElementById('skip-dashboard-link');
+    if (skipLink) {
+      skipLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        nav.navigateTo('dashboard');
+      });
+    }
   },
-  
-  /**
-   * Terminal loading sequence
-   */
+
+  async startAnalysis(name, birthDate) {
+    this.userData = { name, birthDate };
+    this.transitionTo('loader');
+    await this.runTerminalSequence();
+
+    const lifePath = this.calculateLifePath(birthDate);
+    this.saveUserData(name, birthDate, lifePath);
+    this.showReveal(lifePath, false);
+  },
+
+  saveUserData(name, birthDate, lifePath) {
+    storage.set('last_numerology_calc', {
+      name,
+      birthDate,
+      lifePath,
+      calculatedAt: new Date().toISOString()
+    });
+  },
+
   runTerminalSequence() {
     return new Promise((resolve) => {
       const terminalText = document.getElementById('terminal-text');
       const progressBar = document.getElementById('progress-bar');
-      
+      if (!terminalText || !progressBar) {
+        resolve();
+        return;
+      }
+
+      terminalText.replaceChildren();
+      progressBar.style.width = '0%';
+
       let messageIndex = 0;
       const totalDuration = 2500;
       const messageInterval = totalDuration / TERMINAL_MESSAGES.length;
-      
-      // Animate progress bar — LAW 9 COMPLIANT
-      progressBar.classList.add('progress-bar-animate');
+
       setTimeout(() => {
-        progressBar.style.width = '100%'; // Dynamic: allowed
+        progressBar.style.width = '100%';
       }, 100);
-      
-      // Type messages
+
       const typeMessage = () => {
         if (messageIndex < TERMINAL_MESSAGES.length) {
-          const msg = TERMINAL_MESSAGES[messageIndex];
           const line = document.createElement('div');
           line.className = 'terminal-line';
-          line.textContent = msg;
+          line.textContent = TERMINAL_MESSAGES[messageIndex];
           terminalText.appendChild(line);
           terminalText.scrollTop = terminalText.scrollHeight;
-          
-          messageIndex++;
+          messageIndex += 1;
           setTimeout(typeMessage, messageInterval * 0.7);
         }
       };
-      
+
       typeMessage();
-      
-      // Resolve after total duration
       setTimeout(resolve, totalDuration);
     });
   },
-  
-  /**
-   * Calculate life path from birth date
-   */
+
   calculateLifePath(birthDate) {
     const [year, month, day] = birthDate.split('-').map(Number);
-    
+
     const sum = (n) => {
-      let s = String(n).split('').reduce((a, b) => a + parseInt(b), 0);
+      let s = String(n).split('').reduce((a, b) => a + Number.parseInt(b, 10), 0);
       while (s > 9 && s !== 11 && s !== 22 && s !== 33) {
-        s = String(s).split('').reduce((a, b) => a + parseInt(b), 0);
+        s = String(s).split('').reduce((a, b) => a + Number.parseInt(b, 10), 0);
       }
       return s;
     };
-    
-    const lifePath = sum(sum(year) + sum(month) + sum(day));
-    return lifePath;
+
+    return sum(sum(year) + sum(month) + sum(day));
   },
-  
-  /**
-   * Show the reveal section with life path (for new users)
-   */
-  showReveal(lifePath, archetype) {
+
+  showReveal(lifePath, isReturningUser) {
     this.transitionTo('reveal');
-    
+
+    const archetype = ARCHETYPES[lifePath] || ARCHETYPES[9];
     const numberEl = document.getElementById('life-path-number');
     const titleEl = document.getElementById('archetype-title');
     const descEl = document.getElementById('archetype-desc');
+    const revealText = document.querySelector('.reveal-text');
     const ringProgress = document.getElementById('ring-progress');
-    
-    // Safety check
-    if (!numberEl || !titleEl || !descEl) {
-      console.error('[Landing] Required DOM elements not found');
-      return;
+
+    if (!numberEl || !titleEl || !descEl || !revealText) return;
+
+    revealText.querySelectorAll('.welcome-back').forEach((node) => node.remove());
+
+    if (isReturningUser && this.userData?.firstName) {
+      const welcomeMsg = document.createElement('p');
+      welcomeMsg.className = 'welcome-back';
+      welcomeMsg.textContent = `Willkommen zurück, ${this.userData.firstName}.`;
+      revealText.insertBefore(welcomeMsg, revealText.firstChild);
     }
-    
-    // Animate number
-    this.animateNumber(numberEl, lifePath);
-    
-    // Update text
+
+    numberEl.textContent = lifePath;
     titleEl.textContent = archetype.title;
     descEl.textContent = archetype.desc;
-    
-    // Animate SVG ring — LAW 9 COMPLIANT
+
     if (ringProgress) {
-      const circumference = 2 * Math.PI * 90; // r=90
-      ringProgress.style.strokeDasharray = circumference;  // Dynamic: allowed
-      ringProgress.style.strokeDashoffset = circumference; // Dynamic: allowed
-      ringProgress.classList.add('ring-progress-animate'); // Static: CSS class
-      
-      setTimeout(() => {
-        ringProgress.style.strokeDashoffset = 0; // Dynamic: allowed
-      }, 100);
+      const circumference = 2 * Math.PI * 90;
+      ringProgress.style.strokeDasharray = circumference;
+      ringProgress.style.strokeDashoffset = circumference;
+      requestAnimationFrame(() => {
+        ringProgress.style.strokeDashoffset = '0';
+      });
     }
   },
-  
-  /**
-   * Animate number counting up
-   */
-  animateNumber(element, target) {
-    let current = 0;
-    const duration = 800;
-    const step = target / (duration / 16);
-    
-    const count = () => {
-      current += step;
-      if (current < target) {
-        element.textContent = Math.floor(current);
-        requestAnimationFrame(count);
-      } else {
-        element.textContent = target;
-      }
-    };
-    
-    requestAnimationFrame(count);
-  },
-  
-  /**
-   * Section transitions
-   */
+
   transitionTo(section) {
-    // Hide all sections
-    ['hook', 'loader', 'reveal', 'cliffhanger'].forEach(s => {
-      const el = document.getElementById(`${s}-section`);
-      if (el) {
-        el.classList.add('hidden');
-        el.classList.remove('visible');
-      }
+    ['hook', 'loader', 'reveal'].forEach((key) => {
+      const element = document.getElementById(`${key}-section`);
+      if (!element) return;
+      element.classList.add('hidden');
+      element.classList.remove('visible');
     });
-    
-    // Show target section
+
     const target = document.getElementById(`${section}-section`);
     if (target) {
       target.classList.remove('hidden');
-      // Force reflow
       void target.offsetWidth;
       target.classList.add('visible');
     }
-    
-    this.currentSection = section;
-  },
-  
-  /**
-   * Bind unlock buttons (for future payment integration)
-   */
-  bindUnlockButtons() {
-    const btnUnlock = document.getElementById('btn-unlock');
-    const btnDeepDive = document.getElementById('btn-deep-dive');
-
-    const handleUnlock = () => {
-      // LAW 1 COMPLIANT: All navigation must go through router
-      nav.navigateTo('numerology');
-    };
-
-    if (btnUnlock) btnUnlock.addEventListener('click', handleUnlock);
-    if (btnDeepDive) btnDeepDive.addEventListener('click', handleUnlock);
   }
 };
 
-// Auto-Init
 landingRender.init();

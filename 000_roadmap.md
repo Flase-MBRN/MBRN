@@ -83,44 +83,96 @@ Wobei `ΔV_i` = Differenz der Frequenzen (Mental, Emotional, Operativ) und `W_i`
 
 ---
 
-## 🚀 PHASE 5.0: THE UI TSUNAMI & VERTICAL SLICE (AKTIV)
+## 🚀 PHASE 5.0: INFRASTRUCTURE COMPLETION (UNIVERSE PROTOCOL — AKTIV)
 
-**Ziel:** Design-System auf gesamtes Ökosystem ausrollen + Erster vertikaler Durchstich durch alle 4 Säulen.
+> **UNIVERSE PROTOCOL:** Kein MVP. Kein „Lean Start“. Kein halbfertiges System vor echten Menschen.
+> Wir bauen das vollständige Universum — dann öffnen wir die Tür.
 
-### 5.1 — GLOBAL UI OVERHAUL
-- [ ] Glassmorphism auf alle App-Seiten (finance, numerology)
-- [ ] Syne Font konsistent durchgesetzt
+**Ziel:** Vollständige technische Autonomie. Alle Apps 100% funktionsfähig. Alle 4 Säulen operativ.
+
+**Gesetz:** `000_ARCHITECTURE.md` §10 — Law of Pillar Isolation + §16 — Universe Protocol.  
+**SOP:** `000_RECYCLING_SOP.md` — Der 5-Schritte-Workflow für Ideen-Blitze.
+
+### SÄULE 1: META-GENERATOR (🟩 TEMPLATES)
+- [ ] /templates/ Verzeichnisstruktur etabliert
+- [ ] App-Blueprint JSON Schema definiert
+- [ ] Erstes Template: market_sentiment_blueprint.json
+- [ ] Pattern-Extraktion aus bestehenden Apps
+
+### SÄULE 2: B2B API FOUNDATION (🟧 LOGIC / 🟪 EDGE FUNCTIONS)
+- [x] Finance-Logik migriert nach /shared/core/logic/finance.js
+- [x] Gesetz der Säulen-Isolation verankert: "Logik darf niemals direkt in render.js leben"
+- [ ] Edge Function: market-sentiment-import (Python JSON → Supabase)
+- [ ] Edge Function: finance-api (B2B-Zugriff auf Zinseszins-Berechnung)
+- [ ] API-Key Management für B2B-Kunden (JWT-basiert)
+
+### SÄULE 3: DATA ARBITRAGE (🟨 PYTHON/OLLAMA)
+- [x] /scripts/pipelines/ Verzeichnis erstellt
+- [x] market_sentiment_fetcher.py Skeleton mit yfinance
+- [ ] Yahoo Finance Integration aktiv (optional: Alpha Vantage)
+- [ ] Ollama Llama 3 Anreicherung (Sentiment-Scoring lokal)
+- [ ] RX 7700 XT Optimierung für Batch-Verarbeitung
+- [ ] JSON-Output Schema standardisiert
+
+### SÄULE 4: ECOSYSTEM FRONTEND (🟦 UI/RENDER)
+- [x] Glassmorphism auf alle App-Seiten (finance, numerology)
+- [x] Syne Font konsistent durchgesetzt
 - [ ] SVG Visuals statt generischer Icons
-- [ ] Dark Theme #05050A als Standard
+- [x] Dashboard: Market Sentiment Widget (Chronos-Style)
+- [x] Pillar-Isolation-Compliance: Alle render.js importieren nur aus /shared/core/logic/
 
-### 5.2 — SÄULE 3 SETUP (Data Arbitrage)
-- [ ] Erstes Python-Scraper Skript lokal (RX 7700 XT)
-- [ ] Datenquelle identifiziert (z.B. Google Trends, öffentliche Finanz-Metriken)
-- [ ] JSON-Output Struktur definiert
-- [ ] Lokale Ollama-Anreicherung getestet
+### SÄULE 4: DIMENSIONEN-AUSBAU (Infrastructure Completion)
 
-### 5.3 — VERTICAL SLICE INTEGRATION
-- [ ] Python-Skript → Supabase Edge Function Pipeline
-- [ ] Edge Function → MBRN Dashboard Visualisierung
-- [ ] Lokales LLM (Säule 1) wertet Daten aus
-- [ ] Use-Case: Market Sentiment Chronos operational
+**Phase-1-Dimensionen (müssen ALLE zu 100% stehen bevor Launch):**
+- DIM 01 KAPITAL → `/apps/finance/` ✅ Logic Done — ⬜ Design-Finalisierung
+- DIM 03 FREQUENZ → `/apps/numerology/` ✅ Logic Done — ⬜ Design-Finalisierung
+- DIM 05 BINDUNG → `/apps/synergy/` ✅ Engine Done — ⬜ Full App UI
+- DIM 06 CHRONOS → `/apps/chronos/` ✅ Engine Done — ⬜ Full App UI
+- DIM 03+ NOMENKLATUR → `/apps/tuning/` ✅ Engine Done — ⬜ Design-Finalisierung
+
+**Phase-2-Dimensionen (nach Infrastructure Completion):**
+- DIM 10 SIGNAL → `/apps/signal/` 🟡 Reichweiten-Tools für Klaudia (Strategic Rollout)
+
+**Future Dimensionen (Phase 3+ / Community-getrieben):**
+- DIM 02 KÖRPER → `/apps/body/` ⚪ Offen
+- DIM 04 CODE → `/apps/builder/` ⚪ Offen
+- DIM 07 GEIST → `/apps/mind/` ⚪ Offen
+- DIM 08 STIL → `/apps/style/` ⚪ Offen
+- DIM 09 SYSTEM → `/apps/system/` ⚪ Offen
+- DIM 11 UNBEKANNT → Offen für Community-Vorschläge
+
+**Regel:** Keine Phase-2-Dimension starten bevor ALLE Phase-1-Dimensionen zu 100% finalisiert sind.
+
+### VERTICAL SLICE: MARKET SENTIMENT CHRONOS (ALLE 4 SÄULEN)
+- [ ] P3: Python-Fetcher sammelt Marktdaten + Ollama-Anreicherung
+- [ ] P2: Edge Function importiert und exponiert Daten
+- [ ] P4: Dashboard-Widget visualisiert Sentiment-Score
+- [ ] P1: Template extrahiert für zukünftige Data-Module
 
 **Definition of Done:**
-> Ein Button im Dashboard zeigt live Daten aus einem Python-Skript. Der User sieht nicht WHERE es herkommt — nur dass es funktioniert.
+> Ein Button im Dashboard zeigt live Daten aus einem Python-Skript. Der User sieht nicht WHERE es herkommt — nur dass es funktioniert. Die 4 Säulen sind strikt isoliert, jede könnte eigenständig deployt werden.
 
 ---
 
-## 🌱 PHASE 6: COMMUNITY & ANERKENNUNG (Zukunft)
+## 🌱 PHASE 6: COMMUNITY & ANERKENNUNG (Post-Launch)
 
-> Wird geplant wenn der Vertical Slice stabil läuft.
-> Kein Milestone ohne echte Traffic-Daten als Basis.
+> Wird geplant wenn Phase 2 (Strategic Rollout) erste organische Community-Daten liefert.
+> Kein Milestone ohne echte Nutzungsdaten als Basis. Niemals auf Hoffnung bauen.
 
 | Idee | Beschreibung | Trigger |
 |------|-------------|--------|
-| **AI Onboarding** | 3-Fragen Discovery statt Formular | Nach 2-3 Dimensionen live |
-| **MBRN Profil** | Öffentliche Kompetenzkarte ohne Zeugnisse | Nach Community-Entstehung |
-| **Anerkennung** | Beweis was jemand in 6 Monaten gelernt hat | Nach Stufe 3 (Community) |
+| **AI Onboarding** | 3-Fragen Discovery statt Formular | Phase 1 (Infrastructure Completion) |
+| **MBRN Profil** | Öffentliche Kompetenzkarte ohne Zeugnisse | Phase 3 (Ecosystem) |
+| **Anerkennung** | Beweis was jemand in 6 Monaten gelernt hat | Phase 3 (Community-Daten) |
 | **Ökosystem** | Unternehmen kommen zu MBRN — nicht umgekehrt | Langzeitvision |
+
+---
+
+## 🌌 BEYOND THE HORIZON: INFINITE EXPANSION PROTOCOL (Phase 4+ / Unendlich)
+
+> **Architekten-Direktive:** Der System Architect befindet sich in einem dauerhaften Forschungs- und Entwicklungsmodus. Das Ziel ist nicht das Erreichen eines Endzustands, sondern der Aufbau einer technologischen Übermacht, die kontinuierlich erweitert wird.
+
+Phase 4+ ist nicht als "Ende" definiert, sondern als Übergang in das Infinite Expansion Protocol. MBRN ist darauf ausgelegt, über die initialen 5 Apps hinaus unendlich zu wachsen. Neue Säulen, neue Apps und neue Automatisierungen können jederzeit in die bestehende Pillar-Architektur integriert werden, ohne das Fundament zu gefährden.
 
 ---
 
@@ -129,11 +181,14 @@ Wobei `ΔV_i` = Differenz der Frequenzen (Mental, Emotional, Operativ) und `W_i`
 ```
 PHASE 0-3 (M0-M12):     ✅ ARCHIVIERT
 DESIGN PHASE (D1-D2):   ✅ ARCHIVIERT
-PHASE 4.0 (M13-M16):    ✅ COMPLETE — 100% Script-Tag Compliance erreicht
-PHASE 5.0:              🚀 AKTIV — UI TSUNAMI & VERTICAL SLICE
+PHASE 4.0 (M13-M16):    ✅ COMPLETE — Logic Engines finalisiert
+PHASE 5.0:              🚀 AKTIV — INFRASTRUCTURE COMPLETION (Universe Protocol)
 ```
+
+> **UNIVERSE PROTOCOL AKTIV:** Kein Launch, kein Marketing, keine Reichweite
+> bis ALLE Phase-1-Kriterien erfüllt sind. Professionalität vor Sichtbarkeit.
 
 ---
 
-**STATUS: ROADMAP_v5.0_ACTIVE**
+**STATUS: ROADMAP_v7.0_UNIVERSE_PROTOCOL_ACTIVE**
 *System Architect Out.*

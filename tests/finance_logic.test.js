@@ -18,7 +18,7 @@ import {
   calculateCompoundInterest,
   compareScenarios,
   FINANCE_LIMITS
-} from '../apps/finance/logic.js';
+} from '../shared/core/logic/finance.js';
 
 describe('Finance Logic - Compound Interest', () => {
   describe('P0 Security - NaN Detection', () => {

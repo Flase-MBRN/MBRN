@@ -1,0 +1,84 @@
+{
+  "timestamp_utc": "2026-04-18T14:28:27.285347+00:00",
+  "source": "market_sentiment_pipeline",
+  "sentiment_score": 85,
+  "sentiment_label": "Extreme Greed",
+  "confidence": 0.8,
+  "analysis": "The market is experiencing a moderate to strong rally, with the VIX index showing slight concern.",
+  "recommendation": "buy",
+  "market_data": [
+    {
+      "ticker": "SPY",
+      "price": 710.14,
+      "change": 8.48,
+      "change_percent": 1.21,
+      "volume": 70538900,
+      "high": 712.39,
+      "low": 705.76,
+      "market_cap": 651753750528,
+      "pe_ratio": 28.155151,
+      "timestamp": "2026-04-18T14:28:04.780476+00:00",
+      "source": "yfinance"
+    },
+    {
+      "ticker": "QQQ",
+      "price": 648.85,
+      "change": 8.38,
+      "change_percent": 1.31,
+      "volume": 53386300,
+      "high": 650.0,
+      "low": 644.07,
+      "market_cap": 255062933504,
+      "pe_ratio": 34.27903,
+      "timestamp": "2026-04-18T14:28:05.076848+00:00",
+      "source": "yfinance"
+    },
+    {
+      "ticker": "DIA",
+      "price": 494.22,
+      "change": 8.8,
+      "change_percent": 1.81,
+      "volume": 10235600,
+      "high": 497.04,
+      "low": 490.36,
+      "market_cap": 40151863296,
+      "pe_ratio": 24.224075,
+      "timestamp": "2026-04-18T14:28:05.405407+00:00",
+      "source": "yfinance"
+    },
+    {
+      "ticker": "IWM",
+      "price": 275.78,
+      "change": 5.83,
+      "change_percent": 2.16,
+      "volume": 46424100,
+      "high": 277.63,
+      "low": 273.12,
+      "market_cap": 77507960832,
+      "pe_ratio": 19.965326,
+      "timestamp": "2026-04-18T14:28:05.715671+00:00",
+      "source": "yfinance"
+    },
+    {
+      "ticker": "^VIX",
+      "price": 17.48,
+      "change": -0.46,
+      "change_percent": -2.56,
+      "volume": 0,
+      "high": 18.24,
+      "low": 16.87,
+      "market_cap": null,
+      "pe_ratio": null,
+      "timestamp": "2026-04-18T14:28:05.973545+00:00",
+      "source": "yfinance"
+    }
+  ],
+  "mbrn_enriched": {
+    "sentiment_score": 85,
+    "confidence": 0.8,
+    "analysis": "The market is experiencing a moderate to strong rally, with the VIX index showing slight concern.",
+    "recommendation": "buy",
+    "model": "llama3.1:8b",
+    "processed_at": "2026-04-18T14:28:27.285151+00:00"
+  }
+}

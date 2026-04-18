@@ -84,10 +84,10 @@ Roll the Sternenhimmel design system to the entire ecosystem.
 
 ### Tasks
 ```
-Task 5.1.1: Glassmorphism on apps/finance/index.html
-Task 5.1.2: Glassmorphism on apps/numerology/index.html
-Task 5.1.3: Create SVG icon set (replace Unicode icons)
-Task 5.1.4: dashboard/index.html Sternenhimmel migration
+Task 5.1.1: ✅ Glassmorphism on apps/finance/index.html
+Task 5.1.2: ✅ Glassmorphism on apps/numerology/index.html
+Task 5.1.3: ⏳ Create SVG icon set (replace Unicode icons)
+Task 5.1.4: ✅ dashboard/index.html Sternenhimmel migration
 ```
 
 ### Design Compliance

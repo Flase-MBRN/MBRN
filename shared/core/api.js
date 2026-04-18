@@ -29,7 +29,7 @@ try {
   SUPABASE_URL = ENV.SUPABASE_URL;
   SUPABASE_KEY = ENV.SUPABASE_ANON_KEY;
 } catch (err) {
-  console.warn('[API] env.js not found — operating in Offline-Only Mode.');
+  // env.js not found — operating in Offline-Only Mode
 }
 
 export const api = {
@@ -43,19 +43,16 @@ export const api = {
   init() {
     // Guard: Return existing client if already initialized
     if (this.client) {
-      console.log('[API] Reusing existing Supabase connection.');
       return true;
     }
     
     if (!SUPABASE_URL || !SUPABASE_KEY) {
-      console.warn('[API] Missing credentials. Operating in Offline-Mode.');
       return false;
     }
 
     try {
       this.client = createClient(SUPABASE_URL, SUPABASE_KEY);
       this.isOnline = true;
-      console.log('[API] Cloud Fortress established. Connection pool ready.');
       return true;
     } catch (err) {
       console.error('[API] Initialization failed:', err);
@@ -181,7 +178,6 @@ export const api = {
    * --- ANALYTICS (Phase 16.4) ---
    */
   async logEvent(eventData) {
-    console.log(`[Analytics] Event: ${eventData.event} | Source: ${eventData.source}`);
     if (!this.isOnline || !this.client) return;
 
     try {
@@ -200,7 +196,6 @@ export const api = {
         severity: 'low',
         context: { event: eventData.event, source: eventData.source }
       });
-      console.warn('[Analytics] Remote log failed:', err);
     }
   },
 

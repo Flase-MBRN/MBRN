@@ -1,188 +1,230 @@
 /**
  * /apps/finance/render.js
- * PURE UI LAYER - The King's Face
- * 
- * Hört auf Events aus state.js und nutzt dom_utils.js für XSS-sicheres Rendering.
+ * Wachstum - klarer Rechner ohne Premium-Schichten.
  */
 
 import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
-import { calculateCompoundInterest } from './logic.js';
+import { calculateCompoundInterest } from '../../shared/core/logic/finance.js';
 import { dom, animateValue, showTerminalLoader } from '../../shared/ui/dom_utils.js';
-import { hasFeature } from '../../shared/loyalty/access_control.js';
 import { nav } from '../../shared/ui/navigation.js';
+import { renderNavigation } from '../../shared/ui/render_nav.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { i18n } from '../../shared/core/i18n.js';
 
+function formatEuro(value) {
+  return value.toLocaleString('de-DE', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+}
+
+function downloadFinanceStory(data) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Canvas context unavailable');
+  }
+
+  canvas.width = 1080;
+  canvas.height = 1920;
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, '#05050A');
+  gradient.addColorStop(0.55, '#0A0A0F');
+  gradient.addColorStop(1, '#05050A');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#F5F5F5';
+  ctx.textAlign = 'center';
+  ctx.font = '700 64px Syne, sans-serif';
+  ctx.fillText('MBRN', 540, 150);
+
+  ctx.fillStyle = '#7B5CF5';
+  ctx.font = '600 46px Inter, sans-serif';
+  ctx.fillText('Wachstum', 540, 235);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.font = '400 30px Inter, sans-serif';
+  ctx.fillText('So sieht dein Geldweg aus.', 540, 315);
+
+  const cards = [
+    { y: 520, label: 'Am Ende', value: formatEuro(data.finalBalance) + ' EUR', note: 'Das ist das Geld, das am Ende wirklich da ist.' },
+    { y: 830, label: 'Selbst eingezahlt', value: formatEuro(data.totalInvested) + ' EUR', note: 'So viel kommt direkt von dir.' },
+    { y: 1140, label: 'Dazugewachsen', value: formatEuro(data.totalInterest) + ' EUR', note: 'Das ist der Teil, den dein Geld für dich mit aufgebaut hat.' }
+  ];
+
+  cards.forEach((card) => {
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(120, card.y, 840, 220, 28);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255,255,255,0.58)';
+    ctx.textAlign = 'left';
+    ctx.font = '500 26px Inter, sans-serif';
+    ctx.fillText(card.label, 170, card.y + 65);
+
+    ctx.fillStyle = '#F5F5F5';
+    ctx.font = '700 56px Syne, sans-serif';
+    ctx.fillText(card.value, 170, card.y + 140);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.62)';
+    ctx.font = '400 24px Inter, sans-serif';
+    ctx.fillText(card.note, 170, card.y + 190);
+  });
+
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.textAlign = 'center';
+  ctx.font = '400 24px Inter, sans-serif';
+  ctx.fillText('built to be used', 540, 1770);
+
+  const link = document.createElement('a');
+  link.href = canvas.toDataURL('image/png');
+  link.download = 'MBRN_Wachstum.png';
+  link.click();
+}
+
 export const financeRender = {
-  // Cleanup tracking
   _unsubscribers: [],
   _listeners: [],
   _timers: [],
-  
-  /**
-   * Phase 8.1: Bindet Event-Listener und UI-Subscribers
-   */
+  lastResult: null,
+
   init() {
-    // Erlaubt: querySelector im Render-Layer für Inputs/Buttons
     const calcBtn = document.getElementById('calc-btn');
-    
+
     if (calcBtn) {
       const clickHandler = async () => {
-        const principal = parseFloat(document.getElementById('input-principal').value || 0);
-        const rate = parseFloat(document.getElementById('input-rate').value || 0);
-        const years = parseFloat(document.getElementById('input-years').value || 0);
-        const monthly = parseFloat(document.getElementById('input-monthly').value || 0);
+        const principal = parseFloat(document.getElementById('input-principal')?.value || 0);
+        const rate = parseFloat(document.getElementById('input-rate')?.value || 0);
+        const years = parseFloat(document.getElementById('input-years')?.value || 0);
+        const monthly = parseFloat(document.getElementById('input-monthly')?.value || 0);
 
-        // PATCH 3: Terminal Loader für psychologischen Delay
         calcBtn.disabled = true;
         calcBtn.textContent = i18n.t('loadingTerminal');
         await showTerminalLoader('results-section', 1500);
 
-        // Strict Data Flow: UI -> Action -> Logic -> State -> UI
         actions.dispatch('calculateFinance', { principal, rate, years, monthlyAddition: monthly });
-        calcBtn.textContent = 'Jetzt Berechnen';
+        calcBtn.textContent = 'Zeig es mir';
         calcBtn.disabled = false;
       };
+
       calcBtn.addEventListener('click', clickHandler);
       this._listeners.push({ element: calcBtn, type: 'click', handler: clickHandler });
     }
 
-    // Phase 11: Paywall Delegation (locked Buttons triggern Action)
-    const premiumContainer = document.getElementById('premium-features-container');
-    if (premiumContainer) {
-      const clickHandler = (e) => {
-        const lockedBtn = e.target.closest('.locked-feature-btn');
-        if (lockedBtn) {
-          const feature = lockedBtn.getAttribute('data-feature') || 'premium';
-          actions.showPaywall(feature);
-        }
+    const storyBtn = document.getElementById('finance-story-btn');
+    if (storyBtn) {
+      const storyHandler = () => {
+        if (!this.lastResult) return;
+        downloadFinanceStory(this.lastResult);
       };
-      premiumContainer.addEventListener('click', clickHandler);
-      this._listeners.push({ element: premiumContainer, type: 'click', handler: clickHandler });
+      storyBtn.addEventListener('click', storyHandler);
+      this._listeners.push({ element: storyBtn, type: 'click', handler: storyHandler });
     }
 
-    // State Subscribers binden
     this._unsubscribers.push(
       state.subscribe('calculationDone', (result) => this.renderResults(result.data))
     );
     this._unsubscribers.push(
       state.subscribe('calculationFailed', (result) => {
-        dom.setText('finance-error', `❌ Fehler: ${result.error}`);
+        dom.setText('finance-error', `Bitte prüf deine Eingaben. ${result.error}`);
       })
     );
 
-    // Phase 18.4: Paywall Event Renderer
-    state.subscribe('paywallRequested', (payload) => {
-      dom.clear('modal-container');
-      dom.renderTemplate('paywall-template', 'modal-container', (clone) => {
-        // Sicherer Text-Einschub in das generierte Template (Data Mapper Funktion)
-        const nameSpan = clone.querySelector('.paywall-feature-name');
-        if (nameSpan) nameSpan.textContent = payload.feature;
-
-        // Listener zum Schließen binden
-        const closeBtn = clone.querySelector('.modal-close');
-        if (closeBtn) closeBtn.addEventListener('click', () => dom.clear('modal-container'));
-
-        // Phase 18.4: Upgrade-Button an Checkout binden
-        const upgradeBtn = clone.querySelector('.btn-primary');
-        if (upgradeBtn) {
-          upgradeBtn.addEventListener('click', () => {
-            upgradeBtn.textContent = 'Initialisiere...';
-            upgradeBtn.disabled = true;
-            actions.startCheckout('artifact');
-          });
-        }
-      });
-    });
-
-    // Fix #1: Registriere die Logic als Action im Orchestrator
     actions.register('calculateFinance', (inputData) => {
-        if (!inputData) return { success: false, error: 'Keine Input-Daten' };
-        const result = calculateCompoundInterest(
-          inputData.principal, inputData.rate, inputData.years, inputData.monthlyAddition
-        );
-        if (result.success) state.emit('calculationDone', result);
-        else state.emit('calculationFailed', result);
-        return result;
+      if (!inputData) return { success: false, error: 'Keine Daten vorhanden.' };
+      const result = calculateCompoundInterest(
+        inputData.principal,
+        inputData.rate,
+        inputData.years,
+        inputData.monthlyAddition
+      );
+      if (result.success) state.emit('calculationDone', result);
+      else state.emit('calculationFailed', result);
+      return result;
     });
 
-    // Phase 4.0: Scroll Reveal Animation (LAW 9 COMPLIANT - centralized)
     dom.initScrollReveal();
-
-    // Fix #2: Boot + Nav am Ende von init()
-    console.log('[Finance Render] Initializing...');
-    actions.initSystem();
+    renderNavigation('nav-menu');
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
   },
-  
-  /**
-   * Destroy: Cleanup all subscriptions, listeners, and timers
-   */
+
   destroy() {
-    this._unsubscribers.forEach(unsub => unsub && unsub());
+    this._unsubscribers.forEach((unsub) => unsub && unsub());
     this._unsubscribers = [];
     this._listeners.forEach(({ element, type, handler }) => {
       element.removeEventListener(type, handler);
     });
     this._listeners = [];
-    this._timers.forEach(id => clearTimeout(id));
+    this._timers.forEach((id) => clearTimeout(id));
     this._timers = [];
-    console.log('[Finance Render] Destroyed — All listeners removed');
   },
 
-  /**
-   * Phase 8.2: Ergebnisse via dom_utils.js anzeigen (Sanitized)
-   * Phase 5.0: Premium Value-Massive Styling + Number Ticker
-   */
   renderResults(data) {
-    // Fehler zurücksetzen
+    this.lastResult = data;
     dom.setText('finance-error', '');
 
-    // Phase 5.0: Massive Value Cards mit Number Ticker (LAW 3 COMPLIANT)
-    const finalEl = document.getElementById('res-final');
-    const investedEl = document.getElementById('res-invested');
-    const interestEl = document.getElementById('res-interest');
-    
-    // Update structure to value-massive layout using dom.createEl
-    if (finalEl) {
-      dom.clear('res-final');
-      dom.createEl('span', { className: 'value-massive text-size-xl', text: '0', parent: finalEl });
-      dom.createEl('span', { className: 'value-label', text: 'Endkapital', parent: finalEl });
-      const valueEl = finalEl.querySelector('.value-massive');
-      animateValue(valueEl, 0, data.finalBalance, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
-    }
-    
-    if (investedEl) {
-      dom.clear('res-invested');
-      dom.createEl('span', { className: 'value-massive secondary text-size-md', text: '0', parent: investedEl });
-      dom.createEl('span', { className: 'value-label', text: 'Eingezahlt', parent: investedEl });
-      const valueEl = investedEl.querySelector('.value-massive');
-      animateValue(valueEl, 0, data.totalInvested, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
-    }
-    
-    if (interestEl) {
-      dom.clear('res-interest');
-      dom.createEl('span', { className: 'value-massive accent text-size-lg', text: '0', parent: interestEl });
-      dom.createEl('span', { className: 'value-label', text: 'Zinsgewinn', parent: interestEl });
-      const valueEl = interestEl.querySelector('.value-massive');
-      animateValue(valueEl, 0, data.totalInterest, 1500, '', (v) => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' €');
+    const storySection = document.getElementById('finance-story-section');
+    if (storySection) {
+      storySection.classList.remove('hidden');
+      storySection.style.display = 'block';
     }
 
-    // Phase 8.3: Gatekeeper-Hook
-    dom.clear('premium-features-container'); // Container sauber leeren
-    
-    // PDF Export Button wird nur bei vorhandenem Feature gerendert
-    if (hasFeature('pdf_export')) {
-      dom.renderTemplate('pdf-btn-template', 'premium-features-container');
-    } else {
-      // Opt-in für Paywall Hook später
-      dom.renderTemplate('pdf-locked-template', 'premium-features-container');
-    }
-    
-    // Trigger stagger animation for result cards
+    const renderCard = (id, value, label, description, className) => {
+      const root = document.getElementById(id);
+      if (!root) return;
+      dom.clear(id);
+      root.classList.add('stagger-fade');
+
+      const valueEl = dom.createEl('span', {
+        className,
+        text: '0',
+        parent: root
+      });
+      dom.createEl('span', {
+        className: 'value-label',
+        text: label,
+        parent: root
+      });
+      dom.createEl('p', {
+        className: 'text-sm opacity-70 mt-8',
+        text: description,
+        parent: root
+      });
+
+      animateValue(valueEl, 0, value, 1500, '', (v) => formatEuro(v));
+    };
+
+    renderCard(
+      'res-final',
+      data.finalBalance,
+      'Am Ende (EUR)',
+      'Das ist das Geld, das am Ende wirklich da ist.',
+      'value-massive text-size-xl'
+    );
+    renderCard(
+      'res-invested',
+      data.totalInvested,
+      'Selbst eingezahlt (EUR)',
+      'So viel Geld hast du über die Zeit selbst reingegeben.',
+      'value-massive secondary text-size-md'
+    );
+    renderCard(
+      'res-interest',
+      data.totalInterest,
+      'Dazugewachsen (EUR)',
+      'Das ist der Teil, den dein Geld für dich mit aufgebaut hat.',
+      'value-massive accent text-size-lg'
+    );
+
     document.querySelectorAll('.results-card .stagger-fade').forEach((el, index) => {
       const timerId = setTimeout(() => el.classList.add('visible'), index * 100);
       this._timers.push(timerId);
@@ -190,5 +232,4 @@ export const financeRender = {
   }
 };
 
-// Automatischer Start beim Laden (da type="module" ist DOM Content idR schon da)
 financeRender.init();

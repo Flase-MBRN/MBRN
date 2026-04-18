@@ -10,6 +10,18 @@
 
 import { MBRN_CONFIG } from './config.js';
 
+function getNavigatorLanguage() {
+  if (typeof globalThis === 'undefined' || !globalThis.navigator) {
+    return 'en';
+  }
+
+  return globalThis.navigator.language || globalThis.navigator.userLanguage || 'en';
+}
+
+function canUseLocalStorage() {
+  return typeof globalThis !== 'undefined' && !!globalThis.localStorage;
+}
+
 class I18nEngine {
   constructor() {
     this.currentLang = this._detectLanguage();
@@ -23,14 +35,12 @@ class I18nEngine {
    * Fallback: 'en'
    */
   _detectLanguage() {
-    const browserLang = navigator.language || navigator.userLanguage || 'en';
+    const browserLang = getNavigatorLanguage();
     const langCode = browserLang.split('-')[0].toLowerCase();
     
     // Supported languages
     const supported = ['de', 'en'];
     const detected = supported.includes(langCode) ? langCode : 'en';
-    
-    console.log(`[I18n] Detected language: ${detected} (browser: ${browserLang})`);
     return detected;
   }
 
@@ -47,15 +57,15 @@ class I18nEngine {
   setLanguage(lang) {
     const supported = ['de', 'en'];
     if (!supported.includes(lang)) {
-      console.warn(`[I18n] Unsupported language: ${lang}. Using 'en'.`);
       lang = 'en';
     }
     
     if (this.currentLang !== lang) {
       this.currentLang = lang;
-      localStorage.setItem('mbrn_lang', lang);
+      if (canUseLocalStorage()) {
+        globalThis.localStorage.setItem('mbrn_lang', lang);
+      }
       this._notifyListeners();
-      console.log(`[I18n] Language switched to: ${lang}`);
     }
     return this;
   }
@@ -71,7 +81,6 @@ class I18nEngine {
   t(key, params = {}) {
     const langData = this.translations[this.currentLang];
     if (!langData) {
-      console.warn(`[I18n] No translations for language: ${this.currentLang}`);
       return key;
     }
 
@@ -95,7 +104,6 @@ class I18nEngine {
 
     // If still not found, return the key
     if (value === null || value === undefined) {
-      console.warn(`[I18n] Missing translation key: ${key} (${this.currentLang})`);
       return key;
     }
 
@@ -205,7 +213,6 @@ class I18nEngine {
    */
   reload() {
     this.translations = MBRN_CONFIG.i18n || {};
-    console.log(`[I18n] Translations reloaded for ${this.currentLang}`);
     return this;
   }
 

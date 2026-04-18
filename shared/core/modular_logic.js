@@ -14,12 +14,12 @@
 // Re-export all logic functions for backward compatibility
 export { reduceToDigit, validateInput, isMasterNumber, reduceForDiff, diff, MASTER_NUMBERS } from './logic/helpers.js';
 export { calculateSynergy } from './logic/synergy.js';
-export { calculateChronos } from './logic/chronos.js';
+export { calculateChronos } from './logic/chronos_v2.js';
 export { calculateNameFrequency } from './logic/frequency.js';
 
 // Legacy logic object export (for existing imports)
 import { calculateSynergy } from './logic/synergy.js';
-import { calculateChronos } from './logic/chronos.js';
+import { calculateChronos } from './logic/chronos_v2.js';
 import { calculateNameFrequency } from './logic/frequency.js';
 import { validateInput } from './logic/helpers.js';
 

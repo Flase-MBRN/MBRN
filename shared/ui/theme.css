@@ -6,19 +6,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  /* Sternenhimmel Background System */
+  /* ========================================
+     MBRN-STARRY-SKY SYSTEM
+     Deep #05050A, Syne 800, Violet Pulse
+     ======================================== */
+  
+  /* Primary Background System */
   --bg-primary: #05050A;
   --bg-surface: #0A0A0F;
   --bg-elevated: #0F0F15;
   --bg-card: #0A0A0F;
   
-  /* Purple Accent */
-  --accent: #7c3aed;
-  --accent-dim: rgba(124, 58, 237, 0.1);
-  --accent-glow: rgba(124, 58, 237, 0.15);
-  --accent-hover: rgba(124, 58, 237, 0.25);
+  /* Accent: Deep Violet */
+  --accent: #7B5CF5;
+  --accent-dim: rgba(123, 92, 245, 0.1);
+  --accent-glow: rgba(123, 92, 245, 0.15);
+  --accent-hover: rgba(123, 92, 245, 0.25);
   --accent-light: #a78bfa;
-  --accent-gradient-start: #6B4CE6;
+  --accent-gradient-start: #7B5CF5;
   --accent-gradient-end: #9f7aea;
   
   /* Text Colors */
@@ -28,11 +33,11 @@
   --text-dim: rgba(255, 255, 255, 0.25);
   
   /* Borders */
-  --border: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.06); 
   --border-default: rgba(255, 255, 255, 0.12);
-  --border-accent: rgba(124, 58, 237, 0.25);
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-hover: rgba(255, 255, 255, 0.12);
+  --border-accent: rgba(123, 92, 245, 0.25);
+  --border-subtle: rgba(255, 255, 255, 0.03);
+  --border-hover: rgba(255, 255, 255, 0.1);
   
   /* Status Colors */
   --success: #4fffb0;
@@ -53,11 +58,11 @@
   --input-bg: rgba(255, 255, 255, 0.04);
   --input-bg-focus: rgba(255, 255, 255, 0.06);
   --input-border: rgba(255, 255, 255, 0.1);
-  --input-border-focus: rgba(124, 58, 237, 0.5);
-  --focus-glow: rgba(124, 58, 237, 0.1);
+  --input-border-focus: rgba(123, 92, 245, 0.5);
+  --focus-glow: rgba(123, 92, 245, 0.1);
   
-  /* Radii */
-  --radius-card: 20px;
+  /* Minimalist Radii */
+  --radius-card: 16px;
   --radius-btn: 50px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -86,7 +91,7 @@ html {
 }
 
 body {
-  background: var(--bg-primary);
+  background: radial-gradient(circle at top right, #0a0a15 0%, #05050a 100%);
   color: var(--text-primary);
   font-family: var(--font-body);
   font-weight: 400;
@@ -119,7 +124,7 @@ a {
 }
 
 ::selection {
-  background: rgba(124, 58, 237, 0.3);
+  background: rgba(123, 92, 245, 0.3);
   color: var(--text-primary);
 }
 
@@ -188,7 +193,7 @@ aside[class*="nav"] {
   width: 220px;
   height: 100vh;
   background: rgba(5, 5, 10, 0.98) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-right: 1px solid var(--border) !important;
   z-index: 200;
   display: flex;
   flex-direction: column;
@@ -456,7 +461,7 @@ body.void-bg,
 body[class*="void"],
 body[class*="dark"],
 body[class*="black"] {
-  background: var(--bg-primary) !important;
+  background: radial-gradient(circle at top right, #0a0a15 0%, #05050a 100%) !important;
 }
 
 /* Override any remaining pure black inputs */
@@ -465,10 +470,10 @@ input[style*="background:black"] {
   background: rgba(255, 255, 255, 0.04) !important;
 }
 
-/* Legacy nav-container support */
+/* Minimalist Nav Container */
 .nav-container {
   background: rgba(5, 5, 10, 0.98) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-right: 1px solid var(--border) !important;
 }
 
 /* Fix for any remaining old styles */
@@ -493,12 +498,12 @@ input[style*="background:black"] {
   font-size: 11px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--text-muted);
   margin-bottom: 16px;
 }
 
 .tool-hero .hero-title {
-  font-family: 'Syne', sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(40px, 8vw, 64px);
   font-weight: 800;
   letter-spacing: -0.04em;
@@ -520,16 +525,19 @@ input[style*="background:black"] {
 
 /* Section Cards */
 .section-card {
-  background: var(--bg-surface);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 20px;
+  background: rgba(10, 10, 15, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Fast unsichtbar */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border-radius: 24px;
   padding: 40px;
 }
 
 .section-card h2 {
-  font-family: 'Syne', sans-serif;
+  font-family: var(--font-display);
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 24px;
 }
 
@@ -610,14 +618,14 @@ input[style*="background:black"] {
 }
 
 .tier-value {
-  font-family: 'Syne', sans-serif;
+  font-family: var(--font-display);
   font-size: 48px;
   font-weight: 800;
   color: var(--accent);
   letter-spacing: 0.05em;
 }
 
-/* Glow Background für Tool-Seiten */
+/* Background Glow for Void Mode */
 .bg-glow {
   position: fixed;
   width: 600px;
@@ -628,7 +636,6 @@ input[style*="background:black"] {
   filter: blur(60px);
   z-index: -1;
   transform: translateZ(0);
-  will-change: transform;
   pointer-events: none;
 }
 

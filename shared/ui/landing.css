@@ -912,7 +912,7 @@ body {
   line-height: 1.05;
   text-align: center;
   letter-spacing: -0.03em;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .hook-headline .text-glow {
@@ -921,11 +921,38 @@ body {
 }
 
 .hook-subtitle {
-  font-size: 15px;
-  color: var(--text-secondary);
+  font-size: 18px;
+  color: var(--accent);
   text-align: center;
   margin-bottom: 40px;
   line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+}
+
+.hook-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skip-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.skip-link:hover {
+  color: var(--text-primary);
+  border-color: rgba(123, 92, 245, 0.4);
+  background: rgba(123, 92, 245, 0.08);
 }
 
 /* ===== GLASSMORPHISM FORM ===== */
@@ -1228,6 +1255,42 @@ body {
   border-color: var(--accent);
 }
 
+/* Primary variant for reveal section (replaces inline styles) */
+.unlock-cta-primary {
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(107, 76, 230, 0.4);
+  margin-top: 24px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.unlock-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(107, 76, 230, 0.5);
+}
+
+.reveal-note {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.welcome-back {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
 /* ===== CLIFFHANGER SECTION ===== */
 .cliffhanger-section {
   padding: 60px 24px;
@@ -1354,3 +1417,11 @@ body {
     <stop offset="100%" stop-color="var(--accent-gradient-end)"/>
   </linearGradient>
 </defs> */
+
+.nav-brand::before {
+  content: '*';
+}
+
+.footer-brand::before {
+  content: '*';
+}

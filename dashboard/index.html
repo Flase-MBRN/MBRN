@@ -4,123 +4,91 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - MBRN Hub</title>
-  
+
   <link rel="stylesheet" href="../shared/ui/theme.css">
   <link rel="stylesheet" href="../shared/ui/components.css">
-  
-  <!-- Fonts: Syne (Display) + Inter (Body) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="void-bg bg-grid">
 
-  <!-- SIDEBAR NAVIGATION -->
   <aside class="nav-sidebar">
     <div class="nav-brand">
       <span class="logo-text">MBRN</span>
     </div>
-    
-    <nav class="nav-menu">
-      <a class="nav-item" data-route="home">
-        <span class="nav-icon">⌂</span>
-        <span class="nav-label">Home</span>
-      </a>
-      <a class="nav-item active" data-route="dashboard">
-        <span class="nav-icon">◈</span>
-        <span class="nav-label">Dashboard</span>
-      </a>
-      <a class="nav-item" data-route="finance">
-        <span class="nav-icon">◉</span>
-        <span class="nav-label">Finance</span>
-      </a>
-      <a class="nav-item" data-route="numerology">
-        <span class="nav-icon">◐</span>
-        <span class="nav-label">Numerologie</span>
-      </a>
-    </nav>
-    
+
+    <nav class="nav-menu" id="nav-menu"></nav>
+
     <div class="nav-footer">
       <div id="nav-auth-container"></div>
     </div>
   </aside>
 
-  <!-- Background Glow -->
   <div class="bg-glow"></div>
 
-  <!-- MAIN CONTENT -->
   <main class="main-content">
-    
-    <!-- HERO SECTION -->
     <section class="tool-hero reveal">
-      <div class="hero-eyebrow">✦ Command Center</div>
-      <h1 class="hero-title">MASTERY<br>MIRROR</h1>
-      <p class="hero-subtitle">Dein persönliches Progress-Tracking</p>
+      <div class="hero-eyebrow">MBRN OS</div>
+      <h1 class="hero-title">MBRN</h1>
+      <p class="hero-subtitle" style="color: var(--success); text-shadow: 0 0 10px var(--success-dim);">System atmet.</p>
     </section>
-    
-    <!-- DASHBOARD CARD — Premium Glass-Card Design -->
+
     <section class="tool-section reveal">
       <div class="glass-card text-center">
-        <h2 class="section-eyebrow-left">Current Tier</h2>
-        
+        <h2 class="section-eyebrow-left">Zugang</h2>
+
         <div class="tier-display mb-32">
           <span id="dash-tier" class="value-massive accent">-</span>
-          <span class="value-label">Access Level</span>
+          <span class="value-label">DEIN ZUGANG</span>
         </div>
-        
+
         <div class="data-grid my-32">
           <div class="stat-item stagger-fade" data-delay="1">
             <span class="value-massive" id="dash-streak">0</span>
-            <span class="value-label">🔥 Streak</span>
+            <span class="value-label">SERIE</span>
           </div>
           <div class="stat-item stagger-fade" data-delay="2">
             <span class="value-massive" id="dash-shields">0</span>
-            <span class="value-label">🛡️ Shields</span>
+            <span class="value-label">SCHUTZ</span>
           </div>
         </div>
-        
-        <!-- Loader Container -->
+
+        <p class="text-secondary">Besuch uns täglich, um deinen Fokus zu schärfen.</p>
         <div id="dash-loader"></div>
-        
-        <button id="btn-checkin" class="btn-primary">Täglicher Check-In</button>
+        <button id="btn-checkin" class="btn-primary mt-24">Puls halten</button>
         <p id="dash-msg" class="text-accent text-center mt-16"></p>
       </div>
     </section>
-    
-    <!-- REALTIME SENTIMENT WIDGET -->
+
     <section class="tool-section reveal">
       <div id="sentiment-widget"></div>
     </section>
-    
-    <!-- APP MODULES GRID -->
+
     <section class="tool-section reveal">
-      <h3 class="section-eyebrow">Operative Module</h3>
+      <div id="synergy-widget-container"></div>
+    </section>
+
+    <section class="tool-section reveal">
+      <h3 class="section-eyebrow">Deine Apps</h3>
       <div class="data-grid">
         <a href="../apps/numerology/" class="glass-card stagger-fade app-card-link" data-delay="1">
-          <div class="app-icon">◐</div>
-          <h4 class="card-title">Numerology</h4>
-          <p class="text-secondary status-text">Blueprint Analysis</p>
+          <div class="app-icon">Z</div>
+          <h4 class="card-title">Zahlen</h4>
+          <p class="text-secondary status-text">Dein Muster</p>
         </a>
         <a href="../apps/finance/" class="glass-card stagger-fade app-card-link" data-delay="2">
-          <div class="app-icon">◉</div>
-          <h4 class="card-title">Finance</h4>
-          <p class="text-secondary status-text">Quantum Calculator</p>
+          <div class="app-icon">G</div>
+          <h4 class="card-title">Geld</h4>
+          <p class="text-secondary status-text">Dein Wachstum</p>
         </a>
-        <a href="../apps/synergy/" class="glass-card stagger-fade app-card-link" data-delay="3">
-          <div class="app-icon">◈</div>
-          <h4 class="card-title">Synergy</h4>
-          <p class="text-secondary status-text">Compatibility Engine</p>
-        </a>
-        <a href="../apps/chronos/" class="glass-card stagger-fade app-card-link" data-delay="4">
-          <div class="app-icon">◷</div>
-          <h4 class="card-title">Chronos</h4>
-          <p class="text-secondary status-text">Time Protocol</p>
+        <a href="../apps/chronos/" class="glass-card stagger-fade app-card-link" data-delay="3">
+          <div class="app-icon">T</div>
+          <h4 class="card-title">Zeit</h4>
+          <p class="text-secondary status-text">Deine Phasen</p>
         </a>
       </div>
     </section>
-
   </main>
 
-  <!-- Render Modul übernimmt Boot + Nav + Animation -->
-  <script type="module" src="./render_dashboard.js"></script>
-
+  <script type="module" src="./render_dashboard.js?v=6.0"></script>
 </body>
 </html>

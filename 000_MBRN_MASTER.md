@@ -163,29 +163,46 @@ Das System skaliert ohne Architektur-Änderungen.
 
 ---
 
-## 07 — DIE DIMENSIONEN ROADMAP
+## 07 — DIE DIMENSIONEN ROADMAP (UNIVERSE PROTOCOL)
 
-**Phase 0 — Fundament (jetzt):**  
-✅ Architektur steht  
-✅ Auth + Supabase  
-✅ Streak-System  
-⬜ Design auf MBRN-Standard bringen  
-⬜ Onboarding-Entscheidung treffen  
+> **ABSOLUTE DIREKTIVE:** Kein MVP. Kein "Lean Start". Kein halbfertiges System vor echten Menschen.
+> Wir bauen das vollständige Universum — dann öffnen wir die Tür. Nicht vorher. Niemals.
 
-**Phase 1 — Erster Launch:**  
-⬜ Design: WTF-Moment erreicht  
-⬜ 2-3 Tools live (Dimensionen TBD nach Design)  
-⬜ DE + EN  
-⬜ Erste echte User  
+**Phase 0 — Fundament (abgeschlossen):**  
+✅ Architektur steht (15 Eiserne Gesetze)  
+✅ Auth + Supabase + RLS  
+✅ Streak-System + Access Control  
+✅ Pub/Sub State Manager + Action Registry  
 
-**Phase 2 — Traffic:**  
-⬜ Klaudia startet Reichweite (Zeitpunkt offen)  
-⬜ Faceless Content Pipeline  
-⬜ SEO für Tool-Seiten  
+**Phase 1 — Infrastructure Completion (AKTIV):**  
+Das Universum wird gebaut. Alle Dimensionen. Alle Säulen. Vollständig.
 
-**Phase 3 — Monetarisierung:**  
-⬜ Entscheidung basierend auf echten User-Daten  
-⬜ Gewerbe wenn es sich selbst trägt  
+⬜ Alle Apps (Finance, Numerologie, Chronos, Tuning, Synergy) zu 100% funktionsfähig  
+⬜ Alle Apps im MBRN-Design-Standard finalisiert (WTF-Moment in JEDER App)  
+⬜ 4-Säulen-Architektur vollständig operativ (P1-P4)  
+⬜ Python Data Pipeline aktiv (Ollama + Market Sentiment)  
+⬜ i18n: DE + EN vollständig implementiert  
+⬜ SEO, OG-Tags, Sitemap — alles production-ready  
+⬜ PDF Artifact Engine freigeschaltet und getestet  
+⬜ Onboarding-Flow implementiert  
+
+**Kriterium für Abschluss:**  
+> *Könnte ein Fremder den Link öffnen und sofort denken: "Das ist kein Hobby-Projekt"?*  
+> Ja → Phase 1 abgeschlossen. Nein → Weiterbauen.
+
+**Phase 2 — Professional Launch & Strategic Rollout:**  
+Das fertige System wird der Welt übergeben. Nicht halbfertig. Nicht "Beta".
+
+⬜ Klaudia bekommt das fertige Toolset und startet strategischen Rollout  
+⬜ Faceless Content Pipeline auf Basis des fertigen Produkts  
+⬜ Gezielte Reichweite: Qualität vor Quantität  
+⬜ Community-Grundstein durch echten Mehrwert — nicht durch Marketing  
+
+**Phase 3 — Ecosystem & Monetarisierung:**  
+⬜ Entscheidung basierend auf echten Community-Daten (nicht Hoffnung)  
+⬜ B2B-API für externe Entwickler öffnen  
+⬜ Gewerbe wenn sich das System selbst trägt  
+⬜ Premium Features wenn Community-Nachfrage bewiesen ist  
 
 ---
 
@@ -196,16 +213,22 @@ Das System skaliert ohne Architektur-Änderungen.
 - Ehrlich — kein Hype, keine leeren Versprechen
 - Technisch sauber — Architektur die Audits übersteht
 - Menschlich — keine Geldmaschine
+- **Fertig bevor es sichtbar wird** — Professionalität vor Sichtbarkeit
 
 **Was MBRN nie ist:**  
 - Keine Person als Marke (keine Gesichter, keine Namen)
 - Kein Druck zur Zahlung
 - Kein generisches AI-Design
 - Keine Kompromisse bei der Ästhetik
+- **Kein MVP** — kein halbfertiges System das "wächst während User zusehen"
+- **Kein Marketing vor Substanz** — keine Reichweite bevor das Produkt steht
 
-**Die eine Frage für jede Entscheidung:**  
+**Die zwei Fragen für jede Entscheidung:**  
 *"Fühlt sich das noch wie eine Website an — oder wie etwas anderes?"*  
 Wenn Antwort "Website" → nochmal. Wenn "etwas anderes" → rein damit.
+
+*"Würde ich mich schämen wenn 10.000 Menschen das jetzt sehen?"*  
+Wenn Ja → nicht shippen. Wenn Nein → weiterbauen bis die Antwort Nein ist.
 
 ---
 
@@ -223,8 +246,9 @@ Was MBRN wirklich ist — entscheidet sich wenn es lebt.
 ---
 
 *Dokument erstellt: April 2026*  
+*Rewrite: April 2026 — Universe Protocol implementiert*  
 *Status: Lebend — wird mit MBRN aktualisiert*  
-*Nächste Entscheidung: Onboarding-Flow + Design WTF-Moment*
+*Aktive Phase: Phase 1 — Infrastructure Completion*
 
 
 ---
