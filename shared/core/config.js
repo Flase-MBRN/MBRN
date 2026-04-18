@@ -198,8 +198,7 @@ export const MBRN_ROUTES = {
   dashboard: 'dashboard/index.html',
   finance: 'apps/finance/index.html',
   numerology: 'apps/numerology/index.html',
-  chronos: 'apps/chronos/index.html',
-  tuning: 'apps/tuning/index.html'
+  chronos: 'apps/chronos/index.html'
 };
 
 export const MBRN_ROUTE_META = {
@@ -207,6 +206,5 @@ export const MBRN_ROUTE_META = {
   dashboard: { icon: 'D', label: 'Dashboard', tier: 0 },
   finance: { icon: 'G', label: 'Wachstum', tier: 0 },
   numerology: { icon: 'M', label: 'Muster', tier: 0 },
-  chronos: { icon: 'Z', label: 'Zeit', tier: 0 },
-  tuning: { icon: 'F', label: 'Feinschliff', tier: 0 }
+  chronos: { icon: 'Z', label: 'Zeit', tier: 0 }
 };
