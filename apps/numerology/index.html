@@ -59,8 +59,18 @@
           <div id="num-balance-gauge" class="mb-24"></div>
           <div id="num-balance-label" class="text-accent mb-24 status-text">-</div>
 
-          <button class="btn-primary" id="num-share-btn">Für Story teilen</button>
-          <p class="text-sm opacity-50 mt-8">Lade ein Bild herunter, das du direkt weitergeben kannst.</p>
+          <div class="share-action-group">
+            <div class="share-action-group__header">
+              <div class="share-action-group__eyebrow">Social Export</div>
+              <h4 class="card-title-syne mb-8">Waehle dein Format</h4>
+              <p class="text-sm opacity-70">Der Story-Teaser ist der schnelle Hook. Die Detail-Karte speichert dein komplettes Ergebnis als Bild.</p>
+            </div>
+            <div class="share-action-group__buttons">
+              <button class="btn-primary share-action-group__primary" id="num-teaser-btn" type="button">Score fuer Story teilen</button>
+              <button class="btn-secondary share-action-group__secondary" id="num-share-btn" type="button">Details als Bild speichern</button>
+            </div>
+            <p class="text-sm opacity-50 mt-8">Direkt teilen, wenn dein Geraet Web Share kann. Sonst landet die PNG lokal als Download.</p>
+          </div>
         </div>
       </section>
 

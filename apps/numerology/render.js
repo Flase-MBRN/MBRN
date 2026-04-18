@@ -9,8 +9,8 @@ import { storage } from '../../shared/core/storage.js';
 import { dom, animateValue, showTerminalLoader, createGlowRing, bindSmartDateInput } from '../../shared/ui/dom_utils.js';
 import { nav, renderNavigation } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
-import { generateShareCard, generateOperatorReport } from '../../shared/core/logic/orchestrator.js';
-import { renderShareCardToCanvas } from '../../shared/ui/helpers/canvas_renderer.js';
+import { generateShareCard, generateTeaserAsset, generateOperatorReport } from '../../shared/core/logic/orchestrator.js';
+import { renderShareCardToCanvas, renderTeaserCardToCanvas } from '../../shared/ui/helpers/canvas_renderer.js';
 import { OPERATOR_MATRIX } from '../../shared/core/logic/numerology/index.js';
 import { i18n } from '../../shared/core/i18n.js';
 import { errorBoundary } from '../../shared/ui/error_boundary.js';
@@ -83,6 +83,79 @@ function downloadCanvas(canvas, filename) {
   link.click();
 }
 
+function downloadBlob(blob, filename) {
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = objectUrl;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    if (typeof canvas?.toBlob !== 'function') {
+      reject(new Error('Canvas blob export is not available'));
+      return;
+    }
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob);
+        return;
+      }
+
+      reject(new Error('Canvas blob export failed'));
+    }, 'image/png');
+  });
+}
+
+function buildImageFilename(prefix, profile) {
+  const rawName = profile?.meta?.name || 'Operator';
+  const safeName = String(rawName)
+    .trim()
+    .replace(/\s+/g, '_')
+    .replace(/[^\w-]/g, '');
+
+  return `${prefix}_${safeName || 'Operator'}.png`;
+}
+
+async function exportCanvasAsset(canvas, { filename, title, text, preferShare = false } = {}) {
+  if (!preferShare) {
+    downloadCanvas(canvas, filename);
+    return 'downloaded';
+  }
+
+  try {
+    const blob = await canvasToBlob(canvas);
+    const supportsFiles =
+      typeof navigator !== 'undefined' &&
+      typeof navigator.share === 'function' &&
+      typeof File !== 'undefined';
+
+    if (supportsFiles) {
+      const file = new File([blob], filename, { type: 'image/png' });
+      const sharePayload = { title, text, files: [file] };
+      const canShareFiles = typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] });
+
+      if (canShareFiles) {
+        await navigator.share(sharePayload);
+        return 'shared';
+      }
+    }
+
+    downloadBlob(blob, filename);
+    return 'downloaded';
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      throw error;
+    }
+
+    downloadCanvas(canvas, filename);
+    return 'downloaded';
+  }
+}
+
 export const numerologyRender = {
   currentData: null,
   _unsubscribers: [],
@@ -130,9 +203,20 @@ export const numerologyRender = {
 
     const shareBtn = document.getElementById('num-share-btn');
     if (shareBtn) {
-      const shareHandler = () => this.handleShare();
+      const shareHandler = () => {
+        void this.handleShare();
+      };
       shareBtn.addEventListener('click', shareHandler);
       this._listeners.push({ element: shareBtn, type: 'click', handler: shareHandler });
+    }
+
+    const teaserBtn = document.getElementById('num-teaser-btn');
+    if (teaserBtn) {
+      const teaserHandler = () => {
+        void this.handleTeaserShare();
+      };
+      teaserBtn.addEventListener('click', teaserHandler);
+      this._listeners.push({ element: teaserBtn, type: 'click', handler: teaserHandler });
     }
 
     const pdfBtn = document.getElementById('num-pdf-btn');
@@ -290,7 +374,35 @@ export const numerologyRender = {
     dom.setText('num-balance-label', label);
   },
 
-  handleShare() {
+  async handleTeaserShare() {
+    if (!this.currentData) return;
+
+    try {
+      const legacyData = this.currentData.legacy?.full_profile || this.currentData;
+      const teaserData = generateTeaserAsset(legacyData);
+      const canvas = document.createElement('canvas');
+      renderTeaserCardToCanvas(canvas, teaserData);
+      await exportCanvasAsset(canvas, {
+        filename: buildImageFilename('MBRN_Story_Score', legacyData),
+        title: 'MBRN Pattern Score',
+        text: 'What is your pattern?',
+        preferShare: true
+      });
+    } catch (error) {
+      if (error?.name === 'AbortError') {
+        return;
+      }
+
+      console.error('[Mustererkennung] Story-Teaser fehlgeschlagen:', error);
+      errorBoundary.displayError({
+        type: 'teaser_generation_failed',
+        error: 'Der Story-Teaser konnte gerade nicht gebaut werden. Versuch es bitte nochmal.',
+        severity: 'critical'
+      });
+    }
+  },
+
+  async handleShare() {
     if (!this.currentData) return;
 
     try {
@@ -298,8 +410,15 @@ export const numerologyRender = {
       const cardData = generateShareCard(legacyData);
       const canvas = document.createElement('canvas');
       renderShareCardToCanvas(canvas, cardData);
-      downloadCanvas(canvas, `MBRN_Muster_${legacyData.meta.name.replace(/\s+/g, '_')}.png`);
+      await exportCanvasAsset(canvas, {
+        filename: buildImageFilename('MBRN_Muster_Details', legacyData),
+        preferShare: false
+      });
     } catch (error) {
+      if (error?.name === 'AbortError') {
+        return;
+      }
+
       console.error('[Mustererkennung] Share fehlgeschlagen:', error);
       errorBoundary.displayError({
         type: 'share_generation_failed',
