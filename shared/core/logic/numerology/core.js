@@ -81,8 +81,9 @@ export function isYVowel(chars, index) {
   const prev = index > 0 ? chars[index - 1] : null;
   const next = index < chars.length - 1 ? chars[index + 1] : null;
   const isV = c => c && VOWELS.has(c);
+
   if (!prev) return !isV(next);
-  if (!next) return !isV(prev);
+  if (!next) return true;
   return !isV(prev) && !isV(next);
 }
 

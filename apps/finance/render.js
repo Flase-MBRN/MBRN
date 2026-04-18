@@ -94,10 +94,10 @@ export const financeRender = {
   _listeners: [],
   _timers: [],
   lastResult: null,
-
+  
   init() {
     const calcBtn = document.getElementById('calc-btn');
-
+    
     if (calcBtn) {
       const clickHandler = async () => {
         const principal = parseFloat(document.getElementById('input-principal')?.value || 0);
@@ -139,24 +139,25 @@ export const financeRender = {
 
     actions.register('calculateFinance', (inputData) => {
       if (!inputData) return { success: false, error: 'Keine Daten vorhanden.' };
-      const result = calculateCompoundInterest(
+        const result = calculateCompoundInterest(
         inputData.principal,
         inputData.rate,
         inputData.years,
         inputData.monthlyAddition
-      );
-      if (result.success) state.emit('calculationDone', result);
-      else state.emit('calculationFailed', result);
-      return result;
+        );
+        if (result.success) state.emit('calculationDone', result);
+        else state.emit('calculationFailed', result);
+        return result;
     });
 
     dom.initScrollReveal();
-    renderNavigation('nav-menu');
+
+    // Fix #2: Nav am Ende von init() (System bootet global im Dashboard)
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
   },
-
+  
   destroy() {
     this._unsubscribers.forEach((unsub) => unsub && unsub());
     this._unsubscribers = [];

@@ -327,7 +327,7 @@ Dieses Manifest ist **rein dokumentarisch**.
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Repo-Hygiene: Caches deleted 🟢, Dirty Tree 🔴 |
+| **Finding-Titel** | Repo-Hygiene: Caches deleted 🟢, Git Tree Clean � |
 | **Warum kritisch** | Artefakte erschweren Reviews; ein stark verschobener Dirty Tree gefaehrdet die Governance und Merge-Sicherheit. |
 | **Konkreter Befund** | Die Python-Artefakte (`__pycache__`, `.pyc`) wurden erfolgreich entfernt. Der Git-Status des Repos bleibt jedoch dirty (viele Modifikationen/Löschungen), was ein offenes Governance-Risiko darstellt. |
 | **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
