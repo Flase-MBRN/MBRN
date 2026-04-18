@@ -153,6 +153,7 @@ export const financeRender = {
     dom.initScrollReveal();
 
     // Fix #2: Nav am Ende von init() (System bootet global im Dashboard)
+    renderNavigation('nav-menu');
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
