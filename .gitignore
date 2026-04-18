@@ -54,3 +54,8 @@ docs/S3_Data/
 docs/S4_Ecosystem/
 docs/_ARCHIVE_VAULTS/
 docs/OPTION_A_QUICKSTART.md
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class

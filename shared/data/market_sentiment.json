@@ -1,10 +1,10 @@
 {
-  "timestamp_utc": "2026-04-18T20:03:05.320208+00:00",
+  "timestamp_utc": "2026-04-18T23:21:51.752864+00:00",
   "source": "market_sentiment_pipeline",
-  "sentiment_score": 85,
-  "sentiment_label": "Extreme Greed",
+  "sentiment_score": 80,
+  "sentiment_label": "Greed",
   "confidence": 0.8,
-  "analysis": "The market is showing moderate to strong bullish sentiment, with the major indices rising and VIX falling.",
+  "analysis": "The market is showing a moderate to strong bullish trend, with the major indices rising and VIX falling.",
   "recommendation": "buy",
   "market_data": [
     {
@@ -17,7 +17,7 @@
       "low": 705.76,
       "market_cap": 651753750528,
       "pe_ratio": 28.155151,
-      "timestamp": "2026-04-18T20:02:42.156407+00:00",
+      "timestamp": "2026-04-18T23:21:29.137213+00:00",
       "source": "yfinance"
     },
     {
@@ -30,7 +30,7 @@
       "low": 644.07,
       "market_cap": 255062933504,
       "pe_ratio": 34.27903,
-      "timestamp": "2026-04-18T20:02:42.448177+00:00",
+      "timestamp": "2026-04-18T23:21:29.426995+00:00",
       "source": "yfinance"
     },
     {
@@ -43,7 +43,7 @@
       "low": 490.36,
       "market_cap": 40151863296,
       "pe_ratio": 24.224075,
-      "timestamp": "2026-04-18T20:02:42.745567+00:00",
+      "timestamp": "2026-04-18T23:21:29.740454+00:00",
       "source": "yfinance"
     },
     {
@@ -56,7 +56,7 @@
       "low": 273.12,
       "market_cap": 77507960832,
       "pe_ratio": 19.965326,
-      "timestamp": "2026-04-18T20:02:43.046740+00:00",
+      "timestamp": "2026-04-18T23:21:30.079835+00:00",
       "source": "yfinance"
     },
     {
@@ -69,16 +69,16 @@
       "low": 16.87,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-18T20:02:43.308248+00:00",
+      "timestamp": "2026-04-18T23:21:30.391642+00:00",
       "source": "yfinance"
     }
   ],
   "mbrn_enriched": {
-    "sentiment_score": 85,
+    "sentiment_score": 80,
     "confidence": 0.8,
-    "analysis": "The market is showing moderate to strong bullish sentiment, with the major indices rising and VIX falling.",
+    "analysis": "The market is showing a moderate to strong bullish trend, with the major indices rising and VIX falling.",
     "recommendation": "buy",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-18T20:03:05.319703+00:00"
+    "processed_at": "2026-04-18T23:21:51.752630+00:00"
   }
 }
