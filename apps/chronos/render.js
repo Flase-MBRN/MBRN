@@ -7,13 +7,9 @@ import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
 import { storage } from '../../shared/core/storage.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../../shared/ui/dom_utils.js';
-import { nav } from '../../shared/ui/navigation.js';
-import { renderNavigation } from '../../shared/ui/render_nav.js';
+import { nav, renderNavigation } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { calculateChronos } from '../../shared/core/logic/chronos_v2.js';
-
-console.log('[Zeit] render.js geladen.');
-console.log('[Zeit] calculateChronos verfuegbar:', typeof calculateChronos);
 
 export const chronosRender = {
   _unsubscribers: [],
@@ -131,7 +127,7 @@ export const chronosRender = {
       btn.textContent = 'Ich schaue gerade nach.';
       await showTerminalLoader('chrono-content-area', 1000);
 
-      storage.set('user_birthdate', birthDate);
+      await storage.set('user_birthdate', birthDate);
 
       this.renderLifeCycles(birthDate);
     };

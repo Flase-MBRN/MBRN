@@ -46,14 +46,19 @@ serve(async (req) => {
         // 2. Log Transaction
         const { error: transError } = await supabaseAdmin
           .from('transactions')
-          .insert({
-            stripe_session_id: session.id,
-            user_id: userId,
-            product_id: 'deep_report', // Derived from session metadata in production
-            amount_total: session.amount_total,
-            currency: session.currency,
-            status: 'completed'
-          })
+          .upsert(
+            {
+              stripe_session_id: session.id,
+              user_id: userId,
+              product_id: session.metadata?.product_id ?? 'deep_report',
+              amount_total: session.amount_total,
+              currency: session.currency,
+              status: 'completed'
+            },
+            {
+              onConflict: 'stripe_session_id'
+            }
+          )
 
         if (transError) throw transError
       }

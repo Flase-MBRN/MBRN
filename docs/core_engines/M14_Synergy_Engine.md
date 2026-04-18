@@ -1,7 +1,7 @@
 # M14 — Synergy Engine
 
 > **Vault Path:** `/docs/M14_Synergy_Engine.md`  
-> **Module:** `shared/core/modular_logic.js`  
+> **Module:** `shared/core/logic/synergy_engine.js`  
 > **Phase:** 14.1 (Task Complete)  
 > **Status:** ✅ LIVE
 
@@ -171,7 +171,7 @@ When difference ≥ 4 for a dimension:
 ## Code Location
 
 ```
-/shared/core/modular_logic.js
+/shared/core/logic/synergy_engine.js
 ├── isMasterNumber(value)          // Helper
 ├── reduceForDiff(value)             // Helper
 ├── diff(a, b)                       // Helper

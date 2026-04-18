@@ -1,6 +1,8 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-import { errorBoundary } from '../ui/error_boundary.js';
-import { withCircuitBreaker, circuits } from './circuit_breaker.js';
+import { withCircuitBreaker } from './circuit_breaker.js';
+import { IS_COMMERCIAL_MODE_ACTIVE } from './config.js';
+import { state } from './state.js';
+import { hasBrowserWindow } from './browser_runtime.js';
 
 /**
  * /shared/core/api.js
@@ -23,16 +25,13 @@ import { withCircuitBreaker, circuits } from './circuit_breaker.js';
 // Falls env.js fehlt → Offline-Modus (graceful degradation)
 let SUPABASE_URL = null;
 let SUPABASE_KEY = null;
+let _envLoaded = false;
 
-// Umgebungserkennung: Nur lokal env.js laden (verhindert 404/MIME-Fehler auf GitHub Pages)
-const isLocalEnv = () => {
-  if (typeof window === 'undefined') return false;
-  const host = window.location.hostname;
-  return host === 'localhost' || host === '127.0.0.1' || host.includes('.local');
-};
-
-// Nur lokal versuchen, env.js zu laden
-if (isLocalEnv()) {
+// env.js laden, wenn ein Browser-Kontext verfügbar ist.
+// Fehlt die Datei, bleibt das System bewusst im Offline-Modus.
+async function loadBrowserEnv() {
+  if (_envLoaded || !hasBrowserWindow()) return;
+  _envLoaded = true;
   try {
     const { ENV } = await import('./env.js');
     SUPABASE_URL = ENV.SUPABASE_URL;
@@ -41,14 +40,24 @@ if (isLocalEnv()) {
     // env.js not found — operating in Offline-Only Mode
     console.log('[API] env.js not found, running in offline mode');
   }
-} else {
-  // Live-Umgebung: Kein env.js vorhanden, direkt Offline-Modus
-  console.log('[API] Live environment detected, skipping env.js import');
 }
+
+await loadBrowserEnv();
 
 export const api = {
   client: null,
   isOnline: false,
+
+  _setCredentials(url, key) {
+    SUPABASE_URL = url;
+    SUPABASE_KEY = key;
+    _envLoaded = true;
+  },
+
+  _resetForTests() {
+    this.client = null;
+    this.isOnline = false;
+  },
 
   /**
    * Initializes the Supabase client
@@ -126,6 +135,10 @@ export const api = {
     if (!this.isOnline || !this.client) {
       return { success: false, error: 'Offline', offline: true };
     }
+
+    if (!profileData?.id) {
+      return { success: false, error: 'Authenticated user required for cloud sync', offline: true };
+    }
     
     return withCircuitBreaker('supabase', async () => {
       const { data, error } = await this.client
@@ -146,6 +159,7 @@ export const api = {
   },
 
   async getProfile(userId) {
+    if (!userId) return { success: false, error: 'Authenticated user required', offline: true };
     if (!this.isOnline || !this.client) return { success: false, error: 'Offline', offline: true };
     return withCircuitBreaker('supabase', async () => {
       const { data, error } = await this.client
@@ -203,20 +217,26 @@ export const api = {
         created_at: new Date().toISOString()
       });
     } catch (err) {
-      // Report to error boundary with low severity - don't disturb UX but track failures
-      errorBoundary.displayError({
+      state._authorizedEmit('systemError', {
         type: 'analytics_log_failed',
         error: `Analytics logging failed: ${err.message}`,
         severity: 'low',
         context: { event: eventData.event, source: eventData.source }
       });
+      return { success: false, error: err.message };
     }
+
+    return { success: true };
   },
 
   /**
    * --- PAYMENT & MONETIZATION (Phase 18.2) ---
    */
   async createCheckoutSession(priceId) {
+    if (!IS_COMMERCIAL_MODE_ACTIVE) {
+      return { success: false, error: 'Commercial mode inactive', code: 'COMMERCIAL_MODE_INACTIVE' };
+    }
+
     if (!this.isOnline || !this.client) {
       return { success: false, error: 'Bezahlvorgang erfordert eine Cloud-Verbindung.' };
     }
@@ -242,6 +262,10 @@ export const api = {
    * @returns {Promise<Object>} - Verification result per Gesetz 4
    */
   async verifySession(sessionId) {
+    if (!IS_COMMERCIAL_MODE_ACTIVE) {
+      return { success: false, error: 'Commercial mode inactive', code: 'COMMERCIAL_MODE_INACTIVE' };
+    }
+
     if (!this.isOnline || !this.client) {
       return { success: false, error: 'Verification requires cloud connection' };
     }

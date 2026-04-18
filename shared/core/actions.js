@@ -9,8 +9,9 @@ import { state } from './state.js';
 import { storage } from './storage.js';
 import { streakManager } from '../loyalty/streak_manager.js';
 import { api } from './api.js';
-import { MBRN_CONFIG } from './config.js';
+import { IS_COMMERCIAL_MODE_ACTIVE, MBRN_CONFIG } from './config.js';
 import { i18n } from './i18n.js';
+import { validateEmail } from './validators.js';
 
 // Fix #2 (Phase 0.5): Private Registry — nicht exportiert, nicht von außen erreichbar
 const _registry = new Map();
@@ -18,6 +19,7 @@ const _registry = new Map();
 // Removed immediate actions registry to satisfy Law 17 (Inversion of Control)
 let _syncDebounceTimer = null;
 let _systemInitialized = false;  // Idempotency Guard
+let _errorLoggerInitialized = false;
 
 // P1 SECURITY: Global dispatch lock for request deduplication
 // Prevents duplicate concurrent requests of the same action type
@@ -31,7 +33,20 @@ function resolveCurrentProfile() {
   return (fromStorage.success && fromStorage.data) ? fromStorage.data : null;
 }
 
+function resolveAuthenticatedUser() {
+  return state.get('user') || null;
+}
+
 export const actions = {
+  _resetForTests() {
+    if (_syncDebounceTimer) {
+      clearTimeout(_syncDebounceTimer);
+    }
+    _syncDebounceTimer = null;
+    _systemInitialized = false;
+    _errorLoggerInitialized = false;
+    _dispatchingLocks.clear();
+  },
 
   register(actionName, handler) {
     if (typeof handler !== 'function') throw new Error('Handler must be a function');
@@ -92,11 +107,21 @@ export const actions = {
    * Lädt Daten aus dem LocalStorage und hydratisiert den State (Memory).
    * Idempotent: Mehrfache Aufrufe sind sicher.
    */
-  initSystem() {
+  async initSystem() {
     if (_systemInitialized) {
       return { success: true, data: state.get('systemInitialized') };
     }
     _systemInitialized = true;
+
+    if (!_errorLoggerInitialized) {
+      try {
+        const { errorLogger } = await import('./error_logger.js');
+        errorLogger.init();
+        _errorLoggerInitialized = true;
+      } catch (err) {
+        console.warn('[System Boot] Error logger init failed:', err.message);
+      }
+    }
 
     // Phase 13.2: Initialize Cloud Gateway
     const apiInitialized = api.init();
@@ -115,23 +140,22 @@ export const actions = {
       };
     }
 
+    state._authorizedEmit('systemInitialized', initialProfile);
+
     // Phase 14: Session Hydration
     if (apiInitialized) {
-      api.getSession()
-        .then(res => {
-          if (res.success && res.data) {
-            state.set('user', res.data.user);
-            state._authorizedEmit('userAuthChanged', res.data.user);
-            // Phase 15: Perform initial cloud mirroring
-            this.pullCloudData(res.data.user.id);
-          }
-        })
-        .catch(err => {
-          console.warn('[System Boot] Session hydration failed:', err.message);
-        });
+      try {
+        const res = await api.getSession();
+        if (res.success && res.data) {
+          state.set('user', res.data.user);
+          state._authorizedEmit('userAuthChanged', res.data.user);
+          // Phase 15: Perform initial cloud mirroring
+          await this.pullCloudData(res.data.user.id);
+        }
+      } catch (err) {
+        console.warn('[System Boot] Session hydration failed:', err.message);
+      }
     }
-
-    state._authorizedEmit('systemInitialized', initialProfile);
 
     // Phase 15: Reactive Sync Hooks
     state.subscribe('streakUpdated', () => this.debouncedSync());
@@ -148,16 +172,19 @@ export const actions = {
   /**
    * Gamification Action (Phase 5)
    */
-  triggerCheckIn() {
+  async triggerCheckIn() {
     const currentProfile = resolveCurrentProfile() || { streak: 0, shields: 0 };
     const result = streakManager.calculateCheckIn(currentProfile, new Date());
 
     if (result.success) {
-      const newProfile = result.data.profile;
-      storage.set('user_profile', newProfile);
+      const newProfile = {
+        ...result.data.profile,
+        updatedAt: new Date().toISOString()
+      };
+      await storage.set('user_profile', newProfile);
       state._authorizedEmit('systemInitialized', newProfile);
-      state.emit('streakUpdated', result.data);
-      return { success: true, data: result.data };
+      state.emit('streakUpdated', { ...result.data, profile: newProfile });
+      return { success: true, data: { ...result.data, profile: newProfile } };
     } else {
       state.emit('checkInFailed', { message: result.error });
       return result;
@@ -168,8 +195,20 @@ export const actions = {
    * Monetization Hooks (Phase 11)
    */
   showPaywall(featureName) {
-    state.emit('paywallRequested', { feature: featureName });
-    return { success: false, error: 'paywall_active', data: { feature: featureName } };
+    const reason = IS_COMMERCIAL_MODE_ACTIVE ? 'paywall_active' : 'commercial_mode_inactive';
+    state.emit('paywallRequested', {
+      feature: featureName,
+      reason,
+      badge: MBRN_CONFIG.commercial.soonBadgeLabel
+    });
+    return {
+      success: false,
+      error: reason,
+      data: {
+        feature: featureName,
+        badge: MBRN_CONFIG.commercial.soonBadgeLabel
+      }
+    };
   },
 
   /**
@@ -184,7 +223,16 @@ export const actions = {
       return { success: false, error: 'No profile' };
     }
 
-    const response = await api.saveProfile(currentProfile);
+    const user = resolveAuthenticatedUser();
+    if (!user?.id) {
+      state._authorizedEmit('syncFailed', { error: 'Cloud sync requires authenticated user' });
+      return { success: false, error: 'Auth required', offline: true };
+    }
+
+    const response = await api.saveProfile({
+      ...currentProfile,
+      id: currentProfile.id || user.id
+    });
 
     if (response.success) {
       state._authorizedEmit('syncSuccess', response.data);
@@ -199,31 +247,12 @@ export const actions = {
    * --- AUTH ACTIONS (Phase 14) ---
    */
 
-  // Bounce-Shield: Blocked domains to protect Supabase from ban
-  _blockedDomains: [
-    'test.com', 'example.com', 'fake.com', 'asdf.com', 'email.com',
-    'mailinator.com', 'tempmail.com', 'throwaway.email', 'guerrillamail.com',
-    'yopmail.com', 'sharklasers.com', 'trash-mail.com'
-  ],
-
   _validateEmail(email) {
-    if (!email || !email.includes('@')) {
-      return { valid: false, reason: i18n.t('invalidEmail') };
+    const result = validateEmail(email);
+    if (!result.success) {
+      return { valid: false, reason: result.error };
     }
-    const domain = email.split('@')[1]?.toLowerCase();
-    const local = email.split('@')[0]?.toLowerCase();
-
-    // Block known disposable/fake domains
-    if (this._blockedDomains.includes(domain)) {
-      return { valid: false, reason: `${i18n.t('blockedDomain').replace('Domain', `Domain "${domain}"`)}` };
-    }
-
-    // Block obvious trash patterns (asd@asd.com, a@b.com, etc.)
-    if (local.length <= 2 && domain.length <= 6) {
-      return { valid: false, reason: i18n.t('disposableEmail') };
-    }
-
-    return { valid: true };
+    return { valid: true, normalizedEmail: result.data };
   },
 
   async registerAccount(email, password) {
@@ -236,7 +265,7 @@ export const actions = {
       };
     }
 
-    const res = await api.signUp(email, password);
+    const res = await api.signUp(validation.normalizedEmail, password);
     if (res.success) {
       state.set('user', res.data.user);
       state._authorizedEmit('userAuthChanged', res.data.user);
@@ -270,16 +299,22 @@ export const actions = {
    */
 
   debouncedSync(delay = 2000) {
+    const user = resolveAuthenticatedUser();
+    if (!user?.id) {
+      return { success: false, error: 'Auth required for debounced sync' };
+    }
+
     if (_syncDebounceTimer) clearTimeout(_syncDebounceTimer);
     _syncDebounceTimer = setTimeout(() => this.syncProfileToCloud(), delay);
+    return { success: true, scheduled: true };
   },
 
   async pullCloudData(userId) {
-    state.emit('syncStarted');
+    state._authorizedEmit('syncStarted');
 
     const cloudRes = await api.getProfile(userId);
     if (!cloudRes.success || !cloudRes.data) {
-      state.emit('syncFailed');
+      state._authorizedEmit('syncFailed', { error: cloudRes.error || 'Cloud profile unavailable' });
       return;
     }
 
@@ -292,17 +327,21 @@ export const actions = {
     const cloudTime = new Date(cloudProfile.last_sync).getTime();
 
     if (cloudTime > localTime) {
-      storage.set('user_profile', {
+      const mergedProfile = {
         ...localProfile,
         level: cloudProfile.access_level,
+        access_level: cloudProfile.access_level,
         streak: cloudProfile.current_streak,
+        current_streak: cloudProfile.current_streak,
         shields: cloudProfile.shields,
         display_name: cloudProfile.display_name,
+        id: userId,
         updatedAt: cloudProfile.last_sync
-      });
-      state.set('systemInitialized', storage.get('user_profile').data);
+      };
+      await storage.set('user_profile', mergedProfile);
+      state._authorizedEmit('systemInitialized', mergedProfile);
     } else if (localTime > cloudTime) {
-      this.syncProfileToCloud();
+      await this.syncProfileToCloud();
     }
 
     state._authorizedEmit('syncSuccess');
@@ -325,6 +364,10 @@ export const actions = {
    * --- STRIPE CHECKOUT FLOW (Phase 18.2) ---
    */
   async startCheckout(productId = 'artifact') {
+    if (!IS_COMMERCIAL_MODE_ACTIVE) {
+      return this.showPaywall(productId);
+    }
+
     const user = state.get('user');
     if (!user) {
       // User must be logged in to buy
@@ -350,6 +393,15 @@ export const actions = {
   },
 
   async handlePaymentSuccess(sessionId) {
+    if (!IS_COMMERCIAL_MODE_ACTIVE) {
+      state._authorizedEmit('paymentFailed', {
+        sessionId,
+        error: 'Commercial mode inactive',
+        code: 'COMMERCIAL_MODE_INACTIVE'
+      });
+      return { success: false, error: 'Commercial mode inactive' };
+    }
+
     // Phase 18.3: Verify payment with Cloud Fortress
     const res = await api.verifySession(sessionId);
 

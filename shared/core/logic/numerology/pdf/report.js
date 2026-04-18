@@ -299,6 +299,7 @@ export async function generateOperatorReport(data) {
   doc.text(`REF: ${refId} // ${data.meta.date}`, 25, 270);
 
   // Page 2: Die Konfiguration
+  doc.addPage();
   drawFrame(2);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);
@@ -325,6 +326,7 @@ export async function generateOperatorReport(data) {
   doc.text(`MISSION: ${lpData.focus}`, 105, 230, { align: 'center', maxWidth: 160 });
 
   // Page 3: Energie-Abstimmung
+  doc.addPage();
   drawFrame(3);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);
@@ -344,6 +346,7 @@ export async function generateOperatorReport(data) {
   doc.text(hData.note, 105, 195, { align: 'center', maxWidth: 140 });
 
   // Page 4: Verhaltens-Matrix
+  doc.addPage();
   drawFrame(4);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);
@@ -370,6 +373,7 @@ export async function generateOperatorReport(data) {
   });
 
   // Page 5: Lebens-Phasen
+  doc.addPage();
   drawFrame(5);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);
@@ -390,6 +394,7 @@ export async function generateOperatorReport(data) {
   });
 
   // Page 6: Wendepunkte
+  doc.addPage();
   drawFrame(6);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);
@@ -412,6 +417,7 @@ export async function generateOperatorReport(data) {
   });
 
   // Page 7: Herausforderungen
+  doc.addPage();
   drawFrame(7);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);
@@ -431,6 +437,7 @@ export async function generateOperatorReport(data) {
   });
 
   // Page 8: System-Upgrades
+  doc.addPage();
   drawFrame(8);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);
@@ -465,6 +472,7 @@ export async function generateOperatorReport(data) {
   doc.text(data.karma.passion.join(', '), 30, passionY + 12);
 
   // Page 9: Aktivierung
+  doc.addPage();
   drawFrame(9);
   doc.setFontSize(cfg.typography.sizes.subtitle);
   doc.setTextColor(...textSecondary);

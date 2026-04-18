@@ -125,46 +125,5 @@ export async function getUnifiedProfile(name, birthDate) {
   }
 }
 
-/**
- * Convenience export: Calculate unified profile with legacy-only fallback.
- * Used when M15/M16 engines are not available or fail.
- * 
- * @param {string} name - Full name
- * @param {string} birthDate - Birth date "TT.MM.JJJJ"
- * @returns {Object} - Legacy format wrapped in unified structure
- */
-export function getLegacyProfile(name, birthDate) {
-  const legacyResult = calculateLegacyProfile(name, birthDate);
-  
-  if (!legacyResult.success) {
-    return legacyResult;
-  }
-
-  return {
-    success: true,
-    data: {
-      engines: {
-        frequency: null,
-        chronos: null
-      },
-      legacy: {
-        full_profile: legacyResult.data,
-        pdf_config: {
-          title: 'MBRN Operator Report',
-          version: '2.5-legacy-only',
-          generatedAt: getUTCTimestamp() // LAW 15 COMPLIANT
-        }
-      },
-      meta: {
-        name: name.trim(),
-        birthDate,
-        calculatedAt: getUTCTimestamp(), // LAW 15 COMPLIANT
-        version: '2.5-legacy-only',
-        enginesUsed: ['legacy_v2.5']
-      }
-    }
-  };
-}
-
 // Re-export generators for Core access
 export { generateShareCard, generateOperatorReport } from './numerology/index.js';

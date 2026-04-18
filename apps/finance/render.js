@@ -7,8 +7,7 @@ import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
 import { calculateCompoundInterest } from '../../shared/core/logic/finance.js';
 import { dom, animateValue, showTerminalLoader } from '../../shared/ui/dom_utils.js';
-import { nav } from '../../shared/ui/navigation.js';
-import { renderNavigation } from '../../shared/ui/render_nav.js';
+import { nav, renderNavigation } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { i18n } from '../../shared/core/i18n.js';
 

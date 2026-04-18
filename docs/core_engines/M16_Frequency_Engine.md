@@ -2,7 +2,7 @@
 
 > **System:** MBRN-HUB-V1  
 > **Context:** Task 16.1 — Name Numerology  
-> **Module:** `shared/core/modular_logic.js`  
+> **Module:** `shared/core/logic/frequency.js`  
 > **Date:** 14.04.2026  
 > **Status:** ✅ IMPLEMENTED
 
@@ -35,7 +35,7 @@ Every letter carries a vibrational frequency (1-9). Names are not arbitrary — 
 | Aspect | Implementation |
 |--------|----------------|
 | **Language** | Vanilla JavaScript (ES6+) |
-| **Location** | `shared/core/modular_logic.js` |
+| **Location** | `shared/core/logic/frequency.js` |
 | **Export** | `calculateNameFrequency(fullName)` |
 | **Return** | `{success: true, data: {...}}` per Gesetz 4 |
 | **System** | Pythagorean Numerology (ancient Greek) |
@@ -61,7 +61,7 @@ Every letter carries a vibrational frequency (1-9). Names are not arbitrary — 
 
 ## Extractable Logic
 
-### Core Algorithm (modular_logic.js)
+### Core Algorithm (frequency.js)
 
 ```javascript
 /**
@@ -258,7 +258,7 @@ await logic.calculateNameFrequency('Erik Klauss')
 | **Gesetz 1** | ✅ Pure calculation, no side effects |
 | **Gesetz 2** | ✅ No DOM manipulation |
 | **Gesetz 4** | ✅ Structured returns `{success, data}` |
-| **Gesetz 13** | ✅ Logic isolated in modular_logic.js |
+| **Gesetz 13** | ✅ Logic isolated in `frequency.js` |
 | **Gesetz 15** | ✅ N/A (no temporal calculations) |
 
 ---
@@ -266,7 +266,7 @@ await logic.calculateNameFrequency('Erik Klauss')
 ## Dependencies
 
 - None (pure Vanilla JS)
-- Uses `reduceToDigit()` helper from modular_logic.js
+- Uses shared numerology helpers from the canonical logic layer
 - No external libraries required
 
 ---

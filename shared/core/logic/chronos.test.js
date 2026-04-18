@@ -150,6 +150,16 @@ describe('Chronos Engine v2 (M15)', () => {
       expect(result.success).toBe(true);
     });
 
+    test('accepts flexible slash and dot ISO-like formats', () => {
+      const slashResult = calculateChronos('1988/02/29');
+      const dotResult = calculateChronos('1988.02.29');
+
+      expect(slashResult.success).toBe(true);
+      expect(dotResult.success).toBe(true);
+      expect(slashResult.data.birth_date).toBe('1988-02-29');
+      expect(dotResult.data.birth_date).toBe('1988-02-29');
+    });
+
     test('produces same output for equivalent ISO and DD.MM.YYYY input', () => {
       const isoResult = calculateChronos('1990-08-15');
       const dotResult = calculateChronos('15.08.1990');
@@ -157,6 +167,13 @@ describe('Chronos Engine v2 (M15)', () => {
       expect(isoResult.data.personalYear).toBe(dotResult.data.personalYear);
       expect(isoResult.data.livedDays).toBe(dotResult.data.livedDays);
       expect(isoResult.data.currentPhase).toBe(dotResult.data.currentPhase);
+    });
+
+    test('normalizes valid Date instances to UTC midnight', () => {
+      const result = calculateChronos(new Date(Date.UTC(2000, 1, 29, 18, 45, 12)));
+
+      expect(result.success).toBe(true);
+      expect(result.data.birthdateUTC).toBe('2000-02-29T00:00:00.000Z');
     });
   });
 
@@ -186,15 +203,46 @@ describe('Chronos Engine v2 (M15)', () => {
       expect(result).toHaveProperty('error');
     });
 
+    test('rejects invalid Date objects', () => {
+      const result = calculateChronos(new Date('invalid'));
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Geburtsdatum');
+    });
+
     test('rejects impossible date (Feb 30)', () => {
       const result = calculateChronos('30.02.1990');
       expect(result.success).toBe(false);
+    });
+
+    test('rejects impossible ISO dates without autocorrection', () => {
+      const result = calculateChronos('1990-02-30');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Geburtsdatum');
     });
 
     test('rejects future date', () => {
       const result = calculateChronos('2099-01-01');
       expect(result.success).toBe(false);
       expect(result.error).toContain('future');
+    });
+  });
+
+  describe('Cycle Phase Edge Cases', () => {
+    test('returns master-number cycle phase labels when personal year resolves to 11', () => {
+      const result = calculateChronos('1970-01-09');
+
+      expect(result.success).toBe(true);
+      expect(result.data.personalYear).toBe(11);
+      expect(result.data.cycle_phase).toBe('Intuition & Meister-Initiation');
+    });
+
+    test('clamps leap-day cycle starts to valid UTC dates', () => {
+      const result = calculateChronos('1988-02-29');
+
+      expect(result.success).toBe(true);
+      expect(result.data.nextCycleStartUTC).toBe('2030-02-28T00:00:00.000Z');
     });
   });
 

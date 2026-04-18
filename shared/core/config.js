@@ -4,6 +4,11 @@
  */
 
 export const MBRN_CONFIG = {
+  commercial: {
+    isActive: false,
+    soonBadgeLabel: 'Bald verfuegbar'
+  },
+
   accessLevels: {
     FREE: 0,
     SPARK: 1,
@@ -184,6 +189,8 @@ export const MBRN_CONFIG = {
   }
 };
 
+export const IS_COMMERCIAL_MODE_ACTIVE = MBRN_CONFIG.commercial.isActive;
+
 export const MASTER_NUMBERS = Object.freeze([11, 22, 33]);
 
 export const MBRN_ROUTES = {
@@ -191,7 +198,6 @@ export const MBRN_ROUTES = {
   dashboard: 'dashboard/index.html',
   finance: 'apps/finance/index.html',
   numerology: 'apps/numerology/index.html',
-  synergy: 'apps/synergy/index.html',
   chronos: 'apps/chronos/index.html',
   tuning: 'apps/tuning/index.html'
 };
@@ -201,7 +207,6 @@ export const MBRN_ROUTE_META = {
   dashboard: { icon: 'D', label: 'Dashboard', tier: 0 },
   finance: { icon: 'G', label: 'Wachstum', tier: 0 },
   numerology: { icon: 'M', label: 'Muster', tier: 0 },
-  synergy: { icon: 'V', label: 'Vibe', tier: 0 },
   chronos: { icon: 'Z', label: 'Zeit', tier: 0 },
   tuning: { icon: 'F', label: 'Feinschliff', tier: 0 }
 };

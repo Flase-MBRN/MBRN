@@ -256,22 +256,3 @@ export async function withCircuitBreaker(circuitName, fn) {
   
   return circuit.execute(fn);
 }
-
-/**
- * Check if system is in offline mode
- */
-export function isOffline() {
-  return circuits.supabase.state === STATE.OPEN;
-}
-
-/**
- * Get status of all circuits (for monitoring)
- */
-export function getAllCircuitStatus() {
-  return Object.fromEntries(
-    Object.entries(circuits).map(([name, circuit]) => [
-      name,
-      circuit.getStatus()
-    ])
-  );
-}

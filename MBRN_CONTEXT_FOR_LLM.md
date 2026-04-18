@@ -74,13 +74,16 @@ MBRN-HUB-V1/
 │   │   ├── env.js              [Lokal mit echten Keys — IN .GITIGNORE]
 │   │   ├── state.js            [Pub/Sub Event System]
 │   │   ├── storage.js          [LocalStorage Wrapper: mbrn_* prefix]
-│   │   ├── modular_logic.js    [Legacy: Phase 4 Logic Setup]
+│   │   ├── supabase_client.js  [Canonical: Browser Realtime/Auth Client Bridge]
 │   │   └── logic/              [ENGINE CORE — All Business Logic]
 │   │       ├── orchestrator.js [UNIFIED: Gateway to all engines]
-│   │       ├── legacy_numerology.js [M12: 36 Kennzahlen + Lo-Shu + PDF]
+│   │       ├── numerology/
+│   │       │   ├── index.js    [Canonical numerology API + PDF exports]
+│   │       │   ├── metadata.js [Interpretations, matrices, report content]
+│   │       │   └── pdf/        [Canvas + jsPDF report generation]
 │   │       ├── frequency.js    [M16: calculateNameFrequency()]
-│   │       ├── chronos.js      [M15: calculateChronos() — Personal Year/Month/Day]
-│   │       ├── synergy.js      [M14: calculateSynergy() — Operator Compatibility]
+│   │       ├── chronos_v2.js   [M15: canonical calculateChronos() engine]
+│   │       ├── synergy_engine.js [M14: canonical calculateSynergy() engine]
 │   │       └── helpers.js      [Math: reducePreserveMaster(), digitSum()]
 │   │
 │   ├── loyalty/

@@ -178,7 +178,7 @@ Task 14.3: apps/synergy/render.js
   - actions.register('calculateSynergy', handler)
   - Pattern: identisch mit apps/numerology/render.js
 
-Task 14.4: apps/synergy/logic.js
+Task 14.4: shared/core/logic/synergy.js
   - Pure Functions
   - Kein DOM, kein Window, kein State
 

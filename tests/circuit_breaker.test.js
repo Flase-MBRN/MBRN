@@ -7,22 +7,34 @@
  */
 
 import { jest } from '@jest/globals';
-import { CircuitBreaker, circuits, withCircuitBreaker, isOffline, getAllCircuitStatus } from '../shared/core/circuit_breaker.js';
+import { CircuitBreaker, circuits, withCircuitBreaker } from '../shared/core/circuit_breaker.js';
+
+const stateMock = {
+  emit: jest.fn()
+};
+
+const storageMock = {
+  get: jest.fn(() => ({ success: true, data: null })),
+  set: jest.fn(() => ({ success: true }))
+};
 
 // Mock state.emit for tests
 jest.mock('../shared/core/state.js', () => ({
-  state: {
-    emit: jest.fn()
-  }
+  state: stateMock
 }));
 
 // Mock storage module
 jest.mock('../shared/core/storage.js', () => ({
-  storage: {
-    get: jest.fn(() => ({ success: true, data: null })),
-    set: jest.fn(() => ({ success: true }))
-  }
+  storage: storageMock
 }));
+
+beforeEach(() => {
+  stateMock.emit.mockClear();
+  storageMock.get.mockReset();
+  storageMock.set.mockReset();
+  storageMock.get.mockReturnValue({ success: true, data: null });
+  storageMock.set.mockReturnValue({ success: true });
+});
 
 describe('Circuit Breaker Core', () => {
   let breaker;
@@ -205,24 +217,26 @@ describe('Global Circuits', () => {
     expect(circuits.stripe.failureThreshold).toBeLessThan(circuits.supabase.failureThreshold);
   });
 
-  test('getAllCircuitStatus returns all', () => {
-    const all = getAllCircuitStatus();
+  test('global circuits expose status for all configured services', () => {
+    const all = Object.fromEntries(
+      Object.entries(circuits).map(([name, circuit]) => [name, circuit.getStatus()])
+    );
     expect(all.supabase).toBeDefined();
     expect(all.stripe).toBeDefined();
     expect(all.analytics).toBeDefined();
   });
 
-  test('isOffline checks supabase circuit', () => {
+  test('supabase circuit state reflects offline status', () => {
     // Initially closed
-    expect(isOffline()).toBe(false);
+    expect(circuits.supabase.getStatus().state).toBe('CLOSED');
     
     // Manually open circuit for test
     circuits.supabase.openCircuit();
-    expect(isOffline()).toBe(true);
+    expect(circuits.supabase.getStatus().state).toBe('OPEN');
     
     // Reset
     circuits.supabase.reset();
-    expect(isOffline()).toBe(false);
+    expect(circuits.supabase.getStatus().state).toBe('CLOSED');
   });
 });
 
@@ -252,6 +266,18 @@ describe('withCircuitBreaker helper', () => {
 
     // Should execute without circuit protection
     expect(result.success).toBe(true);
+  });
+
+  test('propagates unknown circuit failures without offline mode', async () => {
+    const result = await withCircuitBreaker('unknown', async () => {
+      throw new Error('plain failure');
+    });
+
+    expect(result).toEqual({
+      success: false,
+      error: 'plain failure',
+      offline: false
+    });
   });
 
   test('handles structured return with explicit failure', async () => {
@@ -297,11 +323,11 @@ describe('Supabase Outage Simulation', () => {
     expect(offlineResult.error).toContain('temporarily unavailable');
   });
 
-  test('isOffline() returns true when supabase circuit opens', async () => {
+  test('supabase circuit opens after repeated failures', async () => {
     // Use the global supabase circuit for this test
     // First ensure it's closed
     circuits.supabase.reset();
-    expect(isOffline()).toBe(false);
+    expect(circuits.supabase.getStatus().state).toBe('CLOSED');
 
     // Simulate 3 failures on the actual supabase circuit
     for (let i = 0; i < 3; i++) {
@@ -310,13 +336,11 @@ describe('Supabase Outage Simulation', () => {
       });
     }
 
-    // isOffline() should now return true
-    expect(isOffline()).toBe(true);
     expect(circuits.supabase.getStatus().state).toBe('OPEN');
 
     // Cleanup: reset circuit
     circuits.supabase.reset();
-    expect(isOffline()).toBe(false);
+    expect(circuits.supabase.getStatus().state).toBe('CLOSED');
   });
 
   test('offline flag persists in subsequent requests until recovery', async () => {
@@ -377,7 +401,7 @@ describe('Supabase Outage Simulation', () => {
     expect(recoveryResult.success).toBe(true);
     expect(recoveryResult.offline).toBe(false);
     expect(breaker.getStatus().state).toBe('CLOSED');
-    expect(isOffline()).toBe(false);
+    expect(circuits.supabase.getStatus().state).toBe('CLOSED');
   });
 
   test('structured return includes retryAfter timestamp when offline', async () => {

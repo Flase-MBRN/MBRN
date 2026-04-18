@@ -8,8 +8,15 @@
  * LAW 1 COMPLIANT: Routes imported from centralized config
  */
 
-import { MBRN_ROUTES } from '../core/config.js';
+import { MBRN_ROUTE_META, MBRN_ROUTES } from '../core/config.js';
 import { touchManager } from './touch_manager.js';
+import { dom } from './dom_utils.js';
+
+function getKnownRouteSegments() {
+  return Object.values(MBRN_ROUTES)
+    .filter((route) => route !== MBRN_ROUTES.home)
+    .map((route) => `/${route.replace(/index\.html$/, '')}`);
+}
 
 /**
  * Ermittelt dynamisch den Repo-Root anhand bekannter Pfad-Segmente.
@@ -17,14 +24,7 @@ import { touchManager } from './touch_manager.js';
  */
 export function getRepoRoot() {
   const path = window.location.pathname;
-  const knownSegments = [
-    '/dashboard/',
-    '/apps/finance/',
-    '/apps/numerology/',
-    '/apps/chronos/',
-    '/apps/tuning/',
-    '/apps/synergy/'
-  ];
+  const knownSegments = getKnownRouteSegments();
   for (const segment of knownSegments) {
     const idx = path.indexOf(segment);
     if (idx !== -1) return path.slice(0, idx) + '/';
@@ -32,6 +32,65 @@ export function getRepoRoot() {
   // Sicherstellen, dass Root immer mit / endet
   const root = path.replace(/\/[^/]*$/, '/') || '/';
   return root.endsWith('/') ? root : root + '/';
+}
+
+/**
+ * Rendert die Sidebar-Navigation dynamisch
+ * @param {string} containerId — ID des Containers (default: 'nav-menu')
+ */
+export function renderNavigation(containerId = 'nav-menu') {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    console.warn('[render_nav] Container nicht gefunden:', containerId);
+    return;
+  }
+
+  const currentRoute = getCurrentRoute();
+
+  // Clear existing
+  dom.clear(containerId);
+
+  // Definierte Reihenfolge: Start zuerst, dann Dashboard, dann die Apps
+  const navOrder = ['home', 'dashboard', 'finance', 'numerology', 'chronos', 'tuning'];
+
+  for (const routeKey of navOrder) {
+    const meta = MBRN_ROUTE_META[routeKey];
+    const route = MBRN_ROUTES[routeKey];
+    if (!meta || !route) continue;
+
+    const isActive = currentRoute === routeKey;
+
+    // Real href fallback: relative path calculated from current location
+    const hrefFallback = getRepoRoot() + route;
+
+    const link = dom.createEl('a', {
+      className: `nav-item${isActive ? ' active' : ''}`,
+      attrs: { 'data-route': routeKey, href: hrefFallback, title: meta.label || routeKey },
+      parent: container
+    });
+
+    dom.createEl('span', {
+      className: 'nav-icon',
+      text: meta.icon || '>',
+      parent: link
+    });
+    dom.createEl('span', {
+      className: 'nav-label',
+      text: meta.label || routeKey,
+      parent: link
+    });
+  }
+}
+
+export function getCurrentRoute(pathname = window.location.pathname) {
+  for (const [routeKey, routePath] of Object.entries(MBRN_ROUTES)) {
+    if (routeKey === 'home') continue;
+    const routeSegment = `/${routePath.replace(/index\.html$/, '')}`;
+    if (pathname.includes(routeSegment)) {
+      return routeKey;
+    }
+  }
+  return 'home';
 }
 
 export const nav = {

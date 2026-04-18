@@ -166,12 +166,12 @@ calculateChronos("28.03.2008");
 | Orchestrator | `orchestrator.js` | `import { calculateChronos } from './chronos_v2.js'` |
 | App UI | `apps/chronos/render.js` | `import { calculateChronos } from '../../shared/core/logic/chronos_v2.js'` |
 | Supabase API | `supabase/functions/mbrn_compute/index.ts` | `import { calculateChronos } from "../../../shared/core/logic/chronos_v2.js"` |
-| Barrel Module | `modular_logic.js` | `export { calculateChronos } from './logic/chronos_v2.js'` |
+| Canonical Module | `chronos_v2.js` | `export function calculateChronos(...)` |
 | Tests | `chronos.test.js` | `import { calculateChronos } from './chronos_v2.js'` |
 
 ### Deprecated Stubs
 
-`chronos.js` and `chronos_engine.js` are now thin re-export stubs for backward compatibility. Scheduled for removal in Sprint D.
+`chronos.js` and `chronos_engine.js` were retired in P3. All runtime imports must target `chronos_v2.js` directly.
 
 ---
 

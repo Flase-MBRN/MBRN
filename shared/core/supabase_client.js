@@ -6,11 +6,14 @@
  */
 
 import { api } from './api.js';
+import { hasBrowserWindow } from './browser_runtime.js';
 
-// Ensure API is initialized
-if (!api.client && typeof window !== 'undefined') {
-  api.init();
+export function getSupabaseClient() {
+  if (!api.client && hasBrowserWindow()) {
+    api.init();
+  }
+
+  return api.client;
 }
 
-export const supabase = api.client;
-export default supabase;
+export default getSupabaseClient;

@@ -40,7 +40,7 @@ Der Architect ist unsichtbar. Die Marke trägt alles.
 
 ---
 
-## 03 — DIE 15 EISERNEN GESETZE
+## 03 — DIE 15 GESETZE + 2 DIREKTIVEN
 
 ### CORE LAWS (Fundament — unantastbar)
 
@@ -168,9 +168,8 @@ Labels:   Space Mono oder Inter Caps + Letter-spacing — wie Koordinaten
 │   └── /tuning                 # DIM 03+ — FREQUENCY TUNER (Phase 4.0)
 │
 ├── /dashboard                  # 📊 User Area (Mastery Mirror)
-├── /landing                    # 🌍 Public Frontend (The Hook)
 ├── /docs                       # 🧠 Obsidian Vault (System Knowledge)
-└── index.html                  # 🔄 Root (Landing Page)
+└── index.html                  # 🔄 Root (Landing Page / Public Frontend)
 ```
 
 ---

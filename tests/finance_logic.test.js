@@ -15,6 +15,7 @@
 
 import { jest } from '@jest/globals';
 import {
+  calculateBatch,
   calculateCompoundInterest,
   compareScenarios,
   FINANCE_LIMITS
@@ -201,6 +202,13 @@ describe('Finance Logic - Compound Interest', () => {
 });
 
 describe('Finance Logic - Scenario Comparison', () => {
+  test('returns error when a scenario is missing entirely', () => {
+    const result = compareScenarios(null, { principal: 1000, rate: 5, years: 1, monthlyAddition: 0 });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Beide Szenarien');
+  });
+
   test('compares two valid scenarios', () => {
     const scenarioA = { principal: 10000, rate: 3, years: 5, monthlyAddition: 100 };
     const scenarioB = { principal: 10000, rate: 5, years: 5, monthlyAddition: 100 };
@@ -236,6 +244,18 @@ describe('Finance Logic - Scenario Comparison', () => {
     expect(result.success).toBe(true);
     expect(result.data.delta).toBe(0);
     expect(result.data.betterOption).toBe('Equal');
+  });
+
+  test('marks scenario A as better when scenario B underperforms', () => {
+    const scenarioA = { principal: 15000, rate: 8, years: 10, monthlyAddition: 200 };
+    const scenarioB = { principal: 15000, rate: 2, years: 10, monthlyAddition: 0 };
+
+    const result = compareScenarios(scenarioA, scenarioB);
+
+    expect(result.success).toBe(true);
+    expect(result.data.delta).toBeLessThan(0);
+    expect(result.data.betterOption).toBe('A');
+    expect(result.data.deltaPercent).toBeLessThan(0);
   });
 
   test('handles empty scenario properties with defaults', () => {
@@ -274,5 +294,94 @@ describe('Finance Limits Constants', () => {
     expect(FINANCE_LIMITS.MAX_RATE_PERCENT).toBe(100);
     expect(FINANCE_LIMITS.MAX_PRINCIPAL).toBe(100_000_000);
     expect(FINANCE_LIMITS.MAX_MONTHLY_ADDITION).toBe(100_000_000);
+  });
+});
+
+describe('Finance Logic - Batch Calculations', () => {
+  test('rejects non-array input', () => {
+    expect(calculateBatch({})).toEqual({
+      success: false,
+      error: 'Eingabe muss ein Array von Szenarien sein.'
+    });
+  });
+
+  test('rejects batches larger than 100 scenarios', () => {
+    const scenarios = Array.from({ length: 101 }, () => ({
+      principal: 1000,
+      rate: 5,
+      years: 1,
+      monthlyAddition: 0
+    }));
+
+    expect(calculateBatch(scenarios)).toEqual({
+      success: false,
+      error: 'Maximal 100 Szenarien pro Batch erlaubt.'
+    });
+  });
+
+  test('returns successful batch metadata when all scenarios pass', () => {
+    const result = calculateBatch([
+      { principal: 1000, rate: 5, years: 1, monthlyAddition: 0 },
+      { principal: 2000, rate: 4, years: 2, monthlyAddition: 50 }
+    ]);
+
+    expect(result.success).toBe(true);
+    expect(result.error).toBeUndefined();
+    expect(result.data.count).toBe(2);
+    expect(result.data.successful).toBe(2);
+    expect(result.data.failed).toBe(0);
+    expect(result.data.results[0]).toEqual(expect.objectContaining({
+      index: 0,
+      success: true
+    }));
+  });
+
+  test('reports partial batch failure when at least one scenario is invalid', () => {
+    const result = calculateBatch([
+      { principal: 1000, rate: 5, years: 1, monthlyAddition: 0 },
+      { principal: -1000, rate: 5, years: 1, monthlyAddition: 0 }
+    ]);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('Einige Berechnungen sind fehlgeschlagen.');
+    expect(result.data.successful).toBe(1);
+    expect(result.data.failed).toBe(1);
+    expect(result.data.results[1]).toEqual(expect.objectContaining({
+      index: 1,
+      success: false
+    }));
+  });
+
+  test('calculateCompoundInterest generates complete yearly history with monthly compounding', () => {
+    const result = calculateCompoundInterest(1000, 12, 3, 100);
+
+    expect(result.success).toBe(true);
+    expect(result.data.history).toHaveLength(3);
+    expect(result.data.history[0]).toEqual({
+      year: 1,
+      balance: expect.any(Number),
+      invested: expect.any(Number)
+    });
+    expect(result.data.history[2].year).toBe(3);
+    expect(result.data.years).toBe(3);
+    expect(result.data.rate).toBe(12);
+    expect(result.data.monthlyAddition).toBe(100);
+  });
+
+  test('calculateCompoundInterest with zero monthly addition still compounds annually', () => {
+    const result = calculateCompoundInterest(1000, 10, 2, 0);
+
+    expect(result.success).toBe(true);
+    expect(result.data.totalInvested).toBe(1000);
+    expect(result.data.history).toHaveLength(2);
+    expect(result.data.monthlyAddition).toBe(0);
+  });
+
+  test('calculateCompoundInterest handles high monthly additions', () => {
+    const result = calculateCompoundInterest(500, 8, 1, 500);
+
+    expect(result.success).toBe(true);
+    expect(result.data.totalInvested).toBe(6500); // 500 + 12*500
+    expect(result.data.history[0].invested).toBe(6500);
   });
 });

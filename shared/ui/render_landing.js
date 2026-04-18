@@ -6,6 +6,7 @@
 import { nav } from './navigation.js';
 import { storage } from '../core/storage.js';
 import { i18n } from '../core/i18n.js';
+import { calculateLifePathTotal, formatValue } from '../core/logic/numerology/index.js';
 
 const ARCHETYPES = {
   1: { title: 'Der Initiator', desc: 'Du gehst am besten voran, wenn du selbst den ersten Schritt setzt.' },
@@ -55,7 +56,7 @@ export const landingRender = {
       return {
         name: profile.data.name,
         birthDate,
-        lifePath: this.calculateLifePath(birthDate),
+        lifePath: this.calculateLifePath(profile.data.name, birthDate),
         firstName: profile.data.name.split(' ')[0]
       };
     }
@@ -98,7 +99,7 @@ export const landingRender = {
     this.transitionTo('loader');
     await this.runTerminalSequence();
 
-    const lifePath = this.calculateLifePath(birthDate);
+    const lifePath = this.calculateLifePath(name, birthDate);
     this.saveUserData(name, birthDate, lifePath);
     this.showReveal(lifePath, false);
   },
@@ -149,18 +150,11 @@ export const landingRender = {
     });
   },
 
-  calculateLifePath(birthDate) {
-    const [year, month, day] = birthDate.split('-').map(Number);
-
-    const sum = (n) => {
-      let s = String(n).split('').reduce((a, b) => a + Number.parseInt(b, 10), 0);
-      while (s > 9 && s !== 11 && s !== 22 && s !== 33) {
-        s = String(s).split('').reduce((a, b) => a + Number.parseInt(b, 10), 0);
-      }
-      return s;
-    };
-
-    return sum(sum(year) + sum(month) + sum(day));
+  calculateLifePath(_name, birthDate) {
+    const normalizedDate = birthDate.includes('-')
+      ? birthDate.split('-').reverse().join('.')
+      : birthDate;
+    return Number(formatValue(calculateLifePathTotal(normalizedDate)));
   },
 
   showReveal(lifePath, isReturningUser) {

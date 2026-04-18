@@ -45,13 +45,6 @@ class I18nEngine {
   }
 
   /**
-   * Get current active language
-   */
-  getCurrentLang() {
-    return this.currentLang;
-  }
-
-  /**
    * Manually set language
    */
   setLanguage(lang) {

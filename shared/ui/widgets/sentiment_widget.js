@@ -3,7 +3,7 @@
  * Markt-Vibe ohne Technik-Sprech.
  */
 
-import { supabase } from '../../core/supabase_client.js';
+import { getSupabaseClient } from '../../core/supabase_client.js';
 import { api } from '../../core/api.js';
 import { animateValue, dom } from '../dom_utils.js';
 import { MBRN_CONFIG } from '../../core/config.js';
@@ -33,33 +33,85 @@ export const sentimentWidget = {
   },
 
   render() {
-    const template = `
-      <div class="glass-card text-center">
-        <h3 class="section-eyebrow-left">Markt-Vibe</h3>
-        <p class="text-secondary mb-24">Das zeigt grob, wie entspannt oder nervoes die Welt gerade unterwegs ist.</p>
+    const card = dom.createEl('div', {
+      className: 'glass-card text-center',
+      parent: this.container
+    });
 
-        <div class="sentiment-container">
-          <svg class="sentiment-ring-svg" viewBox="0 0 160 160">
-            <circle cx="80" cy="80" r="70" fill="none" stroke="var(--border)" stroke-width="12"/>
-            <circle id="sentiment-ring" cx="80" cy="80" r="70" fill="none"
-                    stroke="var(--accent)" stroke-width="12" stroke-linecap="round"
-                    stroke-dasharray="440" stroke-dashoffset="220"/>
-          </svg>
+    dom.createEl('h3', {
+      className: 'section-eyebrow-left',
+      text: 'Markt-Vibe',
+      parent: card
+    });
 
-          <div class="sentiment-score-center">
-            <span id="sentiment-score" class="value-massive sentiment-score-massive">50</span>
-          </div>
-        </div>
+    dom.createEl('p', {
+      className: 'text-secondary mb-24',
+      text: 'Das zeigt grob, wie entspannt oder nervoes die Welt gerade unterwegs ist.',
+      parent: card
+    });
 
-        <div id="sentiment-verdict" class="sentiment-verdict">Neutral</div>
-      </div>
-    `;
+    const sentimentContainer = dom.createEl('div', {
+      className: 'sentiment-container',
+      parent: card
+    });
 
-    this.container.insertAdjacentHTML('beforeend', template);
+    const svg = dom.createEl('svg', {
+      className: 'sentiment-ring-svg',
+      attrs: { viewBox: '0 0 160 160' },
+      parent: sentimentContainer
+    });
+
+    dom.createEl('circle', {
+      attrs: {
+        cx: '80',
+        cy: '80',
+        r: '70',
+        fill: 'none',
+        stroke: 'var(--border)',
+        'stroke-width': '12'
+      },
+      parent: svg
+    });
+
+    dom.createEl('circle', {
+      id: 'sentiment-ring',
+      attrs: {
+        cx: '80',
+        cy: '80',
+        r: '70',
+        fill: 'none',
+        stroke: 'var(--accent)',
+        'stroke-width': '12',
+        'stroke-linecap': 'round',
+        'stroke-dasharray': '440',
+        'stroke-dashoffset': '220'
+      },
+      parent: svg
+    });
+
+    const scoreCenter = dom.createEl('div', {
+      className: 'sentiment-score-center',
+      parent: sentimentContainer
+    });
+
+    dom.createEl('span', {
+      id: 'sentiment-score',
+      className: 'value-massive sentiment-score-massive',
+      text: '50',
+      parent: scoreCenter
+    });
+
+    dom.createEl('div', {
+      id: 'sentiment-verdict',
+      className: 'sentiment-verdict',
+      text: 'Neutral',
+      parent: card
+    });
   },
 
   setupRealtime() {
-    if (!api.client) return;
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
 
     this.channel = supabase
       .channel('market_sentiment')
@@ -154,8 +206,9 @@ export const sentimentWidget = {
   },
 
   async fetchFromSupabase() {
-    if (!api.client) return null;
-    const { data, error } = await api.client
+    const supabase = getSupabaseClient();
+    if (!supabase) return null;
+    const { data, error } = await supabase
       .from('market_sentiment')
       .select('*')
       .order('created_at', { ascending: false })

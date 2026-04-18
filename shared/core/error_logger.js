@@ -18,6 +18,16 @@
 import { api } from './api.js';
 import { state } from './state.js';
 import { storage } from './storage.js';
+import {
+  getBrowserHref,
+  getBrowserLanguage,
+  getBrowserNavigator,
+  getBrowserOrigin,
+  getBrowserUserAgent,
+  getBrowserWindow,
+  hasBrowserRuntime,
+  isBrowserOnline
+} from './browser_runtime.js';
 
 const ERROR_QUEUE_KEY = 'error_queue';
 const MAX_QUEUE_SIZE = 50; // Prevent unlimited growth
@@ -74,7 +84,8 @@ class ErrorLogger {
     if (!url || typeof url !== 'string') return '[invalid url]';
     
     try {
-      const u = new URL(url, window.location.origin);
+      const origin = getBrowserOrigin('http://localhost');
+      const u = new URL(url, origin);
       // Strip query params and hash - they may contain sensitive data
       return `${u.protocol}//${u.host}${u.pathname}`;
     } catch {
@@ -87,7 +98,11 @@ class ErrorLogger {
    * Initialize error logger and setup listeners
    */
   init() {
-    if (this._initialized) return;
+    if (this._initialized) return true;
+    if (!hasBrowserRuntime()) return false;
+
+    const windowRef = getBrowserWindow();
+    const navigatorRef = getBrowserNavigator();
 
     // Subscribe to critical system events
     state.subscribe('circuitOpened', (data) => {
@@ -112,14 +127,15 @@ class ErrorLogger {
     });
 
     // Listen for online status to sync queue
-    window.addEventListener('online', () => this._syncQueue());
+    windowRef.addEventListener('online', () => this._syncQueue());
     
     // Initial sync attempt if online
-    if (navigator.onLine) {
+    if (navigatorRef?.onLine) {
       this._syncQueue();
     }
 
     this._initialized = true;
+    return true;
   }
 
   /**
@@ -145,7 +161,7 @@ class ErrorLogger {
   async logError(errorData) {
     // OMEGA FIX: Sanitize context and URL to prevent PII leakage
     const sanitizedContext = this._sanitizeContext(errorData.context);
-    const sanitizedUrl = this._sanitizeUrl(window.location.href);
+    const sanitizedUrl = this._sanitizeUrl(getBrowserHref());
     
     const errorEntry = {
       id: this._generateId(),
@@ -155,16 +171,16 @@ class ErrorLogger {
       severity: errorData.severity || 'medium',
       context: {
         ...sanitizedContext,
-        userAgent: navigator.userAgent,
+        userAgent: getBrowserUserAgent(),
         url: sanitizedUrl, // OMEGA FIX: Sanitized URL
-        language: navigator.language
+        language: getBrowserLanguage()
       },
       stack: errorData.stack || null,
       synced: false
     };
 
     // If online, send immediately
-    if (navigator.onLine && api.isOnline) {
+    if (hasBrowserRuntime() && isBrowserOnline() && api.isOnline) {
       const result = await this._sendToSupabase(errorEntry);
       if (result.success) {
         return { success: true, id: errorEntry.id };
@@ -255,7 +271,7 @@ class ErrorLogger {
    */
   async _syncQueue() {
     if (this._syncInProgress) return;
-    if (!navigator.onLine || !api.isOnline) return;
+    if (!hasBrowserRuntime() || !isBrowserOnline() || !api.isOnline) return;
 
     this._syncInProgress = true;
     
@@ -293,32 +309,6 @@ class ErrorLogger {
   _generateId() {
     return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
-
-  /**
-   * Get current queue status
-   */
-  getQueueStatus() {
-    const queue = this._getQueue();
-    return {
-      total: queue.length,
-      unsynced: queue.filter(e => !e.synced).length,
-      synced: queue.filter(e => e.synced).length
-    };
-  }
-
-  /**
-   * Clear error queue (for testing/debugging)
-   */
-  clearQueue() {
-    storage.remove(ERROR_QUEUE_KEY);
-  }
-
-  /**
-   * Force immediate sync attempt
-   */
-  async forceSync() {
-    return this._syncQueue();
-  }
 }
 
 // Singleton instance
@@ -326,6 +316,3 @@ export const errorLogger = new ErrorLogger();
 
 // Extend api with logError method
 api.logError = (errorData) => errorLogger.logError(errorData);
-
-// Initialize on module load
-errorLogger.init();

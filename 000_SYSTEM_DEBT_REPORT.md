@@ -1,580 +1,254 @@
 ---
 metadata:
   project: MBRN-HUB-V1
-  version: 2.0.0-DEBT-BASE
+  version: 2.1.0-CANONICALIZATION
   last_audit: 2026-04-18
-  system_state: BILINGUAL_V2_READY
-  critical_path: PHASE_1_STABILIZATION
+  system_state: CANONICALIZATION_ACTIVE
+  critical_path: PHASE_1_CANONICALIZATION
 ---
 
 # 000_SYSTEM_DEBT_REPORT
 
 > **MBRN System Debt Manifest**  
-> **Scope:** `C:\DevLab\MBRN-HUB-V1` als aktiver Kern, mit Workspace-Blick auf `C:\DevLab\`  
-> **Status:** Audit konsolidiert, Phase 3 abgeschlossen, **P1.x bis P3.x produktiv geheilt und verifiziert**  
-> **Intent:** Kanonische Debt-Quelle für die nächste Heilungsrunde
+> **Scope:** `C:\DevLab\MBRN-HUB-V1` as active kernel, plus workspace governance at `C:\DevLab`  
+> **Intent:** Canonical live tracker for the next healing round  
+> **Canonical evidence:** [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md)
 
 ---
 
 ## Executive Summary
 
-Der aktive Kern ist **brauchbar und strukturell ernstzunehmend**, aber die langfristige Stabilität des MBRN-Ökosystems wird aktuell durch **mehrere konkurrierende Wahrheiten** belastet: Engine-Dubletten, veraltete Testpfade, widersprüchliche Dokumentation, schwache Runtime-Isolation und ein übermächtiger Cold-Storage-Schatten.
+The active kernel is stable enough to operate and the serial Jest gate is green, but the repository is still in an in-progress canonicalization state. The main technical debt is no longer failing tests. The main remaining debt is repo-truth hygiene, documentation alignment, and final review/commit discipline.
 
 ### Live Healing Status
 
 | Signal | Stand |
 |---|---|
-| Current Healing Progress | `[▓▓▓▓▓▓▓▓▓▓] 100%` |
+| Current Healing Progress | `[▓▓▓▓▓▓▓▓▓░] 95%` |
 | Open P1/P2 Blockers | **0** |
 | Last System Sync | **2026-04-18** |
-| Manifest Mode | `TRACKING_ACTIVE` |
+| Manifest Mode | `CANONICALIZATION_ACTIVE` |
 
 ### Harte Kennzahlen
 
 | Kennzahl | Stand |
 |---|---|
-| Workspace-Größe | ca. **19.470 Dateien / 24,7 GB** |
-| Aktiver Kern | `MBRN-HUB-V1` mit ca. **5.434 Dateien / 28 MB** |
-| Cold Storage | aus dem aktiven Workspace herausgeloest und nach `C:\DevLab_Archive\` verschoben |
-| Verschachtelte Git-Repos | **35** |
-| `node_modules`-Verzeichnisse | **16** |
-| `__pycache__`-Verzeichnisse | **111** |
-| Serieller Jest-Status (Audit-Basis) | **10 Suiten: 5 failed / 5 passed** |
-| Teststatus im Detail (Audit-Basis) | **146 Tests: 137 passed / 8 failed / 1 skipped** |
-| Finaler Jest-Status | **10 Suiten: 10 passed / 0 failed** |
-| Finaler Teststatus | **195 Tests: 194 passed / 0 failed / 1 skipped** |
-| Sprint-A Ziel-Suiten | **3 Verifikationslaeufe: 3 passed / 0 failed** |
-| Sprint-A Scope | `validators` gruen, `finance` gruen, Node-Guard-Scope gruen |
-| P1.4 Synergy-Verifikation | **1 Suite: 1 passed / 0 failed** |
-| Zusätzlicher Befund | `circuit_breaker` loggt erwartbare Fehlerpfade, aber **kein Browser-Global-Crash mehr im Node-Testlauf** |
+| Workspace-Dateien | ca. **5.590** |
+| Aktiver Kern | ca. **5.562 Dateien / 28,17 MB** |
+| Tracked Repo-Files | **251** |
+| Verschachtelte Git-Repos in `C:\DevLab` | **1** |
+| `node_modules`-Verzeichnisse in `C:\DevLab` | **11** |
+| `__pycache__`-Verzeichnisse in `C:\DevLab` | **0** |
+| Archivziel | `C:\DevLab_Archive\` vorhanden |
+| `_COLD_STORAGE` unter `C:\DevLab` | **nicht mehr vorhanden** |
+| Voller Jest-Status | **10 Suiten: 10 passed / 0 failed** |
+| Voller Teststatus | **195 Tests: 194 passed / 0 failed / 1 skipped** |
+| Zusätzlicher Befund | `circuit_breaker` loggt erwartbare Fehlerpfade, aber der serielle Lauf beendet sich sauber |
 
-### Kernaussage
+### Aktuelle Git-Wahrheit
 
-**Der Kern ist produktiv denkbar, aber Source-of-Truth und Repo-Hygiene sind fragmentiert.**  
-Die größten Risiken liegen nicht nur im Code selbst, sondern in der Kombination aus:
+```text
+ M shared/core/actions.js
+ M shared/core/api.js
+ M shared/core/error_logger.js
+ M shared/core/importmap.js
+ M shared/core/validators.js
+ M shared/data/market_sentiment.json
+ M shared/ui/render_nav.js
+ M shared/ui/widgets/sentiment_widget.js
+ M tests/validators.test.js
+?? 000_EXECUTION_ROADMAP.md
+?? 000_FORENSIC_PROJECT_AUDIT.md
+?? shared/ui/form_validation.js
+```
 
-- doppelten Engines mit unterschiedlicher Fachlogik,
-- kaputten Testverträgen,
-- Browser-/Node-Grenzverletzungen,
-- Dokumentationsdrift,
-- und einem Workspace, dessen Archivmasse die operative Klarheit gefährdet.
-
----
-
-## Leitregel für dieses Dokument
-
-Dieses Manifest ist **rein dokumentarisch**.
-
-- Es beschreibt Zustand, Risiken, Reihenfolge und betroffene Dateien.
-- Es **ändert keinen produktiven Code**.
-- Es ist die **kanonische Debt-Quelle** für die nächste Umsetzungsrunde.
-
-### 🤖 Agent Protocol
-
-- **Atomic Fixes:** Behandle jede `P`-Nummer als eigenständigen Task.
-- **Update Header:** Aktualisiere die Kennzahlen im Header nach jedem erfolgreichen `One Shot` oder Sprint.
-- **Traceability:** Hinterlasse bei einem `🟢`-Fix das Datum und den Namen des ausführenden Agenten.
-- **Status-Disziplin:** Nutze ausschließlich diese Stati:
-  - `🟢 Erledigt`
-  - `🟢 Erledigt`
-  - `🟢 Erledigt`
-- **Verifikation zuerst:** Ein Fix gilt erst dann als belastbar, wenn das Feld `Verifikation` konkret benannt und tatsächlich ausgeführt wurde.
-
-### Agent Routing / Delegation Matrix
-
-| Task | Empfohlene KI | Modus | Input / Fokusdateien | Success Signal |
-|---|---|---|---|---|
-| `P1.4` Synergy-Konsolidierung | `Codex` | `Direkt patchen + testen` | `shared/core/logic/synergy.js`, `shared/core/logic/synergy_engine.js`, `shared/core/logic/synergy.test.js`, `apps/synergy/render.js`, `dashboard/render_dashboard.js`, `supabase/functions/mbrn_compute/index.ts` | `SYNERGY CONTRACT UNIFIED` |
-| `P2.2` Navigation Lifecycle & Handles | `Claude 4.6 Sonnet` | `Refactor-Vorschlag oder Patch-Sprint` | `shared/ui/navigation.js`, `tests/navigation.test.js`, Jest-Output zu offenen Handles | `NAVIGATION CLEANUP GREEN, NO OPEN HANDLES` |
-| `P2.3` Dokumentations-Sync | `Gemini 3.1 Pro` | `Governance-/Manifest-Sprint` | `000_ARCHITECTURE.md`, `README.md`, `docs/DevLab_Master_Manifest.md`, `000_DEVLAB_MACRO.md`, `.gitignore`, `shared/core/env.example.js` | `DOCS AGREE ON CURRENT REALITY` |
-| `P3.2` Repo-Hygiene | `Antigravity` | `Lokal-Shell / kontrollierter Cleanup` | `scripts/pipelines/__pycache__`, `.gitignore`, Repo-Root-Hygiene | `ACTIVE CORE FREE OF CACHE ARTEFACTS` |
-| `P1.1` Chronos-Merge-Plan | `Antigravity` | `Architektur-Plan & Execution` | `shared/core/logic/chronos.js`, `shared/core/logic/chronos_engine.js`, `shared/core/logic/orchestrator.js`, `apps/chronos/render.js`, `supabase/functions/mbrn_compute/index.ts`, `docs/M15_Chronos_Engine.md` | `CHRONOS OUTPUTS NORMALIZED ACROSS ORCHESTRATOR, APP AND API` |
+**Kernaussage:**  
+The code-side repair pass is green. The repo is not yet clean because the canonicalization batch itself is still uncommitted, and `market_sentiment.json` remains a versioned pipeline-churn file that must be classified explicitly.
 
 ---
 
-## P1 — Kritische System Debt
+## Leitregel
 
-### P1.1 — Chronos-Dublette: zwei Engines, zwei Wahrheiten
+This document is the **live debt tracker**.
+
+- It must reflect the current repo truth.
+- It must not claim a clean tree when `git status --short` is dirty.
+- Historical or baseline evidence belongs in [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md).
+- Planning work for Phase 4 belongs in [`000_EXECUTION_ROADMAP.md`](./000_EXECUTION_ROADMAP.md).
+
+### Agent Protocol
+
+- **Atomic Fixes:** Treat each P-item as its own task.
+- **Update Header:** Refresh metrics after each successful fix batch.
+- **Traceability:** Every green item gets date plus executing agent.
+- **Truth First:** Git state and test state outrank old manifest wording.
+- **No Silent Drift:** New planning or audit docs must be either committed or explicitly tracked as in-flight artefacts.
+
+---
+
+## Current Open Debt
+
+## P1 - Critical
+
+### P1.1 - No open code blockers
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Chronos-Dublette / zwei Engines mit unterschiedlicher Fachlogik |
-| **Warum kritisch** | Gleicher Fachbegriff, unterschiedliche Implementierungen und unterschiedliche Outputs. Dadurch drohen inkonsistente Ergebnisse zwischen UI, Orchestrator, API und Dokumentation. |
-| **Konkreter Befund** | Der Orchestrator nutzt [orchestrator.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/orchestrator.js:12) mit `chronos.js`, während App, API und Doku auf `chronos_engine.js` zeigen. Das erzeugt zwei konkurrierende Chronos-Wahrheiten im aktiven Kern. |
-| **Abarbeitungsmodus** | `Einheitliche V2 Engine` |
 | **Status** | `🟢 Erledigt` |
-| **Abhängigkeit** | Blockiert die kanonische Chronos-Source-of-Truth für Orchestrator, App und API. Voraussetzung für einen sauberen späteren Phase-2/Phase-3-Kernschnitt. |
-| **Verifikation** | `manual_chronos_diff_check`, `chronos_smoke_test`, `api_contract_compare` |
-| **Success Signal** | `CHRONOS OUTPUTS NORMALIZED ACROSS ORCHESTRATOR, APP AND API (0 UNEXPLAINED DIFFS)` |
-
-**Betroffene Dateien**
-
-- [orchestrator.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/orchestrator.js:12)
-- [chronos.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/chronos.js:1)
-- [chronos_engine.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/chronos_engine.js:1)
-- [render.js](/C:/DevLab/MBRN-HUB-V1/apps/chronos/render.js:13)
-- [index.ts](/C:/DevLab/MBRN-HUB-V1/supabase/functions/mbrn_compute/index.ts:9)
-- [M15_Chronos_Engine.md](/C:/DevLab/MBRN-HUB-V1/docs/M15_Chronos_Engine.md:5)
-- [chronos_v2.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/chronos_v2.js:1) (NEU)
+| **Befund** | Chronos source-of-truth, Synergy contract, Finance import path, and Validator null/domain contract are aligned in the active kernel. |
+| **Verifikation** | `chronos`, `synergy`, `finance`, `validators` covered by the current green serial Jest run |
+| **Success Signal** | `10/10 suites passed in serial run` |
 
 **Traceability**
 
-- `2026-04-18 - Antigravity - chronos_v2.js erstellt und alle 6 Consumer (UI, Orchestrator, API, Barrel, Tests) erfolgreich auf Single Source of Truth umgeleitet. Test Suite auf 40/40 Tests erweitert. Alte Files zu Re-Export Stubs degradiert.`
+- `2026-04-18 - Codex - Canonicalization pass confirmed no remaining P1 code blocker in active kernel.`
 
 ---
 
-### P1.2 — Kaputter Test-/CI-Vertrag im Finance-Pfad
+## P2 - High Stability Risks
+
+### P2.1 - Core/UI boundary materially reduced
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Kaputter Test-/CI-Vertrag wegen gelöschter `apps/finance/logic.js` |
-| **Warum kritisch** | Tests und Coverage zeigen auf einen Pfad, der nicht mehr existiert. Damit ist der grüne Zustand des Kerns nicht mehr zuverlässig überprüfbar. |
-| **Konkreter Befund** | `apps/finance/logic.js` wurde entfernt, aber [jest.config.js](/C:/DevLab/MBRN-HUB-V1/jest.config.js:8) und [finance_logic.test.js](/C:/DevLab/MBRN-HUB-V1/tests/finance_logic.test.js:21) referenzieren den alten Pfad weiter. |
-| **Abarbeitungsmodus** | `One Shot` |
 | **Status** | `🟢 Erledigt` |
-| **Abhängigkeit** | Voraussetzung für einen wieder belastbaren Jest-/CI-Gate im aktiven Kern. |
-| **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand tests/finance_logic.test.js` |
-| **Success Signal** | `FINANCE TEST SUITE GREEN (0 FAILURES, CANONICAL IMPORT PATH ACTIVE)` |
-
-**Betroffene Dateien**
-
-- [jest.config.js](/C:/DevLab/MBRN-HUB-V1/jest.config.js:8)
-- [finance_logic.test.js](/C:/DevLab/MBRN-HUB-V1/tests/finance_logic.test.js:21)
-- [finance.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/finance.js:1)
-
-**Traceability**
-
-- `2026-04-18 - Codex - Importpfad und Coverage-Vertrag auf shared/core/logic/finance.js umgestellt; Verifikation gruen.`
-
----
-
-### P1.3 — Validator-Vertragsbruch
-
-| Feld | Inhalt |
-|---|---|
-| **Finding-Titel** | Validator-Vertragsbruch: `null`-Crash und blockierte Test-Domain |
-| **Warum kritisch** | Ein Validator darf bei Basiseingaben nicht abstürzen. Gleichzeitig widersprechen Domain-Blocklisten dem eigenen Testvertrag. |
-| **Konkreter Befund** | [validators.js](/C:/DevLab/MBRN-HUB-V1/shared/core/validators.js:25) crasht bei `validateDateFormat(null)` wegen `.match()` auf `null`. Außerdem blockt [validators.js](/C:/DevLab/MBRN-HUB-V1/shared/core/validators.js:168) `example.com`, obwohl Tests diese Adresse als gültigen Fall behandeln. |
-| **Abarbeitungsmodus** | `One Shot` |
-| **Status** | `🟢 Erledigt` |
-| **Abhängigkeit** | Voraussetzung für P3.1 (Isolation), weil saubere Validator-Verträge das Testrauschen und Folgefehler im Node-/Storage-Kontext stark reduzieren. |
+| **Befund** | DOM-bound validation helpers were moved out of `shared/core/validators.js` into [`shared/ui/form_validation.js`](./shared/ui/form_validation.js). `shared/core/api.js` no longer imports the UI error boundary directly. |
 | **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand tests/validators.test.js` |
-| **Success Signal** | `ALL VALIDATOR TESTS PASSED (0 FAILURES, NO NULL/UNDEFINED CRASHES)` |
-
-**Betroffene Dateien**
-
-- [validators.js](/C:/DevLab/MBRN-HUB-V1/shared/core/validators.js:25)
-- [validators.js](/C:/DevLab/MBRN-HUB-V1/shared/core/validators.js:168)
-- [validators.test.js](/C:/DevLab/MBRN-HUB-V1/tests/validators.test.js:1)
+| **Success Signal** | `validators core stays pure; DOM helpers live in UI namespace` |
 
 **Traceability**
 
-- `2026-04-18 - Codex - null/undefined-Guard in validateDateFormat ergaenzt und example.com aus der Default-Blockliste entfernt; Verifikation gruen.`
+- `2026-04-18 - Codex - Moved validateLive/validateForm into shared/ui/form_validation.js and removed direct UI import from api.js.`
 
 ---
 
-### P1.4 — Synergy-Dublette und Datenform-Drift
+### P2.2 - Routing/UI drift healed
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Synergy-Dublette / Drift zwischen Datenformen und Tests |
-| **Warum kritisch** | Unterschiedliche Eingabe- und Ausgabeformen erzeugen Integrationsrisiken zwischen Core, Dashboard, API und Tests. |
-| **Konkreter Befund** | [synergy.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/synergy.js:1) und [synergy_engine.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/synergy_engine.js:1) bilden unterschiedliche Modelle ab. Dazu erwarten Tests wiederum eine weitere Rückgabeform. |
-| **Abarbeitungsmodus** | `Kontrollierter Sprint` |
 | **Status** | `🟢 Erledigt` |
-| **Abhängigkeit** | Voraussetzung für konsistente Dashboard-, API- und Testverträge; reduziert spätere Drift beim Sprint B. |
-| **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand shared/core/logic/synergy.test.js`, `dashboard_manual_smoke_test` |
-| **Success Signal** | `SYNERGY CONTRACT UNIFIED (TEST SUITE GREEN + DASHBOARD OUTPUT MATCHES CANONICAL SHAPE)` |
-
-**Betroffene Dateien**
-
-- [synergy.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/synergy.js:1)
-- [synergy_engine.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/synergy_engine.js:1)
-- [synergy.test.js](/C:/DevLab/MBRN-HUB-V1/shared/core/logic/synergy.test.js:1)
-- [render_dashboard.js](/C:/DevLab/MBRN-HUB-V1/dashboard/render_dashboard.js:27)
-- [index.ts](/C:/DevLab/MBRN-HUB-V1/supabase/functions/mbrn_compute/index.ts:10)
+| **Befund** | [`shared/ui/render_nav.js`](./shared/ui/render_nav.js) now renders the same active route family declared in [`shared/core/config.js`](./shared/core/config.js), including `synergy` and `tuning`. |
+| **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand tests/navigation.test.js` plus config/render code review |
+| **Success Signal** | `navigation renderer and route config cover the same active apps` |
 
 **Traceability**
 
-- `2026-04-18 - Codex - Synergy-Vertrag zwischen synergy.js, synergy_engine.js, Tests, App und Dashboard auf einen gemeinsamen Output-Shape gezogen; Verifikation gruen.`
+- `2026-04-18 - Codex - Navigation order expanded to match canonical route definitions.`
 
 ---
 
-## P2 — Hohe Stabilitätsrisiken
-
-### P2.1 — Navigation nicht vollständig deployment-neutral
+### P2.3 - Sentiment widget DOM-safety healed
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Navigation nicht vollständig deployment-neutral |
-| **Warum kritisch** | Harte Pfade widersprechen der dynamischen Root-Erkennung und können bei anderem Hosting oder Repo-Namen sofort brechen. |
-| **Konkreter Befund** | [render_auth.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/render_auth.js:109) enthält einen harten Redirect auf `/MBRN/index.html#auth`, während [navigation.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/navigation.js:14) eigentlich dynamische Root-Logik besitzt. |
-| **Abarbeitungsmodus** | `One Shot` |
-| **Status** | 🟢 Erledigt |
-| **Abhängigkeit** | Voraussetzung für saubere lokale und gehostete Navigationstests nach Sprint B. |
-| **Verifikation** | `manual_route_smoke_test`, `local_root_check`, `github_pages_path_check` |
-| **Success Signal** | `AUTH/NAV PATHS RESOLVE IDENTICALLY IN LOCAL ROOT AND HOSTED PATH CONTEXTS` |
-
-**Betroffene Dateien**
-
-- [render_auth.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/render_auth.js:109)
-- [navigation.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/navigation.js:14)
-
-**Traceability**
-
-- `2026-04-18 - Antigravity - Hardcodierte /MBRN/ Pfade in render_auth.js durch dynamische Root-Erkennung (getRepoRoot) ersetzt; Verifikation lokal und via Pfad-Neutralitaet bestanden.`
-
----
-
-### P2.2 — Navigation-/Lifecycle-Cleanup unvollständig
-
-| Feld | Inhalt |
-|---|---|
-| **Finding-Titel** | Navigation- und Lifecycle-Cleanup unvollständig, offene Handles |
-| **Warum kritisch** | Globale Listener und Intervalle werden aufgebaut, aber nicht vollständig zurückgebaut. Das erzeugt offene Handles, Testrauschen und potenzielle Memory-Leaks. |
-| **Konkreter Befund** | In [navigation.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/navigation.js:66), [navigation.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/navigation.js:82), [navigation.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/navigation.js:180) und [navigation.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/navigation.js:243) werden globale Listener/Intervalle aufgebaut, aber `destroy()` räumt sie nicht vollständig ab. [navigation.test.js](/C:/DevLab/MBRN-HUB-V1/tests/navigation.test.js:1) spiegelt diesen Drift bereits wider. |
-| **Abarbeitungsmodus** | `Kontrollierter Sprint` |
-| **Status** | 🟢 Erledigt |
-| **Abhängigkeit** | Voraussetzung für stabile Navigationstests und für das Entfernen offener Handles im Gesamt-Jest-Lauf. |
-| **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand tests/navigation.test.js`, `jest_open_handle_check` |
-| **Success Signal** | `NAVIGATION TEST SUITE GREEN AND JEST EXITS WITHOUT OPEN HANDLE WARNING` |
-
-**Betroffene Dateien**
-
-- [navigation.js](/C:/DevLab/MBRN-HUB-V1/shared/ui/navigation.js:243)
-- [navigation.test.js](/C:/DevLab/MBRN-HUB-V1/tests/navigation.test.js:1)
-
-**Traceability**
-
-- `2026-04-18 - Antigravity - Navigation-Lifecycle refactored: Alle globalen Listener registriert und in destroy() sauber entfernt. Test Suite 15/15 PASS; keine open handles mehr.`
-
----
-
-### P2.3 — Dokumentationswidersprüche und Governance-Drift
-
-| Feld | Inhalt |
-|---|---|
-| **Finding-Titel** | Dokumentationswidersprüche / Governance-Divergenz |
-| **Warum kritisch** | Wenn Architektur-, README-, Env- und Macro-Texte unterschiedliche Wahrheiten behaupten, verliert das System seine kanonische Steuerbarkeit. |
-| **Konkreter Befund** | [000_ARCHITECTURE.md](/C:/DevLab/MBRN-HUB-V1/000_ARCHITECTURE.md:43) spricht von 15 Gesetzen, listet aber mehr. [.gitignore](/C:/DevLab/MBRN-HUB-V1/.gitignore:25) erklärt `env.js` als tracked/public, während [env.example.js](/C:/DevLab/MBRN-HUB-V1/shared/core/env.example.js:2) „DO NOT COMMIT env.js“ sagt. [DevLab_Master_Manifest.md](/C:/DevLab/MBRN-HUB-V1/docs/DevLab_Master_Manifest.md:12) und [000_DEVLAB_MACRO.md](/C:/DevLab/000_DEVLAB_MACRO.md:1) bilden die reale Workspace-Lage nicht mehr sauber ab. |
-| **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
-| **Status** | 🟢 Erledigt |
-| **Abhängigkeit** | Voraussetzung für Phase 3, damit Workspace-, Env- und Governance-Texte wieder dieselbe Wahrheit transportieren. |
-| **Verifikation** | `doc_consistency_review`, `macro_manifest_crosscheck`, `header_metrics_sync` |
-| **Success Signal** | `ARCHITECTURE, README, ENV AND WORKSPACE MANIFESTS AGREE ON CURRENT REALITY (0 CONTRADICTIONS OPEN)` |
-
-**Betroffene Dateien**
-
-- [DevLab_Master_Manifest.md](/C:/DevLab/MBRN-HUB-V1/docs/DevLab_Master_Manifest.md:12)
-- [000_DEVLAB_MACRO.md](/C:/DevLab/000_DEVLAB_MACRO.md:1)
-
-**Traceability**
-
-- `2026-04-18 - Antigravity - Dokumentations-Sync abgeschlossen: 15 Gesetze konsolidiert, Manifest-Metriken auf 18.04.2026 gehoben; widerspruechliche Env-Hinweise harmonisiert.`
-
----
-
-### P2.4 — Core/UI-Grenze punktuell verletzt
-
-| Feld | Inhalt |
-|---|---|
-| **Finding-Titel** | Core/UI-Grenze punktuell verletzt |
-| **Warum kritisch** | Wenn Redirect- oder UI-nahe Verhaltenslogik im Core liegt, wird der Kern schwerer testbar und weniger architekturtreu. |
-| **Konkreter Befund** | In [actions.js](/C:/DevLab/MBRN-HUB-V1/shared/core/actions.js:343) liegt Redirect-Verhalten im Action-Layer. Das widerspricht dem dokumentierten Anspruch, UI-Verantwortung klar aus dem Core herauszuhalten. |
-| **Abarbeitungsmodus** | `Kontrollierter Sprint` |
-| **Status** | 🟢 Erledigt |
-| **Abhängigkeit** | Voraussetzung für saubere Runtime-Boundaries in Phase 2. |
-| **Verifikation** | `architecture_boundary_review`, `manual_checkout_smoke_test` |
-| **Success Signal** | `NO UI-SIDE REDIRECT RESPONSIBILITY LEFT IN CORE ACTION LAYER FOR THIS FLOW` |
-
-**Betroffene Dateien**
-
-- [actions.js](/C:/DevLab/MBRN-HUB-V1/shared/core/actions.js:343)
-
-**Traceability**
-
-- `2026-04-18 - Antigravity - Core/UI-Grenze in actions.js geheilt: Checkout-Redirect erfolgt nun sauber via state.emit an den UI-Layer statt direkt im Core.`
-
----
-
-## P3 — Mittlere Debt / Wartungs- und Testbarkeitsschäden
-
-### P3.1 — Schwache Runtime-Isolation wegen Browser-Globals
-
-| Feld | Inhalt |
-|---|---|
-| **Finding-Titel** | Testbarkeit/Runtime-Isolation schwach wegen unguarded Browser-Globals |
-| **Warum kritisch** | Core-Module sollten im Node-/Test-Kontext nicht unnötig auf Browser-APIs abstürzen oder noisy werden. |
-| **Konkreter Befund** | [storage.js](/C:/DevLab/MBRN-HUB-V1/shared/core/storage.js:57) und [storage.js](/C:/DevLab/MBRN-HUB-V1/shared/core/storage.js:83) greifen unguarded auf `localStorage` zu. [i18n.js](/C:/DevLab/MBRN-HUB-V1/shared/core/i18n.js:26) und [i18n.js](/C:/DevLab/MBRN-HUB-V1/shared/core/i18n.js:53) greifen direkt auf `navigator` bzw. `localStorage` zu. |
-| **Abarbeitungsmodus** | `One Shot` |
 | **Status** | `🟢 Erledigt` |
-| **Abhängigkeit** | Hängt logisch an P1.3, weil robuste Guards erst dann sauber verifizierbar sind, wenn Basisvalidatoren nicht mehr crashen. |
-| **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand tests/circuit_breaker.test.js tests/validators.test.js`, `node_runtime_smoke_test` |
-| **Success Signal** | `NO UNGUARDED BROWSER GLOBAL FAILURES IN NODE-BASED TEST RUNS` |
-
-**Betroffene Dateien**
-
-- [storage.js](/C:/DevLab/MBRN-HUB-V1/shared/core/storage.js:57)
-- [storage.js](/C:/DevLab/MBRN-HUB-V1/shared/core/storage.js:83)
-- [i18n.js](/C:/DevLab/MBRN-HUB-V1/shared/core/i18n.js:26)
-- [i18n.js](/C:/DevLab/MBRN-HUB-V1/shared/core/i18n.js:53)
+| **Befund** | [`shared/ui/widgets/sentiment_widget.js`](./shared/ui/widgets/sentiment_widget.js) no longer uses `insertAdjacentHTML`; rendering is built through safe DOM creation. |
+| **Verifikation** | static code review plus full serial Jest gate |
+| **Success Signal** | `no insertAdjacentHTML left in sentiment widget render path` |
 
 **Traceability**
 
-- `2026-04-18 - Codex - Guards fuer localStorage und navigator in storage.js und i18n.js ergaenzt; Verifikation im Node-Testkontext gruen.`
+- `2026-04-18 - Codex - Sentiment widget moved from string injection to safe DOM node construction.`
 
 ---
 
-### P3.2 — Repo-Hygiene schwach
+## P3 - Operational and Governance Debt
+
+### P3.1 - Browser-only core files guarded but still worth watching
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Repo-Hygiene: Caches deleted 🟢, Git Tree Clean 🟢 |
-| **Warum kritisch** | Artefakte und ein verschobener Working Tree erschweren Reviews, Testaussagen und Governance. |
-| **Konkreter Befund** | Die Python-Artefakte (`__pycache__`, `.pyc`) wurden entfernt und der Git-Status des aktiven Kerns ist wieder sauber. Damit ist die Hygiene-Basis fuer Review, Merge-Sicherheit und Debt-Abbau wieder hergestellt. |
-| **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
 | **Status** | `🟢 Erledigt` |
-| **Abhängigkeit** | Voraussetzung für den Safe-Zone-Cut in Phase 3 und für einen verlässlichen Working-Tree-Blick. |
-| **Verifikation** | `git_status_review`, `artifact_scan`, `ignore_policy_check` |
-| **Success Signal** | `ACTIVE CORE FREE OF PYTHON CACHE ARTIFACTS AND HYGIENE POLICY DOCUMENTED` |
+| **Befund** | [`shared/core/error_logger.js`](./shared/core/error_logger.js) and [`shared/core/importmap.js`](./shared/core/importmap.js) were guarded for non-browser runtimes so they do not force Node/test crashes. |
+| **Verifikation** | full serial Jest run |
+| **Success Signal** | `no browser-runtime crash introduced by error_logger/importmap in test context` |
+
+**Traceability**
+
+- `2026-04-18 - Codex - Added browser-runtime guards and kept these modules isolated from Node failure paths.`
+
+---
+
+### P3.2 - Repo hygiene still operationally open
+
+| Feld | Inhalt |
+|---|---|
+| **Status** | `🟡 In Arbeit` |
+| **Befund** | Python cache artefacts are gone, but the working tree is intentionally dirty because the canonicalization batch is not yet committed and `market_sentiment.json` still churns as a versioned data artefact. |
+| **Verifikation** | `git status --short`, workspace scan, artifact scan |
+| **Success Signal** | `repo truth documented accurately; next step is review + commit strategy` |
 
 **Betroffene Dateien/Bereiche**
 
-- [scripts/pipelines/__pycache__](/C:/DevLab/MBRN-HUB-V1/scripts/pipelines/__pycache__)
-- [scripts/pipelines/README.md](/C:/DevLab/MBRN-HUB-V1/scripts/pipelines/README.md:1)
-- [.gitignore](/C:/DevLab/MBRN-HUB-V1/.gitignore:1)
-- Repo-Root von `C:\DevLab\MBRN-HUB-V1\` mit aktuellem `git status`
+- [`shared/data/market_sentiment.json`](./shared/data/market_sentiment.json)
+- [`000_EXECUTION_ROADMAP.md`](./000_EXECUTION_ROADMAP.md)
+- [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md)
+- [`shared/ui/form_validation.js`](./shared/ui/form_validation.js)
+- canonicalization-modified tracked files listed in the git snapshot above
 
 **Traceability**
 
-- `2026-04-18 - Antigravity - Python-Caches (__pycache__, .pyc) physisch entfernt und Working Tree bereinigt; Verifikation via git status clean.`
+- `2026-04-18 - Codex - Repo hygiene truth corrected: cache cleanup is green, working tree cleanliness is still pending review/commit.`
 
 ---
 
-## Cold Storage / Workspace Debt
+## Workspace Debt
 
-Diese Debt ist **nicht nur Code Debt**, sondern **System Debt auf Workspace-Ebene**.
-
-### Workspace-Befund
+### Cold Storage / Archive Boundary
 
 | Feld | Inhalt |
 |---|---|
-| **Finding-Titel** | Cold-Storage / Workspace Debt |
-| **Warum kritisch** | Die operative Klarheit des Systems leidet, wenn aktive Wahrheiten, Alt-Repos, Backups, Modellablagen und Graveyard-Code im selben Arbeitsraum konkurrieren. |
-| **Konkreter Befund** | Der aktive Workspace wurde auf die Safe Zone reduziert. `_COLD_STORAGE` wurde aus `C:\DevLab\` entfernt und in einen separaten Archivraum verschoben. Damit konkurrieren die großen Archivzonen nicht mehr direkt mit dem Produktkern im aktiven Arbeitsbereich. |
-| **Abarbeitungsmodus** | `Workspace/Governance Sprint` |
 | **Status** | `🟢 Erledigt` |
-| **Abhängigkeit** | Voraussetzung für den Phase-3-Workspace-Zuschnitt und jede spätere physische Archivtrennung. |
-| **Verifikation** | `workspace_inventory_scan`, `archive_boundary_review`, `safe_zone_cutover_review` |
-| **Success Signal** | `SAFE ZONE DEFINED, ARCHIVE TARGET DECIDED, CUTOVER CHECKLIST READY WITH NO UNRESOLVED PATH RISKS` |
+| **Befund** | `_COLD_STORAGE` is no longer inside `C:\DevLab`; archive mass has been cut away from the active workspace and `C:\DevLab_Archive\` exists as the external archive target. |
+| **Verifikation** | `Test-Path C:\DevLab_Archive` and `Test-Path C:\DevLab\_COLD_STORAGE` |
+| **Success Signal** | `safe zone remains MBRN-HUB-V1 and archive lives outside active workspace` |
 
-**Betroffene Bereiche**
+**Traceability**
 
-- [000_DEVLAB_MACRO.md](/C:/DevLab/000_DEVLAB_MACRO.md:1)
-- [DevLab_Master_Manifest.md](/C:/DevLab/MBRN-HUB-V1/docs/DevLab_Master_Manifest.md:1)
-- `C:\DevLab_Archive\_COLD_STORAGE\1_GOLDMINE\`
-- `C:\DevLab_Archive\_COLD_STORAGE\2_ARCHIVES\`
-- `C:\DevLab_Archive\_COLD_STORAGE\3_GRAVEYARD\`
-
-### Cold-Storage-Ergebnis im Überblick
-
-| Ergebnis | Wirkung |
-|---|---|
-| `_COLD_STORAGE` aus dem aktiven Workspace entfernt | Deutlich geringere Kontext- und Navigationslast |
-| Archivzonen physisch separiert | Historie und aktiver Kern sind klar getrennt |
-| Safe Zone `MBRN-HUB-V1` hergestellt | Weniger Truth-Fragmentation im Arbeitsraum |
-| Produktkern bleibt direkt erreichbar | Bessere Agenten- und Review-Fokussierung |
+- `2026-04-18 - Codex - Macro and workspace truth aligned to post-cutover reality.`
 
 ---
 
-## Test-Rot / Verifikationslage
+## Legitimate Artefacts
 
-### Verifizierter Teststatus
-
-Der letzte serielle Jest-Lauf ergab:
-
-| Bereich | Status |
-|---|---|
-| Test-Suiten | **10 total / 5 failed / 5 passed** |
-| Tests | **146 total / 137 passed / 8 failed / 1 skipped** |
-| Zusatzbefund | offene Handles / unvollständiger Cleanup |
-
-### Sprint-A-Verifikation am 2026-04-18
-
-| Bereich | Status |
-|---|---|
-| `tests/validators.test.js` | **PASS** |
-| `tests/finance_logic.test.js` | **PASS** |
-| `tests/circuit_breaker.test.js tests/validators.test.js` | **PASS** |
-| `shared/core/logic/synergy.test.js` | **PASS** |
-| Sprint-A-D Heilung | **P1.x, P2.x, P3.1, P3.2 (Caches) GREEN** |
-
-### Weiterhin offen oder nicht neu verifiziert
-
-- `synergy`
-- `navigation`
-- numerology-spezifischer Y-Vowel-Testvertrag
-- Chronos-Source-of-Truth-Konsolidierung
-
-### Debt-Wert des Test-Rot
-
-Der Test-Rot ist aktuell **kein isoliertes QA-Problem**, sondern ein Symptom für:
-
-- veraltete Importpfade,
-- driftende Contracts,
-- doppelte Fachlogik,
-- Browser-/Node-Grenzprobleme,
-- und unvollständiges Lifecycle-Cleanup.
-
----
-
-## Recovery-Plan — 3 Phasen
-
-## Phase 1 — Source of Truth & Test Recovery
-
-> **Ziel:** Rot → Grün bei Kernverträgen, ohne Architekturumbau.
-
-### Fokus
-
-- einen **kanonischen Finance-Importpfad** festlegen und Tests/Jest darauf ausrichten
-- den **Validator-Vertrag** hartziehen:
-  - `null` und `undefined` sicher behandeln
-  - Domain-Regeln und Testvertrag angleichen
-  - bestehende Testfälle wieder an dieselbe Wahrheit koppeln
-- die **Synergy-Rückgabeform** und den Testvertrag angleichen
-- die **Chronos-Doppelspur** als explizit offenes Architekturproblem behandeln, aber **noch nicht blind zusammenwerfen**
-- den Testlauf als **Gate** definieren:
-  - `validators`
-  - `finance`
-  - `synergy`
-  - `chronos`
-  - `navigation`
-
-### Ergebnis von Phase 1
-
-- Tests prüfen wieder reale Pfade
-- Kernverträge sind wieder explizit
-- offensichtliche Drift zwischen Tests und Implementierung ist abgebaut
-- der aktive Kern bekommt wieder einen belastbaren Mindest-Qualitätsgate
-
----
-
-## Phase 2 — Runtime Boundary Cleanup
-
-> **Ziel:** Stabile Browser-/Node-Trennung und saubere Lifecycle-Grenzen.
-
-### Fokus
-
-- Browser-Globals in **Storage** und **i18n** sauber guarden
-- Navigation-Cleanup vollständig machen:
-  - Listener
-  - Intervalle
-  - offene Handles
-- harte Deployment-Pfade aus **Auth/Navigation** entfernen
-- UI/Core-Verantwortung sauberer trennen
-- noisy test output und Lifecycle-Rauschen abbauen
-
-### Ergebnis von Phase 2
-
-- Core-Module verhalten sich stabiler in Tests und Nicht-Browser-Kontexten
-- Lifecycle und Navigation werden sauberer kontrollierbar
-- Hosting-/Pfadabhängigkeit sinkt
-- Testausgaben werden klarer und aussagekräftiger
-
----
-
-## Phase 3 — Workspace Canonicalization
-
-> **Ziel:** Das Ökosystem wieder beherrschbar machen.
-
-### Fokus
-
-- aktive Source-of-Truth klar festlegen: **`MBRN-HUB-V1`**
-- Cold Storage nur noch als **referenzierte Zonen** behandeln
-- redundante Repo-Familien dokumentarisch kanonisieren
-- Artefakte aus dem aktiven Kern verbannen:
-  - `__pycache__`
-  - `.pyc`
-  - ggf. weitere lokale Caches
-- Manifest-/Macro-Zahlen und Governance-Texte an die Realität anpassen
-- optional später: ein DevLab-weites Archiv-/Repo-Indexdokument anlegen
-
-### Strategischer Trigger — Safe Zone / Nuke Cut
-
-- Definiere `C:\DevLab\MBRN-HUB-V1\` als **Safe Zone** für aktive Arbeit.
-- Alles außerhalb des aktiven Kerns wird perspektivisch in einen separaten Archivraum verschoben, z. B. `C:\DevLab_Archive\`.
-- Ziel ist nicht manuelles Mikrosortieren von 25 GB Altmasse, sondern ein **physischer Workspace-Zuschnitt**, der das Hintergrundrauschen für Agenten sofort massiv reduziert.
-- Diese Maßnahme bleibt **Phase-3-Arbeit** und wird erst nach expliziter Freigabe umgesetzt.
-
-### Pfadstabilisierung — Symlink Plan
-
-- Vor einem Workspace-Cut wird ein **Pfad- und Abhängigkeitsinventar** erstellt:
-  - lokale `.env`-Dateien
-  - Python-Venvs
-  - Task-Scheduler-/Cron-Pfade
-  - Editor-/Agenten-Workspaces
-  - harte lokale Skriptpfade
-- Falls Archivbereiche physisch aus `C:\DevLab\` herausgezogen werden, werden **Kompatibilitäts-Symlinks oder Junctions** nur dort gesetzt, wo bestehende lokale Automationen sonst brechen würden.
-- `MBRN-HUB-V1` bleibt dabei der **primäre reale Pfad**, nicht der Symlink.
-- Ziel ist ein Cutover, bei dem:
-  - der aktive Kern unverändert erreichbar bleibt,
-  - historische Bereiche entkoppelt werden,
-  - und lokale Toolchains keine stillen Pfadbrüche erleiden.
-
-### Ergebnis von Phase 3
-
-- der Workspace verliert seine Mehrfach-Wahrheiten
-- aktive und historische Bereiche werden wieder sauber unterscheidbar
-- Governance-Dokumente stimmen wieder mit der Realität überein
-- Debt-Abbau wird planbar statt improvisiert
-
----
-
-## Sprint-Vorbereitung
-
-### Fix-Pakete für die nächste Runde
-
-| Paket | Inhalt | Modus |
+| Artefakt | Rolle | Status |
 |---|---|---|
-| **Sprint A** | Finance-Testvertrag + Validator-Vertrag + Browser-Guards | `One Shot — abgeschlossen am 2026-04-18` |
-| **Sprint B** | Synergy-Drift + Navigation-Cleanup + Pfadneutralität | `Kontrollierter Sprint` |
-| **Sprint C** | Chronos-Konsolidierung | `Kontrollierter Sprint` |
-| **Sprint D** | Repo-/Workspace-Kanonisierung | `Workspace/Governance Sprint` |
-
-### Betroffene Kernbereiche gruppiert
-
-| Bereich | Schwerpunkte |
-|---|---|
-| **Core Logic** | `chronos`, `synergy`, `finance`, `validators`, `actions` |
-| **UI / Runtime** | `navigation`, `render_auth`, Lifecycle-Cleanup |
-| **Tests / Gate** | `validators.test`, `finance_logic.test`, `synergy.test`, `navigation.test` |
-| **Governance / Docs** | `000_ARCHITECTURE`, `README`, `.gitignore`, `env.example`, `Macro`, `Manifest` |
-| **Workspace** | `_COLD_STORAGE`, Repo-Familien, Artefakte, Archivstruktur |
+| [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md) | forensic baseline and evidence document | legitimate, currently untracked |
+| [`000_EXECUTION_ROADMAP.md`](./000_EXECUTION_ROADMAP.md) | Phase 4 execution roadmap | legitimate, currently untracked |
+| [`shared/data/market_sentiment.json`](./shared/data/market_sentiment.json) | versioned pipeline output | legitimate runtime/data artefact, classification still required |
 
 ---
 
-## Abnahme / Prüfkriterien
+## Verification Ledger
 
-Dieses Dokument gilt als korrekt, wenn:
+### Targeted suites
 
-- alle Audit-Findings aus dem letzten Lauf enthalten sind
-- **P1, P2, P3 und Cold-Storage** jeweils eigene klar erkennbare Blöcke haben
-- jeder Finding-Eintrag **betroffene Dateien** und **Abarbeitungsmodus** enthält
-- der **3-Phasen-Plan** vollständig und ohne offene Implementierungsentscheidungen formuliert ist
-- der Dokumentstatus den realen Heilungsstand korrekt widerspiegelt
-- die Datei als **kanonische Debt-Quelle** für die nächste Heilungsrunde verwendbar ist
+- `tests/validators.test.js` -> **PASS**
+- `tests/navigation.test.js` -> **PASS**
+- `tests/finance_logic.test.js` -> **PASS**
+- `shared/core/logic/synergy.test.js` -> **PASS**
 
----
+### Full gate
 
-## Default-Entscheidungen für die nächste Heilungsrunde
-
-- Die kanonische Datei liegt in `C:\DevLab\MBRN-HUB-V1\000_SYSTEM_DEBT_REPORT.md`
-- Es gibt **kein zweites Spiegel-Dokument** in `C:\DevLab\`
-- Der Stil bleibt **Manifest + Tabellen**
-- Das Debt-Manifest übernimmt den Auditstand **as-is** und ergänzt Struktur, Priorisierung und Recovery-Reihenfolge
-- Sprint A wurde umgesetzt; Codeänderungen umfassen die Stabilitäts-Sprints **P1.1 bis P3.2**
+- `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand` -> **PASS**
+- `10 suites passed`
+- `194 tests passed`
+- `1 skipped`
+- no hang observed at process exit
 
 ---
 
-**Status:** PHASE_3_COMPLETED  
-**Next Decision:** Fortsetzung mit **Phasen 2.0 / 3.0 (Expansion)**.
+## Next Action
+
+The next healing move is no longer a code repair sprint. It is a **review and commit hygiene pass**:
+
+1. Review the canonicalization diff.
+2. Decide whether `market_sentiment.json` remains versioned churn or should be handled differently.
+3. Add the legitimate new docs/helpers to version control.
+4. Commit the batch.
+5. Refresh this manifest header from the post-commit git truth.
+
+---
+
+**Status:** CANONICALIZATION_ACTIVE  
+**Next Decision:** review, classify, and commit the repair batch

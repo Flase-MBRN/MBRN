@@ -10,9 +10,7 @@ import {
   validateDateFormat,
   validateName,
   validateEmail,
-  validateNumber,
-  validateLive,
-  validateForm
+  validateNumber
 } from '../shared/core/validators.js';
 
 describe('Date Validation', () => {
@@ -218,97 +216,3 @@ describe('Number Validation', () => {
     expect(validateNumber(100, { max: 100 }).success).toBe(true);
   });
 });
-
-// DOM-dependent tests (skip in Node environment)
-const isDOMEnvironment = typeof document !== 'undefined';
-
-if (isDOMEnvironment) {
-  describe('Live Validation (DOM)', () => {
-    test('validates input and applies CSS classes', () => {
-      const input = document.createElement('input');
-      input.value = 'Max';
-      
-      const result = validateLive(input, validateName);
-      
-      expect(result.success).toBe(true);
-      expect(input.classList.contains('input-valid')).toBe(true);
-      expect(input.classList.contains('input-invalid')).toBe(false);
-      expect(input.getAttribute('aria-invalid')).toBe('false');
-    });
-
-    test('applies invalid state on error', () => {
-      const input = document.createElement('input');
-      input.value = 'M'; // Too short
-      
-      const result = validateLive(input, validateName);
-      
-      expect(result.success).toBe(false);
-      expect(input.classList.contains('input-invalid')).toBe(true);
-      expect(input.classList.contains('input-valid')).toBe(false);
-      expect(input.getAttribute('aria-invalid')).toBe('true');
-    });
-
-    test('creates error message element', () => {
-      const container = document.createElement('div');
-      const input = document.createElement('input');
-      input.value = 'M';
-      container.appendChild(input);
-      
-      validateLive(input, validateName);
-      
-      const errorEl = container.querySelector('.input-error-message');
-      expect(errorEl).toBeTruthy();
-      expect(errorEl.textContent).toContain('mindestens');
-    });
-  });
-
-  describe('Form Validation (DOM)', () => {
-    test('validates multiple fields', () => {
-      const form = document.createElement('form');
-      
-      const nameInput = document.createElement('input');
-      nameInput.value = 'Max Mustermann';
-      form.appendChild(nameInput);
-      
-      const dateInput = document.createElement('input');
-      dateInput.value = '15.08.1990';
-      form.appendChild(dateInput);
-      
-      const fields = {
-        name: { element: nameInput, validator: validateName },
-        date: { element: dateInput, validator: validateDateFormat }
-      };
-      
-      const result = validateForm(fields);
-      
-      expect(result.success).toBe(true);
-      expect(result.data.name).toBe('Max Mustermann');
-      expect(result.data.date).toBeInstanceOf(Date);
-    });
-
-    test('collects all errors', () => {
-      const form = document.createElement('form');
-      
-      const nameInput = document.createElement('input');
-      nameInput.value = 'M';
-      form.appendChild(nameInput);
-      
-      const dateInput = document.createElement('input');
-      dateInput.value = 'invalid';
-      form.appendChild(dateInput);
-      
-      const fields = {
-        name: { element: nameInput, validator: validateName },
-        date: { element: dateInput, validator: validateDateFormat }
-      };
-      
-      const result = validateForm(fields);
-      
-      expect(result.success).toBe(false);
-      expect(result.errors.name).toBeTruthy();
-      expect(result.errors.date).toBeTruthy();
-    });
-  });
-} else {
-  test.skip('DOM tests skipped in Node environment', () => {});
-}
