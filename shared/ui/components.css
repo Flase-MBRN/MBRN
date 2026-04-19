@@ -692,15 +692,30 @@
 @media (max-width: 768px) {
   .data-grid.compact {
     gap: 12px;
-  }
-  
-  /* Finance results cards keep min-width */
-  .data-grid.compact {
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
+
   .data-grid.compact > div {
-    min-width: 140px;
+    min-width: auto;
+    width: 100%;
+  }
+
+  /* Numerology accordion inner cards - full width on mobile */
+  #num-accordions .data-grid.compact,
+  .acc-content .data-grid.compact {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .acc-content .card-grid-item-sm {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
   }
 
   #results-section .results-card .data-grid.compact {
@@ -1567,6 +1582,10 @@ button[class*="btn"] {
   background: rgba(255, 255, 255, 0.02);
   border-radius: 12px;
   border: 1px solid var(--border);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .card-sunken,
@@ -1934,11 +1953,17 @@ button[class*="btn"] {
   display: none;
   padding: 16px;
   border-top: 1px solid rgba(255,255,255,0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Active State: Show content when parent has active class */
 .glass-card.active .acc-content {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 /* Accordion Trigger Button */
