@@ -30,6 +30,8 @@ config.local.js
 
 # Data Cache & Temp Files (SECURITY: Prevent data leaks)
 AI/models/data/*.json
+shared/data/market_sentiment.json
+shared/data/*.local.json
 *.cache.json
 .temp/
 .supabase/
