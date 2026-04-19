@@ -167,7 +167,7 @@ a {
 /* Prevent body scroll when sidebar is open on mobile */
 body.sidebar-open {
   overflow: hidden;
-  touch-action: none;
+  overscroll-behavior: none;
 }
 
 /* Mobile optimizations for backdrop */
