@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 
-async function loadApi({ commercialActive = false, env = null, hasWindow = true } = {}) {
+async function loadApi({ commercialActive = false, hasWindow = true } = {}) {
   jest.resetModules();
 
   const supabaseMockModule = await import('./mocks/supabase-js-esm.js');
@@ -42,12 +42,6 @@ async function loadApi({ commercialActive = false, env = null, hasWindow = true 
     IS_COMMERCIAL_MODE_ACTIVE: commercialActive
   }));
 
-  if (env) {
-    await jest.unstable_mockModule('../shared/core/env.js', () => ({
-      ENV: env
-    }));
-  }
-
   const { api } = await import('../shared/core/api.js');
   api._resetForTests();
   return { api, withCircuitBreakerMock, stateMock, supabaseMockModule };
@@ -58,38 +52,33 @@ describe('api', () => {
     delete globalThis.window;
   });
 
-  test('init creates a singleton client from env.js in browser context', async () => {
+  test('init creates a singleton client from the public constants by default', async () => {
     const fakeClient = { auth: {}, from: jest.fn(), functions: {} };
-    const { api, supabaseMockModule } = await loadApi({
-      env: {
-        SUPABASE_URL: 'https://db.example.test',
-        SUPABASE_ANON_KEY: 'anon-test-key'
-      }
-    });
+    const { api, supabaseMockModule } = await loadApi();
     supabaseMockModule.__setCreateClientImpl(() => fakeClient);
 
     const first = api.init();
     const second = api.init();
+    const createClientCalls = supabaseMockModule.__getCreateClientCalls();
 
     expect(first).toBe(true);
     expect(second).toBe(true);
-    expect(supabaseMockModule.__getCreateClientCalls()).toEqual([
-      ['https://db.example.test', 'anon-test-key']
-    ]);
+    expect(createClientCalls).toHaveLength(1);
+    expect(createClientCalls[0][0]).toEqual(expect.any(String));
+    expect(createClientCalls[0][1]).toEqual(expect.any(String));
+    expect(createClientCalls[0][0].length).toBeGreaterThan(0);
+    expect(createClientCalls[0][1].length).toBeGreaterThan(0);
     expect(api.client).toBe(fakeClient);
     expect(api.isOnline).toBe(true);
   });
 
   test('init fails cleanly when credentials are unavailable or client creation throws', async () => {
     const noEnv = await loadApi({ hasWindow: false });
+    noEnv.api._setCredentials('', '');
     expect(noEnv.api.init()).toBe(false);
 
-    const failing = await loadApi({
-      env: {
-        SUPABASE_URL: 'https://db.example.test',
-        SUPABASE_ANON_KEY: 'anon-test-key'
-      }
-    });
+    const failing = await loadApi();
+    failing.api._setCredentials('https://db.example.test', 'anon-test-key');
     failing.supabaseMockModule.__setCreateClientImpl(() => {
       throw new Error('create boom');
     });
@@ -421,9 +410,8 @@ describe('api', () => {
         signOut: jest.fn().mockResolvedValue({ error: { message: 'signout failed' } })
       }
     };
-    const { api, supabaseMockModule } = await loadApi({
-      env: { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_ANON_KEY: 'test-key' }
-    });
+    const { api, supabaseMockModule } = await loadApi();
+    api._setCredentials('https://test.supabase.co', 'test-key');
     supabaseMockModule.__setCreateClientImpl(() => fakeClient);
     await api.init();
 
@@ -432,10 +420,9 @@ describe('api', () => {
   });
 
   test('init handles initialization failure gracefully', async () => {
-    const { api, supabaseMockModule } = await loadApi({
-      env: { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_ANON_KEY: 'test-key' }
-    });
-    
+    const { api, supabaseMockModule } = await loadApi();
+    api._setCredentials('https://test.supabase.co', 'test-key');
+
     supabaseMockModule.__setCreateClientImpl(() => {
       throw new Error('supabase connection failed');
     });
@@ -456,9 +443,8 @@ describe('api', () => {
         getSession: jest.fn().mockResolvedValue({ error: { message: 'session error' }, data: {} })
       }
     };
-    const { api, supabaseMockModule } = await loadApi({
-      env: { SUPABASE_URL: 'https://test.supabase.co', SUPABASE_ANON_KEY: 'test-key' }
-    });
+    const { api, supabaseMockModule } = await loadApi();
+    api._setCredentials('https://test.supabase.co', 'test-key');
     supabaseMockModule.__setCreateClientImpl(() => fakeClient);
     await api.init();
 

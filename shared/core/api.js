@@ -2,47 +2,31 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import { withCircuitBreaker } from './circuit_breaker.js';
 import { IS_COMMERCIAL_MODE_ACTIVE } from './config.js';
 import { state } from './state.js';
-import { hasBrowserWindow } from './browser_runtime.js';
 
 /**
  * /shared/core/api.js
  * THE CLOUD GATEWAY (Supabase Integration)
- * 
- * ARCHITECTURE LAW: 
+ *
+ * ARCHITECTURE LAW:
  * 1. Cloud-First, Offline-Always (Instant UX via LocalStorage Fallback).
  * 2. Row Level Security (RLS) mandated.
  * 3. Sync-Debouncing to protect API limits.
- * 
- * RLS VERIFICATION: ✅ PASSED (13.04.2026)
- * - profiles: SELECT (auth.uid() = id) ✅
- * - profiles: INSERT (auth.uid() = id) ✅
- * - profiles: UPDATE (auth.uid() = id) ✅
- * - DELETE: Not allowed (no policy) ✅
+ *
+ * RLS VERIFICATION: PASSED (13.04.2026)
+ * - profiles: SELECT (auth.uid() = id)
+ * - profiles: INSERT (auth.uid() = id)
+ * - profiles: UPDATE (auth.uid() = id)
+ * - DELETE: Not allowed (no policy)
  */
 
 // --- CONFIGURATION ---
-// SECURITY: Credentials loaded from env.js (NOT in version control)
-// Falls env.js fehlt → Offline-Modus (graceful degradation)
-let SUPABASE_URL = null;
-let SUPABASE_KEY = null;
-let _envLoaded = false;
+// Public frontend constants for GitHub Pages deployment.
+// Replace these placeholders with the real Supabase project values.
+const PUBLIC_SUPABASE_URL = 'https://wqfijgzlxypqftwwoxxp.supabase.co';
+const PUBLIC_SUPABASE_ANON_KEY = 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO';
 
-// env.js laden, wenn ein Browser-Kontext verfügbar ist.
-// Fehlt die Datei, bleibt das System bewusst im Offline-Modus.
-async function loadBrowserEnv() {
-  if (_envLoaded || !hasBrowserWindow()) return;
-  _envLoaded = true;
-  try {
-    const { ENV } = await import('./env.js');
-    SUPABASE_URL = ENV.SUPABASE_URL;
-    SUPABASE_KEY = ENV.SUPABASE_ANON_KEY;
-  } catch (err) {
-    // env.js not found — operating in Offline-Only Mode
-    console.log('[API] env.js not found, running in offline mode');
-  }
-}
-
-await loadBrowserEnv();
+let SUPABASE_URL = PUBLIC_SUPABASE_URL;
+let SUPABASE_KEY = PUBLIC_SUPABASE_ANON_KEY;
 
 export const api = {
   client: null,
@@ -51,7 +35,6 @@ export const api = {
   _setCredentials(url, key) {
     SUPABASE_URL = url;
     SUPABASE_KEY = key;
-    _envLoaded = true;
   },
 
   _resetForTests() {
@@ -64,11 +47,10 @@ export const api = {
    * SINGLETON PATTERN: Prevents multiple GoTrueClient instances
    */
   init() {
-    // Guard: Return existing client if already initialized
     if (this.client) {
       return true;
     }
-    
+
     if (!SUPABASE_URL || !SUPABASE_KEY) {
       return false;
     }
@@ -89,7 +71,7 @@ export const api = {
    */
   async checkConnection() {
     if (!this.client) return false;
-    const { data, error } = await this.client.from('profiles').select('count', { count: 'exact', head: true });
+    const { error } = await this.client.from('profiles').select('count', { count: 'exact', head: true });
     this.isOnline = !error;
     return this.isOnline;
   },
@@ -161,11 +143,11 @@ export const api = {
     if (!profileData?.id) {
       return { success: false, error: 'Authenticated user required for cloud sync', offline: true };
     }
-    
+
     return withCircuitBreaker('supabase', async () => {
       const { data, error } = await this.client
         .from('profiles')
-        .upsert({ 
+        .upsert({
           id: profileData.id,
           display_name: profileData.display_name || profileData.name,
           access_level: profileData.access_level || profileData.level,
@@ -174,7 +156,7 @@ export const api = {
           last_sync: new Date().toISOString()
         })
         .select();
-      
+
       if (error) throw error;
       return data[0];
     });
@@ -202,14 +184,14 @@ export const api = {
     if (!this.isOnline || !this.client) return { success: false, error: 'Offline' };
     const { data, error } = await this.client
       .from('app_data')
-      .upsert({ 
+      .upsert({
         user_id: userId,
         app_id: appId,
-        payload: payload,
+        payload,
         updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,app_id' }) // Ensure upsert by user+app
+      }, { onConflict: 'user_id,app_id' })
       .select();
-    
+
     return error ? { success: false, error: error.message } : { success: true, data: data[0] };
   },
 
@@ -279,7 +261,7 @@ export const api = {
   /**
    * Verifies a Stripe Checkout Session by sessionId.
    * Queries the transactions table to confirm successful payment.
-   * 
+   *
    * @param {string} sessionId - The Stripe Checkout Session ID (cs_test_... or cs_live_...)
    * @returns {Promise<Object>} - Verification result per Gesetz 4
    */
@@ -297,8 +279,6 @@ export const api = {
     }
 
     try {
-      // Query transactions table (Stripe Webhook aligned schema)
-      // Status values: Webhook writes 'completed', API accepts all successful states
       const { data, error } = await this.client
         .from('transactions')
         .select('id, status, user_id, product_id, amount_total, currency, stripe_session_id, created_at')
@@ -307,14 +287,13 @@ export const api = {
         .single();
 
       if (error || !data) {
-        return { 
-          success: false, 
+        return {
+          success: false,
           error: 'Session not found or payment not completed',
           code: 'SESSION_INVALID'
         };
       }
 
-      // Session verified successfully
       return {
         success: true,
         data: {
@@ -324,7 +303,6 @@ export const api = {
           verifiedAt: new Date().toISOString()
         }
       };
-
     } catch (err) {
       console.error('[API] Session verification failed:', err);
       return { success: false, error: err.message, code: 'VERIFICATION_ERROR' };
