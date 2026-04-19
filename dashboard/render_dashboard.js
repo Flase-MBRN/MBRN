@@ -10,6 +10,10 @@ import { nav, renderNavigation } from '../shared/ui/navigation.js';
 import { renderAuth } from '../shared/ui/render_auth.js';
 import { sentimentWidget } from '../shared/ui/widgets/sentiment_widget.js';
 import { errorBoundary } from '../shared/ui/error_boundary.js';
+import { api } from '../shared/core/api.js';
+
+const HEARTBEAT_STALE_MS = 10 * 60 * 1000;
+const HEARTBEAT_POLL_MS = 60 * 1000;
 
 function getVibeLabel(score) {
   if (score >= 90) return 'Ihr seid voll auf einer Wellenlänge.';
@@ -19,10 +23,16 @@ function getVibeLabel(score) {
   return 'Das braucht Geduld und klare Gespräche.';
 }
 
+function formatCheckinDays(value) {
+  const safeValue = Number.isFinite(value) ? value : 0;
+  return safeValue === 1 ? '1 Tag' : `${safeValue} Tage`;
+}
+
 export const dashboardRender = {
   _unsubscribers: [],
   _listeners: [],
   _timers: [],
+  _heartbeatInterval: null,
 
   async init() {
     actions.register('calculateSynergyByDate', async (payload) => {
@@ -86,6 +96,7 @@ export const dashboardRender = {
 
       sentimentWidget.init('sentiment-widget');
       this.buildSynergyWidget();
+      this.startHeartbeatMonitor();
     } catch (err) {
       console.error('Dashboard Init Error:', err);
       document.body.textContent = 'Dashboard konnte nicht geladen werden. Bitte Seite neu laden.';
@@ -101,7 +112,7 @@ export const dashboardRender = {
     dom.createEl('div', { className: 'section-eyebrow-left', text: 'Vibe Check', parent: card });
     dom.createEl('p', {
       className: 'text-secondary mb-24',
-      text: 'Gib zwei Geburtstage ein und ich zeige dir, wie leicht es zwischen euch fliesst.',
+      text: 'Gib zwei Geburtstage ein und ich zeige dir, wie leicht es zwischen euch fließt.',
       parent: card
     });
 
@@ -242,6 +253,44 @@ export const dashboardRender = {
 
     this._timers.forEach((id) => clearTimeout(id));
     this._timers = [];
+
+    if (this._heartbeatInterval) {
+      clearInterval(this._heartbeatInterval);
+      this._heartbeatInterval = null;
+    }
+  },
+
+  startHeartbeatMonitor() {
+    this.setSystemStatus(false);
+    void this.refreshHeartbeatStatus();
+
+    if (this._heartbeatInterval) {
+      clearInterval(this._heartbeatInterval);
+    }
+    this._heartbeatInterval = setInterval(() => {
+      void this.refreshHeartbeatStatus();
+    }, HEARTBEAT_POLL_MS);
+  },
+
+  async refreshHeartbeatStatus() {
+    const result = await api.getLatestReactorHeartbeat();
+    if (!result?.success || !result?.data?.last_seen) {
+      this.setSystemStatus(false);
+      return;
+    }
+
+    const lastSeenMs = Date.parse(result.data.last_seen);
+    const isFresh = Number.isFinite(lastSeenMs) && Date.now() - lastSeenMs <= HEARTBEAT_STALE_MS;
+    this.setSystemStatus(isFresh);
+  },
+
+  setSystemStatus(isOnline) {
+    const statusEl = document.getElementById('system-status-text');
+    if (!statusEl) return;
+
+    statusEl.classList.toggle('system-status-online', isOnline);
+    statusEl.classList.toggle('system-status-offline', !isOnline);
+    dom.setText('system-status-text', isOnline ? 'System online' : 'System offline');
   },
 
   renderStatus(profile) {
@@ -254,7 +303,11 @@ export const dashboardRender = {
       const currentStreak = Number.parseInt(streakEl.textContent, 10) || 0;
       const newStreak = profile.streak || 0;
       if (currentStreak !== newStreak) {
-        animateValue(streakEl, currentStreak, newStreak, 1500);
+        animateValue(streakEl, currentStreak, newStreak, 1500, '', (value) =>
+          formatCheckinDays(Math.round(value))
+        );
+      } else {
+        dom.setText('dash-streak', formatCheckinDays(newStreak));
       }
     }
 
@@ -266,7 +319,7 @@ export const dashboardRender = {
       }
     }
 
-    dom.setText('dash-tier', (profile.access_level || 0) > 0 ? 'Aktiv' : 'Offen');
+    dom.setText('dash-tier', 'Aktiv');
 
     document.querySelectorAll('.stagger-fade').forEach((el, index) => {
       const timerId = setTimeout(() => {

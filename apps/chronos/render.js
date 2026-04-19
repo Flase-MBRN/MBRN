@@ -1,6 +1,6 @@
 /**
  * /apps/chronos/render.js
- * Zeit-Seite fuer Phasen und 7-Jahres-Zyklen.
+ * Zeit-Seite für Phasen und 7-Jahres-Zyklen.
  */
 
 import { state } from '../../shared/core/state.js';
@@ -10,6 +10,60 @@ import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../..
 import { nav, renderNavigation } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { calculateChronos } from '../../shared/core/logic/chronos_v2.js';
+
+const FOCUS_EXPLANATIONS = {
+  1: 'Du befindest dich in einer Startphase. Jetzt zählt Initiative, klare Richtung und mutige Entscheidungen.',
+  2: 'Diese Phase fordert Feingefühl. Stärke Verbindungen, kläre Rollen und arbeite mit ruhigem Timing.',
+  3: 'Du befindest dich in einer Phase der Expansion. Jetzt ist der perfekte Moment, um sichtbar zu werden und dein Momentum zu nutzen. Baue Strukturen auf, die dich im nächsten Zyklus tragen.',
+  4: 'Jetzt geht es um Fundament. Prozesse stabilisieren, Routinen festigen und Dinge sauber aufbauen.',
+  5: 'Diese Phase bringt Bewegung. Bleib flexibel, nutze Chancen schnell und halte deinen Fokus aktiv.',
+  6: 'Verantwortung steht im Zentrum. Stabilität, Verlässlichkeit und klare Prioritäten geben dir Rückenwind.',
+  7: 'Zeit für Analyse und Tiefgang. Sortiere Informationen, ziehe Erkenntnisse und schärfe deinen Kurs.',
+  8: 'Du bist in einer Umsetzungsphase. Entscheide klar, handle konsequent und mach Wirkung messbar.',
+  9: 'Diese Phase steht für Abschluss und Reset. Räume auf, beende offene Schleifen und schaffe Platz für Neues.'
+};
+
+function getFocusNumber(data) {
+  const personalYear = Number.parseInt(data?.personalYear, 10);
+  if (Number.isFinite(personalYear) && personalYear > 0) {
+    return personalYear;
+  }
+  return Number.parseInt(data?.currentPhase, 10) || 1;
+}
+
+function getFocusNarrative(focusNumber, topic) {
+  if (FOCUS_EXPLANATIONS[focusNumber]) {
+    return FOCUS_EXPLANATIONS[focusNumber];
+  }
+  const safeTopic = topic || 'dein aktuelles Thema';
+  return `Diese Phase aktiviert ${safeTopic}. Nutze den Zeitraum bewusst, um deinen nächsten Schritt strategisch aufzubauen.`;
+}
+
+function calculateDaysInCurrentPhase(data) {
+  if (!data?.birthdateUTC || !Number.isFinite(data?.currentPhase)) {
+    return data?.livedDays || 0;
+  }
+
+  const birthDate = new Date(data.birthdateUTC);
+  if (Number.isNaN(birthDate.getTime())) {
+    return data?.livedDays || 0;
+  }
+
+  const phaseOffsetYears = Math.max(0, (Number(data.currentPhase) - 1) * 7);
+  const phaseStart = new Date(Date.UTC(
+    birthDate.getUTCFullYear() + phaseOffsetYears,
+    birthDate.getUTCMonth(),
+    birthDate.getUTCDate()
+  ));
+  const todayUtc = new Date(Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth(),
+    new Date().getUTCDate()
+  ));
+
+  const msPerDay = 24 * 60 * 60 * 1000;
+  return Math.max(0, Math.floor((todayUtc.getTime() - phaseStart.getTime()) / msPerDay));
+}
 
 export const chronosRender = {
   _unsubscribers: [],
@@ -67,13 +121,13 @@ export const chronosRender = {
 
     dom.createEl('h3', {
       className: 'section-eyebrow',
-      text: 'Dein Startpunkt',
+      text: 'Deine Phase',
       parent: card
     });
 
     dom.createEl('p', {
       className: 'text-secondary mb-16',
-      text: 'Gib dein Geburtsdatum ein. Ich zeige dir, in welcher Phase du gerade bist.',
+      text: 'Gib dein Datum ein, um deinen aktuellen Rhythmus zu entschlüsseln.',
       parent: card
     });
 
@@ -103,7 +157,7 @@ export const chronosRender = {
     const btn = dom.createEl('button', {
       className: 'btn-primary mt-24 form-container-compact',
       id: 'chrono-calc-btn',
-      text: 'Zeit ansehen',
+      text: 'Phase ansehen',
       parent: card
     });
 
@@ -158,6 +212,9 @@ export const chronosRender = {
     dom.clear(container.id);
 
     const data = result.data;
+    const focusNumber = getFocusNumber(data);
+    const focusTopic = data?.cycle_phase || 'Aktive Entwicklungsphase';
+    const daysInCurrentPhase = calculateDaysInCurrentPhase(data);
     const nextCycleDate = new Date(data.nextCycleStartUTC);
     const formattedNextCycle = `${String(nextCycleDate.getUTCDate()).padStart(2, '0')}.${String(nextCycleDate.getUTCMonth() + 1).padStart(2, '0')}.${nextCycleDate.getUTCFullYear()}`;
 
@@ -168,13 +225,13 @@ export const chronosRender = {
 
     dom.createEl('h3', {
       className: 'section-eyebrow',
-      text: 'Deine Phasen im Blick',
+      text: 'Dein aktueller Status',
       parent: cyclesCard
     });
 
     dom.createEl('p', {
       className: 'text-secondary mb-24',
-      text: 'Hier siehst du, wie lange dein bisheriger Weg schon läuft und wann die nächste Phase beginnt.',
+      text: 'Jede Phase hat ihren eigenen Rhythmus. Hier siehst du genau, wie lange dein aktuelles Thema noch präsent ist und wann der nächste Wechsel ansteht.',
       parent: cyclesCard
     });
 
@@ -195,7 +252,7 @@ export const chronosRender = {
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Tage bis heute',
+      text: 'Tage in dieser Phase',
       parent: daysItem
     });
 
@@ -206,12 +263,17 @@ export const chronosRender = {
     phaseItem.setAttribute('data-delay', '2');
     dom.createEl('span', {
       className: 'value-massive text-size-xl',
-      text: String(data.currentPhase),
+      text: String(focusNumber),
       parent: phaseItem
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Aktuelle Phase',
+      text: `Dein Fokus: ${focusNumber}`,
+      parent: phaseItem
+    });
+    dom.createEl('span', {
+      className: 'text-sm opacity-70',
+      text: `Thema: ${focusTopic}`,
       parent: phaseItem
     });
 
@@ -227,20 +289,26 @@ export const chronosRender = {
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Nächste Phase ab',
+      text: 'Nächster Wechsel',
       parent: nextItem
     });
 
-    animateValue(daysValue, 0, data.livedDays, 1500);
+    animateValue(daysValue, 0, daysInCurrentPhase, 1500);
 
     const daysTimer = setTimeout(() => daysItem.classList.add('visible'), 100);
     const phaseTimer = setTimeout(() => phaseItem.classList.add('visible'), 200);
     const nextTimer = setTimeout(() => nextItem.classList.add('visible'), 300);
     this._timers.push(daysTimer, phaseTimer, nextTimer);
 
+    dom.createEl('p', {
+      className: 'text-secondary mt-24 text-center',
+      text: getFocusNarrative(focusNumber, focusTopic),
+      parent: cyclesCard
+    });
+
     const resetBtn = dom.createEl('button', {
       className: 'btn-secondary mt-24 text-size-sm',
-      text: 'Neu eingeben',
+      text: 'Neue Analyse',
       parent: cyclesCard
     });
 

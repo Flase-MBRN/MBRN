@@ -15,6 +15,7 @@ describe('orchestrator branch coverage', () => {
     jest.unstable_mockModule('../shared/core/logic/numerology/index.js', () => ({
       calculateFullProfile: () => ({ success: false, error: 'legacy validation failed' }),
       generateShareCard: () => ({}),
+      generateTeaserAsset: () => ({}),
       generateOperatorReport: async () => ({})
     }));
 
@@ -39,6 +40,7 @@ describe('orchestrator branch coverage', () => {
     jest.unstable_mockModule('../shared/core/logic/numerology/index.js', () => ({
       calculateFullProfile: () => ({ success: true, data: { meta: { name: 'Erik', date: '11.12.2005' } } }),
       generateShareCard: () => ({}),
+      generateTeaserAsset: () => ({}),
       generateOperatorReport: async () => ({})
     }));
 
@@ -61,6 +63,7 @@ describe('orchestrator branch coverage', () => {
     jest.unstable_mockModule('../shared/core/logic/numerology/index.js', () => ({
       calculateFullProfile: () => ({ success: true, data: { meta: { name: 'Erik', date: '11.12.2005' } } }),
       generateShareCard: () => ({}),
+      generateTeaserAsset: () => ({}),
       generateOperatorReport: async () => ({})
     }));
 

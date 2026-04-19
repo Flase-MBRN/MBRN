@@ -1,6 +1,6 @@
 /**
  * /shared/ui/render_landing.js
- * Landing-Flow fuer Einstieg, Skip und ersten Blick aufs Muster.
+ * Landing-Flow für Einstieg, Skip und ersten Blick aufs Muster.
  */
 
 import { nav, renderNavigation } from './navigation.js';
@@ -10,18 +10,18 @@ import { calculateLifePathTotal, formatValue } from '../core/logic/numerology/in
 import { renderAuth } from './render_auth.js';
 
 const ARCHETYPES = {
-  1: { title: 'Der Initiator', desc: 'Du gehst am besten voran, wenn du selbst den ersten Schritt setzt.' },
-  2: { title: 'Der Verbinder', desc: 'Du bringst Ruhe, Feingefühl und Verbindung in Gruppen und Beziehungen.' },
-  3: { title: 'Der Kreative', desc: 'Du wirkst stark, wenn du dich zeigst und deiner Stimme Raum gibst.' },
-  4: { title: 'Der Architekt', desc: 'Du baust gern mit Struktur, Klarheit und einem langen Atem.' },
-  5: { title: 'Der Freigeist', desc: 'Du brauchst Bewegung und Freiheit, damit deine Kraft wach bleibt.' },
-  6: { title: 'Der Träger', desc: 'Du gibst Halt, übernimmst Verantwortung und schaust auf dein Umfeld.' },
-  7: { title: 'Der Analytiker', desc: 'Du erkennst Muster schnell und willst die Dinge wirklich verstehen.' },
-  8: { title: 'Der Macher', desc: 'Du willst Wirkung, klare Ergebnisse und greifbare Bewegung sehen.' },
-  9: { title: 'Der Weitblicker', desc: 'Du siehst das große Ganze und denkst oft über dich selbst hinaus.' },
-  11: { title: 'Der Wegweiser', desc: 'Du nimmst viel fein wahr und hast ein starkes Gespür für das, was gerade dran ist.' },
-  22: { title: 'Der Baumeister', desc: 'Du kannst groß denken und Dinge so bauen, dass sie lange tragen.' },
-  33: { title: 'Der Mentor', desc: 'Du wirkst am stärksten, wenn du andere ruhig führst und ihnen Orientierung gibst.' }
+  1: { title: 'Der Initiator', desc: 'Dein Fokus liegt auf Eigeninitiative und klaren Entscheidungen.' },
+  2: { title: 'Der Verbinder', desc: 'Dein System ist auf Kooperation, Timing und Balance ausgerichtet.' },
+  3: { title: 'Der Kreative', desc: 'Dein Fokus liegt auf Ausdruck und Präsenz. Du besitzt das Talent, Räume durch klare Kommunikation zu dominieren.' },
+  4: { title: 'Der Architekt', desc: 'Dein Muster baut auf Struktur, Stabilität und verlässliche Umsetzung.' },
+  5: { title: 'Der Freigeist', desc: 'Du gewinnst durch Anpassung, Bewegung und schnelle Kurswechsel.' },
+  6: { title: 'Der Träger', desc: 'Dein Profil steht für Verantwortung, Halt und langfristige Verlässlichkeit.' },
+  7: { title: 'Der Analytiker', desc: 'Du erkennst tiefe Muster und denkst in klaren Systemen.' },
+  8: { title: 'Der Macher', desc: 'Deine Stärke ist Wirkung in der Realität: führen, entscheiden, liefern.' },
+  9: { title: 'Der Weitblicker', desc: 'Du arbeitest mit großer Perspektive und starkem Sinn für Zusammenhänge.' },
+  11: { title: 'Der Wegweiser', desc: 'Du nimmst Signale früh wahr und setzt Impulse mit hoher Präzision.' },
+  22: { title: 'Der Baumeister', desc: 'Du kannst Visionen in belastbare Strukturen übersetzen.' },
+  33: { title: 'Der Mentor', desc: 'Du führst über Klarheit, Ruhe und starke Orientierung.' }
 };
 
 const TERMINAL_MESSAGES = i18n.getArray('terminal.sequence');
@@ -222,9 +222,9 @@ export const landingRender = {
   },
 
   transitionTo(section) {
-    // Show/hide main content sections (hero, architecture, entry)
-    if (section === 'hero' || section === 'architecture' || section === 'entry') {
-      ['hero', 'architecture', 'entry'].forEach((key) => {
+    // Show/hide main content sections (hero, entry)
+    if (section === 'hero' || section === 'entry') {
+      ['hero', 'entry'].forEach((key) => {
         const element = document.getElementById(`${key}-section`);
         if (!element) return;
         if (key === section) {

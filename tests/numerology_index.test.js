@@ -59,9 +59,13 @@ describe('numerology/index', () => {
     expect(card).toEqual(expect.objectContaining({
       width: 1080,
       height: 1920,
-      name: expect.objectContaining({ text: 'Erik Klauss' }),
-      score: expect.objectContaining({ value: 88 }),
-      coreNumbers: expect.any(Array)
+      header: expect.objectContaining({ eyebrow: 'PATTERN INTELLIGENCE' }),
+      name: expect.objectContaining({ text: 'ERIK KLAUSS' }),
+      score: expect.objectContaining({ value: 88, label: 'PATTERN SCORE' }),
+      coreNumbers: expect.arrayContaining([
+        expect.objectContaining({ label: 'LEBENSZAHL' }),
+        expect.objectContaining({ label: 'SEELENZAHL' })
+      ])
     }));
   });
 

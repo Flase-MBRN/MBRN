@@ -4,17 +4,14 @@
  */
 
 import { getSupabaseClient } from '../../core/supabase_client.js';
-import { api } from '../../core/api.js';
 import { animateValue, dom } from '../dom_utils.js';
-import { MBRN_CONFIG } from '../../core/config.js';
 
 function getVerdictLabel(score) {
-  const { EXTREME_GREED, GREED, NEUTRAL, FEAR } = MBRN_CONFIG.sentiment.thresholds;
-  if (score >= EXTREME_GREED) return 'Sehr aufgedreht';
-  if (score >= GREED) return 'Mutig';
-  if (score >= NEUTRAL) return 'Neutral';
-  if (score >= FEAR) return 'Vorsichtig';
-  return 'Unruhig';
+  if (score >= 81) return 'Sehr optimistisch';
+  if (score >= 61) return 'Optimistisch';
+  if (score >= 41) return 'Neutral';
+  if (score >= 21) return 'Vorsichtig';
+  return 'Sehr vorsichtig';
 }
 
 export const sentimentWidget = {
@@ -46,7 +43,7 @@ export const sentimentWidget = {
 
     dom.createEl('p', {
       className: 'text-secondary mb-24',
-      text: 'Das zeigt grob, wie entspannt oder nervoes die Welt gerade unterwegs ist.',
+      text: 'Die aktuelle Marktstimmung auf einen Blick.',
       parent: card
     });
 
@@ -107,6 +104,12 @@ export const sentimentWidget = {
       text: 'Neutral',
       parent: card
     });
+
+    dom.createEl('p', {
+      className: 'text-sm opacity-70 mt-16',
+      text: 'Was bedeutet das? Der Wert zeigt, ob die Masse gerade Panik schiebt und ihr Geld zusammenhält (0), oder ob alle im absoluten Kauf-Modus sind (100).',
+      parent: card
+    });
   },
 
   setupRealtime() {
@@ -165,20 +168,18 @@ export const sentimentWidget = {
   },
 
   getScoreColor(score) {
-    const { EXTREME_GREED, GREED, NEUTRAL, FEAR } = MBRN_CONFIG.sentiment.thresholds;
-    if (score >= EXTREME_GREED) return 'var(--accent)';
-    if (score >= GREED) return 'var(--success)';
-    if (score >= NEUTRAL) return 'var(--text-secondary)';
-    if (score >= FEAR) return 'var(--warning)';
+    if (score >= 81) return 'var(--accent)';
+    if (score >= 61) return 'var(--success)';
+    if (score >= 41) return 'var(--text-secondary)';
+    if (score >= 21) return 'var(--warning)';
     return 'var(--error)';
   },
 
   getScoreClass(score) {
-    const { EXTREME_GREED, GREED, NEUTRAL, FEAR } = MBRN_CONFIG.sentiment.thresholds;
-    if (score >= EXTREME_GREED) return 'sentiment-verdict-extreme-greed';
-    if (score >= GREED) return 'sentiment-verdict-greed';
-    if (score >= NEUTRAL) return 'sentiment-verdict-neutral';
-    if (score >= FEAR) return 'sentiment-verdict-fear';
+    if (score >= 81) return 'sentiment-verdict-extreme-greed';
+    if (score >= 61) return 'sentiment-verdict-greed';
+    if (score >= 41) return 'sentiment-verdict-neutral';
+    if (score >= 21) return 'sentiment-verdict-fear';
     return 'sentiment-verdict-extreme-fear';
   },
 

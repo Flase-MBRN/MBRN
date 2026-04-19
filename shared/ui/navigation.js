@@ -104,6 +104,7 @@ export const nav = {
   _cleanupInterval: null,
   _mobileMenuOpen: false,
   _hamburgerElement: null,
+  _mobileBackdropElement: null,
   _handlers: {}, // Registry for named handlers to allow removeEventListener
 
   /**
@@ -226,6 +227,11 @@ export const nav = {
     }
     this._navigationBound = true;
 
+    // Global Umlaut-Fix für statische HTML-Texte
+    if (typeof document !== 'undefined' && document.body && typeof dom.normalizeDocumentText === 'function') {
+      dom.normalizeDocumentText(document.body);
+    }
+
     document.querySelectorAll('[data-route]').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -243,12 +249,11 @@ export const nav = {
     this._handlers.outsideClick = (e) => {
       const sidebar = document.querySelector('.nav-sidebar');
       const isClickInsideSidebar = sidebar?.contains(e.target);
-      const isClickOnNavToggle = e.target.closest('.nav-toggle');
+      const isClickOnNavToggle = e.target.closest('.nav-toggle, .nav-hamburger');
 
-      if (!isClickInsideSidebar && !isClickOnNavToggle && sidebar?.classList.contains('open')) {
+      if (!isClickInsideSidebar && !isClickOnNavToggle && sidebar?.classList.contains('mobile-open')) {
         if (window.innerWidth <= 768) {
-          sidebar.classList.remove('open');
-          document.body.style.overflow = '';
+          this._setMobileMenuOpen(false);
         }
       }
     };
@@ -279,29 +284,59 @@ export const nav = {
       hamburger = document.createElement('button');
       hamburger.className = 'nav-hamburger';
       hamburger.setAttribute('aria-label', 'Menu');
+      hamburger.setAttribute('aria-expanded', 'false');
       hamburger.textContent = '☰';
       document.body.appendChild(hamburger);
     }
     
     this._hamburgerElement = hamburger;
+
+    let backdrop = document.querySelector('.nav-mobile-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'nav-mobile-backdrop';
+      document.body.appendChild(backdrop);
+    }
+    this._mobileBackdropElement = backdrop;
     
     // 5. Mobile Toggle Handler
     this._handlers.mobileToggle = () => {
-      const sidebar = document.querySelector('.nav-sidebar');
-      this._mobileMenuOpen = !this._mobileMenuOpen;
-      sidebar?.classList.toggle('mobile-open', this._mobileMenuOpen);
-      hamburger.classList.toggle('active', this._mobileMenuOpen);
-      hamburger.textContent = this._mobileMenuOpen ? '✕' : '☰';
+      this._setMobileMenuOpen(!this._mobileMenuOpen);
     };
     hamburger.addEventListener('click', this._handlers.mobileToggle);
+
+    this._handlers.backdropClick = () => {
+      this._setMobileMenuOpen(false);
+    };
+    backdrop.addEventListener('click', this._handlers.backdropClick);
     
     // 6. Escape Key Handler
     this._handlers.keydownEscape = (e) => {
       if (e.key === 'Escape' && this._mobileMenuOpen) {
-        this._handlers.mobileToggle();
+        this._setMobileMenuOpen(false);
       }
     };
     document.addEventListener('keydown', this._handlers.keydownEscape);
+  },
+
+  _setMobileMenuOpen(isOpen) {
+    this._mobileMenuOpen = Boolean(isOpen);
+    const sidebar = document.querySelector('.nav-sidebar');
+    sidebar?.classList.toggle('mobile-open', this._mobileMenuOpen);
+
+    if (this._hamburgerElement) {
+      this._hamburgerElement.classList.toggle('active', this._mobileMenuOpen);
+      this._hamburgerElement.textContent = this._mobileMenuOpen ? '✕' : '☰';
+      this._hamburgerElement.setAttribute('aria-expanded', this._mobileMenuOpen ? 'true' : 'false');
+    }
+
+    if (this._mobileBackdropElement) {
+      this._mobileBackdropElement.classList.toggle('active', this._mobileMenuOpen);
+    }
+
+    if (document.body?.classList) {
+      document.body.classList.toggle('sidebar-open', this._mobileMenuOpen);
+    }
   },
 
   destroy() {
@@ -332,6 +367,9 @@ export const nav = {
     if (this._handlers.keydownEscape) {
       document.removeEventListener('keydown', this._handlers.keydownEscape);
     }
+    if (this._handlers.backdropClick && this._mobileBackdropElement) {
+      this._mobileBackdropElement.removeEventListener('click', this._handlers.backdropClick);
+    }
     
     // 3. Mobile UI Cleanup
     if (this._hamburgerElement) {
@@ -343,6 +381,13 @@ export const nav = {
       }
       this._hamburgerElement = null;
     }
+    if (this._mobileBackdropElement) {
+      if (this._mobileBackdropElement.parentNode) {
+        this._mobileBackdropElement.parentNode.removeChild(this._mobileBackdropElement);
+      }
+      this._mobileBackdropElement = null;
+    }
+    document.body?.classList?.remove('sidebar-open');
     
     // 4. State Reset
     this._handlers = {};

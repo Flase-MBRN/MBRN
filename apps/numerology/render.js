@@ -18,18 +18,18 @@ import { errorBoundary } from '../../shared/ui/error_boundary.js';
 const STORAGE_KEY = 'numerology_input';
 
 const NUMBER_MEANINGS = {
-  1: 'Vorwärtsgang und erste Schritte.',
-  2: 'Ruhe, Balance und Verbindung.',
-  3: 'Sichtbarkeit und authentischer Ausdruck.',
-  4: 'Struktur und langes Bauen.',
-  5: 'Bewegung, Reize und Freiheit.',
-  6: 'Verantwortung, Geben und Wärme.',
-  7: 'Tiefe, Verstehen und Analyse.',
-  8: 'Führung, Wirkung und Umsetzung.',
-  9: 'Das große Ganze und Mitgefühl.',
-  11: 'Tiefe Intuition und Feingefühl.',
-  22: 'Erhabener Weitblick und Erschaffen.',
-  33: 'Ruhige Führung und Menschlichkeit.'
+  1: 'Klarer Antrieb und der Mut, Dinge als Erste:r zu starten.',
+  2: 'Balance, Verbindung und präzises Gespür für dein Umfeld.',
+  3: 'Präsenz und klare Kommunikation mit starker Wirkung.',
+  4: 'Struktur, Ausdauer und stabile Systeme, die lange tragen.',
+  5: 'Bewegung, Veränderung und Freiheit als Wachstumstreiber.',
+  6: 'Verantwortung, Stabilität und verlässliche Fürsorge.',
+  7: 'Tiefe Analyse, Mustererkennung und strategisches Denken.',
+  8: 'Führungskraft, Umsetzung und messbare Resultate.',
+  9: 'Globale Perspektive und systemisches Denken.',
+  11: 'Intuitive Klarheit und hoher innerer Radar.',
+  22: 'Vision auf großem Maßstab und starke Realisierungskraft.',
+  33: 'Mentor-Energie, Reife und ruhige Führung.'
 };
 
 function getPrimaryNumber(value) {
@@ -51,28 +51,44 @@ function getLifeTheme(value) {
 function getChallengeMeaning(value) {
   const primary = getPrimaryNumber(value);
   if (primary === 0) {
-    return 'Reibungsloser Fluss, aber Gefahr der Trägheit.';
+    return 'Wenig innere Reibung - achte darauf, nicht in Komfort hängen zu bleiben.';
   }
-  return `Reibungsfläche: ${getNumberMeaning(value)}`;
+  return getNumberMeaning(value);
 }
 
 function getBridgeMeaning(value) {
   const primary = getPrimaryNumber(value);
-  if (primary === null) return 'Schnittstelle der Energien.';
-  if (primary <= 2) return 'Fließt sehr leicht zusammen.';
-  if (primary <= 5) return 'Braucht gelegentlich Aufmerksamkeit.';
-  return 'Innere Spannung: Bewusste Arbeit nötig.';
+  if (primary === null) return 'Verbindung zwischen zwei Seiten deines Systems.';
+  if (primary <= 2) return 'Natürliche Synergie. Diese Eigenschaften arbeiten perfekt zusammen.';
+  if (primary <= 5) return 'Stabile Verbindung mit punktuellem Feintuning.';
+  return 'Dynamische Spannung. Erfordert bewussten Fokus, bringt aber enormes Wachstum.';
+}
+
+function getPhaseDescription(value) {
+  const primary = getPrimaryNumber(value);
+  if (primary === 9) {
+    return 'Zeit für Transformation. Alte Strukturen auflösen, um Platz für Neues zu schaffen.';
+  }
+
+  const base = getLifeTheme(value) || getNumberMeaning(value);
+  const cleaned = String(base)
+    .replace(/^Fokus auf\s*/i, '')
+    .replace(/^Fokus im\s*/i, '')
+    .replace(/^Fokus der\s*/i, '')
+    .replace(/\.$/, '');
+  const normalized = cleaned.length > 0 ? `${cleaned.charAt(0).toLowerCase()}${cleaned.slice(1)}` : 'dein Thema klar ausrichten';
+  return `Deine Lernaufgabe in dieser Phase: ${normalized}.`;
 }
 
 function describeField(label, value) {
   switch (label) {
-    case 'Lebenszahl': return `Dein Weg: ${getNumberMeaning(value)}`;
-    case 'Seelenzahl': return `Dein Antrieb: ${getNumberMeaning(value)}`;
-    case 'Persönlichkeit': return `Deine Wirkung: ${getNumberMeaning(value)}`;
-    case 'Ausdruck': return `Dein Potenzial: ${getNumberMeaning(value)}`;
-    case 'Reife': return `Dein Fundament: ${getNumberMeaning(value)}`;
-    case 'Geburtstag': return `Dein frühes Talent: ${getNumberMeaning(value)}`;
-    default: return getNumberMeaning(value);
+    case 'Lebenszahl': return { prefix: 'Dein Weg', body: getNumberMeaning(value) };
+    case 'Seelenzahl': return { prefix: 'Dein Antrieb', body: getNumberMeaning(value) };
+    case 'Persönlichkeit': return { prefix: 'Deine Wirkung', body: getNumberMeaning(value) };
+    case 'Ausdruck': return { prefix: 'Dein Potenzial', body: getNumberMeaning(value) };
+    case 'Reife': return { prefix: 'Dein Fundament', body: getNumberMeaning(value) };
+    case 'Geburtstag': return { prefix: 'Dein frühes Talent', body: getNumberMeaning(value) };
+    default: return { prefix: 'Dein Profil', body: getNumberMeaning(value) };
   }
 }
 
@@ -370,8 +386,33 @@ export const numerologyRender = {
       animateValue(scoreEl, 0, score, 1500);
     }
 
-    const label = score >= 80 ? 'Du wirkst gerade klar und stimmig.' : score >= 45 ? 'Da ist schon viel in Bewegung.' : 'Hier darf noch mehr zusammenfinden.';
+    const label = score <= 30
+      ? 'Extremer Fokus. Du besitzt hochspezialisierte Stärken.'
+      : score <= 60
+        ? 'Dynamisches Muster. Ein starker Mix aus klarem Fokus und Vielseitigkeit.'
+        : score <= 80
+          ? 'Ausgeglichene Struktur. Deine Zahlen greifen nahtlos ineinander.'
+          : 'Hohe Balance. Maximale Harmonie über alle Bereiche.';
     dom.setText('num-balance-label', label);
+
+    const parentCard = container.closest('.glass-card');
+    if (!parentCard) return;
+
+    let infoEl = document.getElementById('num-balance-info');
+    if (!infoEl) {
+      infoEl = document.createElement('p');
+      infoEl.id = 'num-balance-info';
+      infoEl.className = 'text-sm opacity-70 mt-16';
+      const labelEl = document.getElementById('num-balance-label');
+      if (labelEl?.parentNode) {
+        labelEl.parentNode.insertBefore(infoEl, labelEl.nextSibling);
+      } else {
+        parentCard.appendChild(infoEl);
+      }
+    }
+
+    infoEl.textContent =
+      "Dieser Wert zeigt, wie deine Eigenschaften verteilt sind. Wichtig: Es gibt kein 'Besser' oder 'Schlechter'. Ein hoher Wert bedeutet eine breite, ausgeglichene Balance. Ein niedriger Wert steht für extreme Spezialisierung und einen messerscharfen Fokus auf wenige Talente.";
   },
 
   async handleTeaserShare() {
@@ -458,7 +499,10 @@ export const numerologyRender = {
     });
 
     const lines = loshu.activeLines.join(', ') || 'keine';
-    dom.setText('num-loshu-lines', `Das Raster zeigt, was bei dir schon stark da ist und wo noch Luft nach oben ist. Aktive Linien: ${lines}.`);
+    dom.setText(
+      'num-loshu-lines',
+      `Dein persönliches Raster. Lila hervorgehobene Zahlen sind deine stärksten Eigenschaften. Wenn drei Zahlen eine horizontale, vertikale oder diagonale Linie bilden, hast du eine Aktive Linie - ein Zeichen für ein besonderes Talent in diesem Bereich. Aktive Linien: ${lines}.`
+    );
   },
 
   renderAccordions(data) {
@@ -477,7 +521,19 @@ export const numerologyRender = {
 
       const descEl = document.createElement('p');
       descEl.className = 'text-sm opacity-70 mt-8';
-      descEl.textContent = description;
+
+      if (description && typeof description === 'object' && description.prefix) {
+        const prefixEl = document.createElement('span');
+        prefixEl.className = 'card-desc-prefix';
+        prefixEl.textContent = `${description.prefix}:`;
+        const bodyEl = document.createElement('span');
+        bodyEl.className = 'card-desc-body';
+        bodyEl.textContent = description.body || '';
+        descEl.appendChild(prefixEl);
+        descEl.appendChild(bodyEl);
+      } else {
+        descEl.textContent = String(description || '');
+      }
 
       card.appendChild(valueEl);
       card.appendChild(labelEl);
@@ -518,18 +574,18 @@ export const numerologyRender = {
     createSectionHeader(phasesList, 'Lebenszyklen');
     const cyclesGrid = document.createElement('div');
     cyclesGrid.className = 'data-grid compact';
-    createDataCard(cyclesGrid, 'Früher Zyklus', data.cycles.c1, `Fokus in jungen Jahren: ${getLifeTheme(data.cycles.c1)}`, 1);
-    createDataCard(cyclesGrid, 'Mittlerer Zyklus', data.cycles.c2, `Fokus der Hauptphase: ${getLifeTheme(data.cycles.c2)}`, 2);
-    createDataCard(cyclesGrid, 'Später Zyklus', data.cycles.c3, `Fokus im späteren Leben: ${getLifeTheme(data.cycles.c3)}`, 3);
+    createDataCard(cyclesGrid, 'Früher Zyklus', data.cycles.c1, getPhaseDescription(data.cycles.c1), 1);
+    createDataCard(cyclesGrid, 'Mittlerer Zyklus', data.cycles.c2, getPhaseDescription(data.cycles.c2), 2);
+    createDataCard(cyclesGrid, 'Später Zyklus', data.cycles.c3, getPhaseDescription(data.cycles.c3), 3);
     phasesList.appendChild(cyclesGrid);
 
     createSectionHeader(phasesList, 'Meilensteine');
     const pinnaclesGrid = document.createElement('div');
     pinnaclesGrid.className = 'data-grid compact';
-    createDataCard(pinnaclesGrid, 'Phase 1', data.pinnacles.p1, getLifeTheme(data.pinnacles.p1), 4);
-    createDataCard(pinnaclesGrid, 'Phase 2', data.pinnacles.p2, getLifeTheme(data.pinnacles.p2), 5);
-    createDataCard(pinnaclesGrid, 'Phase 3', data.pinnacles.p3, getLifeTheme(data.pinnacles.p3), 6);
-    createDataCard(pinnaclesGrid, 'Phase 4', data.pinnacles.p4, getLifeTheme(data.pinnacles.p4), 7);
+    createDataCard(pinnaclesGrid, 'Phase 1', data.pinnacles.p1, getPhaseDescription(data.pinnacles.p1), 4);
+    createDataCard(pinnaclesGrid, 'Phase 2', data.pinnacles.p2, getPhaseDescription(data.pinnacles.p2), 5);
+    createDataCard(pinnaclesGrid, 'Phase 3', data.pinnacles.p3, getPhaseDescription(data.pinnacles.p3), 6);
+    createDataCard(pinnaclesGrid, 'Phase 4', data.pinnacles.p4, getPhaseDescription(data.pinnacles.p4), 7);
     phasesList.appendChild(pinnaclesGrid);
 
     const karmaList = document.getElementById('acc-karma-list');
@@ -546,8 +602,20 @@ export const numerologyRender = {
     createSectionHeader(karmaList, 'Lernfelder');
     const karmaGrid = document.createElement('div');
     karmaGrid.className = 'data-grid compact';
-    createDataCard(karmaGrid, 'Lektionen', data.karma.lessons.join(', ') || 'Keine', 'Hier darfst du im Leben noch nachreifen.', 5);
-    createDataCard(karmaGrid, 'Starker Zug', data.karma.passion.join(', ') || '-', 'Dieser innere Reiz treibt dich fast automatisch an.', 6);
+    createDataCard(
+      karmaGrid,
+      'Lektionen',
+      data.karma.lessons.join(', ') || 'Keine',
+      'Dein verborgenes Potenzial. Hier liegt dein größter Hebel für persönliches Wachstum.',
+      5
+    );
+    createDataCard(
+      karmaGrid,
+      'Starker Zug',
+      data.karma.passion.join(', ') || '-',
+      'Dein unbewusster Motor. Diese Energie treibt deine Entscheidungen im Hintergrund an.',
+      6
+    );
     karmaList.appendChild(karmaGrid);
 
     const bridgeList = document.getElementById('acc-bridge-list');
@@ -561,7 +629,7 @@ export const numerologyRender = {
 
     const bridgeNote = document.createElement('p');
     bridgeNote.className = 'text-sm opacity-50 mt-16 text-center';
-    bridgeNote.textContent = 'Brücken zeigen, wie leicht zwei Seiten in dir zusammenarbeiten. Kleine Zahlen laufen leichter, hohe Zahlen brauchen bewusste Arbeit.';
+    bridgeNote.textContent = 'Verbindungen zeigen die Synergie zwischen deinen Zahlen. Werte nahe 0 fließen ganz natürlich ineinander. Höhere Werte erzeugen eine innere Spannung, die du aktiv nutzen kannst, um über dich hinauszuwachsen.';
     bridgeList.appendChild(bridgeNote);
   }
 };

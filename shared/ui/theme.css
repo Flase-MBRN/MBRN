@@ -270,7 +270,8 @@ aside[class*="nav"] {
     transition: transform 250ms ease;
   }
   
-  .nav-sidebar.open {
+  .nav-sidebar.open,
+  .nav-sidebar.mobile-open {
     transform: translateX(0);
   }
   

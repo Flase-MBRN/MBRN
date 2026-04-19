@@ -49,9 +49,9 @@ function downloadFinanceStory(data) {
   ctx.fillText('So sieht dein Geldweg aus.', 540, 315);
 
   const cards = [
-    { y: 520, label: 'Am Ende', value: formatEuro(data.finalBalance) + ' EUR', note: 'Das ist das Geld, das am Ende wirklich da ist.' },
-    { y: 830, label: 'Selbst eingezahlt', value: formatEuro(data.totalInvested) + ' EUR', note: 'So viel kommt direkt von dir.' },
-    { y: 1140, label: 'Dazugewachsen', value: formatEuro(data.totalInterest) + ' EUR', note: 'Das ist der Teil, den dein Geld für dich mit aufgebaut hat.' }
+    { y: 520, label: 'Am Ende', value: formatEuro(data.finalBalance) + ' EUR', note: 'Dein komplettes Geld am Ende der Laufzeit.' },
+    { y: 830, label: 'Reiner Gewinn', value: formatEuro(data.totalInterest) + ' EUR', note: 'Das hat dein Geld ganz von alleine für dich verdient.' },
+    { y: 1140, label: 'Eingezahlt', value: formatEuro(data.totalInvested) + ' EUR', note: 'Das ist der Betrag, den du aus eigener Tasche gespart hast.' }
   ];
 
   cards.forEach((card) => {
@@ -207,22 +207,22 @@ export const financeRender = {
     renderCard(
       'res-final',
       data.finalBalance,
-      'Am Ende (EUR)',
-      'Das ist das Geld, das am Ende wirklich da ist.',
+      'Am Ende',
+      'Dein komplettes Geld am Ende der Laufzeit.',
       'value-massive text-size-xl'
     );
     renderCard(
       'res-invested',
       data.totalInvested,
-      'Selbst eingezahlt (EUR)',
-      'So viel Geld hast du über die Zeit selbst reingegeben.',
+      'Eingezahlt',
+      'Das ist der Betrag, den du aus eigener Tasche gespart hast.',
       'value-massive secondary text-size-md'
     );
     renderCard(
       'res-interest',
       data.totalInterest,
-      'Dazugewachsen (EUR)',
-      'Das ist der Teil, den dein Geld für dich mit aufgebaut hat.',
+      'Reiner Gewinn',
+      'Das hat dein Geld ganz von alleine für dich verdient.',
       'value-massive accent text-size-lg'
     );
 

@@ -1,12 +1,14 @@
 // /shared/ui/dom/dom_core.js
 
+import { normalizeGermanText } from './text_normalizer.js';
+
 export const dom = {
   /**
    * 100% XSS-Safe. Ersetzt innerHTML für reine Text-Updates.
    */
   setText: (elementId, text) => {
     const el = document.getElementById(elementId);
-    if (el) el.textContent = text;
+    if (el) el.textContent = normalizeGermanText(text);
   },
 
   /**
@@ -42,7 +44,7 @@ export const dom = {
     const el = document.createElement(tag);
     
     if (options.text !== undefined) {
-      el.textContent = options.text;  // XSS-safe: auto-escapes HTML
+      el.textContent = normalizeGermanText(options.text);  // XSS-safe: auto-escapes HTML
     }
     if (options.className) {
       el.className = options.className;
@@ -55,7 +57,12 @@ export const dom = {
     }
     if (options.attrs) {
       Object.entries(options.attrs).forEach(([key, val]) => {
-        el.setAttribute(key, val);
+        const normalizedValue =
+          typeof val === 'string' &&
+          ['placeholder', 'title', 'aria-label', 'aria-description', 'alt', 'value'].includes(key)
+            ? normalizeGermanText(val)
+            : val;
+        el.setAttribute(key, normalizedValue);
       });
     }
     if (options.parent) {
@@ -240,5 +247,56 @@ export const dom = {
     });
     
     document.querySelectorAll(selector).forEach(el => observer.observe(el));
+  },
+
+  /**
+   * Normalisiert statische DOM-Texte (HTML + Attribute), damit Umlaute global
+   * konsistent dargestellt werden.
+   */
+  normalizeDocumentText: (root = document.body) => {
+    if (
+      typeof document === 'undefined' ||
+      !root ||
+      typeof document.createTreeWalker !== 'function' ||
+      typeof NodeFilter === 'undefined'
+    ) {
+      return;
+    }
+
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!node?.parentElement) return NodeFilter.FILTER_REJECT;
+          const tagName = node.parentElement.tagName;
+          if (tagName === 'SCRIPT' || tagName === 'STYLE' || tagName === 'NOSCRIPT') {
+            return NodeFilter.FILTER_REJECT;
+          }
+          if (!node.nodeValue?.trim()) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+    );
+
+    let currentNode = walker.nextNode();
+    while (currentNode) {
+      const normalized = normalizeGermanText(currentNode.nodeValue);
+      if (normalized !== currentNode.nodeValue) {
+        currentNode.nodeValue = normalized;
+      }
+      currentNode = walker.nextNode();
+    }
+
+    const attrKeys = ['placeholder', 'title', 'aria-label', 'aria-description', 'alt', 'value'];
+    attrKeys.forEach((attr) => {
+      root.querySelectorAll(`[${attr}]`).forEach((el) => {
+        const rawValue = el.getAttribute(attr);
+        const normalized = normalizeGermanText(rawValue);
+        if (normalized !== rawValue) {
+          el.setAttribute(attr, normalized);
+        }
+      });
+    });
   }
 };

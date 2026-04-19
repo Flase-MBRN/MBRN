@@ -95,6 +95,28 @@ export const api = {
   },
 
   /**
+   * Reads the latest reactor heartbeat timestamp.
+   * Used by the dashboard to render "System online/offline".
+   */
+  async getLatestReactorHeartbeat(source = null) {
+    if (!this.client) return { success: false, error: 'Offline', offline: true };
+    if (!this.isOnline || !this.client) return { success: false, error: 'Offline', offline: true };
+
+    let query = this.client
+      .from('reactor_heartbeat')
+      .select('source,last_seen,updated_at')
+      .order('last_seen', { ascending: false })
+      .limit(1);
+
+    if (source) {
+      query = query.eq('source', source);
+    }
+
+    const { data, error } = await query.maybeSingle();
+    return error ? { success: false, error: error.message } : { success: true, data };
+  },
+
+  /**
    * --- AUTHENTICATION (Phase 14) ---
    */
 

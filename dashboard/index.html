@@ -29,32 +29,32 @@
     <section class="tool-hero reveal">
       <div class="hero-eyebrow">MBRN OS</div>
       <h1 class="hero-title">MBRN</h1>
-      <p class="hero-subtitle" style="color: var(--success); text-shadow: 0 0 10px var(--success-dim);">System atmet.</p>
+      <p id="system-status-text" class="hero-subtitle system-status system-status-offline">System offline</p>
     </section>
 
     <section class="tool-section reveal">
       <div class="glass-card text-center">
-        <h2 class="section-eyebrow-left">Zugang</h2>
+        <h2 class="section-eyebrow-left">Dein Profil</h2>
 
         <div class="tier-display mb-32">
           <span id="dash-tier" class="value-massive accent">-</span>
-          <span class="value-label">DEIN ZUGANG</span>
+          <span class="value-label">Status</span>
         </div>
 
         <div class="data-grid my-32">
           <div class="stat-item stagger-fade" data-delay="1">
-            <span class="value-massive" id="dash-streak">0</span>
-            <span class="value-label">SERIE</span>
+            <span class="value-massive" id="dash-streak">0 Tage</span>
+            <span class="value-label">CHECK-IN</span>
           </div>
           <div class="stat-item stagger-fade" data-delay="2">
             <span class="value-massive" id="dash-shields">0</span>
-            <span class="value-label">SCHUTZ</span>
+            <span class="value-label">PAUSEN-JOKER</span>
           </div>
         </div>
 
-        <p class="text-secondary">Besuch uns täglich, um deinen Fokus zu schärfen.</p>
+        <p class="text-secondary">Heute bestätigt?</p>
         <div id="dash-loader"></div>
-        <button id="btn-checkin" class="btn-primary mt-24">Puls halten</button>
+        <button id="btn-checkin" class="btn-primary mt-24">CHECK</button>
         <p id="dash-msg" class="text-accent text-center mt-16"></p>
       </div>
     </section>

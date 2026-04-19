@@ -6,7 +6,7 @@
 export const MBRN_CONFIG = {
   commercial: {
     isActive: false,
-    soonBadgeLabel: 'Bald verfuegbar'
+    soonBadgeLabel: 'Bald verfügbar'
   },
 
   accessLevels: {
@@ -62,12 +62,10 @@ export const MBRN_CONFIG = {
 
       terminal: {
         sequence: [
-          '> Ich sammle deine Angaben.',
-          '> Ich ordne dein Muster.',
-          '> Ich sortiere deine Phasen.',
-          '> Ich bringe alles in eine klare Reihenfolge.',
-          '> Fast fertig.',
-          '> Dein erster Blick ist bereit.'
+          '> Initialisiere Datenstruktur...',
+          '> Dekodiere Kernmuster...',
+          '> Synchronisiere Lebenszyklen...',
+          '> Generiere Profil.'
         ]
       },
 
