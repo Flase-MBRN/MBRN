@@ -1,10 +1,10 @@
 {
-  "timestamp_utc": "2026-04-19T16:18:16.344034+00:00",
+  "timestamp_utc": "2026-04-19T17:02:35.762496+00:00",
   "source": "market_sentiment_pipeline",
   "sentiment_score": 85,
   "sentiment_label": "Extreme Greed",
   "confidence": 0.8,
-  "analysis": "The market is experiencing a moderate to strong rally, with the major indices rising and the VIX falling.",
+  "analysis": "The market is experiencing a moderate to strong rally, with the major indices rising and VIX falling.",
   "recommendation": "buy",
   "market_data": [
     {
@@ -17,7 +17,7 @@
       "low": 705.76,
       "market_cap": 651753750528,
       "pe_ratio": 28.155151,
-      "timestamp": "2026-04-19T16:17:52.351646+00:00",
+      "timestamp": "2026-04-19T17:02:21.499650+00:00",
       "source": "yfinance"
     },
     {
@@ -30,7 +30,7 @@
       "low": 644.07,
       "market_cap": 255062933504,
       "pe_ratio": 34.27903,
-      "timestamp": "2026-04-19T16:17:52.776415+00:00",
+      "timestamp": "2026-04-19T17:02:21.935442+00:00",
       "source": "yfinance"
     },
     {
@@ -43,7 +43,7 @@
       "low": 490.36,
       "market_cap": 40151863296,
       "pe_ratio": 24.224075,
-      "timestamp": "2026-04-19T16:17:53.210548+00:00",
+      "timestamp": "2026-04-19T17:02:22.389992+00:00",
       "source": "yfinance"
     },
     {
@@ -56,7 +56,7 @@
       "low": 273.12,
       "market_cap": 77507960832,
       "pe_ratio": 19.965326,
-      "timestamp": "2026-04-19T16:17:53.652921+00:00",
+      "timestamp": "2026-04-19T17:02:22.828650+00:00",
       "source": "yfinance"
     },
     {
@@ -69,16 +69,16 @@
       "low": 16.87,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-19T16:17:54.046325+00:00",
+      "timestamp": "2026-04-19T17:02:23.222646+00:00",
       "source": "yfinance"
     }
   ],
   "mbrn_enriched": {
     "sentiment_score": 85,
     "confidence": 0.8,
-    "analysis": "The market is experiencing a moderate to strong rally, with the major indices rising and the VIX falling.",
+    "analysis": "The market is experiencing a moderate to strong rally, with the major indices rising and VIX falling.",
     "recommendation": "buy",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-19T16:18:16.343787+00:00"
+    "processed_at": "2026-04-19T17:02:35.762208+00:00"
   }
 }

@@ -1,17 +1,17 @@
 @echo off
 setlocal
 
-REM Dynamische Pfaderkennung (erkennt automatisch, wo die .bat liegt)
+REM Dynamische Pfaderkennung
 set "PROJECT_DIR=%~dp0"
-REM Entfernt den letzten Backslash für saubere Pfade
 set "PROJECT_DIR=%PROJECT_DIR:~0,-1%"
 
+REM Pfad zum Python-Motor (VENV bevorzugt)
 set "PYTHON_EXE=%PROJECT_DIR%\scripts\pipelines\venv\Scripts\python.exe"
 if not exist "%PYTHON_EXE%" set "PYTHON_EXE=python"
 
-REM PowerShell startet das Skript im ultimativen Stealth-Modus
+REM DER MASTER-MOVE: Startet den Sentinel-Daemon im Hintergrund (Hidden)
 powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command ^
-  "Start-Process -WindowStyle Hidden -FilePath '%PYTHON_EXE%' -ArgumentList '\"%PROJECT_DIR%\heartbeat.py\"' -WorkingDirectory '%PROJECT_DIR%'"
+  "Start-Process -WindowStyle Hidden -FilePath '%PYTHON_EXE%' -ArgumentList '\"%PROJECT_DIR%\scripts\pipelines\sentinel_daemon.py\"' -WorkingDirectory '%PROJECT_DIR%\scripts\pipelines'"
 
 endlocal
 exit /b 0
