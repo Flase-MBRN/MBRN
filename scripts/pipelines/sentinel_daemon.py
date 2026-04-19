@@ -12,13 +12,20 @@ from pathlib import Path
 from typing import Callable, Dict, Optional
 import requests
 from worker_registry import WORKER_REGISTRY, WorkerDefinition
+from pipeline_utils import CircuitBreaker, RetryHandler
+from secure_key_manager import SecureKeyManager
 
 # === CONFIGURATION (TURBO-MODE) ===
 CONFIG = {
     "heartbeat_interval_seconds": 60,   # EXTREM SCHNELL: Jede Minute ein Update
     "scheduler_tick_seconds": 1,        # REAKTIONSZEIT: Checkt jede Sekunde den Status
     "log_prefix": "[SENTINEL-ASTRA]",
-    "quiet_mode": False                 # Setze auf True, um nur Fehler zu sehen
+    "quiet_mode": False,                # Setze auf True, um nur Fehler zu sehen
+    # Resilienz-Einstellungen
+    "heartbeat_timeout_seconds": [5, 10, 30],  # Exponential Backoff: 5s → 10s → 30s
+    "max_retries": 3,                          # Max Retry-Versuche
+    "circuit_breaker_threshold": 3,            # Nach 3 Fehlern 5min Pause
+    "circuit_breaker_cooldown": 300           # 5 Minuten Cooldown
 }
 
 # === LOGGING SETUP ===
@@ -76,20 +83,79 @@ def load_env():
             except Exception as e:
                 print(f"Fehler beim Laden der .env: {e}")
 
+# Global Circuit Breaker für Heartbeat
+heartbeat_circuit_breaker = CircuitBreaker(
+    failure_threshold=CONFIG["circuit_breaker_threshold"],
+    cooldown_seconds=CONFIG["circuit_breaker_cooldown"]
+)
+
+# Global Secure Key Manager für Level 2 Security
+secure_key_manager = SecureKeyManager()
+
 def perform_heartbeat():
-    """Heartbeat-Schnittstelle zu Supabase (Optimiert)."""
+    """Heartbeat-Schnittstelle zu Supabase mit Resilienz-Logik und Level 2 Security."""
     url = os.getenv("SUPABASE_URL")
-    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    if not url or not key: return False
+    # Level 2 Security: Zuerst aus Credential Manager, dann .env Fallback
+    key = secure_key_manager.get_key("SUPABASE_SERVICE_ROLE_KEY")
+    if not url or not key:
+        log_event("HB_ERROR: SUPABASE_URL oder SERVICE_ROLE_KEY nicht gesetzt", "ERROR")
+        return False
     
-    try:
-        # Patch-Request ist schneller als Post/Insert
-        endpoint = f"{url.rstrip('/')}/rest/v1/system_status?id=eq.1"
-        payload = {"last_ping": datetime.now(timezone.utc).isoformat()}
-        headers = {"apikey": key, "Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-        r = requests.patch(endpoint, headers=headers, json=payload, timeout=5)
-        return r.status_code in [200, 201, 204]
-    except: return False
+    # Circuit Breaker Check
+    if not heartbeat_circuit_breaker.can_execute():
+        log_event("HB_ERROR: Circuit Breaker OPEN - Heartbeat pausiert", "WARN")
+        return False
+    
+    # Retry Loop mit Exponential Backoff
+    timeouts = CONFIG["heartbeat_timeout_seconds"]
+    for attempt, timeout in enumerate(timeouts, 1):
+        try:
+            endpoint = f"{url.rstrip('/')}/rest/v1/system_status?id=eq.1"
+            payload = {"last_ping": datetime.now(timezone.utc).isoformat()}
+            headers = {
+                "apikey": key,
+                "Authorization": f"Bearer {key}",
+                "Content-Type": "application/json"
+            }
+            
+            r = requests.patch(endpoint, headers=headers, json=payload, timeout=timeout)
+            
+            if r.status_code in [200, 201, 204]:
+                heartbeat_circuit_breaker.record_success()
+                return True
+            elif r.status_code == 401:
+                log_event("HB_ERROR: HTTP 401 - Ungültiger API Key", "ERROR")
+                heartbeat_circuit_breaker.record_failure()
+                return False
+            elif r.status_code >= 500:
+                log_event(f"HB_ERROR: HTTP {r.status_code} - Server-Fehler", "WARN")
+                if attempt < len(timeouts):
+                    log_event(f"HB_RETRY: Versuch {attempt}/{len(timeouts)}, Timeout auf {timeout}s erhöht", "WARN")
+                    time.sleep(2 ** attempt)  # Exponential Backoff
+                continue
+            else:
+                log_event(f"HB_ERROR: HTTP {r.status_code} - Unerwarteter Status", "ERROR")
+                heartbeat_circuit_breaker.record_failure()
+                return False
+                
+        except requests.exceptions.Timeout:
+            if attempt < len(timeouts):
+                log_event(f"HB_TIMEOUT: Versuch {attempt}/{len(timeouts)}, Timeout auf {timeout}s erhöht", "WARN")
+                time.sleep(2 ** attempt)
+            continue
+        except requests.exceptions.ConnectionError as e:
+            log_event(f"HB_CONN_ERROR: {type(e).__name__} - Keine Verbindung", "WARN")
+            heartbeat_circuit_breaker.record_failure()
+            return False
+        except requests.exceptions.RequestException as e:
+            log_event(f"HB_REQUEST_ERROR: {type(e).__name__} - {str(e)[:100]}", "ERROR")
+            heartbeat_circuit_breaker.record_failure()
+            return False
+    
+    # Alle Retries fehlgeschlagen
+    log_event("HB_FAIL: Alle Retry-Versuche fehlgeschlagen", "ERROR")
+    heartbeat_circuit_breaker.record_failure()
+    return False
 
 @dataclass
 class WorkerState:

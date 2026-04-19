@@ -28,6 +28,19 @@ function formatCheckinDays(value) {
   return safeValue === 1 ? '1 Tag' : `${safeValue} Tage`;
 }
 
+function formatPercent(value) {
+  const safeValue = Number.isFinite(Number(value)) ? Number(value) : 0;
+  return `${safeValue.toFixed(1)}%`;
+}
+
+function getOracleState(recommendation = '') {
+  const text = String(recommendation).toLowerCase();
+  if (text.startsWith('buy')) return 'buy';
+  if (text.startsWith('sell')) return 'sell';
+  if (text.startsWith('caution')) return 'caution';
+  return 'hold';
+}
+
 export const dashboardRender = {
   _unsubscribers: [],
   _listeners: [],
@@ -95,6 +108,7 @@ export const dashboardRender = {
       await renderAuth.init();
 
       sentimentWidget.init('sentiment-widget');
+      this.initOracleCard();
       this.buildSynergyWidget();
       this.startHeartbeatMonitor();
     } catch (err) {
@@ -263,13 +277,114 @@ export const dashboardRender = {
   startHeartbeatMonitor() {
     this.setSystemStatus(false);
     void this.refreshHeartbeatStatus();
+    void this.refreshOracleCard();
 
     if (this._heartbeatInterval) {
       clearInterval(this._heartbeatInterval);
     }
     this._heartbeatInterval = setInterval(() => {
       void this.refreshHeartbeatStatus();
+      void this.refreshOracleCard();
     }, HEARTBEAT_POLL_MS);
+  },
+
+  initOracleCard() {
+    const container = document.getElementById('oracle-widget');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div id="oracle-card" class="glass-card oracle-card oracle-state-hold">
+        <div class="oracle-card-header">
+          <div>
+            <div class="section-eyebrow-left">Oracle</div>
+            <p class="text-secondary oracle-subtitle">Numerologie, Markt und News im selben Signal.</p>
+          </div>
+          <div id="oracle-recommendation-badge" class="oracle-pill oracle-pill-hold">Hold</div>
+        </div>
+
+        <div class="oracle-main-grid">
+          <div class="oracle-score-block">
+            <span class="oracle-kicker">Alignment</span>
+            <span id="oracle-alignment-score" class="value-massive oracle-score-value">--</span>
+            <span id="oracle-target-date" class="value-label">Nächster Handelstag</span>
+          </div>
+
+          <div class="oracle-mini-grid">
+            <div class="oracle-mini-stat">
+              <span class="oracle-kicker">Confidence</span>
+              <span id="oracle-confidence" class="oracle-mini-value">--</span>
+            </div>
+            <div class="oracle-mini-stat">
+              <span class="oracle-kicker">Accuracy</span>
+              <span id="oracle-accuracy" class="oracle-mini-value">--</span>
+            </div>
+            <div class="oracle-mini-stat">
+              <span class="oracle-kicker">Trend</span>
+              <span id="oracle-trend" class="oracle-mini-value">--</span>
+            </div>
+            <div class="oracle-mini-stat">
+              <span class="oracle-kicker">News Bias</span>
+              <span id="oracle-news-signal" class="oracle-mini-value">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="oracle-signal-strip">
+          <div class="oracle-signal-chip">
+            <span class="oracle-chip-label">Forecast</span>
+            <span id="oracle-sentiment-forecast" class="oracle-chip-value">--</span>
+          </div>
+          <div class="oracle-signal-chip">
+            <span class="oracle-chip-label">Crypto</span>
+            <span id="oracle-crypto-signal" class="oracle-chip-value">--</span>
+          </div>
+          <div class="oracle-signal-chip">
+            <span class="oracle-chip-label">Headlines</span>
+            <span id="oracle-headline-count" class="oracle-chip-value">0</span>
+          </div>
+        </div>
+
+        <p id="oracle-reasoning" class="oracle-reasoning text-secondary">Oracle synchronisiert noch.</p>
+      </div>
+    `;
+  },
+
+  async refreshOracleCard() {
+    const card = document.getElementById('oracle-card');
+    if (!card) return;
+
+    try {
+      const response = await fetch(`../shared/data/oracle_prediction.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (!response.ok) return;
+
+      const prediction = await response.json();
+      const signal = prediction?.prediction || {};
+      const context = prediction?.market_context || {};
+      const backtesting = prediction?.backtesting || {};
+      const state = getOracleState(signal.trading_recommendation);
+
+      card.classList.remove('oracle-state-buy', 'oracle-state-caution', 'oracle-state-sell', 'oracle-state-hold');
+      card.classList.add(`oracle-state-${state}`);
+
+      const badge = document.getElementById('oracle-recommendation-badge');
+      if (badge) {
+        badge.textContent = signal.trading_recommendation || 'Hold';
+        badge.className = `oracle-pill oracle-pill-${state}`;
+      }
+
+      dom.setText('oracle-alignment-score', Math.round(Number(signal.alignment_score ?? 0)).toString());
+      dom.setText('oracle-target-date', prediction?.target_date || 'Nächster Handelstag');
+      dom.setText('oracle-confidence', formatPercent((Number(signal.confidence ?? 0) * 100)));
+      dom.setText('oracle-accuracy', formatPercent(Number(backtesting.accuracy_pct ?? signal.oracle_accuracy ?? 0)));
+      dom.setText('oracle-trend', context.sentiment_trend || 'neutral');
+      dom.setText('oracle-news-signal', context.news_signal || 'neutral');
+      dom.setText('oracle-sentiment-forecast', `${Math.round(Number(signal.sentiment_prediction ?? 0))}/100`);
+      dom.setText('oracle-crypto-signal', `${Math.round(Number(context.crypto_sentiment ?? 50))}/100`);
+      dom.setText('oracle-headline-count', String(context.headline_count ?? 0));
+      dom.setText('oracle-reasoning', signal.reasoning || 'Noch keine Begründung verfügbar.');
+    } catch (error) {
+      console.error('[Oracle Card] Update failed:', error);
+    }
   },
 
   async refreshHeartbeatStatus() {

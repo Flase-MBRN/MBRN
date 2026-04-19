@@ -1,14 +1,19 @@
 {
-  "timestamp_utc": "2026-04-19T17:02:35.762496+00:00",
+  "timestamp_utc": "2026-04-19T18:36:03.380917+00:00",
   "source": "market_sentiment_pipeline",
   "sentiment_score": 85,
   "sentiment_label": "Extreme Greed",
   "confidence": 0.8,
-  "analysis": "The market is experiencing a moderate to strong rally, with the major indices rising and VIX falling.",
+  "analysis": "Equities are showing strong gains, with the IWM leading the pack at +2.16%, while the VIX is down -2.56%. Crypto prices are declining, but news headlines suggest a positive outlook for AI stocks and fintech companies.",
   "recommendation": "buy",
+  "crypto_bias": "neutral",
+  "news_bias": "bullish",
+  "news_impact": 0,
+  "key_theme": "growth",
   "market_data": [
     {
       "ticker": "SPY",
+      "asset_class": "equity",
       "price": 710.14,
       "change": 8.48,
       "change_percent": 1.21,
@@ -17,11 +22,12 @@
       "low": 705.76,
       "market_cap": 651753750528,
       "pe_ratio": 28.155151,
-      "timestamp": "2026-04-19T17:02:21.499650+00:00",
+      "timestamp": "2026-04-19T18:35:43.603137+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "QQQ",
+      "asset_class": "equity",
       "price": 648.85,
       "change": 8.38,
       "change_percent": 1.31,
@@ -30,11 +36,12 @@
       "low": 644.07,
       "market_cap": 255062933504,
       "pe_ratio": 34.27903,
-      "timestamp": "2026-04-19T17:02:21.935442+00:00",
+      "timestamp": "2026-04-19T18:35:44.025804+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "DIA",
+      "asset_class": "equity",
       "price": 494.22,
       "change": 8.8,
       "change_percent": 1.81,
@@ -43,11 +50,12 @@
       "low": 490.36,
       "market_cap": 40151863296,
       "pe_ratio": 24.224075,
-      "timestamp": "2026-04-19T17:02:22.389992+00:00",
+      "timestamp": "2026-04-19T18:35:44.476734+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "IWM",
+      "asset_class": "equity",
       "price": 275.78,
       "change": 5.83,
       "change_percent": 2.16,
@@ -56,11 +64,12 @@
       "low": 273.12,
       "market_cap": 77507960832,
       "pe_ratio": 19.965326,
-      "timestamp": "2026-04-19T17:02:22.828650+00:00",
+      "timestamp": "2026-04-19T18:35:44.895060+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "^VIX",
+      "asset_class": "equity",
       "price": 17.48,
       "change": -0.46,
       "change_percent": -2.56,
@@ -69,16 +78,120 @@
       "low": 16.87,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-19T17:02:23.222646+00:00",
+      "timestamp": "2026-04-19T18:35:45.282213+00:00",
       "source": "yfinance"
+    },
+    {
+      "ticker": "BTC-USD",
+      "asset_class": "crypto",
+      "price": 74738.97,
+      "change": -987.24,
+      "change_percent": -1.3,
+      "volume": 27579691008,
+      "high": 76132.13,
+      "low": 74688.86,
+      "market_cap": 1496096440320,
+      "pe_ratio": null,
+      "timestamp": "2026-04-19T18:35:45.757587+00:00",
+      "source": "yfinance"
+    },
+    {
+      "ticker": "ETH-USD",
+      "asset_class": "crypto",
+      "price": 2294.3,
+      "change": -56.8,
+      "change_percent": -2.42,
+      "volume": 14530032640,
+      "high": 2355.15,
+      "low": 2292.49,
+      "market_cap": 277249228800,
+      "pe_ratio": null,
+      "timestamp": "2026-04-19T18:35:46.146969+00:00",
+      "source": "yfinance"
+    }
+  ],
+  "news_feed": [
+    {
+      "source": "Google News Business",
+      "title": "Prediction: The Biggest Winners of 2026 Are These 5 AI Stocks Nobody's Paying Attention to Right Now - Yahoo Finance",
+      "summary": "Prediction: The Biggest Winners of 2026 Are These 5 AI Stocks Nobody's Paying Attention to Right Now Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOZ2QyNFlBZnNXWHRFY2VhbFl3Y0FlbnVtMHI3WU9HdnNIUzQ0ZlpzRHZZb05SZFdENk5nZUlwdXNmNGRJclIwUElUT3o5Nm1hX1lWdkZ1NVZGZ3ZMNUFlUzZxSl94WWtkSGhvSFh2SmNqVlgzQ19RYUlfMExqdHRKZnFsYl9ZNFlPR08weGdLZGgtWDBCU1gtQ0xHR1NfUWtIUTVwNw?oc=5",
+      "published_at": "2026-04-19T17:21:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "The Spine: New hub for finance, business and tourism in Egypt by 2026 - Dailynewsegypt",
+      "summary": "The Spine: New hub for finance, business and tourism in Egypt by 2026 Dailynewsegypt",
+      "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNVWJkak94ZzlpTmJlUm15bFo5ck5BN2Qydk9kNjV3MHNMYk9yVnI3eWdCczRoWFBfbFFzbDRpVXN1dkhoUVk4ZHM3SGl4VGN6YXdPYWNQRGJNZVRlU1FyMndlZzJCblBmU3NDOFJ1VUdEWjhpYi00aDZRTnIxNU5YR3lqTE1zenNWdUh6SGNJMUozZTFtdHVpMG1VZkdhZjFUM3k3Rlhqcl9vQmloWUp3?oc=5",
+      "published_at": "2026-04-19T16:46:20+00:00"
+    },
+    {
+      "source": "CNBC Finance",
+      "title": "Software stock dogs have joined market rally. There's a classic investing lesson in the rebound",
+      "summary": "In a 2026 market that had Microsoft down close to 20%, looking for opportunities to buy after big drawdowns is coming to more tech and software stocks.",
+      "link": "https://www.cnbc.com/2026/04/19/software-tech-stocks-market-rally-microsoft.html",
+      "published_at": "2026-04-19T16:10:03+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Turning global ambition into action: how Australia-founded Airwallex builds financial infrastructure to power growth - South China Morning Post",
+      "summary": "Turning global ambition into action: how Australia-founded Airwallex builds financial infrastructure to power growth South China Morning Post",
+      "link": "https://news.google.com/rss/articles/CBMilgJBVV95cUxNTWh2WVhoX3A4LWVsbUwtbEpVWFdDQW1nMG93NFoyMzlsM1VSRW9xdkR5Tkp3WDlfampzbWJ4c2RvVERmNnhLTEZyMkFDVkFjcVlaVmtJTU40R3FNTTdCcklUc3psR2xEVFY5dUlmdWt2M1VXYkhsQnVrbThsdmRVWTd2VExIa3RkdHhYcFBxakdPZFBMTnBKYWMzTE83TDB6VXBodTZwNDl0VVlINlBwWmRseXd0VlYzdEt3UFU0OF9uVzNJS2tmTVpiZXBJUng2OElJZVNqR25VOXNKTE4tSnpjLUZlM1ZoWWxTdEpoSUhuR3dJV2lncWs5cS1qaXZFajUxbGpuQW52MnV2TDBXVHZXZE4wZw?oc=5",
+      "published_at": "2026-04-19T16:00:12+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Wright: Gas prices dropping below $3 ‘might not happen until next year’ - The Hill",
+      "summary": "Wright: Gas prices dropping below $3 ‘might not happen until next year’ The Hill",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPeGI4SXhqQWZJVXF3eGtFdkJxWlFwNWc4QWdvdnE2LUo1TkZpSFdiTjNOSjl6XzYwQVpiY2V1cC1xakxSbjJrb05FcVpKOWRGTnEwekhqbXk0ZnhoSV92ZE0xVmNnRXZ2eVc4b3VEdVVuQW9QeXVtNlQ1dmxVOW5Oc2FjNNIBiAFBVV95cUxNRHR1UjZCZlZSXzNsa0taWHZremt5N3YtQTAwNWxac3lpODBFWF9ISlNFajN2UHVIeF91THAxeEJZVmNxSEtfQUZWeWhjRUtHN2prS2p2bVU4XzlnN0hKZ213Rmhyc0c4bGNtNVpLSExmRDQ1dlJFUHF3TFpCVjhQS2s0RnpIZkZ2?oc=5",
+      "published_at": "2026-04-19T15:13:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Visa backed one idea that turned into $4 billion lifeline - thestreet.com",
+      "summary": "Visa backed one idea that turned into $4 billion lifeline thestreet.com",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPZl9HWl9YdTdFc05LSUlYM1ZVXzdVMkhBMzBwOWtQNlc1cE4tWEhsZm0tS2NETlQ4a0x3R190T2gwMWprY0ZkZUg3WUMzVGhjckdBaXJNLTYtTzVCaUwzRHdZSkxxTko0X05EQmRJbDlYRXlGZVhBRm1MOTIySHU3c2M1emYza055Ykx0RjFmVnpra2NTdFRNTDQ5V2k0LS1t?oc=5",
+      "published_at": "2026-04-19T13:17:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "We Think Contineum Therapeutics (NASDAQ:CTNM) Can Afford To Drive Business Growth - Yahoo Finance",
+      "summary": "We Think Contineum Therapeutics (NASDAQ:CTNM) Can Afford To Drive Business Growth Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxObVBaTTlOeGdmRnBHMVhVbGtZeTUycmNYcXVtc1BDbmFmb2J3aTkxYUJGWFg2MnRxbEtySmhqM0djVmhMYU1XT1VVem93ejJIMjR1anFBTnplV20tb2JSZ1luaGw4VUJ2dzJWVjY3RFlRWEpsMXYzMDhBdTdURkxLOURXbjlyYWN6S3djSXN3UTdNbkxycHJEUk9aTHVhMEQzMGRQaURNZ1M?oc=5",
+      "published_at": "2026-04-19T12:03:52+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Black Entrepreneur Wins SBA Small Business Person Of The Year To Represent Mississippi During National Small Business Week - Yahoo Finance",
+      "summary": "Black Entrepreneur Wins SBA Small Business Person Of The Year To Represent Mississippi During National Small Business Week Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOSGNlTURvY1dsRXRXMVRFN1k4WTZMb2RSOE9WZ3VKZWk3MFdtSWJEZ2dsSUlYSFRsWWNoTlNMX3NxckFtTUpFM21aZHNKRkRQUFZrT3hIYkR1aUxLUGloeVpWcHR0Nmtsbmd4U0xZZkFVMkFIZHNrbk9INDNaaGVhd1JvMjB1dGpXMWxQeVRmOTZPOHZyNGM0LW1CQWI5SGs?oc=5",
+      "published_at": "2026-04-19T12:00:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Why The First Business Financial Services (FBIZ) Story Is Shifting As Fair Value Gets Reworked - Yahoo Finance",
+      "summary": "Why The First Business Financial Services (FBIZ) Story Is Shifting As Fair Value Gets Reworked Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPQ2lQNFBuQ1RZOE5HNE12T3hadWlnVnhMTXBvYzRqVlVEMUwyZ0tLNDFWLUVJenZCYXc3Q05mLVh2cVFPRG1PWWdHLXNUNW82OWFnSjdiWlMwRzFIdFk0UDNZQmg2d09qVVR4eXFaZlJzNXZ0ZlZKVS12aVF5Qy1yS1lybGNhT3NtMUtKdi1ycFhzUFVnRzZuZWh1ZnZmckp3bklRWA?oc=5",
+      "published_at": "2026-04-19T11:06:54+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Finance minister calls for global efforts on supply chain stability at G20 meeting - Korea JoongAng Daily",
+      "summary": "Finance minister calls for global efforts on supply chain stability at G20 meeting Korea JoongAng Daily",
+      "link": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxQOGtOd0E5SzkxcGNDUjA4eEo5WjhyUUtuRFk5RFJfeEdVWmNKYlBWTzNuRDA2ZS0wZ1JidENyT1pRR0QybkhrdmtJQjJvcVI0TmdkckFRSzVDMmtBUDktV2tNY2RWYXN0N3hXbDNyczFuam1sQzZTVU5TX1Rza3ZaR1BYM3pKcDNMZjQyeHZCRlhRWWxCQmZJVl9kNGpfc3ZUTWZrQV9kQVpSRUcyX1dXNmdxenJienRVNXpfdjZKbmZrRWgzV19ET25EM3hCS2NCeFpkTEh6ZF81amhibGJ0d1lURVA2cDMzVjNkR0JSc2UtUQ?oc=5",
+      "published_at": "2026-04-19T07:39:20+00:00"
     }
   ],
   "mbrn_enriched": {
     "sentiment_score": 85,
     "confidence": 0.8,
-    "analysis": "The market is experiencing a moderate to strong rally, with the major indices rising and VIX falling.",
+    "analysis": "Equities are showing strong gains, with the IWM leading the pack at +2.16%, while the VIX is down -2.56%. Crypto prices are declining, but news headlines suggest a positive outlook for AI stocks and fintech companies.",
     "recommendation": "buy",
+    "crypto_bias": "neutral",
+    "news_bias": "bullish",
+    "news_impact": 0,
+    "key_theme": "growth",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-19T17:02:35.762208+00:00"
+    "processed_at": "2026-04-19T18:36:03.380854+00:00"
   }
 }

@@ -14,7 +14,7 @@ from typing import Any, Dict, Iterable, List, Optional
 
 import requests
 
-from pipeline_utils import OllamaEnricher, SupabaseUplink, load_pipeline_env, save_to_json
+from pipeline_utils import OllamaEnricher, SupabaseUplink, load_pipeline_env, save_json_atomic, save_to_json
 from schema_validator import SchemaValidator, ValidationError
 
 
@@ -306,8 +306,7 @@ def load_state() -> Dict[str, Any]:
 def save_state(state: Dict[str, Any]) -> None:
     """Persist duplicate-detection state."""
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(STATE_FILE, "w", encoding="utf-8") as handle:
-        json.dump(state, handle, indent=2, ensure_ascii=False)
+    save_json_atomic(STATE_FILE, state)
 
 
 def prune_recent_hashes(entries: List[Dict[str, str]]) -> List[Dict[str, str]]:

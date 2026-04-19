@@ -1,0 +1,40 @@
+{
+  "timestamp_utc": "2026-04-19T17:33:30.525621+00:00",
+  "target_date": "20.04.2026",
+  "oracle_version": "1.0.0",
+  "day_numerology": {
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  "market_context": {
+    "previous_sentiment": 60,
+    "previous_vix": 17.48,
+    "sentiment_trend": {
+      "direction": "falling",
+      "value": -10.0
+    }
+  },
+  "prediction": {
+    "alignment_score": 60.0,
+    "confidence": 0.36,
+    "sentiment_prediction": 50.0,
+    "trading_recommendation": "Caution",
+    "reasoning": "Tag 7 (Analyse, Spiritualität, Intuition). Historisch korreliert Tag 6 am stärksten mit einem Sentiment von 60.0."
+  },
+  "correlation_summary": {
+    "analysis_period_days": 90,
+    "strongest_correlation": {
+      "day_number": 6,
+      "alignment_score": 38.29,
+      "avg_sentiment": 60.0
+    },
+    "weakest_correlation": {
+      "day_number": 6,
+      "alignment_score": 38.29,
+      "avg_sentiment": 60.0
+    },
+    "overall_trend": "negative_correlation",
+    "statistical_significance": "low"
+  }
+}

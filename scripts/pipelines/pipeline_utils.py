@@ -17,20 +17,26 @@ Architect: Flase | Pillar 3: Data Arbitrage | Law 1: Module Responsibility
 
 import json
 import os
+import random
 import re
 import shutil
+import socket
 import subprocess
+import tempfile
 import threading
 import time
+import xml.etree.ElementTree as ET
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable, List
 from dataclasses import dataclass, field
 
 import requests
 import urllib.request
 import urllib.error
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
 
@@ -79,6 +85,8 @@ CONFIG = PipelineConfig()
 OLLAMA_EXECUTION_SEMAPHORE = threading.Semaphore(1)
 PIPELINES_ENV_PATH = Path(__file__).resolve().parent / ".env"
 _ENV_LOADED = False
+_JSON_WRITE_LOCKS: Dict[str, threading.Lock] = {}
+_JSON_WRITE_LOCKS_GUARD = threading.Lock()
 
 
 def load_pipeline_env(env_path: Optional[Path] = None) -> bool:
@@ -117,6 +125,443 @@ def log(level: str, message: str) -> None:
     """
     timestamp = datetime.now(timezone.utc).isoformat()
     print(f"[{timestamp}] [{level}] {message}")
+
+
+def normalize_feed_text(value: str) -> str:
+    """Collapse whitespace for stable feed parsing."""
+    return " ".join((value or "").split()).strip()
+
+
+def strip_html_tags(value: str) -> str:
+    """Remove HTML tags from feed summaries while preserving readable text."""
+    if not value:
+        return ""
+    return normalize_feed_text(BeautifulSoup(value, "lxml").get_text(" ", strip=True))
+
+
+def parse_datetime_safe(raw_value: str) -> datetime:
+    """Parse RFC822/ISO timestamps into UTC."""
+    if not raw_value:
+        return datetime.now(timezone.utc)
+
+    try:
+        parsed = parsedate_to_datetime(raw_value)
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
+    except (TypeError, ValueError, IndexError):
+        pass
+
+    try:
+        parsed = datetime.fromisoformat(str(raw_value).replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
+    except ValueError:
+        return datetime.now(timezone.utc)
+
+
+def classify_fetch_error(exc: Exception) -> str:
+    """Map fetch/parsing exceptions to stable reason buckets."""
+    if isinstance(exc, TimeoutError):
+        return "timeout"
+
+    if isinstance(exc, urllib.error.HTTPError):
+        return "http_error"
+
+    if isinstance(exc, urllib.error.URLError):
+        reason = getattr(exc, "reason", None)
+        if isinstance(reason, socket.gaierror):
+            return "dns_error"
+        if isinstance(reason, TimeoutError):
+            return "timeout"
+        return "connection_error"
+
+    if isinstance(exc, ET.ParseError):
+        return "invalid_xml"
+
+    return "unknown_error"
+
+
+def _strip_markdown_fences(text: str) -> str:
+    """Remove common markdown code fences from model output."""
+    stripped = (text or "").strip()
+    if stripped.startswith("```json"):
+        return stripped.split("```json", 1)[1].split("```", 1)[0].strip()
+    if stripped.startswith("```"):
+        return stripped.split("```", 1)[1].split("```", 1)[0].strip()
+    return stripped
+
+
+def extract_json_object(text: str) -> Optional[str]:
+    """
+    Extract the first plausible top-level JSON object from noisy text.
+
+    Uses a balanced-brace scan so prose around the JSON block is tolerated.
+    """
+    cleaned = _strip_markdown_fences(text)
+    if not cleaned:
+        return None
+
+    start_index = cleaned.find("{")
+    while start_index != -1:
+        depth = 0
+        in_string = False
+        escaped = False
+
+        for index in range(start_index, len(cleaned)):
+            char = cleaned[index]
+
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    in_string = False
+                continue
+
+            if char == '"':
+                in_string = True
+                continue
+
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    candidate = cleaned[start_index : index + 1].strip()
+                    if candidate:
+                        return candidate
+                    break
+
+        start_index = cleaned.find("{", start_index + 1)
+
+    return None
+
+
+def parse_strict_json_response(
+    text: str,
+    required_keys: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """
+    Parse a JSON object from direct or noisy model output.
+
+    Raises:
+        ValueError: When parsing fails or required keys are missing.
+    """
+    required_keys = required_keys or []
+    raw_text = text or ""
+    candidates: List[str] = []
+
+    direct = _strip_markdown_fences(raw_text)
+    if direct:
+        candidates.append(direct)
+
+    extracted = extract_json_object(raw_text)
+    if extracted and extracted not in candidates:
+        candidates.append(extracted)
+
+    errors: List[str] = []
+    for candidate in candidates:
+        try:
+            parsed = json.loads(candidate)
+            if not isinstance(parsed, dict):
+                errors.append("parsed_json_not_object")
+                continue
+
+            missing = [key for key in required_keys if key not in parsed]
+            if missing:
+                raise ValueError(f"missing_required_keys={','.join(missing)}")
+
+            return parsed
+        except (json.JSONDecodeError, ValueError) as exc:
+            errors.append(str(exc))
+
+    raise ValueError("strict_json_parse_failed:" + " | ".join(errors or ["no_json_object_found"]))
+
+
+def repair_json_with_ollama(
+    raw_output: str,
+    schema_hint: str,
+    model: str,
+    timeout: int,
+    host: str = "localhost",
+    port: int = 11434,
+) -> Optional[Dict[str, Any]]:
+    """
+    Ask Ollama to repair malformed model output into one valid JSON object.
+
+    Returns None when repair fails.
+    """
+    prompt = (
+        "Convert the following malformed model output into ONE valid JSON object.\n"
+        "Return ONLY valid JSON. No preamble, no markdown, no explanation.\n\n"
+        f"Schema hint:\n{schema_hint}\n\n"
+        f"Malformed output:\n{raw_output}"
+    )
+
+    try:
+        url = f"http://{host}:{port}/api/generate"
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "stream": False,
+            "options": {
+                "temperature": 0.0,
+            },
+        }
+
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+
+        with ollama_execution_guard(
+            worker_name=f"json_repair:{model}",
+            acquire_timeout_seconds=timeout,
+            gpu_wait_timeout_seconds=30,
+        ):
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                result = json.loads(response.read().decode("utf-8"))
+
+        repaired_output = result.get("response", "")
+        return parse_strict_json_response(repaired_output)
+    except Exception as exc:
+        log("WARN", f"JSON repair with Ollama failed: {exc}")
+        return None
+
+
+def fetch_url_with_retry(
+    url: str,
+    headers_pool: List[Dict[str, str]],
+    timeout_seconds: int,
+    retries: int,
+) -> str:
+    """Fetch a URL with retry and rotating request headers."""
+    attempts = max(1, retries)
+    if not headers_pool:
+        headers_pool = [{"User-Agent": "MBRN/1.0"}]
+
+    last_error: Optional[Exception] = None
+    for attempt in range(1, attempts + 1):
+        headers = headers_pool[(attempt - 1) % len(headers_pool)]
+        try:
+            request = urllib.request.Request(url, headers=headers, method="GET")
+            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+                return response.read().decode("utf-8", errors="replace")
+        except Exception as exc:
+            last_error = exc
+            if attempt < attempts:
+                time.sleep(min(1.5 * attempt, 3.0))
+
+    assert last_error is not None
+    raise last_error
+
+
+def _extract_feed_link(entry: ET.Element) -> str:
+    """Extract entry link from RSS or Atom XML."""
+    link = ""
+    direct_link = entry.find("link")
+    if direct_link is not None:
+        if direct_link.text:
+            link = normalize_feed_text(direct_link.text)
+        elif direct_link.attrib.get("href"):
+            link = normalize_feed_text(direct_link.attrib["href"])
+
+    if link:
+        return link
+
+    atom_link = entry.find("{http://www.w3.org/2005/Atom}link")
+    if atom_link is not None:
+        return normalize_feed_text(atom_link.attrib.get("href", ""))
+
+    return ""
+
+
+def _parse_xml_feed_items(root: ET.Element, source: str) -> List[Dict[str, Any]]:
+    """Parse RSS/Atom XML trees into normalized feed items."""
+    raw_items = root.findall(".//item")
+    if not raw_items:
+        raw_items = root.findall(".//{http://www.w3.org/2005/Atom}entry")
+
+    items: List[Dict[str, Any]] = []
+    for entry in raw_items:
+        title = ""
+        for tag in ("title", "{http://www.w3.org/2005/Atom}title"):
+            element = entry.find(tag)
+            if element is not None and element.text:
+                title = normalize_feed_text(element.text)
+                break
+
+        if not title:
+            continue
+
+        summary = ""
+        for tag in (
+            "description",
+            "summary",
+            "content",
+            "{http://www.w3.org/2005/Atom}summary",
+            "{http://www.w3.org/2005/Atom}content",
+        ):
+            element = entry.find(tag)
+            if element is not None and element.text:
+                summary = strip_html_tags(element.text)
+                break
+
+        published_raw = ""
+        for tag in (
+            "pubDate",
+            "published",
+            "updated",
+            "{http://www.w3.org/2005/Atom}published",
+            "{http://www.w3.org/2005/Atom}updated",
+        ):
+            element = entry.find(tag)
+            if element is not None and element.text:
+                published_raw = normalize_feed_text(element.text)
+                break
+
+        items.append(
+            {
+                "source": source,
+                "title": title,
+                "summary": summary[:320],
+                "link": _extract_feed_link(entry),
+                "published_at": parse_datetime_safe(published_raw).isoformat(),
+            }
+        )
+
+    return items
+
+
+def _parse_bs4_feed_items(xml_or_html: str, source: str, parser_name: str) -> List[Dict[str, Any]]:
+    """Parse malformed feeds with BeautifulSoup."""
+    soup = BeautifulSoup(xml_or_html, parser_name)
+    entries = soup.find_all(["item", "entry"])
+
+    items: List[Dict[str, Any]] = []
+    for entry in entries:
+        title_node = entry.find(["title"])
+        title = normalize_feed_text(title_node.get_text(" ", strip=True) if title_node else "")
+        if not title:
+            continue
+
+        link = ""
+        link_node = entry.find(["link"])
+        if link_node is not None:
+            link = normalize_feed_text(link_node.get("href", "") or link_node.get_text(" ", strip=True))
+
+        summary_node = entry.find(["description", "summary", "content"])
+        summary = strip_html_tags(summary_node.get_text(" ", strip=True) if summary_node else "")
+
+        published_node = entry.find(["pubdate", "published", "updated"])
+        published_raw = normalize_feed_text(published_node.get_text(" ", strip=True) if published_node else "")
+
+        items.append(
+            {
+                "source": source,
+                "title": title,
+                "summary": summary[:320],
+                "link": link,
+                "published_at": parse_datetime_safe(published_raw).isoformat(),
+            }
+        )
+
+    return items
+
+
+def parse_feed_items(xml_or_html: str, source: str, parser_hint: str) -> List[Dict[str, Any]]:
+    """
+    Parse XML/HTML feed payloads into a normalized item shape.
+
+    Supported parser hints:
+    - xml
+    - dirty_xml
+    - html
+    """
+    if parser_hint == "html":
+        return _parse_bs4_feed_items(xml_or_html, source, "lxml")
+
+    try:
+        root = ET.fromstring(xml_or_html)
+        items = _parse_xml_feed_items(root, source)
+        if items or parser_hint == "xml":
+            return items
+    except ET.ParseError:
+        if parser_hint == "xml":
+            raise
+
+    if parser_hint == "dirty_xml":
+        for parser_name in ("xml", "lxml-xml", "lxml"):
+            items = _parse_bs4_feed_items(xml_or_html, source, parser_name)
+            if items:
+                return items
+        return []
+
+    return []
+
+
+def _get_json_write_lock(filepath: Path) -> threading.Lock:
+    """Return a stable in-process lock for one JSON target path."""
+    normalized = str(filepath.resolve()).lower()
+    with _JSON_WRITE_LOCKS_GUARD:
+        lock = _JSON_WRITE_LOCKS.get(normalized)
+        if lock is None:
+            lock = threading.Lock()
+            _JSON_WRITE_LOCKS[normalized] = lock
+        return lock
+
+
+@contextmanager
+def _cross_process_file_lock(lock_path: Path):
+    """
+    Acquire a lightweight cross-process lock via a sidecar lock file.
+
+    This complements the in-process threading lock so parallel worker runs from
+    separate processes cannot interleave writes.
+    """
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    handle = open(lock_path, "a+b")
+
+    try:
+        if os.name == "nt":
+            import msvcrt
+
+            while True:
+                try:
+                    handle.seek(0)
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+                    break
+                except OSError:
+                    time.sleep(0.05)
+        else:
+            import fcntl
+
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+
+        yield
+    finally:
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        finally:
+            handle.close()
+            try:
+                lock_path.unlink()
+            except OSError:
+                pass
 
 
 # =============================================================================
@@ -176,8 +621,7 @@ class PipelineCache:
         cache_path = self.cache_dir / f"{key}.json"
         
         try:
-            with open(cache_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
+            save_json_atomic(cache_path, data)
             return True
         except IOError as e:
             log("ERROR", f"Cache write failed: {e}")
@@ -788,6 +1232,49 @@ Respond in this exact JSON format:
 # JSON OUTPUT HELPERS
 # =============================================================================
 
+def save_json_atomic(filepath: Path | str, data: Dict[str, Any]) -> str:
+    """
+    Persist JSON atomically and thread-safely.
+
+    Strategy:
+    - In-process lock per target path
+    - Cross-process sidecar lock file
+    - Write to temp file in the same directory
+    - Flush + fsync temp file
+    - Atomic replace onto the target path
+    """
+    target_path = Path(filepath)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+
+    thread_lock = _get_json_write_lock(target_path)
+    lock_path = target_path.with_suffix(f"{target_path.suffix}.lock")
+    temp_path: Optional[Path] = None
+
+    with thread_lock:
+        with _cross_process_file_lock(lock_path):
+            try:
+                with tempfile.NamedTemporaryFile(
+                    mode="w",
+                    encoding="utf-8",
+                    dir=target_path.parent,
+                    prefix=f"{target_path.stem}_",
+                    suffix=".tmp",
+                    delete=False,
+                ) as handle:
+                    json.dump(data, handle, indent=2, ensure_ascii=False)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                    temp_path = Path(handle.name)
+
+                os.replace(temp_path, target_path)
+                return str(target_path)
+            finally:
+                if temp_path and temp_path.exists():
+                    try:
+                        temp_path.unlink()
+                    except OSError:
+                        pass
+
 def save_to_json(data: Dict[str, Any], output_dir: Path, filename_template: str = "data_{timestamp}.json") -> str:
     """
     Save data to JSON file with timestamp.
@@ -806,8 +1293,7 @@ def save_to_json(data: Dict[str, Any], output_dir: Path, filename_template: str 
     filename = filename_template.format(timestamp=timestamp)
     filepath = output_dir / filename
     
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    save_json_atomic(filepath, data)
     
     log("OK", f"Data saved to: {filepath}")
     return str(filepath)

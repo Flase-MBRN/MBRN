@@ -1,0 +1,632 @@
+[
+  {
+    "date": "19.01.2026",
+    "date_utc": "2026-01-19T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "20.01.2026",
+    "date_utc": "2026-01-20T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "21.01.2026",
+    "date_utc": "2026-01-21T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "22.01.2026",
+    "date_utc": "2026-01-22T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "23.01.2026",
+    "date_utc": "2026-01-23T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "24.01.2026",
+    "date_utc": "2026-01-24T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "25.01.2026",
+    "date_utc": "2026-01-25T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "26.01.2026",
+    "date_utc": "2026-01-26T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "27.01.2026",
+    "date_utc": "2026-01-27T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "28.01.2026",
+    "date_utc": "2026-01-28T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "29.01.2026",
+    "date_utc": "2026-01-29T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "30.01.2026",
+    "date_utc": "2026-01-30T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "31.01.2026",
+    "date_utc": "2026-01-31T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "01.02.2026",
+    "date_utc": "2026-02-01T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "02.02.2026",
+    "date_utc": "2026-02-02T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "03.02.2026",
+    "date_utc": "2026-02-03T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "04.02.2026",
+    "date_utc": "2026-02-04T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "05.02.2026",
+    "date_utc": "2026-02-05T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "06.02.2026",
+    "date_utc": "2026-02-06T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "07.02.2026",
+    "date_utc": "2026-02-07T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "08.02.2026",
+    "date_utc": "2026-02-08T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "09.02.2026",
+    "date_utc": "2026-02-09T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "10.02.2026",
+    "date_utc": "2026-02-10T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "11.02.2026",
+    "date_utc": "2026-02-11T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "12.02.2026",
+    "date_utc": "2026-02-12T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "13.02.2026",
+    "date_utc": "2026-02-13T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "14.02.2026",
+    "date_utc": "2026-02-14T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "15.02.2026",
+    "date_utc": "2026-02-15T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "16.02.2026",
+    "date_utc": "2026-02-16T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "17.02.2026",
+    "date_utc": "2026-02-17T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "18.02.2026",
+    "date_utc": "2026-02-18T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "19.02.2026",
+    "date_utc": "2026-02-19T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "20.02.2026",
+    "date_utc": "2026-02-20T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "21.02.2026",
+    "date_utc": "2026-02-21T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "22.02.2026",
+    "date_utc": "2026-02-22T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "23.02.2026",
+    "date_utc": "2026-02-23T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "24.02.2026",
+    "date_utc": "2026-02-24T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "25.02.2026",
+    "date_utc": "2026-02-25T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "26.02.2026",
+    "date_utc": "2026-02-26T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "27.02.2026",
+    "date_utc": "2026-02-27T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "28.02.2026",
+    "date_utc": "2026-02-28T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "01.03.2026",
+    "date_utc": "2026-03-01T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "02.03.2026",
+    "date_utc": "2026-03-02T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "03.03.2026",
+    "date_utc": "2026-03-03T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "04.03.2026",
+    "date_utc": "2026-03-04T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "05.03.2026",
+    "date_utc": "2026-03-05T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "06.03.2026",
+    "date_utc": "2026-03-06T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "07.03.2026",
+    "date_utc": "2026-03-07T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "08.03.2026",
+    "date_utc": "2026-03-08T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "09.03.2026",
+    "date_utc": "2026-03-09T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "10.03.2026",
+    "date_utc": "2026-03-10T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "11.03.2026",
+    "date_utc": "2026-03-11T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "12.03.2026",
+    "date_utc": "2026-03-12T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "13.03.2026",
+    "date_utc": "2026-03-13T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "14.03.2026",
+    "date_utc": "2026-03-14T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "15.03.2026",
+    "date_utc": "2026-03-15T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "16.03.2026",
+    "date_utc": "2026-03-16T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "17.03.2026",
+    "date_utc": "2026-03-17T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "18.03.2026",
+    "date_utc": "2026-03-18T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "19.03.2026",
+    "date_utc": "2026-03-19T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "20.03.2026",
+    "date_utc": "2026-03-20T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "21.03.2026",
+    "date_utc": "2026-03-21T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "22.03.2026",
+    "date_utc": "2026-03-22T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "23.03.2026",
+    "date_utc": "2026-03-23T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "24.03.2026",
+    "date_utc": "2026-03-24T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "25.03.2026",
+    "date_utc": "2026-03-25T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "26.03.2026",
+    "date_utc": "2026-03-26T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "27.03.2026",
+    "date_utc": "2026-03-27T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "28.03.2026",
+    "date_utc": "2026-03-28T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "29.03.2026",
+    "date_utc": "2026-03-29T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "30.03.2026",
+    "date_utc": "2026-03-30T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "31.03.2026",
+    "date_utc": "2026-03-31T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "01.04.2026",
+    "date_utc": "2026-04-01T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "02.04.2026",
+    "date_utc": "2026-04-02T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "03.04.2026",
+    "date_utc": "2026-04-03T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "04.04.2026",
+    "date_utc": "2026-04-04T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "05.04.2026",
+    "date_utc": "2026-04-05T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "06.04.2026",
+    "date_utc": "2026-04-06T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "07.04.2026",
+    "date_utc": "2026-04-07T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "08.04.2026",
+    "date_utc": "2026-04-08T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "09.04.2026",
+    "date_utc": "2026-04-09T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  },
+  {
+    "date": "10.04.2026",
+    "date_utc": "2026-04-10T00:00:00Z",
+    "day_number": 6,
+    "is_master": false,
+    "description": "Harmonie, Familie, Verantwortung"
+  },
+  {
+    "date": "11.04.2026",
+    "date_utc": "2026-04-11T00:00:00Z",
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  {
+    "date": "12.04.2026",
+    "date_utc": "2026-04-12T00:00:00Z",
+    "day_number": 8,
+    "is_master": false,
+    "description": "Macht, Erfolg, materielle Fülle"
+  },
+  {
+    "date": "13.04.2026",
+    "date_utc": "2026-04-13T00:00:00Z",
+    "day_number": 9,
+    "is_master": false,
+    "description": "Abschluss, Weisheit, Humanität"
+  },
+  {
+    "date": "14.04.2026",
+    "date_utc": "2026-04-14T00:00:00Z",
+    "day_number": 1,
+    "is_master": false,
+    "description": "Initiative, Führung, Neubeginn"
+  },
+  {
+    "date": "15.04.2026",
+    "date_utc": "2026-04-15T00:00:00Z",
+    "day_number": 11,
+    "is_master": true,
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+  },
+  {
+    "date": "16.04.2026",
+    "date_utc": "2026-04-16T00:00:00Z",
+    "day_number": 3,
+    "is_master": false,
+    "description": "Kreativität, Ausdruck, Kommunikation"
+  },
+  {
+    "date": "17.04.2026",
+    "date_utc": "2026-04-17T00:00:00Z",
+    "day_number": 4,
+    "is_master": false,
+    "description": "Stabilität, Struktur, Fundament"
+  },
+  {
+    "date": "18.04.2026",
+    "date_utc": "2026-04-18T00:00:00Z",
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
+  }
+]

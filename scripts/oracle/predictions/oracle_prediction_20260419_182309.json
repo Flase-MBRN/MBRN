@@ -1,0 +1,75 @@
+{
+  "timestamp_utc": "2026-04-19T18:23:09.777474+00:00",
+  "target_date": "20.04.2026",
+  "oracle_version": "1.1.0",
+  "day_numerology": {
+    "day_number": 7,
+    "is_master": false,
+    "description": "Analyse, Spiritualität, Intuition"
+  },
+  "market_context": {
+    "previous_sentiment": 60,
+    "previous_vix": 17.48,
+    "sentiment_trend": "neutral",
+    "sentiment_trend_value": 3.33,
+    "crypto_snapshot": {},
+    "crypto_sentiment": 50.0,
+    "news_signal": "neutral",
+    "news_impact": 0,
+    "headline_count": 0,
+    "news_items": []
+  },
+  "prediction": {
+    "alignment_score": 61.02,
+    "confidence": 0.61,
+    "sentiment_prediction": 53.67,
+    "trading_recommendation": "Hold",
+    "reasoning": "Tag 7 (Analyse, Spiritualität, Intuition). historisch korreliert Tag 11 am stärksten mit einem Sentiment von 50.0.",
+    "alignment_breakdown": {
+      "base_alignment_score": 61.02,
+      "crypto_modifier": 0.0,
+      "news_modifier": 0.0,
+      "day_multiplier": 0.95,
+      "total_modifier": 0.0,
+      "final_alignment_score": 61.02
+    },
+    "oracle_accuracy": 98.61
+  },
+  "correlation_summary": {
+    "analysis_period_days": 90,
+    "strongest_correlation": {
+      "day_number": 11,
+      "alignment_score": 67.93,
+      "avg_sentiment": 50.0
+    },
+    "weakest_correlation": {
+      "day_number": 2,
+      "alignment_score": 36.53,
+      "avg_sentiment": 50.0
+    },
+    "overall_trend": "weak_or_no_correlation",
+    "statistical_significance": "high"
+  },
+  "backtesting": {
+    "accuracy_pct": 98.61,
+    "total_predictions": 73,
+    "evaluated_predictions": 72,
+    "correct_predictions": 71,
+    "pending_predictions": 1,
+    "latest_result": {
+      "generated_at": "2026-04-19T18:23:09.755745+00:00",
+      "target_date": "19.04.2026",
+      "recommendation": "Hold",
+      "alignment_score": 58.15,
+      "confidence": 0.58,
+      "sentiment_prediction": 50.0,
+      "oracle_version": "1.1.0-replay",
+      "evaluated_at": "2026-04-19T18:23:09.755748+00:00",
+      "was_correct": false,
+      "actual_sentiment": 60.0,
+      "previous_sentiment": 50.0,
+      "sentiment_delta": 10.0,
+      "actual_trend": "rising"
+    }
+  }
+}
