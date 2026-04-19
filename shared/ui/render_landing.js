@@ -8,6 +8,7 @@ import { storage } from '../core/storage.js';
 import { i18n } from '../core/i18n.js';
 import { calculateLifePathTotal, formatValue } from '../core/logic/numerology/index.js';
 import { renderAuth } from './render_auth.js';
+import { bindSmartDateInput } from './dom_utils.js';
 
 const ARCHETYPES = {
   1: { title: 'Der Initiator', desc: 'Dein Fokus liegt auf Eigeninitiative und klaren Entscheidungen.' },
@@ -95,6 +96,8 @@ export const landingRender = {
   bindForm() {
     const form = document.getElementById('frequency-form');
     if (!form) return;
+
+    bindSmartDateInput('input-date');
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();

@@ -95,25 +95,25 @@ export const api = {
   },
 
   /**
-   * Reads the latest reactor heartbeat timestamp.
+   * Reads the system heartbeat timestamp from the singleton system_status row.
    * Used by the dashboard to render "System online/offline".
    */
-  async getLatestReactorHeartbeat(source = null) {
+  async getSystemStatusPing() {
     if (!this.client) return { success: false, error: 'Offline', offline: true };
     if (!this.isOnline || !this.client) return { success: false, error: 'Offline', offline: true };
 
-    let query = this.client
-      .from('reactor_heartbeat')
-      .select('source,last_seen,updated_at')
-      .order('last_seen', { ascending: false })
-      .limit(1);
+    const { data, error } = await this.client
+      .from('system_status')
+      .select('id,last_ping')
+      .eq('id', 1)
+      .maybeSingle();
 
-    if (source) {
-      query = query.eq('source', source);
-    }
-
-    const { data, error } = await query.maybeSingle();
     return error ? { success: false, error: error.message } : { success: true, data };
+  },
+
+  // Backward-compatible alias for older callers.
+  async getLatestReactorHeartbeat() {
+    return this.getSystemStatusPing();
   },
 
   /**

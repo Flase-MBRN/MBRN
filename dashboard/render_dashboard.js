@@ -12,7 +12,7 @@ import { sentimentWidget } from '../shared/ui/widgets/sentiment_widget.js';
 import { errorBoundary } from '../shared/ui/error_boundary.js';
 import { api } from '../shared/core/api.js';
 
-const HEARTBEAT_STALE_MS = 10 * 60 * 1000;
+const HEARTBEAT_STALE_MS = 65 * 60 * 1000;
 const HEARTBEAT_POLL_MS = 60 * 1000;
 
 function getVibeLabel(score) {
@@ -273,13 +273,13 @@ export const dashboardRender = {
   },
 
   async refreshHeartbeatStatus() {
-    const result = await api.getLatestReactorHeartbeat();
-    if (!result?.success || !result?.data?.last_seen) {
+    const result = await api.getSystemStatusPing();
+    if (!result?.success || !result?.data?.last_ping) {
       this.setSystemStatus(false);
       return;
     }
 
-    const lastSeenMs = Date.parse(result.data.last_seen);
+    const lastSeenMs = Date.parse(result.data.last_ping);
     const isFresh = Number.isFinite(lastSeenMs) && Date.now() - lastSeenMs <= HEARTBEAT_STALE_MS;
     this.setSystemStatus(isFresh);
   },
