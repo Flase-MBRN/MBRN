@@ -97,19 +97,33 @@ export function getCurrentRoute(pathname = window.location.pathname) {
   
   console.log('[getCurrentRoute] pathname:', pathname, 'cleanPath:', cleanPath);
   
-  const systemMatch = SYSTEM_SURFACES.find((surface) => {
-    if (surface.id === 'home') return cleanPath === '/' || cleanPath.endsWith('/index.html');
-    return cleanPath.includes(`/${surface.route.replace(/index\.html$/, '')}`);
-  });
-  if (systemMatch) {
-    console.log('[getCurrentRoute] systemMatch:', systemMatch.id);
-    return systemMatch.id;
+  // System-Surfaces prüfen (Start, Dashboard)
+  for (const surface of SYSTEM_SURFACES) {
+    const routePath = `/${surface.route.replace(/index\.html$/, '')}`;
+    if (surface.id === 'home') {
+      if (cleanPath === '/' || cleanPath === '/index.html' || cleanPath.endsWith('/index.html')) {
+        console.log('[getCurrentRoute] home match');
+        return 'home';
+      }
+    } else {
+      if (cleanPath.startsWith(routePath) || cleanPath === routePath || cleanPath === routePath + '/') {
+        console.log('[getCurrentRoute] systemMatch:', surface.id);
+        return surface.id;
+      }
+    }
   }
 
-  const appMatch = APP_MANIFEST.find((app) => cleanPath.includes(`/${app.route.replace(/index\.html$/, '')}`));
-  const result = appMatch?.id || 'home';
-  console.log('[getCurrentRoute] appMatch:', result);
-  return result;
+  // Apps prüfen
+  for (const app of APP_MANIFEST) {
+    const routePath = `/${app.route.replace(/index\.html$/, '')}`;
+    if (cleanPath.startsWith(routePath) || cleanPath === routePath || cleanPath === routePath + '/') {
+      console.log('[getCurrentRoute] appMatch:', app.id);
+      return app.id;
+    }
+  }
+  
+  console.log('[getCurrentRoute] default: home');
+  return 'home';
 }
 
 export function renderNavigation(containerId = 'nav-menu') {
