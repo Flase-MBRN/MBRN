@@ -95,14 +95,21 @@ export function getCurrentRoute(pathname = window.location.pathname) {
   // GitHub Pages: /MBRN/ Präfix entfernen für Route-Erkennung
   const cleanPath = pathname.replace(/^\/MBRN\//, '/');
   
+  console.log('[getCurrentRoute] pathname:', pathname, 'cleanPath:', cleanPath);
+  
   const systemMatch = SYSTEM_SURFACES.find((surface) => {
     if (surface.id === 'home') return cleanPath === '/' || cleanPath.endsWith('/index.html');
     return cleanPath.includes(`/${surface.route.replace(/index\.html$/, '')}`);
   });
-  if (systemMatch) return systemMatch.id;
+  if (systemMatch) {
+    console.log('[getCurrentRoute] systemMatch:', systemMatch.id);
+    return systemMatch.id;
+  }
 
   const appMatch = APP_MANIFEST.find((app) => cleanPath.includes(`/${app.route.replace(/index\.html$/, '')}`));
-  return appMatch?.id || 'home';
+  const result = appMatch?.id || 'home';
+  console.log('[getCurrentRoute] appMatch:', result);
+  return result;
 }
 
 export function renderNavigation(containerId = 'nav-menu') {
@@ -117,6 +124,7 @@ export function renderNavigation(containerId = 'nav-menu') {
 
   buildNavigationEntries().forEach((entry) => {
     const isActive = currentRoute === entry.id;
+    console.log('[renderNavigation] entry:', entry.id, 'isActive:', isActive, 'currentRoute:', currentRoute);
     const hrefFallback = getRepoRoot() + entry.route;
 
     const link = dom.createEl('a', {
