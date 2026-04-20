@@ -95,50 +95,14 @@ export function getCurrentRoute(pathname = window.location.pathname) {
   // GitHub Pages: /MBRN/ Präfix entfernen für Route-Erkennung
   const cleanPath = pathname.replace(/^\/MBRN\//, '/');
   
-  console.log('[getCurrentRoute] pathname:', pathname, 'cleanPath:', cleanPath);
+  // Einfache Pfad-basierte Erkennung
+  if (cleanPath.includes('/dashboard/')) return 'dashboard';
+  if (cleanPath.includes('/apps/finance/')) return 'finance';
+  if (cleanPath.includes('/apps/numerology/')) return 'numerology';
+  if (cleanPath.includes('/apps/chronos/')) return 'chronos';
+  if (cleanPath.includes('/apps/synergy/')) return 'synergy';
   
-  // System-Surfaces prüfen (Start, Dashboard)
-  for (const surface of SYSTEM_SURFACES) {
-    const routeWithoutIndex = surface.route.replace(/index\.html$/, '');
-    const routePath = `/${routeWithoutIndex}`;
-    
-    console.log('[getCurrentRoute] checking surface:', surface.id, 'routePath:', routePath);
-    
-    if (surface.id === 'home') {
-      if (cleanPath === '/' || cleanPath === '/index.html' || cleanPath.endsWith('/index.html')) {
-        console.log('[getCurrentRoute] home match');
-        return 'home';
-      }
-    } else {
-      // Match mit und ohne index.html und mit/ohne trailing slash
-      if (cleanPath === routePath || 
-          cleanPath === routePath + '/' || 
-          cleanPath === routePath + '/index.html' ||
-          cleanPath.startsWith(routePath + '/')) {
-        console.log('[getCurrentRoute] systemMatch:', surface.id);
-        return surface.id;
-      }
-    }
-  }
-
-  // Apps prüfen
-  for (const app of APP_MANIFEST) {
-    const routeWithoutIndex = app.route.replace(/index\.html$/, '');
-    const routePath = `/${routeWithoutIndex}`;
-    
-    console.log('[getCurrentRoute] checking app:', app.id, 'routePath:', routePath);
-    
-    // Match mit und ohne index.html und mit/ohne trailing slash
-    if (cleanPath === routePath || 
-        cleanPath === routePath + '/' || 
-        cleanPath === routePath + '/index.html' ||
-        cleanPath.startsWith(routePath + '/')) {
-      console.log('[getCurrentRoute] appMatch:', app.id);
-      return app.id;
-    }
-  }
-  
-  console.log('[getCurrentRoute] default: home');
+  // Default: Start
   return 'home';
 }
 
@@ -154,7 +118,6 @@ export function renderNavigation(containerId = 'nav-menu') {
 
   buildNavigationEntries().forEach((entry) => {
     const isActive = currentRoute === entry.id;
-    console.log('[renderNavigation] entry:', entry.id, 'isActive:', isActive, 'currentRoute:', currentRoute);
     const hrefFallback = getRepoRoot() + entry.route;
 
     const link = dom.createEl('a', {
