@@ -56,11 +56,11 @@ async function loadErrorLogger({ withBrowser = true } = {}) {
     delete globalThis.navigator;
   }
 
-  await jest.unstable_mockModule('../shared/core/state.js', () => ({
+  await jest.unstable_mockModule('../shared/core/state/index.js', () => ({
     state: stateMock
   }));
 
-  await jest.unstable_mockModule('../shared/core/storage.js', () => ({
+  await jest.unstable_mockModule('../shared/core/storage/index.js', () => ({
     storage: storageMock
   }));
 

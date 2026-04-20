@@ -47,11 +47,11 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
     init: jest.fn()
   };
 
-  await jest.unstable_mockModule('../shared/core/state.js', () => ({
+  await jest.unstable_mockModule('../shared/core/state/index.js', () => ({
     state: stateMock
   }));
 
-  await jest.unstable_mockModule('../shared/core/storage.js', () => ({
+  await jest.unstable_mockModule('../shared/core/storage/index.js', () => ({
     storage: storageMock
   }));
 
@@ -74,7 +74,7 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
     }))
   }));
 
-  await jest.unstable_mockModule('../shared/core/config.js', () => ({
+  await jest.unstable_mockModule('../shared/core/config/index.js', () => ({
     IS_COMMERCIAL_MODE_ACTIVE: commercialActive,
     MBRN_CONFIG: {
       commercial: {

@@ -19,12 +19,12 @@ const storageMock = {
 };
 
 // Mock state.emit for tests
-jest.mock('../shared/core/state.js', () => ({
+jest.mock('../shared/core/state/index.js', () => ({
   state: stateMock
 }));
 
 // Mock storage module
-jest.mock('../shared/core/storage.js', () => ({
+jest.mock('../shared/core/storage/index.js', () => ({
   storage: storageMock
 }));
 
