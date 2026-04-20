@@ -14,6 +14,7 @@ import { i18n } from '../core/i18n.js';
 import { validateEmail } from '../core/validators.js';
 import { supabaseBridge } from '../../bridges/supabase/index.js';
 import { stripePaymentAdapter } from '../../commerce/payment_adapters/stripe_payment_adapter.js';
+import { buildCheckoutSessionRequest } from '../../pillars/monetization/billing/index.js';
 import { resolveCommercialGate } from '../../pillars/monetization/gates/entitlement_gate.js';
 
 const registry = new Map();
@@ -332,11 +333,13 @@ export const actions = {
     }
 
     state._authorizedEmit('syncStarted');
-    const priceId = productId === 'artifact'
-      ? MBRN_CONFIG.stripe.priceIdArtifact
-      : MBRN_CONFIG.stripe.priceIdArtifact;
+    const checkoutRequest = buildCheckoutSessionRequest(productId);
+    if (!checkoutRequest?.priceId) {
+      state._authorizedEmit('syncFailed');
+      return { success: false, error: 'Checkout product is not configured' };
+    }
 
-    const res = await stripePaymentAdapter.createCheckoutSession(priceId);
+    const res = await stripePaymentAdapter.createCheckoutSession(checkoutRequest.priceId);
 
     if (res.success && res.data?.url) {
       state.emit('checkoutRedirectRequested', { url: res.data.url });
@@ -368,4 +371,3 @@ export const actions = {
     return { success: false, error: res.error || 'Payment verification failed' };
   }
 };
-

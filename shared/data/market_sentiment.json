@@ -1,15 +1,15 @@
 {
-  "timestamp_utc": "2026-04-20T22:06:45.990615+00:00",
+  "timestamp_utc": "2026-04-20T23:07:22.480357+00:00",
   "source": "market_sentiment_pipeline",
-  "sentiment_score": 60,
-  "sentiment_label": "Neutral",
-  "confidence": 0.8,
-  "analysis": "Equities are mixed, VIX is rising, and crypto is showing momentum, but news headlines are neutral.",
+  "sentiment_score": 78,
+  "sentiment_label": "Greed",
+  "confidence": 0.85,
+  "analysis": "Mixed market sentiment with equities slightly down and VIX up, but crypto prices rising.",
   "recommendation": "hold",
   "crypto_bias": "bullish",
   "news_bias": "neutral",
-  "news_impact": 20,
-  "key_theme": "market volatility",
+  "news_impact": 2,
+  "key_theme": "regulatory risks",
   "market_data": [
     {
       "ticker": "SPY",
@@ -22,7 +22,7 @@
       "low": 706.14,
       "market_cap": 650450436096,
       "pe_ratio": 28.09885,
-      "timestamp": "2026-04-20T22:06:08.958335+00:00",
+      "timestamp": "2026-04-20T23:06:47.095441+00:00",
       "source": "yfinance"
     },
     {
@@ -36,7 +36,7 @@
       "low": 642.52,
       "market_cap": 254253137920,
       "pe_ratio": 34.170197,
-      "timestamp": "2026-04-20T22:06:09.241530+00:00",
+      "timestamp": "2026-04-20T23:06:47.381140+00:00",
       "source": "yfinance"
     },
     {
@@ -50,7 +50,7 @@
       "low": 492.31,
       "market_cap": 40160800768,
       "pe_ratio": 24.229465,
-      "timestamp": "2026-04-20T22:06:09.573940+00:00",
+      "timestamp": "2026-04-20T23:06:47.676164+00:00",
       "source": "yfinance"
     },
     {
@@ -64,7 +64,7 @@
       "low": 274.53,
       "market_cap": 77949214720,
       "pe_ratio": 20.078989,
-      "timestamp": "2026-04-20T22:06:09.909024+00:00",
+      "timestamp": "2026-04-20T23:06:47.991339+00:00",
       "source": "yfinance"
     },
     {
@@ -78,45 +78,59 @@
       "low": 18.77,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T22:06:10.183150+00:00",
+      "timestamp": "2026-04-20T23:06:48.261255+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "BTC-USD",
       "asset_class": "crypto",
-      "price": 76153.48,
-      "change": 2297.12,
-      "change_percent": 3.11,
-      "volume": 41346514944,
+      "price": 75796.39,
+      "change": 1940.04,
+      "change_percent": 2.63,
+      "volume": 39759020032,
       "high": 76469.56,
       "low": 73820.11,
-      "market_cap": 1523240534016,
+      "market_cap": 1518247215104,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T22:06:10.513767+00:00",
+      "timestamp": "2026-04-20T23:06:48.520803+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "ETH-USD",
       "asset_class": "crypto",
-      "price": 2327.51,
-      "change": 62.59,
-      "change_percent": 2.76,
-      "volume": 20255096832,
+      "price": 2313.86,
+      "change": 48.94,
+      "change_percent": 2.16,
+      "volume": 19224115200,
       "high": 2342.29,
       "low": 2263.49,
-      "market_cap": 280626135040,
+      "market_cap": 279272456192,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T22:06:10.809466+00:00",
+      "timestamp": "2026-04-20T23:06:48.771581+00:00",
       "source": "yfinance"
     }
   ],
   "news_feed": [
     {
-      "source": "Google News Markets",
-      "title": "Why the Stock Market Refuses to Give Up Its Gains - Barron's",
-      "summary": "Why the Stock Market Refuses to Give Up Its Gains Barron's",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxON1NzSXBRX1gwUHBZTEhPWkhBaWtONkQ1YVkxd2NEeDZkZWhGb2ZYLTgzR3JRX0xyNjVDa0ZybUdVYzI2Y2ZRb0w0T0FEMXhrczhIaE9abGN3eHNTUkgtdjF5SktIdldPcDFQendKR0oyVXRFaTFiYmVILUZuS1hxR000bUlqczVG?oc=5",
-      "published_at": "2026-04-20T20:20:00+00:00"
+      "source": "Google News Business",
+      "title": "Banking industry scrambles for Anthropic's Mythos as global regulators review risks - Reuters",
+      "summary": "Banking industry scrambles for Anthropic's Mythos as global regulators review risks Reuters",
+      "link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPRHBGdXc4MW82dlM2U21Kc05mVkdsbERMSEVKQ3Y4Ty12WElOQ3dkdmRKQTF2S18zQzcweXhQSmJZWEY2UTFnTEFEazl6Q1ZnakxuRXZocnhwY0NwVjVLMTB5bDdCdW41THBWQXluLTdQM0tTaS1aVHV1UHp0RGtmN3F5bWNYeWdQSjJ1OEdEX0hIYXBad04tMFBwN0dXT2RCTzQtV294bVlma2pRS1A0dloyVWtUN1FzdVhqb3EyZC1RaTRX?oc=5",
+      "published_at": "2026-04-20T22:11:38+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Rich Products Launches First Responsible Business Report, Reflecting a Long-standing, Values-Driven Approach to Responsible Growth - Yahoo Finance",
+      "summary": "Rich Products Launches First Responsible Business Report, Reflecting a Long-standing, Values-Driven Approach to Responsible Growth Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOdHRWcy12QjBHTG5Nb3FtVjZZalc4ZzcxQm5nY2tiT282cndaLUJMR0F0VHJFZ3ZTVTRCN0E1WnZPYV84ZW5OTWRfTFFvYXlmYXlnTk9aTWptRGo4RGk5UnBPSHhSZk95T3g1YWV4M1N5ODhQci1uMGtLTU1MUkU4UEF5WWM2R3hicW1kYS1fME9lOWtqd0J1RmNhQ19EQzhzV01GeHVjY0tuLUdSM0E?oc=5",
+      "published_at": "2026-04-20T22:04:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Alpha Cognition Strengthens Its Board of Directors with Appointment of Bethany Sensenig - Yahoo Finance",
+      "summary": "Alpha Cognition Strengthens Its Board of Directors with Appointment of Bethany Sensenig Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNV05kMDVLNWNsbi1Wa1E0SUVQQ3BTVG5mc0o4TTRwcW92T1pBODZKdGtadDRCVWY4NHpBaFJRNU1CMVNOZGJ0WWstUDJWVlpfOW82R203MURWQ0l6S2VqVVA1SU4tNE1vSGs2SzdacEdPQ3BtSmZhT0NyM0VaYmZrQmY5Z0dMWnFfck5zdHgwOWs0ZmJEbXFiWTB6WmVJYjJNV0VNMkxqd0ZPQ0h1ZTZRRlJ3?oc=5",
+      "published_at": "2026-04-20T21:00:00+00:00"
     },
     {
       "source": "Google News Business",
@@ -166,32 +180,18 @@
       "summary": "Oaktree-Backed Firm Buys Advisory Los Angeles Business Journal",
       "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1OS2xnRXZKWmdnaGdHREJZYkxwelF0bjl2T3p0SUVrazVidnU5OW5icW5ZRTRQMzNFY0J6QW1Tclc1SnViR0ZpTm9na2l4TER1el9iTGt1cGVxY1NRQzN5ZE91TUhiVVpzYUhzUmhtdmZjQlZmRjNtWmVTeEI?oc=5",
       "published_at": "2026-04-20T18:54:05+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Former Marcum Wealth exec wins $3.2M in gender discrimination suit - Crain's Cleveland Business",
-      "summary": "Former Marcum Wealth exec wins $3.2M in gender discrimination suit Crain's Cleveland Business",
-      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNNWl4VmRtak0xb3dwcG9tc1BJcG1SMDRCcG5kVk5RODJMTEs5S3dPdnpiaVRkMnpNSDd6VUNXbi16RmRNdVhnS1NQNjZKVFBfeGFCVmFuOXlGX2p5SDY5LUlLN0NMeFJobERnWEJKWkM4NTJNVk05TlhzcWhIQXlydnhkajd2WWhQRkU1ZGVYczNRYXNOLW5CeA?oc=5",
-      "published_at": "2026-04-20T18:45:00+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Kurita Invests in Cyclopure to Accelerate PFAS Business Expansion Utilizing DEXSORB in the United States - Yahoo Finance",
-      "summary": "Kurita Invests in Cyclopure to Accelerate PFAS Business Expansion Utilizing DEXSORB in the United States Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRl9hZER6UktsY1dHSGppU1p3Z2paSi1HWERBY2NsWVhrdy1JTzRzTzctdnBVUFd0b0FWLTdfYjRFczgzSlJ4WDNfM1JjS0VOMEEwdzl4Wk1xSXdqczlGT0dBOVVXVU9CYTFsZ0lyOVYwYTZFNzVDV1RQMjhyeTVwTHZ1bVZ4TEFQanY2cFpIOXpoX2h4eEFDRmhuNXpRWkFNRzNUVVlvS2ZYV25scFE?oc=5",
-      "published_at": "2026-04-20T18:30:00+00:00"
     }
   ],
   "mbrn_enriched": {
-    "sentiment_score": 60,
-    "confidence": 0.8,
-    "analysis": "Equities are mixed, VIX is rising, and crypto is showing momentum, but news headlines are neutral.",
+    "sentiment_score": 78,
+    "confidence": 0.85,
+    "analysis": "Mixed market sentiment with equities slightly down and VIX up, but crypto prices rising.",
     "recommendation": "hold",
     "crypto_bias": "bullish",
     "news_bias": "neutral",
-    "news_impact": 20,
-    "key_theme": "market volatility",
+    "news_impact": 2,
+    "key_theme": "regulatory risks",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-20T22:06:45.990364+00:00"
+    "processed_at": "2026-04-20T23:07:22.480082+00:00"
   }
 }

@@ -9,7 +9,7 @@ import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../sh
 import { getRepoRoot, nav, renderNavigation } from '../pillars/frontend_os/navigation/index.js';
 import { renderAuth } from '../pillars/frontend_os/ui_states/auth_controller.js';
 import { sentimentWidget } from '../pillars/frontend_os/cards/sentiment_widget.js';
-import { errorBoundary } from '../shared/ui/error_boundary.js';
+import { errorBoundary } from '../shared/ui/base_components/error_boundary.js';
 import { injectLegalBlock } from '../pillars/frontend_os/shell/legal_blocks.js';
 import { readOracleDashboardSnapshot } from '../shared/application/read_models/oracle_dashboard.js';
 import { readSystemHeartbeat } from '../shared/application/read_models/system_status.js';

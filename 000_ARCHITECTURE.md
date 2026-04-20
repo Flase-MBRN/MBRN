@@ -71,7 +71,11 @@ Minimal aktiv:
 - weitere Businesszonen reserviert
 
 ### `meta_generator`
-Geplant, nicht aktiv implementiert.
+Seed-aktiv:
+
+- erste Generator-Subsysteme vorhanden
+- erste interne Workflow-Konsumenten vorhanden
+- noch nicht voll ausgebaut
 
 ## Dimensions
 

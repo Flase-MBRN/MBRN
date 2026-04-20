@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from '@jest/globals';
-import { clearMBRNLocalData, listMBRNKeys } from '../shared/core/legal_storage.js';
+import { clearMBRNLocalData, listMBRNKeys } from '../shared/core/legal/storage.js';
 
 afterEach(() => {
   delete globalThis.localStorage;

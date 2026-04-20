@@ -20,6 +20,9 @@ describe('registries and contracts', () => {
       'oracle',
       'frontend_os'
     ]);
+    expect(PILLAR_REGISTRY.find((pillar) => pillar.id === 'meta_generator')).toEqual(
+      expect.objectContaining({ status: 'seed' })
+    );
     PILLAR_REGISTRY.forEach((pillar) => {
       expect(pillar).toEqual(expect.objectContaining({
         id: expect.any(String),

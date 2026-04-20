@@ -54,6 +54,7 @@ function buildNavigationEntries() {
       const dimension = getDimensionById(app.dimensionId);
       return {
         id: app.id,
+        dimensionId: app.dimensionId,
         label: dimension?.publicLabel || app.label,
         route: app.route,
         icon: app.icon
@@ -69,6 +70,10 @@ function buildNavigationEntries() {
     ...systemEntries,
     ...appEntries
   ];
+}
+
+export function getNavigationEntries() {
+  return buildNavigationEntries();
 }
 
 function renderGlobalLegalRail() {

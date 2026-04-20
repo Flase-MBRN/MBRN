@@ -2,7 +2,7 @@ export const PILLAR_REGISTRY = Object.freeze([
   {
     id: 'meta_generator',
     label: 'Meta Generator',
-    status: 'planned',
+    status: 'seed',
     capabilities: ['blueprints', 'content', 'modules', 'assets', 'agent_adapters'],
     serviceContracts: ['generator_outputs']
   },

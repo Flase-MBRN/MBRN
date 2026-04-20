@@ -13,7 +13,7 @@ import { generateShareCard, generateTeaserAsset, generateOperatorReport } from '
 import { renderShareCardToCanvas, renderTeaserCardToCanvas } from '../../shared/ui/helpers/canvas_renderer.js';
 import { OPERATOR_MATRIX } from '../../shared/core/logic/numerology/index.js';
 import { i18n } from '../../shared/core/i18n.js';
-import { errorBoundary } from '../../shared/ui/error_boundary.js';
+import { errorBoundary } from '../../shared/ui/base_components/error_boundary.js';
 import { injectLegalBlock } from '../../pillars/frontend_os/shell/legal_blocks.js';
 
 const STORAGE_KEY = 'numerology_input';

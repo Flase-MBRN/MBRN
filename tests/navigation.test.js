@@ -86,10 +86,11 @@ async function loadNavigation() {
     renderPolicyLinks: renderPolicyLinksMock
   }));
 
-  const { nav } = await import('../pillars/frontend_os/navigation/index.js');
+  const { nav, getNavigationEntries } = await import('../pillars/frontend_os/navigation/index.js');
 
   return {
     nav,
+    getNavigationEntries,
     stateMock,
     touchManagerMock,
     domMock,
@@ -176,5 +177,16 @@ describe('frontend_os navigation', () => {
     expect(app.destroy).toHaveBeenCalledTimes(1);
     expect(nav._currentApp).toBeNull();
     expect(nav._navigationBound).toBe(false);
+  });
+
+  test('navigation entries follow manifest membership and dimension navigation order', async () => {
+    const { getNavigationEntries } = await loadNavigation();
+    expect(getNavigationEntries().map((entry) => entry.id)).toEqual([
+      'home',
+      'dashboard',
+      'finance',
+      'numerology',
+      'chronos'
+    ]);
   });
 });

@@ -1,8 +1,9 @@
 /**
  * /shared/ui/theme.css
- * DEPRECATED FACADE - Re-exports from tokens/ and theme/
- * This file exists for backward compatibility during migration.
- * TODO: Update imports to use tokens/index.css or theme/starry_sky.css directly
+ * Public aggregate theme entrypoint for no-build HTML surfaces.
+ *
+ * This file intentionally composes the shared token and theme layers so
+ * static HTML entrypoints can keep one stable stylesheet import.
  */
 
 @import url('./tokens/index.css');
