@@ -1,5 +1,5 @@
 /**
- * /shared/core/state.js
+ * /shared/core/state/index.js
  * Global State Manager - Pub/Sub Event System
  */
 

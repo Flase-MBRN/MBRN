@@ -1,15 +1,15 @@
 {
-  "timestamp_utc": "2026-04-20T21:06:07.820879+00:00",
+  "timestamp_utc": "2026-04-20T22:06:45.990615+00:00",
   "source": "market_sentiment_pipeline",
   "sentiment_score": 60,
   "sentiment_label": "Neutral",
   "confidence": 0.8,
-  "analysis": "Mixed market sentiment with equities slightly down, VIX up, and crypto prices rising.",
+  "analysis": "Equities are mixed, VIX is rising, and crypto is showing momentum, but news headlines are neutral.",
   "recommendation": "hold",
   "crypto_bias": "bullish",
   "news_bias": "neutral",
-  "news_impact": 5,
-  "key_theme": "tariff refunds",
+  "news_impact": 20,
+  "key_theme": "market volatility",
   "market_data": [
     {
       "ticker": "SPY",
@@ -22,7 +22,7 @@
       "low": 706.14,
       "market_cap": 650450436096,
       "pe_ratio": 28.09885,
-      "timestamp": "2026-04-20T21:05:31.859204+00:00",
+      "timestamp": "2026-04-20T22:06:08.958335+00:00",
       "source": "yfinance"
     },
     {
@@ -36,7 +36,7 @@
       "low": 642.52,
       "market_cap": 254253137920,
       "pe_ratio": 34.170197,
-      "timestamp": "2026-04-20T21:05:32.154504+00:00",
+      "timestamp": "2026-04-20T22:06:09.241530+00:00",
       "source": "yfinance"
     },
     {
@@ -50,7 +50,7 @@
       "low": 492.31,
       "market_cap": 40160800768,
       "pe_ratio": 24.229465,
-      "timestamp": "2026-04-20T21:05:32.472768+00:00",
+      "timestamp": "2026-04-20T22:06:09.573940+00:00",
       "source": "yfinance"
     },
     {
@@ -64,7 +64,7 @@
       "low": 274.53,
       "market_cap": 77949214720,
       "pe_ratio": 20.078989,
-      "timestamp": "2026-04-20T21:05:32.766378+00:00",
+      "timestamp": "2026-04-20T22:06:09.909024+00:00",
       "source": "yfinance"
     },
     {
@@ -78,39 +78,46 @@
       "low": 18.77,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T21:05:33.036962+00:00",
+      "timestamp": "2026-04-20T22:06:10.183150+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "BTC-USD",
       "asset_class": "crypto",
-      "price": 76270.19,
-      "change": 2413.84,
-      "change_percent": 3.27,
-      "volume": 41341751296,
+      "price": 76153.48,
+      "change": 2297.12,
+      "change_percent": 3.11,
+      "volume": 41346514944,
       "high": 76469.56,
       "low": 73820.11,
-      "market_cap": 1527316742144,
+      "market_cap": 1523240534016,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T21:05:33.290433+00:00",
+      "timestamp": "2026-04-20T22:06:10.513767+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "ETH-USD",
       "asset_class": "crypto",
-      "price": 2341.6,
-      "change": 76.68,
-      "change_percent": 3.39,
-      "volume": 20182962176,
-      "high": 2338.09,
+      "price": 2327.51,
+      "change": 62.59,
+      "change_percent": 2.76,
+      "volume": 20255096832,
+      "high": 2342.29,
       "low": 2263.49,
-      "market_cap": 282077593600,
+      "market_cap": 280626135040,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T21:05:33.727741+00:00",
+      "timestamp": "2026-04-20T22:06:10.809466+00:00",
       "source": "yfinance"
     }
   ],
   "news_feed": [
+    {
+      "source": "Google News Markets",
+      "title": "Why the Stock Market Refuses to Give Up Its Gains - Barron's",
+      "summary": "Why the Stock Market Refuses to Give Up Its Gains Barron's",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxON1NzSXBRX1gwUHBZTEhPWkhBaWtONkQ1YVkxd2NEeDZkZWhGb2ZYLTgzR3JRX0xyNjVDa0ZybUdVYzI2Y2ZRb0w0T0FEMXhrczhIaE9abGN3eHNTUkgtdjF5SktIdldPcDFQendKR0oyVXRFaTFiYmVILUZuS1hxR000bUlqczVG?oc=5",
+      "published_at": "2026-04-20T20:20:00+00:00"
+    },
     {
       "source": "Google News Business",
       "title": "Tariff refunds are coming for US businesses: 3 things to know - Yahoo Finance",
@@ -124,27 +131,6 @@
       "summary": "Blue Origin acknowledged the satellite was placed in the wrong orbit, but has not commented since it was deemed lost.",
       "link": "https://www.cnbc.com/2026/04/20/ast-falls-after-bezos-blue-origin-places-satellite-in-wrong-orbit.html",
       "published_at": "2026-04-20T20:01:02+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Deutsche Bank CEO says 'everyone' trying to access Anthropic's Mythos as global regulators review risks - Reuters",
-      "summary": "Deutsche Bank CEO says 'everyone' trying to access Anthropic's Mythos as global regulators review risks Reuters",
-      "link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPRHBGdXc4MW82dlM2U21Kc05mVkdsbERMSEVKQ3Y4Ty12WElOQ3dkdmRKQTF2S18zQzcweXhQSmJZWEY2UTFnTEFEazl6Q1ZnakxuRXZocnhwY0NwVjVLMTB5bDdCdW41THBWQXluLTdQM0tTaS1aVHV1UHp0RGtmN3F5bWNYeWdQSjJ1OEdEX0hIYXBad04tMFBwN0dXT2RCTzQtV294bVlma2pRS1A0dloyVWtUN1FzdVhqb3EyZC1RaTRX?oc=5",
-      "published_at": "2026-04-20T20:00:05+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "$166 Billion in Tariff Refunds: What to Know - AARP",
-      "summary": "$166 Billion in Tariff Refunds: What to Know AARP",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBIUVBoRENab1hOVUY1S1B6TG9Xa3JNWVVKZVNBWHVKaWFNd0ZKdFpNWHJFV3JHNGdoYXF4eV9HV1JHekF4dmlEYWwwb0M1WEZPSFJoMzZSV0pWOGpIZkw3YVQ3a2NDMGEzVExB?oc=5",
-      "published_at": "2026-04-20T19:56:36+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "3 Services Stocks We Find Risky - Yahoo Finance",
-      "summary": "3 Services Stocks We Find Risky Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOVWdzTmtlZWRQc1cxSFpHNXNuS0JCQ0VQUWF0S0dxOU9wLXJNMHZQYVZXUUVOcEJkeTJNWDJXYS1qa0lFZ0VrRjlBdDVIRExZYi1xbmFCakFUU3dyVUVHTkJvNjI4N0tQcDdocndOOWhMa1pyZ0FwRTYwMjNhcTR0bDJ0T2Y0WWhmSENDeDM4WUNmZw?oc=5",
-      "published_at": "2026-04-20T19:41:32+00:00"
     },
     {
       "source": "Google News Business",
@@ -162,6 +148,13 @@
     },
     {
       "source": "Google News Business",
+      "title": "Former SBS Finance Exec Roberto Castro Joins MediaCo Leadership Team. - Insideradio.com",
+      "summary": "Former SBS Finance Exec Roberto Castro Joins MediaCo Leadership Team. Insideradio.com",
+      "link": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQTWQ0SzBiUVZ0cHpaOGtOU2h3Y1BXNzQ2dUVEYVRreHlnLTZLYmQwUmVMM1JZZmVKZFNXbk9tLThoVk5aOGRrdWNQci1ablc2bDI0R0padXRyNUxETE9LX1cxUWcwenNyQnMtUVVzWGdVYkpuWjcxb1A0eE1aa3dMYm9zbXJxSzNRRUUxOWRpODM0UFNHMU9kaDJwbDdoVkQyY2JCMXQwckFWd1NDY3JnbWlqbnRvdS1EUjI2dWItNXdZTEFwd3g5NlFfTjdQNXdBb0d3cEdKR2NyUkZYQTNUUG5ZSWNXdw?oc=5",
+      "published_at": "2026-04-20T19:15:00+00:00"
+    },
+    {
+      "source": "Google News Business",
       "title": "Following National Stage Debut, Strategic Architect Michelle May O’Neil of Concierra Business Announces Free Live Training on Founder Overload for April 28 - Yahoo Finance",
       "summary": "Following National Stage Debut, Strategic Architect Michelle May O’Neil of Concierra Business Announces Free Live Training on Founder Overload for April 28 Yahoo Finance",
       "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQQjl3MjQyLVhJdHRGbF9waUdLczFYYnZCUlF4TmQxUkdybjB2YTBZZzdZZkhOT3hCYW9yTEFBWExOc2FZcDhuN21QMmlDLTdRVjV1YVNKdWFxbHF4MlZ2VHd5WDlRdk1zQjlldG9QUmp6VmNpT2VoYVpFS2VMZ2dNdHUtUWZOT2hWNVV0dmthU3JGaTJWenZDWnhmS1lSdGR0OFZTckxCWFkyMV9NZEE?oc=5",
@@ -169,29 +162,36 @@
     },
     {
       "source": "Google News Business",
-      "title": "Northstar Financial Advisory Highlights Rising Demand for Cannabis Accounting and Tax Specialists in the US as Operators Navigate 280E and Multi-State Complexity - Yahoo Finance",
-      "summary": "Northstar Financial Advisory Highlights Rising Demand for Cannabis Accounting and Tax Specialists in the US as Operators Navigate 280E and Multi-State Complexity Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQV19jRGtKVVdIcmtXNEhMZlRmSjhyZGhPQWt6TXFaRmQ0azQ4dEhSajlrSlQ1VDJNcXF5SWloUFExSWpSZHlmUG51Xzh6UmkzRU9jV1JaOElIaUhjeU5NamJ5Z3lYcmdublF1ZnppQnBYSk1BZlZXUndvMGh1X083ZHhDVzJxZmRWWmswQ2VqWVMwajdfbzNaX19OUnhydDRENXZUM2FWSkxjTTZhZ2dydUNRblhIdw?oc=5",
-      "published_at": "2026-04-20T19:07:00+00:00"
-    },
-    {
-      "source": "Google News Business",
       "title": "Oaktree-Backed Firm Buys Advisory - Los Angeles Business Journal",
       "summary": "Oaktree-Backed Firm Buys Advisory Los Angeles Business Journal",
       "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1OS2xnRXZKWmdnaGdHREJZYkxwelF0bjl2T3p0SUVrazVidnU5OW5icW5ZRTRQMzNFY0J6QW1Tclc1SnViR0ZpTm9na2l4TER1el9iTGt1cGVxY1NRQzN5ZE91TUhiVVpzYUhzUmhtdmZjQlZmRjNtWmVTeEI?oc=5",
       "published_at": "2026-04-20T18:54:05+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Former Marcum Wealth exec wins $3.2M in gender discrimination suit - Crain's Cleveland Business",
+      "summary": "Former Marcum Wealth exec wins $3.2M in gender discrimination suit Crain's Cleveland Business",
+      "link": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNNWl4VmRtak0xb3dwcG9tc1BJcG1SMDRCcG5kVk5RODJMTEs5S3dPdnpiaVRkMnpNSDd6VUNXbi16RmRNdVhnS1NQNjZKVFBfeGFCVmFuOXlGX2p5SDY5LUlLN0NMeFJobERnWEJKWkM4NTJNVk05TlhzcWhIQXlydnhkajd2WWhQRkU1ZGVYczNRYXNOLW5CeA?oc=5",
+      "published_at": "2026-04-20T18:45:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Kurita Invests in Cyclopure to Accelerate PFAS Business Expansion Utilizing DEXSORB in the United States - Yahoo Finance",
+      "summary": "Kurita Invests in Cyclopure to Accelerate PFAS Business Expansion Utilizing DEXSORB in the United States Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQRl9hZER6UktsY1dHSGppU1p3Z2paSi1HWERBY2NsWVhrdy1JTzRzTzctdnBVUFd0b0FWLTdfYjRFczgzSlJ4WDNfM1JjS0VOMEEwdzl4Wk1xSXdqczlGT0dBOVVXVU9CYTFsZ0lyOVYwYTZFNzVDV1RQMjhyeTVwTHZ1bVZ4TEFQanY2cFpIOXpoX2h4eEFDRmhuNXpRWkFNRzNUVVlvS2ZYV25scFE?oc=5",
+      "published_at": "2026-04-20T18:30:00+00:00"
     }
   ],
   "mbrn_enriched": {
     "sentiment_score": 60,
     "confidence": 0.8,
-    "analysis": "Mixed market sentiment with equities slightly down, VIX up, and crypto prices rising.",
+    "analysis": "Equities are mixed, VIX is rising, and crypto is showing momentum, but news headlines are neutral.",
     "recommendation": "hold",
     "crypto_bias": "bullish",
     "news_bias": "neutral",
-    "news_impact": 5,
-    "key_theme": "tariff refunds",
+    "news_impact": 20,
+    "key_theme": "market volatility",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-20T21:06:07.820695+00:00"
+    "processed_at": "2026-04-20T22:06:45.990364+00:00"
   }
 }

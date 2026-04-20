@@ -74,7 +74,7 @@ async function loadNavigation() {
     state: stateMock
   }));
 
-  await jest.unstable_mockModule('../shared/ui/touch_manager.js', () => ({
+  await jest.unstable_mockModule('../pillars/frontend_os/navigation/touch_manager.js', () => ({
     touchManager: touchManagerMock
   }));
 

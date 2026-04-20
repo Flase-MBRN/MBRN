@@ -43,6 +43,10 @@ describe('Registry-Metadata Consistency', () => {
     for (const app of APP_MANIFEST) {
       const dimension = DIMENSION_REGISTRY.find(d => d.id === app.dimensionId);
       if (dimension && app.surfaceFlags) {
+        if (app.status === 'provisional') {
+          continue;
+        }
+
         // Warn if navigation flags differ (log but don't fail)
         if (app.surfaceFlags.includeInNavigation !== dimension.surfaceFlags.includeInNavigation) {
           console.warn(
@@ -58,6 +62,14 @@ describe('Registry-Metadata Consistency', () => {
         }
       }
     }
+  });
+
+  test('provisional apps may intentionally diverge from dimension surface flags', () => {
+    const synergy = APP_MANIFEST.find(app => app.id === 'synergy');
+    expect(synergy).toBeDefined();
+    expect(synergy?.status).toBe('provisional');
+    expect(synergy?.surfaceFlags?.includeInNavigation).toBe(false);
+    expect(synergy?.surfaceFlags?.includeInDashboard).toBe(false);
   });
 
   test('Dimension navigationOrder values are unique and sorted', () => {

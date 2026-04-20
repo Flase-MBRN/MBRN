@@ -3,7 +3,7 @@
    Minimal additions to theme.css + components.css
    ======================================== */
 
-@import url('./theme.css');
+@import url('../../../shared/ui/theme.css');
 
 /* ===== LANDING-SPECIFIC LAYOUTS ===== */
 

@@ -1,7 +1,7 @@
 import { APP_MANIFEST } from '../../../shared/core/registries/app_manifest.js';
 import { DIMENSION_REGISTRY, getDimensionById } from '../../../shared/core/registries/dimension_registry.js';
 import { state } from '../../../shared/core/state/index.js';
-import { touchManager } from '../../../shared/ui/touch_manager.js';
+import { touchManager } from './touch_manager.js';
 import { dom } from '../../../shared/ui/dom_utils.js';
 import { renderPolicyLinks } from '../shell/legal_blocks.js';
 

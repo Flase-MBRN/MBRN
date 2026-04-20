@@ -1,6 +1,6 @@
 /**
- * /shared/core/storage.js
- * LocalStorage Wrapper - Enforces 'mbrn_' prefix and structured returns.
+ * /shared/core/storage/index.js
+ * LocalStorage wrapper with structured returns and mbrn_ namespacing.
  */
 
 export const STORAGE_PREFIX = 'mbrn_';

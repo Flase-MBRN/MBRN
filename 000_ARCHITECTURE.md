@@ -1,185 +1,89 @@
-# 000_ARCHITECTURE.md — MBRN MASTER DIRECTIVE v5.1
+# 000_ARCHITECTURE.md
 
-> **ZERO-TOLERANCE AI DIRECTIVE:**
-> Dieses Dokument beschreibt die aktive Systemwahrheit. Keine Konzeptänderung ohne Freigabe durch den System Architect. Keine Doku darf einen Stand behaupten, der im Code nicht existiert.
+## Zweck
+Dieses Dokument beschreibt die **aktive** Systemwahrheit von MBRN Hub.
 
----
+Es darf keinen zukünftigen Zustand als bereits umgesetzt behaupten.
 
-> **V3 IST 100% COMPLETE**
-> Phasen 1-5 abgeschlossen. Architektur ist final und stabil.
+## Aktueller Zielzustand
 
----
+MBRN ist aktuell auf einen **plattformsauberen v3-Zustand** gebracht:
 
-## 01 — Vision
+- nur eine technische Wahrheit im Repo
+- IO-freier Core
+- Cross-Pillar-Orchestrierung im Application-Layer
+- Bridges und Commerce als technische Außenhaut
+- Frontend OS als aktive Surface-Komposition
+- ehrliche, nicht überbehauptete Pillars
 
-MBRN ist kein loses Tool-Set, sondern ein Membran-System zwischen Potenzial, Struktur und operativer Umsetzung. Die UI darf spektakulär wirken, aber das Fundament bleibt strikt modular, lokal beherrschbar und langfristig erweiterbar.
+Dieser Stand ist **nicht** die volle Vision mit 11 Dimensions oder 4 komplett ausgebauten Businesses.
 
-Kernsatz:
+## Architekturgesetze
 
-```text
-MBRN — built to be used
-```
+1. `shared/core/` kennt keine externe IO.
+2. `shared/application/` verbindet Core, Bridges, Commerce und Oberflächen.
+3. `bridges/*` und `commerce/*` tragen technische Integrationen.
+4. `pillars/frontend_os/` enthält Surface-Komposition, nicht Primitive oder Providerlogik.
+5. `shared/ui/` bleibt business-blinde UI-Infrastruktur.
+6. `dimensionRegistry` ist die kanonische Runtime-Wahrheit für Dimensions.
+7. `dimensions/*/metadata.json` sind Spiegel, nicht Primärquelle.
+8. Reservierte Zielzonen bleiben markiert statt künstlich mit Fake-Logik gefüllt.
 
----
-
-## 02 — Die Gesetze
-
-### Core Laws
-
-1. **Module Responsibility** — Ein File, eine Aufgabe.
-2. **No Direct DOM in Core** — DOM-Zugriff gehört in UI-Layer.
-3. **Safe Rendering** — Dynamische UI-Erzeugung über sichere DOM-Hilfen, nicht über rohe HTML-Strings.
-4. **Structured Returns** — Funktionen liefern strukturierte Objekte, keine impliziten Rohwerte.
-5. **Idempotenz** — Wiederholte Ausführung darf keinen Chaoszustand erzeugen.
-6. **Fallback State** — UX darf bei Ausfällen nicht brechen.
-7. **No Magic Numbers** — Schwellenwerte gehören in Konfiguration oder klar benannte Konstanten.
-8. **No-Build Production** — Kein Framework-Bundling im produktiven App-Code.
-9. **Relative Project Paths** — Keine hartverdrahteten lokalen Sonderpfade im aktiven Kernel.
-
-### Universe Protocol
-
-10. **Professionalität vor Sichtbarkeit** — Kein Launch vor finalisiertem Kern.
-11. **Modular Infinity** — Jede Komponente muss für langfristige Erweiterung gebaut sein.
-12. **Pillar Isolation** — UI, Logik, Datenarbeit und API-Zone bleiben klar getrennt.
-
----
-
-## 03 — Design Code
-
-MBRN folgt dem Sternenhimmel-Prinzip:
-
-- dunkle Void-Basis statt generischem Schwarz
-- wenige, präzise Glow-Akzente
-- Glassmorphism mit Zurückhaltung
-- viel Raum, wenig Lärm
-- Datenästhetik statt Kitsch
-
-Referenzfarben:
-
-```text
-Hintergrund: #05050A
-Surface:     #0A0A0F
-Akzent:      #7B5CF5
-Text:        #F5F5F5
-```
-
----
-
-## 04 — Aktiver Tech Stack
-
-| Layer | Technologie | Rolle |
-|---|---|---|
-| **Frontend** | Vanilla JavaScript (ES Modules) | Dashboard, Apps, Routing |
-| **State** | Pub/Sub (`state.js`) | entkoppelter Event-Fluss |
-| **Storage** | LocalStorage + Supabase | instant-on plus Sync |
-| **Styling** | CSS Variables + globale Komponenten | SSoT für Design |
-| **DOM** | `dom_utils.js` / `shared/ui/dom/*` | sichere DOM-Erzeugung |
-| **Python Workers** | `scripts/pipelines/` | Market Sentiment, RSS, Uplinks |
-| **Oracle Layer** | `scripts/oracle/` | Prognose, Backtesting, Replay |
-| **AI / Inference** | Lokales Ollama mit Llama 3.1 | RX 7700 XT, keine Paid-Abhängigkeit |
-| **Backend Bridge** | Supabase + Edge Functions | Auth, Persistenz, optionale API-Zone |
-| **Docs** | aktive Markdown-Kerndokumente | nur Live-Wissen, kein Archivballast |
-
-**No-Build Policy:** Produktionscode in `/apps`, `/dashboard` und `/shared` bleibt browsernativ und importiert nur `.js`-Module.
-
----
-
-## 05 — Aktive Struktur
+## Aktive Struktur
 
 ```text
 /MBRN-HUB-V1
-│
-├── /shared
-│   ├── /core
-│   ├── /application
-│   ├── /ui
-│   └── /loyalty
-│
-├── /pillars
-│   ├── /meta_generator
-│   ├── /monetization
-│   ├── /oracle
-│   └── /frontend_os
-│
-├── /dimensions
-├── /apps
-├── /bridges
-├── /commerce
-├── /dashboard
-├── /scripts/pipelines
-├── /scripts/oracle
-├── /supabase/functions
-├── /templates
-├── /docs
-└── index.html
+  /shared
+    /core
+    /application
+    /ui
+    /loyalty
+  /pillars
+    /meta_generator
+    /monetization
+    /oracle
+    /frontend_os
+  /dimensions
+  /apps
+  /bridges
+  /commerce
+  /dashboard
+  /scripts
+  /supabase
 ```
 
-**Wahrheitsnotiz:** Historische Dokumentationsarchive liegen nicht mehr unter `docs/` im aktiven Repo. Sie wurden extern nach `C:\DevLab_Archive\MBRN-HUB-V1_docs_archive_20260419_205331` ausgelagert.
+## Reifegrad der 4 Pillars
 
----
+### `frontend_os`
+Aktiv und produktiv genutzt.
 
-## 06 — Die vier Säulen
+### `oracle`
+Teilweise aktiv:
 
-### Säule 1 — Meta-Generator
+- `browser_read` aktiv
+- Heavy-Processing weiter operativ in `scripts/oracle/`
+- übrige Unterzonen reserviert
 
-- `pillars/meta_generator/`
-- für Blueprints, Content, Module, Assets und Agent-Adapter reserviert
+### `monetization`
+Minimal aktiv:
 
-### Säule 2 — Monetization
+- `gates` aktiv
+- weitere Businesszonen reserviert
 
-- `pillars/monetization/`
-- Produkt-, Plan-, Gate- und Entitlement-Logik ohne Provider-SDKs
+### `meta_generator`
+Geplant, nicht aktiv implementiert.
 
-### Säule 3 — Oracle
+## Dimensions
 
-- `pillars/oracle/`
-- `scripts/pipelines/` und `scripts/oracle/` bleiben operative Daten- und Rechenpfade
-- Oberflächen lesen nur strukturierte Snapshot-Read-Models
+Aktuell formalisierte Dimensions:
 
-### Säule 4 — Frontend OS
+- `growth`
+- `pattern`
+- `time`
+- `signal`
 
-- `pillars/frontend_os/`
-- Shell, Navigation, Dashboard- und Legal-Surfaces
-- keine IO, keine primitive UI-Basisbausteine
+Die 11-Dimensions-Welt gehört nicht zum aktuellen Plattform-Abschluss.
 
----
+## Doku-Regel
 
-## 07 — Pillar Isolation
-
-| Regel | Bedeutung |
-|---|---|
-| **Core bleibt IO-frei** | `shared/core/` kennt keine Bridges, Commerce- oder Frontend-OS-Module |
-| **Application orchestriert** | `shared/application/` verbindet Core, Bridges, Commerce und Oberflächen |
-| **Frontend OS bleibt dünn** | Shell und Surface-Komposition, aber keine Provider- oder Processing-Logik |
-| **Data Workers bleiben getrennt** | Python sammelt, normalisiert und persistiert Signale |
-
-Verboten:
-
-- Business-Logik direkt in `render.js`
-- unsichere HTML-Strings für dynamische UI
-- lokale Sonderpfade statt Projektpfade
-- Dokumentation, die einen älteren Stand als Wahrheit verkauft
-
----
-
-## 08 — Aktive Wahrheiten
-
-- `market_sentiment_fetcher.py` verarbeitet `SPY`, `QQQ`, `DIA`, `IWM`, `^VIX`, `BTC-USD` und `ETH-USD`.
-- RSS-Fallbacks laufen über Reuters, CNBC und Google News.
-- `save_json_atomic()` ist der kanonische Schreibpfad für Runtime-JSON.
-- `oracle_core.py` spiegelt atomar nach `shared/data/oracle_prediction.json`.
-- Oracle-Backtesting läuft über `shared/data/oracle_backtest.json`.
-- Phase 6.0 ist noch nicht reif, solange Tuning, Synergy-Finalisierung, Template-Tiefe und Governance-Konsistenz offen sind.
-
----
-
-## 09 — Markt und Sprache
-
-- Deutsch und Englisch bleiben wichtige Ausbaustufen.
-- Für deutsche UIs gelten echte Umlaute und direkter Ton.
-- Kein Esoterik-Nebel, kein steriles Finanzsprech.
-
----
-
-**STATUS: MASTER_DIRECTIVE_v5.1_TRUTH_ALIGNED**
-*System Architect Out.*
+Wenn ein Dokument ältere Pfade oder Vor-Refactor-Zustände beschreibt, ist es nur noch als historische Referenz zulässig und darf nicht als aktive Runtime-Wahrheit gelten.

@@ -1,107 +1,149 @@
-# MBRN Hub v1.1
+# MBRN Hub v3 Platform
 
-Core, Data Arbitrage und Oracle-Vertical-Slice.
+MBRN Hub ist aktuell eine **plattformsaubere v3-Basis** rund um einen IO-freien Core, einen klaren Application-Layer und eine bewusst ehrliche Pillar-Struktur.
 
-MBRN Hub ist ein modulares System, das im Browser leicht bleibt, im Core deterministisch arbeitet und lokal durch Python, Ollama und datengetriebene Worker erweitert wird. Der aktive Kern ist kein Prototyp mehr, sondern ein operativer Vertical Slice zwischen Säule 3 und Säule 4.
+Der aktuelle Stand ist **nicht** die volle Vision mit 11 Dimensions oder 4 voll ausgebauten Businesses.  
+Der aktuelle Stand ist die bereinigte Plattform, auf der diese spätere Vision sauber wachsen kann.
 
-## Architektur
+## Aktive Systemwahrheit
 
-MBRN Hub ist jetzt um einen klaren Kern mit getrennten Runtime-Zonen organisiert:
+- Die einzige technische Wahrheit liegt in diesem Repo: `C:\DevLab\MBRN-HUB-V1`
+- `shared/core/` bleibt die IO-freie Mitte
+- `shared/application/` trägt Cross-Pillar-Orchestrierung
+- `bridges/*` und `commerce/*` tragen technische Außenwelt
+- `pillars/frontend_os/` ist die aktive Surface-Komposition
+- `dimensionRegistry` ist die primäre Runtime-Wahrheit für Dimensions
+- `dimensions/*/metadata.json` sind Spiegel, nicht die kanonische Quelle
 
-1. **Headless Core**
-   `shared/core/` enthält nur Contracts, Registries, State, Config, Storage, Legal und pure Logik. Keine externe IO lebt dauerhaft im Core.
-
-2. **Application Layer**
-   `shared/application/` trägt Auth-, Sync-, Checkout-, Observability- und Read-Model-Orchestrierung zwischen Core, Bridges, Commerce und Oberflächen.
-
-3. **Bridges / Commerce**
-   `bridges/*` kapselt technische IO zu Supabase, Python-Mirrors, lokalen Modellen und externen APIs. `commerce/*` kapselt Provider-Technik wie Stripe.
-
-4. **Pillars / Frontend OS**
-   `pillars/*` trennt `meta_generator`, `monetization`, `oracle` und `frontend_os`. Dimensions bleiben thematische Türen, Apps bleiben konkrete Werkzeuge.
-
-## Aktueller Systemstand
+## Aktuelle Architektur
 
 ### Headless Core
 
-Der Core ist jetzt die IO-freie Mitte:
+`shared/core/` enthält:
 
-- pure Logik, Contracts und Registries
-- Shared Storage- und State-Layer
-- keine Supabase-, Stripe- oder sonstige Provider-Implementierung
-- keine Frontend-OS- oder Surface-Abhängigkeit
+- Contracts
+- Registries
+- State
+- Storage
+- Config
+- Legal
+- pure Logic
 
-### Frontend OS
+Keine externe IO lebt dauerhaft im Core.
 
-Das aktive Frontend folgt dem Observatory-/MBRN-OS-Stil und ist auf Surface-Komposition reduziert:
+### Application Layer
 
-- Void-first Dark Surface
-- Glassmorphism-Karten mit kontrollierten Glow-Akzenten
-- direkte Tool-Einstiege ohne Framework-Build
-- Navigation, Shell, Dashboard- und Legal-Surfaces in `pillars/frontend_os/`
+`shared/application/` verbindet Core, Bridges, Commerce und Oberflächen:
 
-### Data Arbitrage
+- Actions
+- Auth
+- Sync
+- Observability
+- Read Models
+- Resilience
 
-Die Pipeline-Schicht ist operativ:
+### Bridges und Commerce
 
-- `market_sentiment_fetcher.py` zieht `SPY`, `QQQ`, `DIA`, `IWM`, `^VIX`, `BTC-USD` und `ETH-USD`
-- RSS-Feeds kommen aus Reuters, CNBC und Google News Fallbacks
-- JSON-Hardening für Ollama-Ausgaben läuft über `pipeline_utils.py`
-- alle JSON-Schreibvorgänge nutzen `save_json_atomic()`
-- Market-Sentiment wird nach `AI/models/data/` und `shared/data/market_sentiment.json` gespiegelt
+Produktiv aktiv:
 
-### Oracle
+- `bridges/supabase/`
+- `commerce/stripe/`
+- `commerce/payment_adapters/`
+- `commerce/provider_maps/`
 
-Das Oracle-Modul bleibt produktiv nutzbar, aber die Oberfläche liest nur normalisierte Read-Models:
+Bewusst reserviert:
 
-- `oracle_core.py` baut Prognosen für den nächsten Handelstag
-- `oracle_backtest.json` speichert die laufende Trefferhistorie
-- `oracle_prediction.json` wird als Shared Mirror für das Dashboard atomar geschrieben
-- Backfill über `scripts/oracle/backfill_history.py` erzeugt historische Trainingsbasis
-- Bias-Warnungen bei überhöhter Accuracy bleiben intern und verändern das Schema nicht
+- `bridges/local_llm/`
+- `bridges/external_apis/`
 
-## Produktmodule
+### Pillars
 
-Aktive Oberflächen:
+#### `frontend_os`
+Aktiv für:
 
-- `dashboard/`
-- `apps/numerology/`
-- `apps/finance/`
-- `apps/chronos/`
-- `apps/synergy/` als noch nicht finalisierter Ausbaupfad
+- Shell
+- Navigation
+- Dashboard-Komposition
+- Cards
+- Auth-/Legal-Surfaces
 
-Offene Vorbedingungen vor Phase 6.0:
+#### `oracle`
+Teilweise aktiv:
 
-- `apps/tuning/` fehlt noch
-- Synergy ist noch nicht als eigenständige Voll-App finalisiert
-- der Template-Layer ist mit `templates/app_blueprint.json` noch zu schmal
+- `browser_read` ist aktiv
+- weitere Unterzonen bleiben reserviert
+- Heavy-Processing lebt aktuell weiterhin operativ unter `scripts/oracle/`
 
-## Engineering Posture
+#### `monetization`
+Minimal aktiv:
 
-Dieses Repo priorisiert Wahrheit vor Zierde:
+- `gates` ist aktiv
+- weitere Businesszonen bleiben reserviert
 
-- aktive Dokumentation statt Archivballast
-- relative Projektpfade statt lokale Sonderwege
-- lokale AI-/Datenverarbeitung vor kostenpflichtigen APIs
-- strukturierte Returns und atomische File-Writes
-- No-Build-Architektur für Production-Code
+#### `meta_generator`
+Bewusst geplant, nicht aktiv implementiert.
 
-## Repository Hygiene
+## Dimensions und Apps
 
-Der aktive Markdown-Kern umfasst aktuell `18` Dokumente. Historische Vaults wurden aus dem Live-Repo entfernt und extern nach `C:\DevLab_Archive\MBRN-HUB-V1_docs_archive_20260419_205331` gesichert.
+Aktive formalisierte Dimensions:
 
-Machine-generated Daten bleiben Artefakte und keine Primärquellen für Produktlogik:
+- `growth`
+- `pattern`
+- `time`
+- `signal`
+
+Aktive App-Bindungen:
+
+- `finance -> growth`
+- `numerology -> pattern`
+- `chronos -> time`
+- `synergy -> pattern` mit `status = provisional`
+
+Es gibt aktuell **4** formalisierte Dimensions, nicht 11.
+
+## UI-Grenzen
+
+`shared/ui/` bleibt gemeinsame UI-Infrastruktur:
+
+- tokens
+- theme
+- dom
+- primitives
+- base components
+
+Surface-spezifische Dinge liegen in `pillars/frontend_os/`.
+
+Beispiel:
+
+- Landing-Styles liegen in `pillars/frontend_os/shell/landing.css`
+- mobile Sidebar-Gesten liegen in `pillars/frontend_os/navigation/touch_manager.js`
+
+## Data und Oracle
+
+Die Pipeline-Schicht bleibt operativ:
+
+- `scripts/pipelines/`
+- `scripts/oracle/`
+
+Runtime-Mirror-Artefakte bleiben Artefakte und keine Primärquelle für Produktlogik:
 
 - `shared/data/market_sentiment.json`
 - `shared/data/oracle_prediction.json`
 - `shared/data/oracle_backtest.json`
-- `AI/models/data/*.json`
 
 ## Status
 
-MBRN Hub v1.1 läuft jetzt mit core-zentrierter Zielarchitektur v3:
+Der aktuelle Stand ist:
 
-- `shared/core` als IO-freie Mitte
-- `shared/application` als Cross-Pillar-Orchestrierung
-- `bridges/*` und `commerce/*` als technische Außenhaut
-- `frontend_os` als einzig aktive Surface-Komposition
+- Plattformbasis bereinigt
+- Tests grün
+- Registry/Manifest aktiv
+- Root-Wahrheit auf dieses Repo reduziert
+- 4 Pillars ehrlich eingeordnet, aber nicht künstlich „voll ausgebaut“
+
+Nicht behauptet wird:
+
+- 11 Dimensions
+- fertiger Meta-Generator
+- voll ausgebautes Oracle-Pillar
+- voll ausgebautes Monetization-Pillar

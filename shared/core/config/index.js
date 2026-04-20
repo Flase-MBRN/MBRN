@@ -1,6 +1,6 @@
 /**
- * /shared/core/config.js
- * MBRN Mastery System (Single Source of Truth)
+ * /shared/core/config/index.js
+ * MBRN runtime configuration.
  */
 
 export const MBRN_CONFIG = {
@@ -190,4 +190,3 @@ export const MBRN_CONFIG = {
 export const IS_COMMERCIAL_MODE_ACTIVE = MBRN_CONFIG.commercial.isActive;
 
 export const MASTER_NUMBERS = Object.freeze([11, 22, 33]);
-
