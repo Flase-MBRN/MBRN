@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-20T16:01:02.561775+00:00",
+  "updated_at": "2026-04-20T17:01:03.310208+00:00",
   "history": [
     {
       "generated_at": "2026-04-19T18:23:09.744083+00:00",
@@ -1097,12 +1097,12 @@
       "actual_trend": "rising"
     },
     {
-      "generated_at": "2026-04-20T16:01:02.543974+00:00",
+      "generated_at": "2026-04-20T17:01:03.292599+00:00",
       "target_date": "21.04.2026",
       "recommendation": "Hold",
-      "alignment_score": 63.49,
-      "confidence": 0.63,
-      "sentiment_prediction": 65.5,
+      "alignment_score": 61.96,
+      "confidence": 0.62,
+      "sentiment_prediction": 63.2,
       "oracle_version": "1.1.0",
       "evaluated_at": null,
       "was_correct": null,
