@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MBRN - built to be used</title>
   <meta name="description" content="MBRN zeigt dir dein Muster, dein Wachstum und deine Phasen. Klar, direkt und ohne Umwege.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
 
-  <link rel="stylesheet" href="shared/ui/theme.css">
-  <link rel="stylesheet" href="shared/ui/components.css">
-  <link rel="stylesheet" href="shared/ui/landing.css">
+  <link rel="stylesheet" href="./shared/ui/theme.css">
+  <link rel="stylesheet" href="./shared/ui/components.css">
+  <link rel="stylesheet" href="./shared/ui/landing.css">
 </head>
 <body class="void-bg bg-grid">
 
@@ -55,7 +56,7 @@
           </div>
 
           <button type="submit" class="btn-primary mt-24">Analyse starten</button>
-          <a href="./dashboard/" id="skip-dashboard-link" class="skip-link text-center mt-16">Überspringen →</a>
+          <a href="./dashboard/index.html" id="skip-dashboard-link" class="skip-link text-center mt-16">Überspringen →</a>
         </form>
         <div id="landing-legal-mount" class="mt-24"></div>
       </div>
@@ -110,6 +111,6 @@
   </section>
 
   <!-- Scripts -->
-  <script type="module" src="pillars/frontend_os/shell/render_landing.js"></script>
+  <script type="module" src="./pillars/frontend_os/shell/render_landing.js"></script>
 </body>
 </html>

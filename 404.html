@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Seite nicht gefunden</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
+  <link rel="stylesheet" href="./shared/ui/theme.css">
+  <link rel="stylesheet" href="./shared/ui/components.css">
+</head>
+<body class="void-bg bg-grid">
+  <main class="main-content" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+    <div class="glass-card text-center" style="max-width: 480px;">
+      <h1 class="hero-title" style="font-size: clamp(64px, 10vw, 120px);">404</h1>
+      <p class="text-secondary mt-16">Seite nicht gefunden</p>
+      <p class="text-muted mt-16">Die angeforderte Seite existiert nicht.</p>
+      <a href="./index.html" class="btn-primary mt-24" style="display: inline-flex; text-decoration: none;">Zur Startseite</a>
+    </div>
+  </main>
+
+  <script>
+    // Redirect common 404 patterns to correct pages
+    const path = window.location.pathname;
+    
+    // Redirect /dashboard/ to /dashboard/index.html
+    if (path.endsWith('/dashboard/')) {
+      window.location.href = path + 'index.html';
+    }
+    
+    // Redirect /apps/xxx/ to /apps/xxx/index.html
+    if (path.match(/\/apps\/[^/]+\/$/)) {
+      window.location.href = path + 'index.html';
+    }
+  </script>
+</body>
+</html>
