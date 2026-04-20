@@ -191,18 +191,3 @@ export const IS_COMMERCIAL_MODE_ACTIVE = MBRN_CONFIG.commercial.isActive;
 
 export const MASTER_NUMBERS = Object.freeze([11, 22, 33]);
 
-export const MBRN_ROUTES = {
-  home: 'index.html',
-  dashboard: 'dashboard/index.html',
-  finance: 'apps/finance/index.html',
-  numerology: 'apps/numerology/index.html',
-  chronos: 'apps/chronos/index.html'
-};
-
-export const MBRN_ROUTE_META = {
-  home: { icon: 'S', label: 'Start', tier: 0 },
-  dashboard: { icon: 'D', label: 'Dashboard', tier: 0 },
-  finance: { icon: 'G', label: 'Wachstum', tier: 0 },
-  numerology: { icon: 'M', label: 'Muster', tier: 0 },
-  chronos: { icon: 'Z', label: 'Zeit', tier: 0 }
-};
