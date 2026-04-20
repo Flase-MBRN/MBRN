@@ -7,7 +7,7 @@
  * LAW 8 COMPLIANT: No magic numbers - all thresholds in MBRN_CONFIG
  */
 
-import { MBRN_CONFIG } from './config.js';
+import { MBRN_CONFIG } from './config/index.js';
 import { i18n } from './i18n.js';
 
 // LAW 8: Destructure validation constants for clean usage

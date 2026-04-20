@@ -10,7 +10,7 @@
  * - PILLAR 2 ISOLATION: This module is API-ready, deployable as Edge Function
  */
 
-import { MBRN_CONFIG } from '../config.js';
+import { MBRN_CONFIG } from '../config/index.js';
 
 // LAW 8: Destructure validation constants for clean usage
 const { finance: F, validation: V } = MBRN_CONFIG;

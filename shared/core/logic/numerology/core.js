@@ -6,7 +6,7 @@
  * Responsibility: All base mathematical operations and identity calculations
  */
 
-import { MASTER_NUMBERS } from '../../config.js';
+import { MASTER_NUMBERS } from '../../config/index.js';
 
 /* ─── CONSTANTS ────────────────────────────────────────────────────────── */
 

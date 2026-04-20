@@ -7,7 +7,7 @@
  * LAW 9 COMPLIANT: CSS centralized in theme.css
  */
 
-import { state } from '../core/state.js';
+import { state } from '../core/state/index.js';
 
 /**
  * Touch gesture manager for mobile sidebar navigation

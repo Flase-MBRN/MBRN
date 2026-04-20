@@ -1,4 +1,4 @@
-import { MASTER_NUMBERS } from '../config.js';
+import { MASTER_NUMBERS } from '../config/index.js';
 
 const MASTER_NUMBERS_SET = new Set(MASTER_NUMBERS);
 const MAX_DIFF = 8;

@@ -7,7 +7,7 @@
  * @see docs/M16_Frequency_Engine.md
  */
 
-import { MASTER_NUMBERS } from '../config.js';
+import { MASTER_NUMBERS } from '../config/index.js';
 
 // Convert array to Set for O(1) lookups while maintaining central definition
 const MASTER_NUMBERS_SET = new Set(MASTER_NUMBERS);

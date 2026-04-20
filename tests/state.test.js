@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { state } from '../shared/core/state.js';
+import { state } from '../shared/core/state/index.js';
 
 describe('state', () => {
   beforeEach(() => {

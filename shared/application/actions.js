@@ -6,10 +6,10 @@
  * pillar policies without turning shared/core into an IO zone.
  */
 
-import { state } from '../core/state.js';
-import { storage } from '../core/storage.js';
+import { state } from '../core/state/index.js';
+import { storage } from '../core/storage/index.js';
 import { streakManager } from '../loyalty/streak_manager.js';
-import { IS_COMMERCIAL_MODE_ACTIVE, MBRN_CONFIG } from '../core/config.js';
+import { IS_COMMERCIAL_MODE_ACTIVE, MBRN_CONFIG } from '../core/config/index.js';
 import { i18n } from '../core/i18n.js';
 import { validateEmail } from '../core/validators.js';
 import { supabaseBridge } from '../../bridges/supabase/index.js';

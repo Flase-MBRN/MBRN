@@ -9,7 +9,7 @@
  */
 
 import { getBrowserLanguage, getBrowserLocalStorage } from './browser_runtime.js';
-import { MBRN_CONFIG } from './config.js';
+import { MBRN_CONFIG } from './config/index.js';
 
 class I18nEngine {
   constructor() {

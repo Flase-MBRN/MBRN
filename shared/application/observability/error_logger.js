@@ -3,8 +3,8 @@
  * Critical error monitoring with bridge-backed delivery and offline fallback.
  */
 
-import { state } from '../../core/state.js';
-import { storage } from '../../core/storage.js';
+import { state } from '../../core/state/index.js';
+import { storage } from '../../core/storage/index.js';
 import { getSupabaseClient } from '../../../bridges/supabase/client.js';
 import { supabaseBridge } from '../../../bridges/supabase/index.js';
 import {

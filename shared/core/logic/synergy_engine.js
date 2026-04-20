@@ -19,7 +19,7 @@
  * @see docs/M14_Synergy_Engine.md
  */
 
-import { MASTER_NUMBERS } from '../config.js';
+import { MASTER_NUMBERS } from '../config/index.js';
 import { buildSynergyData } from './synergy_contract.js';
 
 // LAW 1 COMPLIANT: Single source — MASTER_NUMBERS from config.js (not redefined here)

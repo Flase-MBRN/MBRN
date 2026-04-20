@@ -3,7 +3,7 @@
  * Berechnet Streaks, Shields und Check-ins (Pure Functions)
  */
 
-import { MBRN_CONFIG } from '../core/config.js';
+import { MBRN_CONFIG } from '../core/config/index.js';
 
 /**
  * Normalisiert ein Datum zu einem strikten YYYY-MM-DD Format,

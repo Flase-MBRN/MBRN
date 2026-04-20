@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { storage } from '../shared/core/storage.js';
+import { storage } from '../shared/core/storage/index.js';
 
 describe('storage', () => {
   afterEach(() => {

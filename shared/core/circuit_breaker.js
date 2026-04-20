@@ -7,8 +7,8 @@
  * LAW 4 COMPLIANT: Structured Returns - always { success, data?, error?, offline? }
  */
 
-import { state } from './state.js';
-import { storage } from './storage.js';
+import { state } from './state/index.js';
+import { storage } from './storage/index.js';
 
 /**
  * Circuit Breaker states

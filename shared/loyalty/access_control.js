@@ -3,8 +3,8 @@
  * The Gatekeeper: Prüft Unlocks & Feature Flags strikt nach MBRN_CONFIG
  */
 
-import { MBRN_CONFIG } from '../core/config.js';
-import { state } from '../core/state.js';
+import { MBRN_CONFIG } from '../core/config/index.js';
+import { state } from '../core/state/index.js';
 
 /**
  * Hilfsfunktion, um das aktuelle Profil sicher aus dem State zu laden.
