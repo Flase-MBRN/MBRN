@@ -4,7 +4,7 @@ import { createBridgeSuccess, createBridgeFailure } from '../../shared/core/cont
 import { state } from '../../shared/core/state/index.js';
 
 /**
- * /shared/core/api.js
+ * /bridges/supabase/api.js
  * THE CLOUD GATEWAY (Supabase Integration)
  *
  * ARCHITECTURE LAW:

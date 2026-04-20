@@ -1,4 +1,4 @@
-import { readOracleSnapshot } from '../../../bridges/python/oracle_snapshot_reader.js';
+import { readOracleSnapshot } from '../../../pillars/oracle/browser_read/snapshot_reader.js';
 
 export function normalizeOracleDashboardSnapshot(snapshot = {}) {
   const prediction = snapshot.prediction || {};

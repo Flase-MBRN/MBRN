@@ -5,6 +5,11 @@
 
 ---
 
+> **V3 IST 100% COMPLETE**
+> Phasen 1-5 abgeschlossen. Architektur ist final und stabil.
+
+---
+
 ## 01 — Vision
 
 MBRN ist kein loses Tool-Set, sondern ein Membran-System zwischen Potenzial, Struktur und operativer Umsetzung. Die UI darf spektakulär wirken, aber das Fundament bleibt strikt modular, lokal beherrschbar und langfristig erweiterbar.
