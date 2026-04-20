@@ -8,8 +8,9 @@ async function loadApi() {
 
   const withCircuitBreakerMock = jest.fn(async (_circuitName, fn) => {
     try {
-      const data = await fn();
-      return { success: true, data, offline: false };
+      const result = await fn();
+      // BridgeResultContract already wraps results - just pass through
+      return result;
     } catch (error) {
       return { success: false, error: error.message, offline: false };
     }
@@ -77,20 +78,27 @@ describe('supabase bridge api', () => {
 
     await expect(api.checkConnection()).resolves.toBe(true);
     await expect(api.checkConnection()).resolves.toBe(false);
-    await expect(api.signUp('a@test.dev', 'pw')).resolves.toEqual({
+    await expect(api.signUp('a@test.dev', 'pw')).resolves.toMatchObject({
       success: true,
       data: { user: { id: 'user-1' } },
-      offline: false
+      source: 'supabase.auth.signUp',
+      error: null
     });
-    await expect(api.signIn('a@test.dev', 'pw')).resolves.toEqual({
+    await expect(api.signIn('a@test.dev', 'pw')).resolves.toMatchObject({
       success: false,
       error: 'bad credentials',
-      offline: false
+      source: 'supabase.auth.signIn'
     });
-    await expect(api.signOut()).resolves.toEqual({ success: true });
-    await expect(api.getSession()).resolves.toEqual({
+    await expect(api.signOut()).resolves.toMatchObject({
       success: true,
-      data: { user: { id: 'user-1' } }
+      source: 'supabase.auth.signOut',
+      error: null
+    });
+    await expect(api.getSession()).resolves.toMatchObject({
+      success: true,
+      data: { user: { id: 'user-1' } },
+      source: 'supabase.auth.getSession',
+      error: null
     });
   });
 
@@ -130,27 +138,32 @@ describe('supabase bridge api', () => {
     };
     api.isOnline = true;
 
-    await expect(api.saveProfile({ id: 'user-1', name: 'Erik' })).resolves.toEqual({
+    await expect(api.saveProfile({ id: 'user-1', name: 'Erik' })).resolves.toMatchObject({
       success: true,
       data: { id: 'user-1' },
-      offline: false
+      source: 'supabase.profile.save',
+      error: null
     });
-    await expect(api.getProfile('user-1')).resolves.toEqual({
+    await expect(api.getProfile('user-1')).resolves.toMatchObject({
       success: true,
       data: { id: 'user-1' },
-      offline: false
+      source: 'supabase.profile.get',
+      error: null
     });
-    await expect(api.saveAppData('u1', 'finance', {})).resolves.toEqual({
+    await expect(api.saveAppData('u1', 'finance', {})).resolves.toMatchObject({
       success: true,
-      data: { payload: { score: 9 } }
+      data: { payload: { score: 9 } },
+      source: 'supabase.app_data.save'
     });
-    await expect(api.getAppData('u1', 'finance')).resolves.toEqual({
+    await expect(api.getAppData('u1', 'finance')).resolves.toMatchObject({
       success: true,
-      data: { payload: { score: 9 } }
+      data: { payload: { score: 9 } },
+      source: 'supabase.app_data.get'
     });
-    await expect(api.logEvent({ event: 'sync_failed', source: 'dashboard', data: {} })).resolves.toEqual({
+    await expect(api.logEvent({ event: 'sync_failed', source: 'dashboard', data: {} })).resolves.toMatchObject({
       success: false,
-      error: 'analytics failed'
+      error: 'analytics failed',
+      source: 'supabase.analytics.log'
     });
     expect(stateMock._authorizedEmit).toHaveBeenCalledWith(
       'systemError',

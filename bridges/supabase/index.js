@@ -1,4 +1,5 @@
 import { withCircuitBreaker } from '../../shared/application/resilience/circuit_breaker.js';
+import { createBridgeSuccess, createBridgeFailure } from '../../shared/core/contracts/bridge_result.js';
 import {
   checkSupabaseConnection,
   getSupabaseClient,
@@ -35,7 +36,9 @@ export const supabaseBridge = {
 
   async getSystemStatusPing() {
     const client = getSupabaseClient();
-    if (!client || !this.isOnline) return { success: false, error: 'Offline', offline: true };
+    if (!client || !this.isOnline) {
+      return createBridgeFailure('supabase.system_status', 'Offline', { offline: true });
+    }
 
     const { data, error } = await client
       .from('system_status')
@@ -43,7 +46,9 @@ export const supabaseBridge = {
       .eq('id', 1)
       .maybeSingle();
 
-    return error ? { success: false, error: error.message } : { success: true, data };
+    return error
+      ? createBridgeFailure('supabase.system_status', error.message)
+      : createBridgeSuccess('supabase.system_status', data);
   },
 
   async getLatestReactorHeartbeat() {
@@ -52,46 +57,50 @@ export const supabaseBridge = {
 
   async signUp(email, password) {
     const client = getSupabaseClient();
-    if (!client) return { success: false, error: 'Offline' };
+    if (!client) return createBridgeFailure('supabase.auth.signUp', 'Offline');
     return withCircuitBreaker('supabase', async () => {
       const { data, error } = await client.auth.signUp({ email, password });
-      if (error) throw error;
-      return data;
+      if (error) return createBridgeFailure('supabase.auth.signUp', error.message);
+      return createBridgeSuccess('supabase.auth.signUp', data);
     });
   },
 
   async signIn(email, password) {
     const client = getSupabaseClient();
-    if (!client) return { success: false, error: 'Offline' };
+    if (!client) return createBridgeFailure('supabase.auth.signIn', 'Offline');
     return withCircuitBreaker('supabase', async () => {
       const { data, error } = await client.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      return data;
+      if (error) return createBridgeFailure('supabase.auth.signIn', error.message);
+      return createBridgeSuccess('supabase.auth.signIn', data);
     });
   },
 
   async signOut() {
     const client = getSupabaseClient();
-    if (!client) return { success: false, error: 'Offline' };
+    if (!client) return createBridgeFailure('supabase.auth.signOut', 'Offline');
     const { error } = await client.auth.signOut();
-    return error ? { success: false, error: error.message } : { success: true };
+    return error
+      ? createBridgeFailure('supabase.auth.signOut', error.message)
+      : createBridgeSuccess('supabase.auth.signOut', null);
   },
 
   async getSession() {
     const client = getSupabaseClient();
-    if (!client) return { success: false, error: 'Offline' };
+    if (!client) return createBridgeFailure('supabase.auth.getSession', 'Offline');
     const { data, error } = await client.auth.getSession();
-    return error ? { success: false, error: error.message } : { success: true, data: data.session };
+    return error
+      ? createBridgeFailure('supabase.auth.getSession', error.message)
+      : createBridgeSuccess('supabase.auth.getSession', data.session);
   },
 
   async saveProfile(profileData) {
     const client = getSupabaseClient();
     if (!this.isOnline || !client) {
-      return { success: false, error: 'Offline', offline: true };
+      return createBridgeFailure('supabase.profile.save', 'Offline', { offline: true });
     }
 
     if (!profileData?.id) {
-      return { success: false, error: 'Authenticated user required for cloud sync', offline: true };
+      return createBridgeFailure('supabase.profile.save', 'Authenticated user required for cloud sync', { offline: true });
     }
 
     return withCircuitBreaker('supabase', async () => {
@@ -108,14 +117,14 @@ export const supabaseBridge = {
         .select();
 
       if (error) throw error;
-      return data[0];
+      return { success: true, data: data[0] };
     });
   },
 
   async getProfile(userId) {
     const client = getSupabaseClient();
-    if (!userId) return { success: false, error: 'Authenticated user required', offline: true };
-    if (!this.isOnline || !client) return { success: false, error: 'Offline', offline: true };
+    if (!userId) return createBridgeFailure('supabase.profile.get', 'Authenticated user required', { offline: true });
+    if (!this.isOnline || !client) return createBridgeFailure('supabase.profile.get', 'Offline', { offline: true });
     return withCircuitBreaker('supabase', async () => {
       const { data, error } = await client
         .from('profiles')
@@ -123,13 +132,15 @@ export const supabaseBridge = {
         .eq('id', userId)
         .single();
       if (error) throw error;
-      return data;
+      return createBridgeSuccess('supabase.profile.get', data);
     });
   },
 
   async saveAppData(userId, appId, payload) {
     const client = getSupabaseClient();
-    if (!this.isOnline || !client) return { success: false, error: 'Offline' };
+    if (!this.isOnline || !client) {
+      return createBridgeFailure('supabase.app_data.save', 'Offline');
+    }
     const { data, error } = await client
       .from('app_data')
       .upsert({
@@ -140,24 +151,30 @@ export const supabaseBridge = {
       }, { onConflict: 'user_id,app_id' })
       .select();
 
-    return error ? { success: false, error: error.message } : { success: true, data: data[0] };
+    return error
+      ? createBridgeFailure('supabase.app_data.save', error.message)
+      : createBridgeSuccess('supabase.app_data.save', data[0]);
   },
 
   async getAppData(userId, appId) {
     const client = getSupabaseClient();
-    if (!this.isOnline || !client) return { success: false, error: 'Offline' };
+    if (!this.isOnline || !client) {
+      return createBridgeFailure('supabase.app_data.get', 'Offline');
+    }
     const { data, error } = await client
       .from('app_data')
       .select('*')
       .eq('user_id', userId)
       .eq('app_id', appId)
       .single();
-    return error ? { success: false, error: error.message } : { success: true, data };
+    return error
+      ? createBridgeFailure('supabase.app_data.get', error.message)
+      : createBridgeSuccess('supabase.app_data.get', data);
   },
 
   async logEvent(eventData) {
     const client = getSupabaseClient();
-    if (!this.isOnline || !client) return;
+    if (!this.isOnline || !client) return createBridgeFailure('supabase.analytics.log', 'Offline');
 
     const userResult = await client.auth.getUser();
     try {
@@ -169,9 +186,9 @@ export const supabaseBridge = {
         created_at: new Date().toISOString()
       });
     } catch (err) {
-      return { success: false, error: err.message };
+      return createBridgeFailure('supabase.analytics.log', err.message);
     }
 
-    return { success: true };
+    return createBridgeSuccess('supabase.analytics.log', null);
   }
 };
