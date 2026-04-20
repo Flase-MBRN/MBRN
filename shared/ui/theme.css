@@ -1,132 +1,16 @@
-/* ========================================
-   MBRN-HUB-V1: Design System
-   Sternenhimmel Theme - v5.0 Master Directive
-   ======================================== */
+/**
+ * /shared/ui/theme.css
+ * DEPRECATED FACADE - Re-exports from tokens/ and theme/
+ * This file exists for backward compatibility during migration.
+ * TODO: Update imports to use tokens/index.css or theme/starry_sky.css directly
+ */
 
-:root {
-  /* ========================================
-     MBRN-STARRY-SKY SYSTEM
-     Deep #05050A, Syne 800, Violet Pulse
-     ======================================== */
-  
-  /* Primary Background System */
-  --bg-primary: #05050A;
-  --bg-surface: #0A0A0F;
-  --bg-elevated: #0F0F15;
-  --bg-card: #0A0A0F;
-  
-  /* Accent: Deep Violet */
-  --accent: #7B5CF5;
-  --accent-dim: rgba(123, 92, 245, 0.1);
-  --accent-glow: rgba(123, 92, 245, 0.15);
-  --accent-hover: rgba(123, 92, 245, 0.25);
-  --accent-light: #a78bfa;
-  --accent-gradient-start: #7B5CF5;
-  --accent-gradient-end: #9f7aea;
-  
-  /* Text Colors */
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-muted: rgba(255, 255, 255, 0.3);
-  --text-dim: rgba(255, 255, 255, 0.25);
-  
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.06); 
-  --border-default: rgba(255, 255, 255, 0.12);
-  --border-accent: rgba(123, 92, 245, 0.25);
-  --border-subtle: rgba(255, 255, 255, 0.03);
-  --border-hover: rgba(255, 255, 255, 0.1);
-  
-  /* Status Colors */
-  --success: #4fffb0;
-  --success-dim: rgba(79, 255, 176, 0.1);
-  --warning: #fbbf24;
-  --warning-dim: rgba(251, 191, 36, 0.1);
-  --error: #ff6b6b;
-  --kofi: #ff5e5b;
-  
-  /* Utility Colors */
-  --white: #ffffff;
-  --terminal-red: #ff5f56;
-  --terminal-yellow: #ffbd2e;
-  --terminal-green: #27c93f;
-  
-  /* Hover & Overlay */
-  --hover-bg: rgba(255, 255, 255, 0.03);
-  --input-bg: rgba(255, 255, 255, 0.04);
-  --input-bg-focus: rgba(255, 255, 255, 0.06);
-  --input-border: rgba(255, 255, 255, 0.1);
-  --input-border-focus: rgba(123, 92, 245, 0.5);
-  --focus-glow: rgba(123, 92, 245, 0.1);
-  
-  /* Minimalist Radii */
-  --radius-card: 16px;
-  --radius-btn: 50px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-pill: 50px;
-  --radius-lg: 20px;
-  
-  /* Fonts */
-  --font-display: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 500ms ease;
-}
+@import url('./tokens/index.css');
+@import url('./theme/starry_sky.css');
 
-/* ===== CSS RESET & BASE ===== */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Legacy compatibility - ensure old CSS continues to work */
+/* All CSS variables are now defined in tokens/colors.css */
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background: radial-gradient(circle at top right, #0a0a15 0%, #05050a 100%);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-weight: 400;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  overflow-x: hidden;
-  max-width: 100vw;
-}
-
-/* ===== TYPOGRAPHY ===== */
-h1, h2, h3 {
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.5rem; }
-
-p {
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-::selection {
-  background: rgba(123, 92, 245, 0.3);
-  color: var(--text-primary);
-}
 
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {

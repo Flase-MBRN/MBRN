@@ -3,14 +3,14 @@
  * Wachstum - klarer Rechner ohne Premium-Schichten.
  */
 
-import { state } from '../../shared/core/state.js';
-import { actions } from '../../shared/core/actions.js';
+import { state } from '../../shared/core/state/index.js';
+import { actions } from '../../shared/application/actions.js';
 import { calculateCompoundInterest } from '../../shared/core/logic/finance.js';
 import { dom, animateValue, showTerminalLoader } from '../../shared/ui/dom_utils.js';
-import { getRepoRoot, nav, renderNavigation } from '../../shared/ui/navigation.js';
-import { renderAuth } from '../../shared/ui/render_auth.js';
+import { getRepoRoot, nav, renderNavigation } from '../../pillars/frontend_os/navigation/index.js';
+import { renderAuth } from '../../pillars/frontend_os/ui_states/auth_controller.js';
 import { i18n } from '../../shared/core/i18n.js';
-import { injectLegalBlock } from '../../shared/ui/legal_system.js';
+import { injectLegalBlock } from '../../pillars/frontend_os/shell/legal_blocks.js';
 
 function formatEuro(value) {
   return value.toLocaleString('de-DE', {

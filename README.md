@@ -6,39 +6,39 @@ MBRN Hub ist ein modulares System, das im Browser leicht bleibt, im Core determi
 
 ## Architektur
 
-MBRN Hub ist um vier Säulen organisiert:
+MBRN Hub ist jetzt um einen klaren Kern mit getrennten Runtime-Zonen organisiert:
 
-1. **Vanilla-JS-App-Layer**
-   Reine ES-Module für Landing, Dashboard und modulare Apps ohne Framework-Lock-in.
+1. **Headless Core**
+   `shared/core/` enthält nur Contracts, Registries, State, Config, Storage, Legal und pure Logik. Keine externe IO lebt dauerhaft im Core.
 
-2. **Headless Core Logic**
-   Geschäftslogik, Orchestrierung, State, Storage und numerologische Engines leben in `shared/core/` und bleiben außerhalb des DOM testbar.
+2. **Application Layer**
+   `shared/application/` trägt Auth-, Sync-, Checkout-, Observability- und Read-Model-Orchestrierung zwischen Core, Bridges, Commerce und Oberflächen.
 
-3. **Data Arbitrage**
-   Python-Worker unter `scripts/pipelines/` sammeln Marktdaten, Krypto-Druck und RSS-News, härten externe Quellen ab und reichern lokal mit Ollama/Llama 3.1 an.
+3. **Bridges / Commerce**
+   `bridges/*` kapselt technische IO zu Supabase, Python-Mirrors, lokalen Modellen und externen APIs. `commerce/*` kapselt Provider-Technik wie Stripe.
 
-4. **Ecosystem / Oracle**
-   Das Dashboard und `scripts/oracle/` verbinden numerologische Tageswerte mit Markt- und News-Signalen, erzeugen Prognosen und spiegeln die Ergebnisse in `shared/data/`.
+4. **Pillars / Frontend OS**
+   `pillars/*` trennt `meta_generator`, `monetization`, `oracle` und `frontend_os`. Dimensions bleiben thematische Türen, Apps bleiben konkrete Werkzeuge.
 
 ## Aktueller Systemstand
 
 ### Headless Core
 
-Der Core ist auf Trennung zwischen UI und Logik ausgelegt:
+Der Core ist jetzt die IO-freie Mitte:
 
-- orchestrierte Entry-Points statt Wildwuchs
-- Browser-Guards an den Stellen, an denen Runtime-Zugriff nötig ist
-- testbare Pure Functions in den Engine-Modulen
-- Shared Storage- und State-Layer für Dashboard und Apps
+- pure Logik, Contracts und Registries
+- Shared Storage- und State-Layer
+- keine Supabase-, Stripe- oder sonstige Provider-Implementierung
+- keine Frontend-OS- oder Surface-Abhängigkeit
 
-### Observatory UI
+### Frontend OS
 
-Das aktive Frontend folgt dem Observatory-/MBRN-OS-Stil:
+Das aktive Frontend folgt dem Observatory-/MBRN-OS-Stil und ist auf Surface-Komposition reduziert:
 
 - Void-first Dark Surface
 - Glassmorphism-Karten mit kontrollierten Glow-Akzenten
 - direkte Tool-Einstiege ohne Framework-Build
-- mobile Navigation mit Sidebar-/Hamburger-Muster
+- Navigation, Shell, Dashboard- und Legal-Surfaces in `pillars/frontend_os/`
 
 ### Data Arbitrage
 
@@ -52,7 +52,7 @@ Die Pipeline-Schicht ist operativ:
 
 ### Oracle
 
-Das Oracle-Modul ist nicht mehr Vorbereitung, sondern produktiv nutzbar:
+Das Oracle-Modul bleibt produktiv nutzbar, aber die Oberfläche liest nur normalisierte Read-Models:
 
 - `oracle_core.py` baut Prognosen für den nächsten Handelstag
 - `oracle_backtest.json` speichert die laufende Trefferhistorie
@@ -99,9 +99,9 @@ Machine-generated Daten bleiben Artefakte und keine Primärquellen für Produktl
 
 ## Status
 
-MBRN Hub v1.1 ist ein operativer Kern mit echtem Vertical Slice:
+MBRN Hub v1.1 läuft jetzt mit core-zentrierter Zielarchitektur v3:
 
-- Browser-UI für den Nutzer
-- lokaler Daten- und LLM-Stack für Anreicherung
-- Oracle als System-Brücke zwischen Numerologie und Markt
-- dokumentierte Phase-6.0-Blocker statt verdrängter Restschuld
+- `shared/core` als IO-freie Mitte
+- `shared/application` als Cross-Pillar-Orchestrierung
+- `bridges/*` und `commerce/*` als technische Außenhaut
+- `frontend_os` als einzig aktive Surface-Komposition

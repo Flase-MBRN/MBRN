@@ -1,0 +1,56 @@
+/* ========================================
+   MBRN Design Tokens: Colors
+   Sternenhimmel Theme - v5.0
+   ======================================== */
+
+:root {
+  /* Primary Background System */
+  --bg-primary: #05050A;
+  --bg-surface: #0A0A0F;
+  --bg-elevated: #0F0F15;
+  --bg-card: #0A0A0F;
+
+  /* Accent: Deep Violet */
+  --accent: #7B5CF5;
+  --accent-dim: rgba(123, 92, 245, 0.1);
+  --accent-glow: rgba(123, 92, 245, 0.15);
+  --accent-hover: rgba(123, 92, 245, 0.25);
+  --accent-light: #a78bfa;
+  --accent-gradient-start: #7B5CF5;
+  --accent-gradient-end: #9f7aea;
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.3);
+  --text-dim: rgba(255, 255, 255, 0.25);
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-accent: rgba(123, 92, 245, 0.25);
+  --border-subtle: rgba(255, 255, 255, 0.03);
+  --border-hover: rgba(255, 255, 255, 0.1);
+
+  /* Status Colors */
+  --success: #4fffb0;
+  --success-dim: rgba(79, 255, 176, 0.1);
+  --warning: #fbbf24;
+  --warning-dim: rgba(251, 191, 36, 0.1);
+  --error: #ff6b6b;
+  --kofi: #ff5e5b;
+
+  /* Utility Colors */
+  --white: #ffffff;
+  --terminal-red: #ff5f56;
+  --terminal-yellow: #ffbd2e;
+  --terminal-green: #27c93f;
+
+  /* Hover & Overlay */
+  --hover-bg: rgba(255, 255, 255, 0.03);
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-bg-focus: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-border-focus: rgba(123, 92, 245, 0.5);
+  --focus-glow: rgba(123, 92, 245, 0.1);
+}

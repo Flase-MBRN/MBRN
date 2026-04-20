@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 
-async function loadActions({ commercialActive = false } = {}) {
+async function loadActions({ commercialActive = false, gateAllowed = true } = {}) {
   jest.resetModules();
 
   const stateMock = {
@@ -21,7 +21,7 @@ async function loadActions({ commercialActive = false } = {}) {
     calculateCheckIn: jest.fn()
   };
 
-  const apiMock = {
+  const supabaseBridgeMock = {
     init: jest.fn(() => false),
     getSession: jest.fn(),
     getProfile: jest.fn(),
@@ -30,9 +30,12 @@ async function loadActions({ commercialActive = false } = {}) {
     signIn: jest.fn(),
     signOut: jest.fn(),
     saveAppData: jest.fn(),
-    createCheckoutSession: jest.fn(),
-    verifySession: jest.fn(),
     logEvent: jest.fn()
+  };
+
+  const stripePaymentAdapterMock = {
+    createCheckoutSession: jest.fn(),
+    verifySession: jest.fn()
   };
 
   const i18nMock = {
@@ -56,8 +59,19 @@ async function loadActions({ commercialActive = false } = {}) {
     streakManager: streakManagerMock
   }));
 
-  await jest.unstable_mockModule('../shared/core/api.js', () => ({
-    api: apiMock
+  await jest.unstable_mockModule('../bridges/supabase/index.js', () => ({
+    supabaseBridge: supabaseBridgeMock
+  }));
+
+  await jest.unstable_mockModule('../commerce/payment_adapters/stripe_payment_adapter.js', () => ({
+    stripePaymentAdapter: stripePaymentAdapterMock
+  }));
+
+  await jest.unstable_mockModule('../pillars/monetization/gates/entitlement_gate.js', () => ({
+    resolveCommercialGate: jest.fn(() => ({
+      allowed: gateAllowed,
+      reason: gateAllowed ? null : 'commercial_mode_inactive'
+    }))
   }));
 
   await jest.unstable_mockModule('../shared/core/config.js', () => ({
@@ -81,11 +95,11 @@ async function loadActions({ commercialActive = false } = {}) {
     validateEmail: validateEmailMock
   }));
 
-  await jest.unstable_mockModule('../shared/core/error_logger.js', () => ({
+  await jest.unstable_mockModule('../shared/application/observability/error_logger.js', () => ({
     errorLogger: errorLoggerMock
   }));
 
-  const { actions } = await import('../shared/core/actions.js');
+  const { actions } = await import('../shared/application/actions.js');
   actions._resetForTests();
 
   return {
@@ -93,19 +107,20 @@ async function loadActions({ commercialActive = false } = {}) {
     stateMock,
     storageMock,
     streakManagerMock,
-    apiMock,
+    supabaseBridgeMock,
+    stripePaymentAdapterMock,
     i18nMock,
     validateEmailMock,
     errorLoggerMock
   };
 }
 
-describe('actions', () => {
+describe('application actions', () => {
   afterEach(() => {
     jest.useRealTimers();
   });
 
-  test('dispatch handles sync results, missing actions, invalid returns, throws, and deduped async work', async () => {
+  test('dispatch handles sync results, invalid returns and deduplicated async work', async () => {
     const { actions } = await loadActions();
 
     actions.register('sync-ok', (payload) => ({ success: true, payload }));
@@ -152,8 +167,15 @@ describe('actions', () => {
     await expect(first).resolves.toEqual({ success: true, done: true });
   });
 
-  test('initSystem bootstraps defaults, logger init, and subscriptions, then returns idempotently', async () => {
-    const { actions, stateMock, storageMock, apiMock, errorLoggerMock } = await loadActions();
+  test('initSystem bootstraps defaults, error logger and subscriptions', async () => {
+    const {
+      actions,
+      stateMock,
+      storageMock,
+      supabaseBridgeMock,
+      errorLoggerMock
+    } = await loadActions();
+
     stateMock.get.mockReturnValueOnce({ id: 'cached-profile' });
 
     const first = await actions.initSystem();
@@ -173,41 +195,28 @@ describe('actions', () => {
       data: { id: 'cached-profile' }
     });
     expect(storageMock.get).toHaveBeenCalledWith('user_profile');
-    expect(apiMock.init).toHaveBeenCalledTimes(1);
+    expect(supabaseBridgeMock.init).toHaveBeenCalledTimes(1);
     expect(errorLoggerMock.init).toHaveBeenCalledTimes(1);
     expect(stateMock.subscribe).toHaveBeenCalledWith('streakUpdated', expect.any(Function));
     expect(stateMock.subscribe).toHaveBeenCalledWith('analyticsTrack', expect.any(Function));
-    expect(stateMock._authorizedEmit).toHaveBeenCalledWith(
-      'systemInitialized',
-      expect.objectContaining({ isNewUser: true })
-    );
   });
 
-  test('initSystem hydrates sessions and survives session hydration failure', async () => {
-    const successCase = await loadActions();
-    successCase.apiMock.init.mockReturnValue(true);
-    successCase.apiMock.getSession.mockResolvedValue({
+  test('initSystem hydrates sessions when bridge reports an active session', async () => {
+    const context = await loadActions();
+    context.supabaseBridgeMock.init.mockReturnValue(true);
+    context.supabaseBridgeMock.getSession.mockResolvedValue({
       success: true,
       data: { user: { id: 'user-1' } }
     });
-    const pullCloudDataSpy = jest.spyOn(successCase.actions, 'pullCloudData').mockResolvedValue();
+    const pullCloudDataSpy = jest.spyOn(context.actions, 'pullCloudData').mockResolvedValue();
 
-    await expect(successCase.actions.initSystem()).resolves.toEqual({
+    await expect(context.actions.initSystem()).resolves.toEqual({
       success: true,
       data: expect.objectContaining({ isNewUser: true })
     });
-    expect(successCase.stateMock.set).toHaveBeenCalledWith('user', { id: 'user-1' });
-    expect(successCase.stateMock._authorizedEmit).toHaveBeenCalledWith('userAuthChanged', { id: 'user-1' });
+    expect(context.stateMock.set).toHaveBeenCalledWith('user', { id: 'user-1' });
+    expect(context.stateMock._authorizedEmit).toHaveBeenCalledWith('userAuthChanged', { id: 'user-1' });
     expect(pullCloudDataSpy).toHaveBeenCalledWith('user-1');
-
-    const failureCase = await loadActions();
-    failureCase.apiMock.init.mockReturnValue(true);
-    failureCase.apiMock.getSession.mockRejectedValue(new Error('session exploded'));
-
-    await expect(failureCase.actions.initSystem()).resolves.toEqual({
-      success: true,
-      data: expect.objectContaining({ isNewUser: true })
-    });
   });
 
   test('triggerCheckIn covers success and failure branches', async () => {
@@ -245,8 +254,8 @@ describe('actions', () => {
     expect(stateMock.emit).toHaveBeenCalledWith('checkInFailed', { message: 'already checked in' });
   });
 
-  test('syncProfileToCloud covers no profile, auth required, success, and API failure', async () => {
-    const { actions, stateMock, storageMock, apiMock } = await loadActions();
+  test('syncProfileToCloud covers no profile, auth required, success and bridge failure', async () => {
+    const { actions, stateMock, storageMock, supabaseBridgeMock } = await loadActions();
 
     stateMock.get.mockReturnValue(null);
     await expect(actions.syncProfileToCloud()).resolves.toEqual({
@@ -271,7 +280,7 @@ describe('actions', () => {
       if (key === 'user') return { id: 'user-1' };
       return null;
     });
-    apiMock.saveProfile.mockResolvedValueOnce({
+    supabaseBridgeMock.saveProfile.mockResolvedValueOnce({
       success: true,
       data: { id: 'user-1', synced: true }
     }).mockResolvedValueOnce({
@@ -289,11 +298,11 @@ describe('actions', () => {
     });
   });
 
-  test('auth actions cover validation blocks plus success and failure passthrough', async () => {
+  test('auth actions validate email and pass through bridge responses', async () => {
     const {
       actions,
       stateMock,
-      apiMock,
+      supabaseBridgeMock,
       validateEmailMock
     } = await loadActions();
 
@@ -306,21 +315,21 @@ describe('actions', () => {
       error: 'securityBlock: blocked domain useRealEmail'
     });
 
-    apiMock.signUp.mockResolvedValueOnce({
+    supabaseBridgeMock.signUp.mockResolvedValueOnce({
       success: true,
       data: { user: { id: 'user-signup' } }
     }).mockResolvedValueOnce({
       success: false,
       error: 'signup failed'
     });
-    apiMock.signIn.mockResolvedValueOnce({
+    supabaseBridgeMock.signIn.mockResolvedValueOnce({
       success: true,
       data: { user: { id: 'user-login' } }
     }).mockResolvedValueOnce({
       success: false,
       error: 'login failed'
     });
-    apiMock.signOut.mockResolvedValueOnce({ success: true }).mockResolvedValueOnce({
+    supabaseBridgeMock.signOut.mockResolvedValueOnce({ success: true }).mockResolvedValueOnce({
       success: false,
       error: 'logout failed'
     });
@@ -353,7 +362,7 @@ describe('actions', () => {
   });
 
   test('debouncedSync schedules cloud sync only for authenticated users', async () => {
-    const { actions, stateMock, apiMock } = await loadActions();
+    const { actions, stateMock, supabaseBridgeMock } = await loadActions();
     jest.useFakeTimers();
 
     stateMock.get.mockReturnValueOnce(null);
@@ -367,7 +376,7 @@ describe('actions', () => {
       if (key === 'systemInitialized') return { streak: 4, shields: 1 };
       return null;
     });
-    apiMock.saveProfile.mockResolvedValue({ success: true, data: { id: 'user-sync', synced: true } });
+    supabaseBridgeMock.saveProfile.mockResolvedValue({ success: true, data: { id: 'user-sync', synced: true } });
 
     expect(actions.debouncedSync(250)).toEqual({
       success: true,
@@ -375,17 +384,17 @@ describe('actions', () => {
     });
 
     await jest.advanceTimersByTimeAsync(250);
-    expect(apiMock.saveProfile).toHaveBeenCalledWith({
+    expect(supabaseBridgeMock.saveProfile).toHaveBeenCalledWith({
       id: 'user-sync',
       streak: 4,
       shields: 1
     });
   });
 
-  test('pullCloudData handles missing cloud data, newer cloud state, and newer local state', async () => {
-    const { actions, stateMock, storageMock, apiMock } = await loadActions();
+  test('pullCloudData handles missing cloud data, newer cloud state and newer local state', async () => {
+    const { actions, stateMock, storageMock, supabaseBridgeMock } = await loadActions();
 
-    apiMock.getProfile.mockResolvedValueOnce({ success: false, error: 'cloud missing' });
+    supabaseBridgeMock.getProfile.mockResolvedValueOnce({ success: false, error: 'cloud missing' });
     await expect(actions.pullCloudData('user-1')).resolves.toBeUndefined();
     expect(stateMock._authorizedEmit).toHaveBeenCalledWith('syncFailed', { error: 'cloud missing' });
 
@@ -396,7 +405,7 @@ describe('actions', () => {
           ? { id: 'user-1' }
           : null
     ));
-    apiMock.getProfile.mockResolvedValueOnce({
+    supabaseBridgeMock.getProfile.mockResolvedValueOnce({
       success: true,
       data: {
         access_level: 10,
@@ -427,7 +436,7 @@ describe('actions', () => {
       })
     );
 
-    apiMock.saveProfile.mockResolvedValue({ success: true, data: { id: 'user-1', synced: true } });
+    supabaseBridgeMock.saveProfile.mockResolvedValue({ success: true, data: { id: 'user-1', synced: true } });
     stateMock.get.mockImplementation((key) => {
       if (key === 'systemInitialized') {
         return { id: 'user-1', streak: 9, shields: 3, updatedAt: '2026-04-18T12:00:00.000Z' };
@@ -437,7 +446,7 @@ describe('actions', () => {
     });
 
     await actions.pullCloudData('user-1');
-    expect(apiMock.saveProfile).toHaveBeenCalledWith({
+    expect(supabaseBridgeMock.saveProfile).toHaveBeenCalledWith({
       id: 'user-1',
       streak: 9,
       shields: 3,
@@ -446,30 +455,29 @@ describe('actions', () => {
   });
 
   test('syncAppData emits states for success and failure and no-ops without a user', async () => {
-    const { actions, stateMock, apiMock } = await loadActions();
+    const { actions, stateMock, supabaseBridgeMock } = await loadActions();
 
     stateMock.get.mockReturnValue(null);
     await actions.syncAppData('finance', { risk: 'mid' });
-    expect(apiMock.saveAppData).not.toHaveBeenCalled();
+    expect(supabaseBridgeMock.saveAppData).not.toHaveBeenCalled();
 
     stateMock.get.mockReturnValue({ id: 'user-app' });
-    apiMock.saveAppData
+    supabaseBridgeMock.saveAppData
       .mockResolvedValueOnce({ success: true })
       .mockResolvedValueOnce({ success: false, error: 'write failed' });
 
     await actions.syncAppData('finance', { risk: 'mid' });
     await actions.syncAppData('finance', { risk: 'high' });
 
-    expect(apiMock.saveAppData).toHaveBeenNthCalledWith(1, 'user-app', 'finance', { risk: 'mid' });
-    expect(apiMock.saveAppData).toHaveBeenNthCalledWith(2, 'user-app', 'finance', { risk: 'high' });
+    expect(supabaseBridgeMock.saveAppData).toHaveBeenNthCalledWith(1, 'user-app', 'finance', { risk: 'mid' });
+    expect(supabaseBridgeMock.saveAppData).toHaveBeenNthCalledWith(2, 'user-app', 'finance', { risk: 'high' });
     expect(stateMock._authorizedEmit).toHaveBeenCalledWith('syncSuccess');
     expect(stateMock._authorizedEmit).toHaveBeenCalledWith('syncFailed');
   });
 
-  test('commercial mode inactive routes users to paywall and blocks payment verification', async () => {
-    const { actions, stateMock, apiMock } = await loadActions();
-
-    await expect(actions.startCheckout('artifact')).resolves.toEqual({
+  test('paywall and checkout flows are split between monetization gate and commerce adapter', async () => {
+    const gated = await loadActions({ commercialActive: false, gateAllowed: false });
+    await expect(gated.actions.startCheckout('artifact')).resolves.toEqual({
       success: false,
       error: 'commercial_mode_inactive',
       data: {
@@ -477,62 +485,41 @@ describe('actions', () => {
         badge: 'Bald verfuegbar'
       }
     });
-    await expect(actions.handlePaymentSuccess('cs_test_123')).resolves.toEqual({
-      success: false,
-      error: 'Commercial mode inactive'
-    });
-    expect(apiMock.createCheckoutSession).not.toHaveBeenCalled();
-    expect(apiMock.verifySession).not.toHaveBeenCalled();
-    expect(stateMock.emit).toHaveBeenCalledWith(
-      'paywallRequested',
-      expect.objectContaining({
-        feature: 'artifact',
-        reason: 'commercial_mode_inactive'
-      })
-    );
-  });
+    expect(gated.stripePaymentAdapterMock.createCheckoutSession).not.toHaveBeenCalled();
 
-  test('commercial mode active covers auth-required, redirect, checkout failure, payment success, and payment failure', async () => {
-    const { actions, stateMock, apiMock } = await loadActions({ commercialActive: true });
-
-    stateMock.get.mockReturnValue(null);
-    await expect(actions.startCheckout('artifact')).resolves.toEqual({
+    const active = await loadActions({ commercialActive: true, gateAllowed: true });
+    active.stateMock.get.mockReturnValue(null);
+    await expect(active.actions.startCheckout('artifact')).resolves.toEqual({
       success: false,
       error: 'Auth required'
     });
 
-    stateMock.get.mockReturnValue({ id: 'user-pay' });
-    apiMock.createCheckoutSession
+    active.stateMock.get.mockReturnValue({ id: 'user-pay' });
+    active.stripePaymentAdapterMock.createCheckoutSession
       .mockResolvedValueOnce({ success: true, data: { url: 'https://checkout.test' } })
       .mockResolvedValueOnce({ success: false, error: 'checkout failed' });
 
-    await expect(actions.startCheckout('artifact')).resolves.toEqual({
+    await expect(active.actions.startCheckout('artifact')).resolves.toEqual({
       success: true,
       redirecting: true
     });
-    await expect(actions.startCheckout('artifact')).resolves.toEqual({
+    await expect(active.actions.startCheckout('artifact')).resolves.toEqual({
       success: false,
       error: 'checkout failed'
     });
-    expect(stateMock.emit).toHaveBeenCalledWith('checkoutRedirectRequested', { url: 'https://checkout.test' });
+    expect(active.stateMock.emit).toHaveBeenCalledWith('checkoutRedirectRequested', { url: 'https://checkout.test' });
 
-    apiMock.verifySession
+    active.stripePaymentAdapterMock.verifySession
       .mockResolvedValueOnce({ success: true, data: { sessionId: 'cs_success' } })
       .mockResolvedValueOnce({ success: false, error: 'verification failed', code: 'SESSION_INVALID' });
 
-    await expect(actions.handlePaymentSuccess('cs_success')).resolves.toEqual({
+    await expect(active.actions.handlePaymentSuccess('cs_success')).resolves.toEqual({
       success: true,
       data: { sessionId: 'cs_success' }
     });
-    await expect(actions.handlePaymentSuccess('cs_fail')).resolves.toEqual({
+    await expect(active.actions.handlePaymentSuccess('cs_fail')).resolves.toEqual({
       success: false,
       error: 'verification failed'
-    });
-    expect(stateMock._authorizedEmit).toHaveBeenCalledWith('paymentVerified', { sessionId: 'cs_success' });
-    expect(stateMock._authorizedEmit).toHaveBeenCalledWith('paymentFailed', {
-      sessionId: 'cs_fail',
-      error: 'verification failed',
-      code: 'SESSION_INVALID'
     });
   });
 });

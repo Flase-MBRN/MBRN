@@ -3,18 +3,18 @@
  * Mustererkennung - klar, direkt und ohne Paywall.
  */
 
-import { state } from '../../shared/core/state.js';
-import { actions } from '../../shared/core/actions.js';
-import { storage } from '../../shared/core/storage.js';
+import { state } from '../../shared/core/state/index.js';
+import { actions } from '../../shared/application/actions.js';
+import { storage } from '../../shared/core/storage/index.js';
 import { dom, animateValue, showTerminalLoader, createGlowRing, bindSmartDateInput } from '../../shared/ui/dom_utils.js';
-import { getRepoRoot, nav, renderNavigation } from '../../shared/ui/navigation.js';
-import { renderAuth } from '../../shared/ui/render_auth.js';
+import { getRepoRoot, nav, renderNavigation } from '../../pillars/frontend_os/navigation/index.js';
+import { renderAuth } from '../../pillars/frontend_os/ui_states/auth_controller.js';
 import { generateShareCard, generateTeaserAsset, generateOperatorReport } from '../../shared/core/logic/orchestrator.js';
 import { renderShareCardToCanvas, renderTeaserCardToCanvas } from '../../shared/ui/helpers/canvas_renderer.js';
 import { OPERATOR_MATRIX } from '../../shared/core/logic/numerology/index.js';
 import { i18n } from '../../shared/core/i18n.js';
 import { errorBoundary } from '../../shared/ui/error_boundary.js';
-import { injectLegalBlock } from '../../shared/ui/legal_system.js';
+import { injectLegalBlock } from '../../pillars/frontend_os/shell/legal_blocks.js';
 
 const STORAGE_KEY = 'numerology_input';
 

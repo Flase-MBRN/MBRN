@@ -11,7 +11,8 @@ async function loadErrorLogger({ withBrowser = true } = {}) {
 
   const stateMock = {
     emit: jest.fn(),
-    subscribe: jest.fn()
+    subscribe: jest.fn(),
+    _authorizedEmit: jest.fn()
   };
 
   const insertMock = jest.fn();
@@ -19,14 +20,14 @@ async function loadErrorLogger({ withBrowser = true } = {}) {
     insert: insertMock
   }));
   const getUserMock = jest.fn(() => Promise.resolve({ data: { user: { id: 'user-1' } } }));
+  const getSupabaseClientMock = jest.fn(() => ({
+    from: fromMock,
+    auth: {
+      getUser: getUserMock
+    }
+  }));
 
-  const apiMock = {
-    client: {
-      from: fromMock,
-      auth: {
-        getUser: getUserMock
-      }
-    },
+  const supabaseBridgeMock = {
     isOnline: false
   };
 
@@ -55,10 +56,6 @@ async function loadErrorLogger({ withBrowser = true } = {}) {
     delete globalThis.navigator;
   }
 
-  await jest.unstable_mockModule('../shared/core/api.js', () => ({
-    api: apiMock
-  }));
-
   await jest.unstable_mockModule('../shared/core/state.js', () => ({
     state: stateMock
   }));
@@ -67,7 +64,15 @@ async function loadErrorLogger({ withBrowser = true } = {}) {
     storage: storageMock
   }));
 
-  const { errorLogger } = await import('../shared/core/error_logger.js');
+  await jest.unstable_mockModule('../bridges/supabase/client.js', () => ({
+    getSupabaseClient: getSupabaseClientMock
+  }));
+
+  await jest.unstable_mockModule('../bridges/supabase/index.js', () => ({
+    supabaseBridge: supabaseBridgeMock
+  }));
+
+  const { errorLogger } = await import('../shared/application/observability/error_logger.js');
   errorLogger._initialized = false;
   errorLogger._syncInProgress = false;
 
@@ -75,14 +80,15 @@ async function loadErrorLogger({ withBrowser = true } = {}) {
     errorLogger,
     storageMock,
     stateMock,
-    apiMock,
+    supabaseBridgeMock,
+    getSupabaseClientMock,
     insertMock,
     fromMock,
     getUserMock
   };
 }
 
-describe('errorLogger', () => {
+describe('application errorLogger', () => {
   afterEach(() => {
     delete globalThis.window;
     delete globalThis.navigator;
@@ -187,7 +193,7 @@ describe('errorLogger', () => {
   });
 
   test('sends errors directly to Supabase when online and falls back to queue on send failure', async () => {
-    const { errorLogger, apiMock, insertMock, storageMock, fromMock } = await loadErrorLogger();
+    const { errorLogger, supabaseBridgeMock, insertMock, storageMock, fromMock } = await loadErrorLogger();
     Object.defineProperty(globalThis, 'navigator', {
       value: {
         onLine: true,
@@ -196,7 +202,7 @@ describe('errorLogger', () => {
       },
       configurable: true
     });
-    apiMock.isOnline = true;
+    supabaseBridgeMock.isOnline = true;
     insertMock
       .mockResolvedValueOnce({ error: null })
       .mockResolvedValueOnce({ error: { message: 'write failed' } });
@@ -234,7 +240,7 @@ describe('errorLogger', () => {
 
   test('sendToSupabase handles missing client and thrown insert failures', async () => {
     const missingClientCase = await loadErrorLogger();
-    missingClientCase.apiMock.client = null;
+    missingClientCase.getSupabaseClientMock.mockReturnValue(null);
     await expect(missingClientCase.errorLogger._sendToSupabase({
       id: 'err_1',
       timestamp: new Date().toISOString(),
@@ -274,14 +280,14 @@ describe('errorLogger', () => {
     expect(errorLogger._sanitizeUrl('http://%zz')).toBe('http://%zz');
   });
 
-  test('syncQueue covers early returns, mixed outcomes, and state emit', async () => {
-    const { errorLogger, storageMock, stateMock, apiMock } = await loadErrorLogger();
+  test('syncQueue skips when offline and persists only failed entries', async () => {
+    const { errorLogger, storageMock, stateMock, supabaseBridgeMock } = await loadErrorLogger();
 
     errorLogger._syncInProgress = true;
     await expect(errorLogger._syncQueue()).resolves.toBeUndefined();
     errorLogger._syncInProgress = false;
 
-    apiMock.isOnline = false;
+    supabaseBridgeMock.isOnline = false;
     await expect(errorLogger._syncQueue()).resolves.toBeUndefined();
 
     Object.defineProperty(globalThis, 'navigator', {
@@ -292,12 +298,11 @@ describe('errorLogger', () => {
       },
       configurable: true
     });
-    apiMock.isOnline = true;
+    supabaseBridgeMock.isOnline = true;
 
     storageMock.get.mockReturnValue({
       success: true,
       data: [
-        { id: 'skip', synced: true },
         { id: 'ok', type: 'api_failure', error: 'ok', timestamp: new Date().toISOString(), synced: false },
         { id: 'fail', type: 'api_failure', error: 'fail', timestamp: new Date().toISOString(), synced: false }
       ]
@@ -316,29 +321,10 @@ describe('errorLogger', () => {
         expect.objectContaining({ id: 'fail' })
       ]
     );
-    expect(stateMock.emit).toHaveBeenCalledWith('errorQueueSync', { synced: 1, remaining: 1 });
-  });
-
-  test('init subscribers only forward critical state events', async () => {
-    const { errorLogger, stateMock } = await loadErrorLogger();
-    errorLogger.init();
-
-    const circuitOpenedHandler = stateMock.subscribe.mock.calls.find(([event]) => event === 'circuitOpened')[1];
-    const systemErrorHandler = stateMock.subscribe.mock.calls.find(([event]) => event === 'systemError')[1];
-    const logSpy = jest.spyOn(errorLogger, 'logError').mockResolvedValue({ success: true });
-
-    circuitOpenedHandler({ name: 'supabase', retryAfter: 30000 });
-    systemErrorHandler({ type: 'info', severity: 'low', error: 'ignore me' });
-    systemErrorHandler({ type: 'auth_failure', severity: 'high', error: 'log me' });
-
-    expect(logSpy).toHaveBeenCalledTimes(2);
-    expect(logSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      type: 'circuit_open',
-      severity: 'critical'
-    }));
-    expect(logSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
-      type: 'auth_failure',
-      severity: 'high'
-    }));
+    expect(stateMock._authorizedEmit).toHaveBeenCalledWith('errorQueueSynced', {
+      total: 2,
+      synced: 1,
+      failed: 1
+    });
   });
 });

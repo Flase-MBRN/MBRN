@@ -1,0 +1,19 @@
+{
+  "id": "pattern",
+  "publicLabel": "Muster",
+  "description": "Numerologie, Profile und wiederkehrende Signaturen.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "meta_generator",
+    "oracle"
+  ],
+  "defaultApp": "numerology",
+  "surfaceFlags": {
+    "includeInNavigation": true,
+    "includeInDashboard": true,
+    "navigationOrder": 20
+  }
+}

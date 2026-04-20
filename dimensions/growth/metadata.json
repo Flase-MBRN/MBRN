@@ -1,0 +1,19 @@
+{
+  "id": "growth",
+  "publicLabel": "Wachstum",
+  "description": "Kapital, Entwicklung und messbares Vorankommen.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "oracle",
+    "monetization"
+  ],
+  "defaultApp": "finance",
+  "surfaceFlags": {
+    "includeInNavigation": true,
+    "includeInDashboard": true,
+    "navigationOrder": 10
+  }
+}

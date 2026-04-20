@@ -3,14 +3,14 @@
  * Zeit-Seite für Phasen und 7-Jahres-Zyklen.
  */
 
-import { state } from '../../shared/core/state.js';
-import { actions } from '../../shared/core/actions.js';
-import { storage } from '../../shared/core/storage.js';
+import { state } from '../../shared/core/state/index.js';
+import { actions } from '../../shared/application/actions.js';
+import { storage } from '../../shared/core/storage/index.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../../shared/ui/dom_utils.js';
-import { getRepoRoot, nav, renderNavigation } from '../../shared/ui/navigation.js';
-import { renderAuth } from '../../shared/ui/render_auth.js';
+import { getRepoRoot, nav, renderNavigation } from '../../pillars/frontend_os/navigation/index.js';
+import { renderAuth } from '../../pillars/frontend_os/ui_states/auth_controller.js';
 import { calculateChronos } from '../../shared/core/logic/chronos_v2.js';
-import { injectLegalBlock } from '../../shared/ui/legal_system.js';
+import { injectLegalBlock } from '../../pillars/frontend_os/shell/legal_blocks.js';
 
 const FOCUS_EXPLANATIONS = {
   1: 'Das Modell liest diese Phase oft als Startpunkt. Initiative, Richtung und mutige Entscheidungen rücken stärker nach vorn.',

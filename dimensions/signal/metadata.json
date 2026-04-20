@@ -1,0 +1,18 @@
+{
+  "id": "signal",
+  "publicLabel": "Signal",
+  "description": "Markt- und Oracle-Signale als eigene Oberfläche.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "oracle"
+  ],
+  "defaultApp": null,
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 40
+  }
+}

@@ -86,15 +86,20 @@ Text:        #F5F5F5
 │
 ├── /shared
 │   ├── /core
+│   ├── /application
 │   ├── /ui
 │   └── /loyalty
 │
-├── /apps
-│   ├── /finance
-│   ├── /numerology
-│   ├── /chronos
-│   └── /synergy
+├── /pillars
+│   ├── /meta_generator
+│   ├── /monetization
+│   ├── /oracle
+│   └── /frontend_os
 │
+├── /dimensions
+├── /apps
+├── /bridges
+├── /commerce
 ├── /dashboard
 ├── /scripts/pipelines
 ├── /scripts/oracle
@@ -112,25 +117,25 @@ Text:        #F5F5F5
 
 ### Säule 1 — Meta-Generator
 
-- `templates/`
-- aktuell vorhanden, aber noch nicht tief genug ausgebaut
+- `pillars/meta_generator/`
+- für Blueprints, Content, Module, Assets und Agent-Adapter reserviert
 
-### Säule 2 — Logic / API Foundation
+### Säule 2 — Monetization
 
-- `shared/core/logic/`
-- `supabase/functions/`
-- pure Logik, API-ready, keine DOM-Abhängigkeit
+- `pillars/monetization/`
+- Produkt-, Plan-, Gate- und Entitlement-Logik ohne Provider-SDKs
 
-### Säule 3 — Data Arbitrage
+### Säule 3 — Oracle
 
-- `scripts/pipelines/`
-- yfinance, RSS, JSON-Hardening, lokale Ollama-Anreicherung
+- `pillars/oracle/`
+- `scripts/pipelines/` und `scripts/oracle/` bleiben operative Daten- und Rechenpfade
+- Oberflächen lesen nur strukturierte Snapshot-Read-Models
 
-### Säule 4 — Ecosystem / Oracle UI
+### Säule 4 — Frontend OS
 
-- `dashboard/`
-- `apps/*`
-- `scripts/oracle/` als operative Brücke zwischen Datenarbeit und Nutzeroberfläche
+- `pillars/frontend_os/`
+- Shell, Navigation, Dashboard- und Legal-Surfaces
+- keine IO, keine primitive UI-Basisbausteine
 
 ---
 
@@ -138,10 +143,10 @@ Text:        #F5F5F5
 
 | Regel | Bedeutung |
 |---|---|
-| **UI bleibt UI** | `render.js` und Dashboard-Dateien bauen Oberfläche, aber keine Fachlogik |
-| **Logic bleibt rein** | `shared/core/logic/` exportiert pure Funktionen |
+| **Core bleibt IO-frei** | `shared/core/` kennt keine Bridges, Commerce- oder Frontend-OS-Module |
+| **Application orchestriert** | `shared/application/` verbindet Core, Bridges, Commerce und Oberflächen |
+| **Frontend OS bleibt dünn** | Shell und Surface-Komposition, aber keine Provider- oder Processing-Logik |
 | **Data Workers bleiben getrennt** | Python sammelt, normalisiert und persistiert Signale |
-| **Oracle verbindet, vermischt aber nicht** | `scripts/oracle/` liest Artefakte und schreibt spiegelbare Vorhersagen |
 
 Verboten:
 

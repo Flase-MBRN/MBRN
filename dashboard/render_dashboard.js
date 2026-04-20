@@ -3,15 +3,17 @@
  * Dashboard mit klarem Check-in, Markt-Vibe und Vibe-Check.
  */
 
-import { state } from '../shared/core/state.js';
-import { actions } from '../shared/core/actions.js';
+import { state } from '../shared/core/state/index.js';
+import { actions } from '../shared/application/actions.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../shared/ui/dom_utils.js';
-import { getRepoRoot, nav, renderNavigation } from '../shared/ui/navigation.js';
-import { renderAuth } from '../shared/ui/render_auth.js';
-import { sentimentWidget } from '../shared/ui/widgets/sentiment_widget.js';
+import { getRepoRoot, nav, renderNavigation } from '../pillars/frontend_os/navigation/index.js';
+import { renderAuth } from '../pillars/frontend_os/ui_states/auth_controller.js';
+import { sentimentWidget } from '../pillars/frontend_os/cards/sentiment_widget.js';
 import { errorBoundary } from '../shared/ui/error_boundary.js';
-import { api } from '../shared/core/api.js';
-import { injectLegalBlock } from '../shared/ui/legal_system.js';
+import { injectLegalBlock } from '../pillars/frontend_os/shell/legal_blocks.js';
+import { readOracleDashboardSnapshot } from '../shared/application/read_models/oracle_dashboard.js';
+import { readSystemHeartbeat } from '../shared/application/read_models/system_status.js';
+import { renderDashboardAppCards } from '../pillars/frontend_os/dashboard/app_cards.js';
 
 const HEARTBEAT_STALE_MS = 65 * 60 * 1000;
 const HEARTBEAT_POLL_MS = 60 * 1000;
@@ -155,22 +157,6 @@ export const dashboardRender = {
         this._listeners.push({ element: btnCheckin, type: 'click', handler: checkinHandler });
       }
 
-      document.querySelectorAll('.app-card-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          const href = link.getAttribute('href');
-          if (href.includes('numerology') || href.includes('muster')) {
-            nav.navigateTo('numerology');
-          } else if (href.includes('finance') || href.includes('wachstum')) {
-            nav.navigateTo('finance');
-          } else if (href.includes('chronos') || href.includes('zeit')) {
-            nav.navigateTo('chronos');
-          } else {
-            window.location.href = href;
-          }
-        });
-      });
-
       this._unsubscribers.push(state.subscribe('systemInitialized', (profile) => this.renderStatus(profile)));
       this._unsubscribers.push(state.subscribe('streakUpdated', (payload) => {
         this.renderStatus(payload.profile);
@@ -192,6 +178,8 @@ export const dashboardRender = {
       sentimentWidget.init('sentiment-widget');
       this.initOracleCard();
       this.buildSynergyWidget();
+      renderDashboardAppCards();
+      this.bindDashboardAppCards();
       this.renderLegalSurface();
       this.startHeartbeatMonitor();
     } catch (err) {
@@ -207,6 +195,20 @@ export const dashboardRender = {
       includePolicyLinks: true,
       includeReset: true,
       reloadOnSuccess: true
+    });
+  },
+
+  bindDashboardAppCards() {
+    document.querySelectorAll('.app-card-link').forEach((link) => {
+      const clickHandler = (e) => {
+        e.preventDefault();
+        const route = link.getAttribute('data-route');
+        if (route) {
+          nav.navigateTo(route);
+        }
+      };
+      link.addEventListener('click', clickHandler);
+      this._listeners.push({ element: link, type: 'click', handler: clickHandler });
     });
   },
 
@@ -448,52 +450,68 @@ export const dashboardRender = {
     if (!card) return;
 
     try {
-      const response = await fetch(`../shared/data/oracle_prediction.json?t=${Date.now()}`, { cache: 'no-store' });
-      if (!response.ok) return;
+      const oracleSnapshot = await readOracleDashboardSnapshot();
+      if (!oracleSnapshot.success) return;
 
-      const prediction = await response.json();
-      const signal = prediction?.prediction || {};
-      const context = prediction?.market_context || {};
-      const backtesting = prediction?.backtesting || {};
-      const state = getOracleState(signal.trading_recommendation);
-      const strategyLabel = getOracleStrategyLabel(state);
-      const marketVibe = getMarketVibeLabel(signal.sentiment_prediction ?? 50);
+      const prediction = oracleSnapshot.data;
+      const oracleState = getOracleState(prediction.tradingRecommendation);
+      const explanationSnapshot = {
+        day_numerology: {
+          day_number: prediction.dayNumber,
+          description: prediction.dayDescription
+        }
+      };
+      const explanationSignal = {
+        sentiment_prediction: prediction.sentimentPrediction,
+        reasoning: prediction.reasoning
+      };
+      const explanationContext = {
+        crypto_sentiment: prediction.cryptoSentiment,
+        crypto_snapshot: prediction.cryptoSnapshot,
+        news_signal: prediction.newsSignal,
+        headline_count: prediction.headlineCount
+      };
+      const strategyLabel = getOracleStrategyLabel(oracleState);
+      const marketVibe = getMarketVibeLabel(prediction.sentimentPrediction);
 
       card.classList.remove('oracle-state-buy', 'oracle-state-caution', 'oracle-state-sell', 'oracle-state-hold');
-      card.classList.add(`oracle-state-${state}`);
+      card.classList.add(`oracle-state-${oracleState}`);
 
       const badge = document.getElementById('oracle-recommendation-badge');
       if (badge) {
         badge.textContent = strategyLabel;
-        badge.className = `oracle-pill oracle-pill-${state}`;
+        badge.className = `oracle-pill oracle-pill-${oracleState}`;
       }
 
-      dom.setText('oracle-alignment-score', Math.round(Number(signal.alignment_score ?? 0)).toString());
-      dom.setText('oracle-target-date', prediction?.target_date || 'Nächster Handelstag');
-      dom.setText('oracle-confidence', formatPercent((Number(signal.confidence ?? 0) * 100)));
-      dom.setText('oracle-accuracy', formatPercent(Number(backtesting.accuracy_pct ?? signal.oracle_accuracy ?? 0)));
+      dom.setText('oracle-alignment-score', Math.round(prediction.alignmentScore).toString());
+      dom.setText('oracle-target-date', prediction.targetDate || 'Nächster Handelstag');
+      dom.setText('oracle-confidence', formatPercent(prediction.confidence * 100));
+      dom.setText('oracle-accuracy', formatPercent(prediction.accuracyPct));
       dom.setText('oracle-market-vibe', marketVibe);
       dom.setText('oracle-strategy', strategyLabel);
-      dom.setText('oracle-sentiment-forecast', formatScoreOutOfHundred(signal.sentiment_prediction ?? 50));
+      dom.setText('oracle-sentiment-forecast', formatScoreOutOfHundred(prediction.sentimentPrediction));
       dom.setText('oracle-sentiment-label', marketVibe);
-      dom.setText('oracle-crypto-signal', formatScoreOutOfHundred(context.crypto_sentiment ?? 50));
-      dom.setText('oracle-crypto-detail', formatCryptoDetails(context.crypto_snapshot ?? {}));
-      dom.setText('oracle-news-flow', getBiasLabel(context.news_signal ?? 'neutral'));
-      dom.setText('oracle-news-detail', formatNewsDetails(context.news_signal ?? 'neutral', context.headline_count ?? 0));
-      dom.setText('oracle-reasoning', buildOracleExplanation(prediction, signal, context, state));
+      dom.setText('oracle-crypto-signal', formatScoreOutOfHundred(prediction.cryptoSentiment));
+      dom.setText('oracle-crypto-detail', formatCryptoDetails(prediction.cryptoSnapshot));
+      dom.setText('oracle-news-flow', getBiasLabel(prediction.newsSignal));
+      dom.setText('oracle-news-detail', formatNewsDetails(prediction.newsSignal, prediction.headlineCount));
+      dom.setText(
+        'oracle-reasoning',
+        buildOracleExplanation(explanationSnapshot, explanationSignal, explanationContext, oracleState)
+      );
     } catch (error) {
       console.error('[Oracle Card] Update failed:', error);
     }
   },
 
   async refreshHeartbeatStatus() {
-    const result = await api.getSystemStatusPing();
-    if (!result?.success || !result?.data?.last_ping) {
+    const result = await readSystemHeartbeat();
+    if (!result?.success || !result?.data?.lastPing) {
       this.setSystemStatus(false);
       return;
     }
 
-    const lastSeenMs = Date.parse(result.data.last_ping);
+    const lastSeenMs = Date.parse(result.data.lastPing);
     const isFresh = Number.isFinite(lastSeenMs) && Date.now() - lastSeenMs <= HEARTBEAT_STALE_MS;
     this.setSystemStatus(isFresh);
   },

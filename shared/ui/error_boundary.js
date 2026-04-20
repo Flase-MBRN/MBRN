@@ -1,13 +1,16 @@
 /**
  * /shared/ui/error_boundary.js
- * GLOBAL ERROR BOUNDARY — System Safety Net
+ * DEPRECATED FACADE - Use base_components/error_boundary.js instead
+ * This file exists for backward compatibility during migration.
+ * TODO: Update imports to use base_components/error_boundary.js
  * 
+ * GLOBAL ERROR BOUNDARY — System Safety Net
  * Responsibility: Global error handling and graceful degradation
  * Creates error container dynamically (no HTML modifications needed)
  */
 
-import { state } from '../core/state.js';
-import { dom } from './dom_utils.js';
+import { state } from '../core/state/index.js';
+import { dom } from './dom/index.js';
 
 export const errorBoundary = {
   _container: null,

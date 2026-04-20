@@ -2,14 +2,15 @@ import { jest } from '@jest/globals';
 
 const apiMock = {
   client: null,
-  init: jest.fn()
+  init: jest.fn(),
+  checkConnection: jest.fn()
 };
 
-await jest.unstable_mockModule('../shared/core/api.js', () => ({
+await jest.unstable_mockModule('../bridges/supabase/api.js', () => ({
   api: apiMock
 }));
 
-const { getSupabaseClient, default: defaultExport } = await import('../shared/core/supabase_client.js');
+const { getSupabaseClient, default: defaultExport } = await import('../bridges/supabase/client.js');
 
 describe('supabase_client', () => {
   const originalWindow = globalThis.window;
