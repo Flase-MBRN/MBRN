@@ -1,14 +1,18 @@
 /**
- * /shared/core/circuit_breaker.js
+ * /shared/application/resilience/circuit_breaker.js
  * CIRCUIT BREAKER PATTERN - Resilience Engineering
  * 
  * Responsibility: Protects against cascading failures in cloud connections
  * LAW 7 COMPLIANT: Fallback State - graceful degradation
  * LAW 4 COMPLIANT: Structured Returns - always { success, data?, error?, offline? }
+ * 
+ * Location: shared/application/resilience (not shared/core)
+ * Reason: Circuit breakers handle external IO failures (API timeouts, network issues).
+ * shared/core must remain 100% pure with no knowledge of the outside world.
  */
 
-import { state } from './state/index.js';
-import { storage } from './storage/index.js';
+import { state } from '../../core/state/index.js';
+import { storage } from '../../core/storage/index.js';
 
 /**
  * Circuit Breaker states

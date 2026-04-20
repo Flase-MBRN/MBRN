@@ -7,7 +7,7 @@
  */
 
 import { jest } from '@jest/globals';
-import { CircuitBreaker, circuits, withCircuitBreaker } from '../shared/core/circuit_breaker.js';
+import { CircuitBreaker, circuits, withCircuitBreaker } from '../shared/application/resilience/circuit_breaker.js';
 
 const stateMock = {
   emit: jest.fn()

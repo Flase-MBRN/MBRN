@@ -1,4 +1,4 @@
-import { withCircuitBreaker } from '../../shared/core/circuit_breaker.js';
+import { withCircuitBreaker } from '../../shared/application/resilience/circuit_breaker.js';
 import {
   checkSupabaseConnection,
   getSupabaseClient,

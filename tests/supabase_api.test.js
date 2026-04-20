@@ -19,7 +19,7 @@ async function loadApi() {
     _authorizedEmit: jest.fn()
   };
 
-  await jest.unstable_mockModule('../shared/core/circuit_breaker.js', () => ({
+  await jest.unstable_mockModule('../shared/application/resilience/circuit_breaker.js', () => ({
     withCircuitBreaker: withCircuitBreakerMock
   }));
 
