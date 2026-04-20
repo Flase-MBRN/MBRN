@@ -99,14 +99,22 @@ export function getCurrentRoute(pathname = window.location.pathname) {
   
   // System-Surfaces prüfen (Start, Dashboard)
   for (const surface of SYSTEM_SURFACES) {
-    const routePath = `/${surface.route.replace(/index\.html$/, '')}`;
+    const routeWithoutIndex = surface.route.replace(/index\.html$/, '');
+    const routePath = `/${routeWithoutIndex}`;
+    
+    console.log('[getCurrentRoute] checking surface:', surface.id, 'routePath:', routePath);
+    
     if (surface.id === 'home') {
       if (cleanPath === '/' || cleanPath === '/index.html' || cleanPath.endsWith('/index.html')) {
         console.log('[getCurrentRoute] home match');
         return 'home';
       }
     } else {
-      if (cleanPath.startsWith(routePath) || cleanPath === routePath || cleanPath === routePath + '/') {
+      // Match mit und ohne index.html und mit/ohne trailing slash
+      if (cleanPath === routePath || 
+          cleanPath === routePath + '/' || 
+          cleanPath === routePath + '/index.html' ||
+          cleanPath.startsWith(routePath + '/')) {
         console.log('[getCurrentRoute] systemMatch:', surface.id);
         return surface.id;
       }
@@ -115,8 +123,16 @@ export function getCurrentRoute(pathname = window.location.pathname) {
 
   // Apps prüfen
   for (const app of APP_MANIFEST) {
-    const routePath = `/${app.route.replace(/index\.html$/, '')}`;
-    if (cleanPath.startsWith(routePath) || cleanPath === routePath || cleanPath === routePath + '/') {
+    const routeWithoutIndex = app.route.replace(/index\.html$/, '');
+    const routePath = `/${routeWithoutIndex}`;
+    
+    console.log('[getCurrentRoute] checking app:', app.id, 'routePath:', routePath);
+    
+    // Match mit und ohne index.html und mit/ohne trailing slash
+    if (cleanPath === routePath || 
+        cleanPath === routePath + '/' || 
+        cleanPath === routePath + '/index.html' ||
+        cleanPath.startsWith(routePath + '/')) {
       console.log('[getCurrentRoute] appMatch:', app.id);
       return app.id;
     }
