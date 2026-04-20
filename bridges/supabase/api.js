@@ -163,7 +163,7 @@ export const api = {
         })
         .select();
 
-      if (error) throw error;
+      if (error) return createBridgeFailure('supabase.profile.save', error.message);
       return createBridgeSuccess('supabase.profile.save', data[0]);
     });
   },
@@ -177,7 +177,7 @@ export const api = {
         .select('*')
         .eq('id', userId)
         .single();
-      if (error) throw error;
+      if (error) return createBridgeFailure('supabase.profile.get', error.message);
       return createBridgeSuccess('supabase.profile.get', data);
     });
   },

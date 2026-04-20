@@ -116,8 +116,8 @@ export const supabaseBridge = {
         })
         .select();
 
-      if (error) throw error;
-      return { success: true, data: data[0] };
+      if (error) return createBridgeFailure('supabase.profile.save', error.message);
+      return createBridgeSuccess('supabase.profile.save', data[0]);
     });
   },
 
@@ -131,7 +131,7 @@ export const supabaseBridge = {
         .select('*')
         .eq('id', userId)
         .single();
-      if (error) throw error;
+      if (error) return createBridgeFailure('supabase.profile.get', error.message);
       return createBridgeSuccess('supabase.profile.get', data);
     });
   },
