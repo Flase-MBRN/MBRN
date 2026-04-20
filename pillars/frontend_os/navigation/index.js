@@ -60,8 +60,8 @@ function buildNavigationEntries() {
       };
     })
     .sort((left, right) => {
-      const leftOrder = getDimensionById(left.id)?.surfaceFlags?.navigationOrder ?? 999;
-      const rightOrder = getDimensionById(right.id)?.surfaceFlags?.navigationOrder ?? 999;
+      const leftOrder = getDimensionById(left.dimensionId)?.surfaceFlags?.navigationOrder ?? 999;
+      const rightOrder = getDimensionById(right.dimensionId)?.surfaceFlags?.navigationOrder ?? 999;
       return leftOrder - rightOrder;
     });
 
@@ -95,12 +95,21 @@ export function getCurrentRoute(pathname = window.location.pathname) {
   // GitHub Pages: /MBRN/ Präfix entfernen für Route-Erkennung
   const cleanPath = pathname.replace(/^\/MBRN\//, '/');
   
-  // Einfache Pfad-basierte Erkennung
-  if (cleanPath.includes('/dashboard/')) return 'dashboard';
-  if (cleanPath.includes('/apps/finance/')) return 'finance';
-  if (cleanPath.includes('/apps/numerology/')) return 'numerology';
-  if (cleanPath.includes('/apps/chronos/')) return 'chronos';
-  if (cleanPath.includes('/apps/synergy/')) return 'synergy';
+  // 1. System-Surfaces prüfen (Start, Dashboard)
+  for (const surface of SYSTEM_SURFACES) {
+    const routePath = surface.route.replace(/index\.html$/, '');
+    if (cleanPath.includes(`/${routePath}`)) {
+      return surface.id;
+    }
+  }
+  
+  // 2. Apps aus APP_MANIFEST prüfen (registry-driven)
+  for (const app of APP_MANIFEST) {
+    const routePath = app.route.replace(/index\.html$/, '');
+    if (cleanPath.includes(`/${routePath}`)) {
+      return app.id;
+    }
+  }
   
   // Default: Start
   return 'home';

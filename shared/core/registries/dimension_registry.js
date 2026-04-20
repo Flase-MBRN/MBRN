@@ -1,3 +1,7 @@
+// NOTE: dimensions/*/metadata.json are static mirrors.
+// This DIMENSION_REGISTRY is the primary runtime truth for navigation, routing, and surface discovery.
+// Any changes to dimensions should first be made here, then reflected in metadata.json if needed.
+
 export const DIMENSION_REGISTRY = Object.freeze([
   {
     id: 'growth',
