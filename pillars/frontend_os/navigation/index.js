@@ -19,11 +19,21 @@ function getKnownRouteSegments() {
 
 export function getRepoRoot() {
   const path = window.location.pathname;
+  
+  // GitHub Pages: Wenn der Pfad mit /MBRN/ beginnt, ist das der Repo-Root
+  const mbrnPrefix = '/MBRN/';
+  if (path.startsWith(mbrnPrefix)) {
+    return mbrnPrefix;
+  }
+  
+  // Fallback: Suche nach bekannten Route-Segmenten
   const knownSegments = getKnownRouteSegments();
   for (const segment of knownSegments) {
     const idx = path.indexOf(segment);
     if (idx !== -1) return path.slice(0, idx) + '/';
   }
+  
+  // Default: Aktuelles Verzeichnis
   const root = path.replace(/\/[^/]*$/, '/') || '/';
   return root.endsWith('/') ? root : root + '/';
 }

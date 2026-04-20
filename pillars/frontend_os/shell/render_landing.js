@@ -29,7 +29,7 @@ export const landingRender = {
   init() {
     const existingData = this.checkExistingProfile();
     if (existingData) {
-      window.location.href = './dashboard/index.html';
+      window.location.href = getRepoRoot() + 'dashboard/index.html';
       return;
     }
 
