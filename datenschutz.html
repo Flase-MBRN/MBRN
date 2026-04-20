@@ -7,18 +7,20 @@
   <link rel="stylesheet" href="shared/ui/theme.css">
   <link rel="stylesheet" href="shared/ui/components.css">
 </head>
-<body class="void-bg bg-grid">
+<body class="void-bg bg-grid" data-legal-page="datenschutz">
   <aside class="nav-sidebar">
     <div class="nav-brand">
       <span class="logo-text">MBRN</span>
     </div>
-    <nav class="nav-menu">
-      <a class="nav-item" href="index.html"><span class="nav-label">Start</span></a>
-      <a class="nav-item" href="dashboard/"><span class="nav-label">Dashboard</span></a>
-      <a class="nav-item" href="impressum.html"><span class="nav-label">Impressum</span></a>
-      <a class="nav-item active" href="datenschutz.html"><span class="nav-label">Datenschutz</span></a>
-    </nav>
+
+    <nav class="nav-menu" id="nav-menu"></nav>
+
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
+    </div>
   </aside>
+
+  <div class="bg-glow"></div>
 
   <main class="main-content">
     <section class="tool-hero reveal">
@@ -29,13 +31,21 @@
 
     <section class="tool-section reveal">
       <div class="glass-card legal-page-card">
+        <div class="legal-links legal-page-links">
+          <a class="legal-page-link" data-legal-page-link="impressum" data-root-link="impressum.html" href="impressum.html">Impressum</a>
+          <a class="legal-page-link" data-legal-page-link="datenschutz" data-root-link="datenschutz.html" href="datenschutz.html">Datenschutz</a>
+          <a class="legal-page-link" data-root-link="index.html" href="index.html">Startseite</a>
+        </div>
+
         <div class="legal-section">
-          <h2 class="card-title mb-16">1. Verantwortliche Stelle</h2>
-          <p>Erik Klauß</p>
-          <p>Flottenstraße 5</p>
-          <p>47139 Duisburg</p>
-          <p>Deutschland</p>
-          <p>E-Mail: erikk2k5@gmail.com</p>
+          <h2 class="card-title">1. Verantwortliche Stelle</h2>
+          <div class="legal-contact-list">
+            <p>Erik Klauß</p>
+            <p>Flottenstraße 5</p>
+            <p>47139 Duisburg</p>
+            <p>Deutschland</p>
+            <p>E-Mail: erikk2k5@gmail.com</p>
+          </div>
         </div>
 
         <div class="legal-notice legal-card">
@@ -44,46 +54,43 @@
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">2. Welche Daten MBRN verarbeitet</h2>
+          <h2 class="card-title">2. Welche Daten MBRN verarbeitet</h2>
           <p>Je nach genutzter Fläche verarbeitet MBRN Eingaben wie Name, Geburtsdatum, numerologische Werte, Check-in-Daten und daraus abgeleitete Modell-Ausgaben.</p>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">3. Lokale Speicherung im Browser</h2>
+          <h2 class="card-title">3. Lokale Speicherung im Browser</h2>
           <p>MBRN speichert Teile deines Profils und deiner Ergebnisse lokal im Browser, damit du deine Daten bei einem späteren Besuch erneut laden kannst. Die Speicherung erfolgt lokal-first und kann über die Funktion „Lokale Daten löschen“ zurückgesetzt werden.</p>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">4. Externe Infrastruktur</h2>
+          <h2 class="card-title">4. Externe Infrastruktur</h2>
           <p>Bestimmte Funktionen können technische Verbindungen zu externer Infrastruktur auslösen. Das betrifft insbesondere vorbereitete oder aktivierte Auth-, Profil-, Realtime- oder Sync-Funktionen über Supabase sowie allgemeine API- oder Hosting-Verbindungen.</p>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">5. Zahlungs- und Commerce-Vorbereitung</h2>
+          <h2 class="card-title">5. Zahlungs- und Commerce-Vorbereitung</h2>
           <p>Für künftige kostenpflichtige Module ist eine Integration externer Zahlungsanbieter wie Stripe technisch vorbereitet. Diese Schicht ist derzeit nicht aktiv und wird aktuell nicht für Verkäufe oder Zahlungsabwicklung genutzt.</p>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">6. Schriftarten und externe Requests</h2>
+          <h2 class="card-title">6. Schriftarten und externe Requests</h2>
           <p>Die aktuellen öffentlichen Einstiegsseiten wurden auf Systemschriftarten umgestellt. Dadurch werden in diesem Stand keine Google-Font-CDN-Requests mehr als Standard benötigt.</p>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">7. Teilen und Exportieren</h2>
+          <h2 class="card-title">7. Teilen und Exportieren</h2>
           <p>Beim Export von Bildern, Storys oder PDFs können persönliche Informationen in der Datei sichtbar sein. Prüfe Inhalte daher vor dem Teilen sorgfältig.</p>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">8. Deine Rechte</h2>
+          <h2 class="card-title">8. Deine Rechte</h2>
           <p>Du kannst lokale MBRN-Daten in deinem Browser jederzeit löschen. Für Anfragen zu extern verarbeiteten Daten nutze bitte die oben genannte Kontakt-E-Mail der verantwortlichen Stelle.</p>
-        </div>
-
-        <div class="legal-links legal-links-compact">
-          <a class="legal-link" href="index.html">Zurück zur Startseite</a>
-          <a class="legal-link" href="impressum.html">Impressum</a>
         </div>
       </div>
     </section>
   </main>
+
+  <script type="module" src="shared/ui/render_legal_page.js"></script>
 </body>
 </html>

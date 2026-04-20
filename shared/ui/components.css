@@ -2718,11 +2718,71 @@ button[class*="btn"] {
 .legal-page-card {
   display: grid;
   gap: 24px;
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: clamp(24px, 3vw, 34px);
 }
 
 .legal-section {
   display: grid;
-  gap: 8px;
+  gap: 12px;
+}
+
+.legal-page-card .card-title {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.legal-section p,
+.legal-section li {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.78;
+}
+
+.legal-page-links {
+  justify-content: flex-start;
+  gap: 10px 14px;
+  padding-top: 4px;
+}
+
+.legal-page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.legal-page-link:hover,
+.legal-page-link:focus-visible {
+  border-color: rgba(255, 255, 255, 0.16);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.legal-page-link.is-active {
+  color: var(--text-primary);
+  border-color: rgba(123, 92, 245, 0.42);
+  box-shadow: 0 0 0 1px rgba(123, 92, 245, 0.12);
+}
+
+.legal-contact-list {
+  display: grid;
+  gap: 6px;
+}
+
+.legal-page-card .legal-card {
+  margin-top: 4px;
 }
 
 .legal-blocker-card {
@@ -2741,6 +2801,11 @@ button[class*="btn"] {
   .legal-rail {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .legal-page-link {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .legal-reset {

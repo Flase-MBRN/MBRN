@@ -7,60 +7,69 @@
   <link rel="stylesheet" href="shared/ui/theme.css">
   <link rel="stylesheet" href="shared/ui/components.css">
 </head>
-<body class="void-bg bg-grid">
+<body class="void-bg bg-grid" data-legal-page="impressum">
   <aside class="nav-sidebar">
     <div class="nav-brand">
       <span class="logo-text">MBRN</span>
     </div>
-    <nav class="nav-menu">
-      <a class="nav-item" href="index.html"><span class="nav-label">Start</span></a>
-      <a class="nav-item" href="dashboard/"><span class="nav-label">Dashboard</span></a>
-      <a class="nav-item active" href="impressum.html"><span class="nav-label">Impressum</span></a>
-      <a class="nav-item" href="datenschutz.html"><span class="nav-label">Datenschutz</span></a>
-    </nav>
+
+    <nav class="nav-menu" id="nav-menu"></nav>
+
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
+    </div>
   </aside>
+
+  <div class="bg-glow"></div>
 
   <main class="main-content">
     <section class="tool-hero reveal">
       <div class="hero-eyebrow">Pflichtangaben</div>
       <h1 class="hero-title">Impressum</h1>
-      <p class="hero-subtitle">Dieses Projekt wird derzeit privat betrieben und noch nicht monetarisiert.</p>
+      <p class="hero-subtitle">Klar, direkt und ohne Platzhalter: Das ist die aktuelle Betreiber- und Kontaktbasis für das private MBRN-Projekt.</p>
     </section>
 
     <section class="tool-section reveal">
       <div class="glass-card legal-page-card">
-        <div class="legal-section">
-          <h2 class="card-title mb-16">Angaben gemäß § 5 TMG</h2>
-          <p>Erik Klauß</p>
-          <p>Flottenstraße 5</p>
-          <p>47139 Duisburg</p>
-          <p>Deutschland</p>
+        <div class="legal-links legal-page-links">
+          <a class="legal-page-link" data-legal-page-link="impressum" data-root-link="impressum.html" href="impressum.html">Impressum</a>
+          <a class="legal-page-link" data-legal-page-link="datenschutz" data-root-link="datenschutz.html" href="datenschutz.html">Datenschutz</a>
+          <a class="legal-page-link" data-root-link="index.html" href="index.html">Startseite</a>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">Kontakt</h2>
+          <h2 class="card-title">Angaben gemäß § 5 TMG</h2>
+          <div class="legal-contact-list">
+            <p>Erik Klauß</p>
+            <p>Flottenstraße 5</p>
+            <p>47139 Duisburg</p>
+            <p>Deutschland</p>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <h2 class="card-title">Kontakt</h2>
           <p>E-Mail: erikk2k5@gmail.com</p>
         </div>
 
         <div class="legal-section">
-          <h2 class="card-title mb-16">Verantwortlich für Inhalte</h2>
-          <p>Erik Klauß</p>
-          <p>Flottenstraße 5</p>
-          <p>47139 Duisburg</p>
-          <p>Deutschland</p>
+          <h2 class="card-title">Verantwortlich für Inhalte</h2>
+          <div class="legal-contact-list">
+            <p>Erik Klauß</p>
+            <p>Flottenstraße 5</p>
+            <p>47139 Duisburg</p>
+            <p>Deutschland</p>
+          </div>
         </div>
 
         <div class="legal-notice legal-card">
           <span class="legal-notice-title">Projektstatus</span>
-          <p class="legal-notice-body">MBRN wird aktuell als privates Projekt betrieben. Es findet derzeit keine aktive Monetarisierung oder Zahlungsabwicklung über diese öffentliche Oberfläche statt.</p>
-        </div>
-
-        <div class="legal-links legal-links-compact">
-          <a class="legal-link" href="index.html">Zurück zur Startseite</a>
-          <a class="legal-link" href="datenschutz.html">Datenschutz</a>
+          <p class="legal-notice-body">MBRN wird aktuell als privates Projekt betrieben. Es gibt derzeit keine aktive Monetarisierung und keine öffentliche Zahlungsabwicklung.</p>
         </div>
       </div>
     </section>
   </main>
+
+  <script type="module" src="shared/ui/render_legal_page.js"></script>
 </body>
 </html>
