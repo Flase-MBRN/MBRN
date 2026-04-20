@@ -7,7 +7,6 @@
 
   <link rel="stylesheet" href="../shared/ui/theme.css">
   <link rel="stylesheet" href="../shared/ui/components.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="void-bg bg-grid">
 
@@ -54,7 +53,7 @@
 
         <p class="text-secondary">Heute bestätigt?</p>
         <div id="dash-loader"></div>
-        <button id="btn-checkin" class="btn-primary mt-24">CHECK</button>
+        <button id="btn-checkin" class="btn-primary dashboard-check-button mt-24">CHECK</button>
         <p id="dash-msg" class="text-accent text-center mt-16"></p>
       </div>
     </section>
@@ -64,11 +63,15 @@
     </section>
 
     <section class="tool-section reveal">
-      <div id="oracle-widget"></div>
+      <div id="oracle-widget" class="oracle-widget-shell"></div>
     </section>
 
     <section class="tool-section reveal">
       <div id="synergy-widget-container"></div>
+    </section>
+
+    <section class="tool-section reveal">
+      <div id="dashboard-legal-mount"></div>
     </section>
 
     <section class="tool-section reveal">

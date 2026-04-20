@@ -1,308 +1,165 @@
 # MBRN Data Arbitrage — Pillar 3 Pipelines
 
-> **Location:** `/scripts/pipelines/`  
-> **Purpose:** Automated data collection for all 4 Pillars  
-> **Compliance:** DSGVO-safe — no personal data, only structural B2B data  
+> **Location:** `scripts/pipelines/`
+> **Purpose:** lokale Datensammlung und Anreicherung für Dashboard, Oracle und Supabase
+> **Compliance:** keine personenbezogenen Daten, nur strukturelle Markt- und News-Signale
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies
 pip install -r requirements.txt
-
-# 2. Copy environment config
-cp .env.example .env
-# Edit .env with your Supabase credentials
-
-# 3. Run a pipeline
-python sentiment_scraper.py          # Crypto/Fear-Greed data
-python market_sentiment_fetcher.py # Stock/Indices data
+python market_sentiment_fetcher.py
 ```
+
+Optional für Secrets:
+
+- Windows Credential Manager via `pywin32`
+- `keyring` als plattformübergreifender Fallback
 
 ---
 
-## Architecture
+## Aktive Pipelines
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    PILLAR 3: DATA ARBITRAGE                 │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌──────────────────┐     ┌──────────────────┐              │
-│  │ sentiment_       │     │ market_sentiment │              │
-│  │ _scraper.py      │     │ _fetcher.py      │              │
-│  │                  │     │                  │              │
-│  │ • Fear & Greed   │     │ • Yahoo Finance  │              │
-│  │ • CoinGecko      │     │ • Ollama Enrich  │              │
-│  │ • Crypto Trends  │     │ • Stock Indices  │              │
-│  └────────┬─────────┘     └────────┬─────────┘              │
-│           │                        │                         │
-│           └────────┬───────────────┘                         │
-│                    │                                         │
-│           ┌────────▼─────────┐                               │
-│           │ pipeline_utils   │                               │
-│           │ .py              │                               │
-│           │                  │                               │
-│           │ • SupabaseUplink │                               │
-│           │ • OllamaEnricher │                               │
-│           │ • PipelineCache  │                               │
-│           │ • RetryHandler   │                               │
-│           └────────┬─────────┘                               │
-│                    │                                         │
-│           ┌────────▼─────────┐                               │
-│           │     OUTPUT       │                               │
-│           │ AI/models/data/  │                               │
-│           └────────┬─────────┘                               │
-│                    │                                         │
-│                    ▼                                         │
-│           ┌──────────────────┐                               │
-│           │  SUPABASE      │  ◄──── Pillar 2 (API)         │
-│           │  EDGE FUNCTION │                               │
-│           └──────────────────┘                               │
-└─────────────────────────────────────────────────────────────┘
-```
+### `market_sentiment_fetcher.py`
 
----
+Die Markt-Pipeline ist der operative Vertical Slice für Säule 3.
 
-## Pipelines
+**Ticker**
 
-### `sentiment_scraper.py` — Crypto Sentiment
+- `SPY`
+- `QQQ`
+- `DIA`
+- `IWM`
+- `^VIX`
+- `BTC-USD`
+- `ETH-USD`
 
-**Data Sources:**
-- Fear & Greed Index (alternative.me)
-- CoinGecko (trending coins, global metrics)
+**News-Quellen**
 
-**Features:**
-- 5-minute caching
-- Structured logging
-- Bearer auth Supabase uplink
-- Retry logic with exponential backoff
+- Reuters Business
+- Reuters World
+- CNBC Markets
+- CNBC Finance
+- Google News Markets
+- Google News Business
 
-**Output:**
+**Härtung**
+
+- `fetch_url_with_retry()` mit rotierenden Headern und Retry-Logik
+- tolerantes Feed-Parsing über `parse_feed_items()`
+- `dirty_xml`-Fallback mit `BeautifulSoup` und `lxml`
+- `parse_strict_json_response()` für direkte und verrauschte Ollama-Ausgaben
+- `repair_json_with_ollama()` für einen einmaligen JSON-Reparaturversuch
+- neutrales Fallback-Payload, wenn Ollama oder Parsing scheitert
+
+**Output**
+
+- Verlauf nach `AI/models/data/market_sentiment_YYYYMMDD_HHMMSS.json`
+- Shared Mirror nach `shared/data/market_sentiment.json`
+- Supabase Payload mit stabiler Vertragsform
+
+**Top-Level-Felder im Shared Mirror**
+
 ```json
 {
-  "timestamp": "2026-04-16T10:30:00Z",
-  "data": {
-    "fear_greed": {"score": 75, "classification": "Greed"},
-    "trending_coins": [...],
-    "global_metrics": {...}
-  }
+  "timestamp_utc": "2026-04-19T18:36:03.380917+00:00",
+  "source": "market_sentiment_pipeline",
+  "sentiment_score": 85,
+  "sentiment_label": "Extreme Greed",
+  "confidence": 0.8,
+  "analysis": "Kurzbeschreibung der Lage",
+  "recommendation": "buy",
+  "crypto_bias": "neutral",
+  "news_bias": "bullish",
+  "news_impact": 0,
+  "key_theme": "growth",
+  "market_data": [],
+  "news_feed": [],
+  "mbrn_enriched": {}
 }
 ```
 
----
+### `pipeline_utils.py`
 
-### `market_sentiment_fetcher.py` — Stock Market Sentiment
+Gemeinsame Utilities für:
 
-**Data Sources:**
-- Yahoo Finance (SPY, QQQ, DIA, IWM, VIX)
+- `save_json_atomic()` für thread-sichere und prozesssichere JSON-Writes
+- `SupabaseUplink`
+- `RetryHandler`
+- `CircuitBreaker`
+- `PipelineCache`
+- `OllamaEnricher`
+- JSON-Hardening und Feed-Parsing
 
-**Features:**
-- Local Ollama LLM enrichment
-- RX 7700 XT optimized inference
-- Sentiment scoring (0-100)
-- yfinance integration
-
-**Output:**
-```json
-{
-  "pipeline": "market_sentiment",
-  "market_data": [...],
-  "enrichment": {
-    "sentiment_score": 65,
-    "confidence": 0.85,
-    "recommendation": "hold"
-  }
-}
-```
+`save_json_atomic()` ist der kanonische Schreibpfad für Runtime-Artefakte.
 
 ---
 
-## Shared Utils (`pipeline_utils.py`)
+## Abhängigkeiten
 
-### SupabaseUplink
-```python
-from pipeline_utils import SupabaseUplink
+Aktiver Stand von `requirements.txt`:
 
-uplink = SupabaseUplink()
-success = uplink.dispatch({
-    "sentiment_score": 75,
-    "verdict": "bullish",
-    "raw_data": {...}
-})
-```
-
-### OllamaEnricher
-```python
-from pipeline_utils import OllamaEnricher
-
-enricher = OllamaEnricher()
-result = enricher.analyze_sentiment("SPY: $450 (+1.2%)")
-# Returns: {"sentiment_score": 65, "confidence": 0.8, ...}
-```
-
-### PipelineCache
-```python
-from pipeline_utils import PipelineCache
-
-cache = PipelineCache()
-cache.set("market_data", data)
-cached = cache.get("market_data")  # Returns None if expired (5min TTL)
+```txt
+requests>=2.31.0
+python-dotenv>=1.0.0
+pywin32>=306
+keyring>=24.0.0
+yfinance>=0.2.28
+beautifulsoup4>=4.12.3
+lxml>=5.3.0
 ```
 
 ---
 
-## Automation (Cron/Task Scheduler)
+## Datenfluss
 
-### Linux/Mac (Cron)
-```bash
-# Edit crontab
-crontab -e
-
-# Run every 15 minutes
-*/15 * * * * cd /path/to/MBRN-HUB-V1/scripts/pipelines && python sentiment_scraper.py >> /var/log/mbrn_sentiment.log 2>&1
-
-# Run hourly for market data
-0 * * * * cd /path/to/MBRN-HUB-V1/scripts/pipelines && python market_sentiment_fetcher.py >> /var/log/mbrn_market.log 2>&1
+```text
+yfinance + RSS + Ollama
+        ↓
+market_sentiment_fetcher.py
+        ↓
+AI/models/data/market_sentiment_*.json
+        ↓
+shared/data/market_sentiment.json
+        ↓
+Supabase Edge Function / Oracle / Dashboard
 ```
-
-### Windows (Task Scheduler)
-
-1. **Open Task Scheduler** (`taskschd.msc`)
-
-2. **Create Basic Task:**
-   - Name: `MBRN Sentiment Scraper`
-   - Trigger: Daily, every 15 minutes
-   - Action: Start a program
-   - Program: `python`
-   - Arguments: `sentiment_scraper.py`
-   - Start in: `C:\DevLab\MBRN-HUB-V1\scripts\pipelines`
-
-3. **Enable "Run whether user is logged on or not"**
-
-4. **Repeat for** `market_sentiment_fetcher.py` (hourly)
 
 ---
 
-## Environment Variables (.env)
+## Betriebsnotizen
 
-```bash
-# Supabase Edge Function Configuration
-SUPABASE_EDGE_FUNCTION_URL=https://your-project.supabase.co/functions/v1/market_sentiment
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
-DATA_ARB_API_KEY=your-data-arbitrage-api-key-here
-
-# Optional
-DEBUG=false
-```
-
-**Security Warning:**
-- Never commit `.env` to version control
-- `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS — keep it secret!
-- `DATA_ARB_API_KEY` must match the Edge Function environment
+- Die Pipeline nutzt lokale Ollama-Verarbeitung auf der RX 7700 XT.
+- Reuters kann extern instabil sein; CNBC und Google News dienen als resiliente Gegenpfade.
+- Feed-Ausfälle sind isoliert. Ein defekter Feed darf den gesamten News-Zyklus nicht blockieren.
+- Die Persistenzform des Shared Mirrors bleibt bewusst rückwärtskompatibel.
 
 ---
 
-## 🤖 Automation Setup — Cronjob Configuration
+## Oracle-Kopplung
 
-### Windows (Task Scheduler)
+Das Oracle liest die von dieser Pipeline erzeugten Artefakte über `scripts/oracle/data_bridge.py`.
 
-1. **Open Task Scheduler:** `Win + R` → `taskschd.msc`
+Genutzte Signale:
 
-2. **Create Basic Task:**
-   - Name: `MBRN Market Sentiment Pipeline`
-   - Trigger: Daily at 06:00 AM
-   - Action: Start a program
-   - Program: `python` (or full path to python.exe)
-   - Arguments: `scripts/pipelines/sentiment_scraper.py`
-   - Start in: `C:\DevLab\MBRN-HUB-V1` (adjust to your project root)
+- `sentiment_score`
+- `recommendation`
+- `news_bias` / `news_signal`
+- `news_impact`
+- `headline_count`
+- BTC-/ETH-Snapshots und abgeleitete `crypto_sentiment`-Werte
 
-3. **Advanced Settings:**
-   - ✓ Run whether user is logged on or not
-   - ✓ Run with highest privileges
-   - Configure for: Windows 10/11
+Die geplante Stunden-Orchestrierung läuft über den bestehenden Sentinel-Pfad:
 
-4. **Multiple Pipelines:** Create separate tasks for each pipeline:
-   - `sentiment_scraper.py` → Every 4 hours (Crypto/Fear-Greed)
-   - `market_sentiment_fetcher.py` → Daily 6 AM (Stock/Indices)
-
-### Linux/macOS (Cron)
-
-```bash
-# Edit crontab
-crontab -e
-
-# Add entries (runs at specified times)
-# Crypto/Fear-Greed: Every 4 hours
-0 */4 * * * cd /path/to/MBRN-HUB-V1 && /usr/bin/python3 scripts/pipelines/sentiment_scraper.py >> logs/pipeline.log 2>&1
-
-# Stock/Indices: Daily at 6 AM
-0 6 * * * cd /path/to/MBRN-HUB-V1 && /usr/bin/python3 scripts/pipelines/market_sentiment_fetcher.py >> logs/pipeline.log 2>&1
-```
-
-### Recommended Schedule
-
-| Pipeline | Frequency | Use Case | Cron Expression |
-|----------|-----------|----------|-----------------|
-| Crypto/Fear-Greed | Every 4 hours | High volatility market | `0 */4 * * *` |
-| Stock/Indices | Daily 6 AM | Pre-market open data | `0 6 * * *` |
-
-### Verification
-
-Check if automation is working:
-
-```bash
-# Check last run timestamp
-tail -1 AI/models/data/market_sentiment.json | python -m json.tool | grep timestamp
-
-# Or on Windows PowerShell
-Get-Content AI/models/data/market_sentiment.json -Tail 1 | ConvertFrom-Json | Select-Object timestamp
-```
-
-### Log Rotation
-
-Prevent log files from growing indefinitely:
-
-**Linux/macOS:**
-```bash
-# Add to crontab (weekly log rotation)
-0 0 * * 0 cd /path/to/MBRN-HUB-V1 && mv logs/pipeline.log logs/pipeline-$(date +%Y%m%d).log
-```
-
-**Windows:** Use Task Scheduler to run monthly cleanup script.
+- `worker_registry.py` registriert den Oracle-Worker
+- `sentinel_daemon.py` kann Oracle und Pipeline-Worker im selben Scheduler-Takt dispatchen
 
 ---
 
-## Compliance
+## Status
 
-- **DSGVO/GDPR Compliant:** No personal data collection
-- **B2B Focus:** Structural data, company metrics, trends
-- **Public Sources Only:** All data from public APIs
-
----
-
-## Troubleshooting
-
-### Ollama not available
-```bash
-# Start Ollama server
-ollama serve
-
-# Pull required model
-ollama pull llama3.1:8b
-```
-
-### Supabase auth failed
-- Check `DATA_ARB_API_KEY` in `.env`
-- Verify Edge Function URL
-- Check Supabase function logs
-
-### Cache not working
-- Ensure `AI/models/data/` directory exists and is writable
-- Check file permissions
-
----
-
-**Architect:** Flase | **Pillar:** 3 | **Status:** Production Ready
+**Pipeline-Version:** `1.1.x`
+**Status:** `operativ`
+**Nächste offene Ebene:** Scheduler-/Worker-Orchestrierung für einen belastbaren Stundenrhythmus außerhalb des Frontends

@@ -15,6 +15,13 @@ from worker_registry import WORKER_REGISTRY, WorkerDefinition
 from pipeline_utils import CircuitBreaker, RetryHandler
 from secure_key_manager import SecureKeyManager
 
+# Make sibling script modules importable for worker dispatching.
+SCRIPT_ROOT = Path(__file__).resolve().parents[1]
+ORACLE_ROOT = SCRIPT_ROOT / "oracle"
+for import_root in (SCRIPT_ROOT, ORACLE_ROOT):
+    if str(import_root) not in sys.path:
+        sys.path.insert(0, str(import_root))
+
 # === CONFIGURATION (TURBO-MODE) ===
 CONFIG = {
     "heartbeat_interval_seconds": 60,   # EXTREM SCHNELL: Jede Minute ein Update

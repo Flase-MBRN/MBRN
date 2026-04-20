@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-19T18:36:10.416808+00:00",
+  "updated_at": "2026-04-20T12:31:26.224440+00:00",
   "history": [
     {
       "generated_at": "2026-04-19T18:23:09.744083+00:00",
@@ -1089,6 +1089,21 @@
       "confidence": 0.61,
       "sentiment_prediction": 53.67,
       "oracle_version": "1.1.0",
+      "evaluated_at": "2026-04-20T12:31:26.223929+00:00",
+      "was_correct": false,
+      "actual_sentiment": 85.0,
+      "previous_sentiment": 60.0,
+      "sentiment_delta": 25.0,
+      "actual_trend": "rising"
+    },
+    {
+      "generated_at": "2026-04-20T12:31:26.082406+00:00",
+      "target_date": "21.04.2026",
+      "recommendation": "Hold",
+      "alignment_score": 63.49,
+      "confidence": 0.63,
+      "sentiment_prediction": 65.5,
+      "oracle_version": "1.1.0",
       "evaluated_at": null,
       "was_correct": null,
       "actual_sentiment": null,
@@ -1098,24 +1113,24 @@
     }
   ],
   "summary": {
-    "accuracy_pct": 98.61,
-    "total_predictions": 73,
-    "evaluated_predictions": 72,
+    "accuracy_pct": 97.26,
+    "total_predictions": 74,
+    "evaluated_predictions": 73,
     "correct_predictions": 71,
     "pending_predictions": 1,
     "latest_result": {
-      "generated_at": "2026-04-19T18:23:09.755745+00:00",
-      "target_date": "19.04.2026",
+      "generated_at": "2026-04-19T18:36:10.399752+00:00",
+      "target_date": "20.04.2026",
       "recommendation": "Hold",
-      "alignment_score": 58.15,
-      "confidence": 0.58,
-      "sentiment_prediction": 50.0,
-      "oracle_version": "1.1.0-replay",
-      "evaluated_at": "2026-04-19T18:23:09.755748+00:00",
+      "alignment_score": 61.02,
+      "confidence": 0.61,
+      "sentiment_prediction": 53.67,
+      "oracle_version": "1.1.0",
+      "evaluated_at": "2026-04-20T12:31:26.223929+00:00",
       "was_correct": false,
-      "actual_sentiment": 60.0,
-      "previous_sentiment": 50.0,
-      "sentiment_delta": 10.0,
+      "actual_sentiment": 85.0,
+      "previous_sentiment": 60.0,
+      "sentiment_delta": 25.0,
       "actual_trend": "rising"
     }
   }

@@ -7,9 +7,10 @@ import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
 import { calculateCompoundInterest } from '../../shared/core/logic/finance.js';
 import { dom, animateValue, showTerminalLoader } from '../../shared/ui/dom_utils.js';
-import { nav, renderNavigation } from '../../shared/ui/navigation.js';
+import { getRepoRoot, nav, renderNavigation } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { i18n } from '../../shared/core/i18n.js';
+import { injectLegalBlock } from '../../shared/ui/legal_system.js';
 
 function formatEuro(value) {
   return value.toLocaleString('de-DE', {
@@ -37,15 +38,15 @@ function downloadFinanceStory(data) {
 
   ctx.fillStyle = '#F5F5F5';
   ctx.textAlign = 'center';
-  ctx.font = '700 64px Syne, sans-serif';
+  ctx.font = '700 64px Segoe UI, Arial, sans-serif';
   ctx.fillText('MBRN', 540, 150);
 
   ctx.fillStyle = '#7B5CF5';
-  ctx.font = '600 46px Inter, sans-serif';
+  ctx.font = '600 46px Segoe UI, Arial, sans-serif';
   ctx.fillText('Wachstum', 540, 235);
 
   ctx.fillStyle = 'rgba(255,255,255,0.72)';
-  ctx.font = '400 30px Inter, sans-serif';
+  ctx.font = '400 30px Segoe UI, Arial, sans-serif';
   ctx.fillText('So sieht dein Geldweg aus.', 540, 315);
 
   const cards = [
@@ -65,21 +66,21 @@ function downloadFinanceStory(data) {
 
     ctx.fillStyle = 'rgba(255,255,255,0.58)';
     ctx.textAlign = 'left';
-    ctx.font = '500 26px Inter, sans-serif';
+    ctx.font = '500 26px Segoe UI, Arial, sans-serif';
     ctx.fillText(card.label, 170, card.y + 65);
 
     ctx.fillStyle = '#F5F5F5';
-    ctx.font = '700 56px Syne, sans-serif';
+    ctx.font = '700 56px Segoe UI, Arial, sans-serif';
     ctx.fillText(card.value, 170, card.y + 140);
 
     ctx.fillStyle = 'rgba(255,255,255,0.62)';
-    ctx.font = '400 24px Inter, sans-serif';
+    ctx.font = '400 24px Segoe UI, Arial, sans-serif';
     ctx.fillText(card.note, 170, card.y + 190);
   });
 
   ctx.fillStyle = 'rgba(255,255,255,0.5)';
   ctx.textAlign = 'center';
-  ctx.font = '400 24px Inter, sans-serif';
+  ctx.font = '400 24px Segoe UI, Arial, sans-serif';
   ctx.fillText('built to be used', 540, 1770);
 
   const link = document.createElement('a');
@@ -156,6 +157,7 @@ export const financeRender = {
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
+    this.renderLegalSurfaces();
   },
   
   destroy() {
@@ -229,6 +231,24 @@ export const financeRender = {
     document.querySelectorAll('.results-card .stagger-fade').forEach((el, index) => {
       const timerId = setTimeout(() => el.classList.add('visible'), index * 100);
       this._timers.push(timerId);
+    });
+
+    this.renderLegalSurfaces();
+  },
+
+  renderLegalSurfaces() {
+    const basePath = getRepoRoot();
+    injectLegalBlock('finance-result-legal', {
+      variant: 'finance',
+      basePath,
+      includePolicyLinks: true,
+      compactLinks: true
+    });
+    injectLegalBlock('finance-export-legal', {
+      variant: 'export_privacy',
+      basePath,
+      includePolicyLinks: true,
+      compactLinks: true
     });
   }
 };

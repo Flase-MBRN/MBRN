@@ -111,6 +111,13 @@ export const renderAuth = {
         }
       });
     }
+
+    dom.createEl('div', {
+      id: 'nav-auth-legal-hook',
+      className: 'legal-auth-hook',
+      attrs: { 'data-legal-hook': 'auth' },
+      parent: navRight
+    });
   },
 
   bindAuthForms() {

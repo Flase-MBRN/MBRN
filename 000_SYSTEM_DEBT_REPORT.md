@@ -1,254 +1,161 @@
 ---
 metadata:
   project: MBRN-HUB-V1
-  version: 2.1.0-CANONICALIZATION
-  last_audit: 2026-04-18
-  system_state: CANONICALIZATION_ACTIVE
-  critical_path: PHASE_1_CANONICALIZATION
+  version: 2.2.0-TRUTH-MATRIX
+  last_audit: 2026-04-19
+  system_state: TRUTH_MATRIX_ACTIVE
+  critical_path: PHASE_6_READINESS
 ---
 
 # 000_SYSTEM_DEBT_REPORT
 
-> **MBRN System Debt Manifest**  
-> **Scope:** `C:\DevLab\MBRN-HUB-V1` as active kernel, plus workspace governance at `C:\DevLab`  
-> **Intent:** Canonical live tracker for the next healing round  
-> **Canonical evidence:** [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md)
+> **MBRN System Debt Manifest**
+> **Scope:** `C:\DevLab\MBRN-HUB-V1` as active kernel
+> **Intent:** Live tracker for Repo-Wahrheit, Dokumentationskonsistenz und Phase-6-Reife
+> **Canonical evidence:** [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md) and [`000_INTEGRITY_AUDIT_REPORT.md`](./000_INTEGRITY_AUDIT_REPORT.md)
 
 ---
 
 ## Executive Summary
 
-The active kernel is stable enough to operate and the serial Jest gate is green, but the repository is still in an in-progress canonicalization state. The main technical debt is no longer failing tests. The main remaining debt is repo-truth hygiene, documentation alignment, and final review/commit discipline.
+Der aktive Kern ist operativ und deutlich weiter als ein Teil der Dokumentation bislang behauptet hat. Die Python-/Oracle-/Dashboard-Kette läuft live, die bisherigen Integrity-Fixes sind umgesetzt, und der Arbeitsbaum ist aktuell sauber. Das größte verbleibende Risiko ist nicht mehr fehlerhafter Code, sondern eine Doku, die beim nächsten Ausbau falsche Annahmen erzeugt.
 
-### Live Healing Status
+### Live Status
 
 | Signal | Stand |
 |---|---|
-| Current Healing Progress | `[▓▓▓▓▓▓▓▓▓░] 95%` |
-| Open P1/P2 Blockers | **0** |
-| Last System Sync | **2026-04-18** |
-| Manifest Mode | `CANONICALIZATION_ACTIVE` |
+| Manifest Mode | `TRUTH_MATRIX_ACTIVE` |
+| Git-Wahrheit | `clean working tree` |
+| Aktive Markdown-Dateien | `18` |
+| Archiv-Markdown-Dateien im Repo | `0` |
+| Oracle-Status | `operativ mit Backtesting und Shared Mirror` |
+| Market Sentiment | `operativ mit Krypto, RSS, JSON-Guard und Supabase Push` |
+| Phase-6-Reife | `noch nicht erreicht` |
 
-### Harte Kennzahlen
-
-| Kennzahl | Stand |
-|---|---|
-| Workspace-Dateien | ca. **5.590** |
-| Aktiver Kern | ca. **5.562 Dateien / 28,17 MB** |
-| Tracked Repo-Files | **251** |
-| Verschachtelte Git-Repos in `C:\DevLab` | **1** |
-| `node_modules`-Verzeichnisse in `C:\DevLab` | **11** |
-| `__pycache__`-Verzeichnisse in `C:\DevLab` | **0** |
-| Archivziel | `C:\DevLab_Archive\` vorhanden |
-| `_COLD_STORAGE` unter `C:\DevLab` | **nicht mehr vorhanden** |
-| Voller Jest-Status | **10 Suiten: 10 passed / 0 failed** |
-| Voller Teststatus | **195 Tests: 194 passed / 0 failed / 1 skipped** |
-| Zusätzlicher Befund | `circuit_breaker` loggt erwartbare Fehlerpfade, aber der serielle Lauf beendet sich sauber |
-
-### Aktuelle Git-Wahrheit
+### Repo-Wahrheit
 
 ```text
- M shared/core/actions.js
- M shared/core/api.js
- M shared/core/error_logger.js
- M shared/core/importmap.js
- M shared/core/validators.js
- M shared/data/market_sentiment.json
- M shared/ui/render_nav.js
- M shared/ui/widgets/sentiment_widget.js
- M tests/validators.test.js
-?? 000_EXECUTION_ROADMAP.md
-?? 000_FORENSIC_PROJECT_AUDIT.md
-?? shared/ui/form_validation.js
+git status --short
+# keine Ausgabe
 ```
 
-**Kernaussage:**  
-The code-side repair pass is green. The repo is not yet clean because the canonicalization batch itself is still uncommitted, and `market_sentiment.json` remains a versioned pipeline-churn file that must be classified explicitly.
+### Archiv-Entscheidung
+
+Die beiden nicht-aktiven Dokumentationsbäume wurden aus dem Live-Repo entfernt und extern gesichert:
+
+- `docs/_ARCHIVE_VAULTS/`
+- `docs/ARCHIVE_ENTERPRISE/`
+
+Externe Sicherung:
+
+`C:\DevLab_Archive\MBRN-HUB-V1_docs_archive_20260419_205331`
 
 ---
 
 ## Leitregel
 
-This document is the **live debt tracker**.
+Dieses Dokument ist der **Live-Tracker für Systemschuld**.
 
-- It must reflect the current repo truth.
-- It must not claim a clean tree when `git status --short` is dirty.
-- Historical or baseline evidence belongs in [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md).
-- Planning work for Phase 4 belongs in [`000_EXECUTION_ROADMAP.md`](./000_EXECUTION_ROADMAP.md).
-
-### Agent Protocol
-
-- **Atomic Fixes:** Treat each P-item as its own task.
-- **Update Header:** Refresh metrics after each successful fix batch.
-- **Traceability:** Every green item gets date plus executing agent.
-- **Truth First:** Git state and test state outrank old manifest wording.
-- **No Silent Drift:** New planning or audit docs must be either committed or explicitly tracked as in-flight artefacts.
+- Repo-Wahrheit schlägt alte Manifeste.
+- Aktive Dokumentation schlägt Archivmaterial.
+- Laufender Code schlägt historische Beschreibungen.
+- Phase 6.0 startet erst, wenn Governance, UI und Orchestrierung dieselbe Wahrheit sprechen.
 
 ---
 
-## Current Open Debt
+## Truth Matrix
 
-## P1 - Critical
-
-### P1.1 - No open code blockers
-
-| Feld | Inhalt |
-|---|---|
-| **Status** | `🟢 Erledigt` |
-| **Befund** | Chronos source-of-truth, Synergy contract, Finance import path, and Validator null/domain contract are aligned in the active kernel. |
-| **Verifikation** | `chronos`, `synergy`, `finance`, `validators` covered by the current green serial Jest run |
-| **Success Signal** | `10/10 suites passed in serial run` |
-
-**Traceability**
-
-- `2026-04-18 - Codex - Canonicalization pass confirmed no remaining P1 code blocker in active kernel.`
+| Bereich | Ist-Zustand | Urteil | Nächste Maßnahme |
+|---|---|---|---|
+| Markdown-Bestand | `18` aktive `.md` im Repo | sauberer aktiver Wissenskern | als einzige Live-Quellen behandeln |
+| Legacy-Müll | Archivmaterial liegt nicht mehr im Repo | bereinigt | nur noch extern referenzieren, nicht mehr als aktive Wissensquelle |
+| `000_SYSTEM_DEBT_REPORT.md` | auf aktuellen Zustand gehoben | wahr | künftig bei jeder Governance-Änderung mitziehen |
+| `000_ARCHITECTURE.md` | muss lokale Oracle-/Ollama-Realität beschreiben | in Arbeit | Tech-Stack und Struktur konsistent halten |
+| `README.md` | muss operativen Vertical Slice abbilden | in Arbeit | Live-Status statt „preparation layer“ |
+| `scripts/pipelines/README.md` | muss BTC/ETH, RSS, JSON-Hardening und neue Dependencies nennen | in Arbeit | Pipeline-Topologie aktuell halten |
+| `docs/S3_Data/oracle_core.md` | muss Backtesting, Bias-Warnung, Shared Mirror und Marktkontext 1.1.x beschreiben | in Arbeit | Oracle-Doku an Runtime angleichen |
+| Oracle-Card | wird aktuell im UI umgebaut | in Arbeit | Safe-DOM, MBRN-Wording, Glassmorphism |
+| Phase-6.0-Voraussetzungen | noch offen | nicht reif | Tuning-App, Synergy-Finalisierung, Template-Tiefe, Governance-Konsistenz |
 
 ---
 
-## P2 - High Stability Risks
+## Offene Schuld
 
-### P2.1 - Core/UI boundary materially reduced
+## P1 - Governance und Doku
 
-| Feld | Inhalt |
-|---|---|
-| **Status** | `🟢 Erledigt` |
-| **Befund** | DOM-bound validation helpers were moved out of `shared/core/validators.js` into [`shared/ui/form_validation.js`](./shared/ui/form_validation.js). `shared/core/api.js` no longer imports the UI error boundary directly. |
-| **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand tests/validators.test.js` |
-| **Success Signal** | `validators core stays pure; DOM helpers live in UI namespace` |
-
-**Traceability**
-
-- `2026-04-18 - Codex - Moved validateLive/validateForm into shared/ui/form_validation.js and removed direct UI import from api.js.`
-
----
-
-### P2.2 - Routing/UI drift healed
-
-| Feld | Inhalt |
-|---|---|
-| **Status** | `🟢 Erledigt` |
-| **Befund** | [`shared/ui/render_nav.js`](./shared/ui/render_nav.js) now renders the same active route family declared in [`shared/core/config.js`](./shared/core/config.js), including `synergy` and `tuning`. |
-| **Verifikation** | `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand tests/navigation.test.js` plus config/render code review |
-| **Success Signal** | `navigation renderer and route config cover the same active apps` |
-
-**Traceability**
-
-- `2026-04-18 - Codex - Navigation order expanded to match canonical route definitions.`
-
----
-
-### P2.3 - Sentiment widget DOM-safety healed
-
-| Feld | Inhalt |
-|---|---|
-| **Status** | `🟢 Erledigt` |
-| **Befund** | [`shared/ui/widgets/sentiment_widget.js`](./shared/ui/widgets/sentiment_widget.js) no longer uses `insertAdjacentHTML`; rendering is built through safe DOM creation. |
-| **Verifikation** | static code review plus full serial Jest gate |
-| **Success Signal** | `no insertAdjacentHTML left in sentiment widget render path` |
-
-**Traceability**
-
-- `2026-04-18 - Codex - Sentiment widget moved from string injection to safe DOM node construction.`
-
----
-
-## P3 - Operational and Governance Debt
-
-### P3.1 - Browser-only core files guarded but still worth watching
-
-| Feld | Inhalt |
-|---|---|
-| **Status** | `🟢 Erledigt` |
-| **Befund** | [`shared/core/error_logger.js`](./shared/core/error_logger.js) and [`shared/core/importmap.js`](./shared/core/importmap.js) were guarded for non-browser runtimes so they do not force Node/test crashes. |
-| **Verifikation** | full serial Jest run |
-| **Success Signal** | `no browser-runtime crash introduced by error_logger/importmap in test context` |
-
-**Traceability**
-
-- `2026-04-18 - Codex - Added browser-runtime guards and kept these modules isolated from Node failure paths.`
-
----
-
-### P3.2 - Repo hygiene still operationally open
+### P1.1 - Repo-Wahrheit muss dauerhaft synchron bleiben
 
 | Feld | Inhalt |
 |---|---|
 | **Status** | `🟡 In Arbeit` |
-| **Befund** | Python cache artefacts are gone, but the working tree is intentionally dirty because the canonicalization batch is not yet committed and `market_sentiment.json` still churns as a versioned data artefact. |
-| **Verifikation** | `git status --short`, workspace scan, artifact scan |
-| **Success Signal** | `repo truth documented accurately; next step is review + commit strategy` |
+| **Befund** | Die alte Governance-Lage war veraltet. Archivmaterial ist jetzt ausgelagert, die aktiven Kerndokumente werden auf den Live-Stand gehoben. |
+| **Success Signal** | README, Architektur, Pipeline-README und Oracle-Doku beschreiben denselben operativen Stand. |
 
-**Betroffene Dateien/Bereiche**
-
-- [`shared/data/market_sentiment.json`](./shared/data/market_sentiment.json)
-- [`000_EXECUTION_ROADMAP.md`](./000_EXECUTION_ROADMAP.md)
-- [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md)
-- [`shared/ui/form_validation.js`](./shared/ui/form_validation.js)
-- canonicalization-modified tracked files listed in the git snapshot above
-
-**Traceability**
-
-- `2026-04-18 - Codex - Repo hygiene truth corrected: cache cleanup is green, working tree cleanliness is still pending review/commit.`
-
----
-
-## Workspace Debt
-
-### Cold Storage / Archive Boundary
+### P1.2 - Active docs only
 
 | Feld | Inhalt |
 |---|---|
 | **Status** | `🟢 Erledigt` |
-| **Befund** | `_COLD_STORAGE` is no longer inside `C:\DevLab`; archive mass has been cut away from the active workspace and `C:\DevLab_Archive\` exists as the external archive target. |
-| **Verifikation** | `Test-Path C:\DevLab_Archive` and `Test-Path C:\DevLab\_COLD_STORAGE` |
-| **Success Signal** | `safe zone remains MBRN-HUB-V1 and archive lives outside active workspace` |
+| **Befund** | Das Repo enthält nur noch die `18` aktiven Markdown-Dateien. Archivpfade sind extern gesichert. |
+| **Success Signal** | Agenten und Entwickler lesen keinen Archivballast mehr aus dem aktiven Kernel. |
 
-**Traceability**
+## P2 - UX und Frontend-Wahrheit
 
-- `2026-04-18 - Codex - Macro and workspace truth aligned to post-cutover reality.`
+### P2.1 - Oracle-Card muss die Systemgesetze einhalten
 
----
+| Feld | Inhalt |
+|---|---|
+| **Status** | `🟡 In Arbeit` |
+| **Befund** | Die Oracle-Card muss ohne `innerHTML` aufgebaut werden und das bestätigte MBRN-Wording sprechen. |
+| **Success Signal** | `dom.createEl()` / `dom.setText()` statt HTML-Strings, saubere Umlaute, klare Glow-Zustände. |
 
-## Legitimate Artefacts
+### P2.2 - Mobile-Navigation darf niemals blockieren
 
-| Artefakt | Rolle | Status |
-|---|---|---|
-| [`000_FORENSIC_PROJECT_AUDIT.md`](./000_FORENSIC_PROJECT_AUDIT.md) | forensic baseline and evidence document | legitimate, currently untracked |
-| [`000_EXECUTION_ROADMAP.md`](./000_EXECUTION_ROADMAP.md) | Phase 4 execution roadmap | legitimate, currently untracked |
-| [`shared/data/market_sentiment.json`](./shared/data/market_sentiment.json) | versioned pipeline output | legitimate runtime/data artefact, classification still required |
+| Feld | Inhalt |
+|---|---|
+| **Status** | `🟡 In Arbeit` |
+| **Befund** | Die mobile Navigation nutzt sowohl `.nav-toggle` als auch `.nav-hamburger` als potenzielle Trigger. Beide müssen über allen Dashboard-Layern liegen. |
+| **Success Signal** | Hamburger-Button bleibt auch über Oracle-Card und Backdrop bedienbar. |
+
+## P3 - Phase-6.0-Readiness
+
+### P3.1 - Fehlende Produktbausteine
+
+| Feld | Inhalt |
+|---|---|
+| **Status** | `🟡 Offen` |
+| **Befund** | `apps/tuning/` fehlt weiterhin. `apps/synergy/` ist nicht als vollwertige eigenständige App finalisiert. Der Template-Layer besteht aktuell nur aus `templates/app_blueprint.json`. |
+| **Success Signal** | Tuning-App vorhanden, Synergy-App finalisiert, Meta-Generator konkreter als Einzelfile. |
+
+### P3.2 - Orchestrierung vor Phase 6.0
+
+| Feld | Inhalt |
+|---|---|
+| **Status** | `🟡 In Arbeit` |
+| **Befund** | `oracle_core.py` spiegelt bereits atomar nach `shared/data/oracle_prediction.json`. Der bestehende Sentinel-/Worker-Pfad wurde für Oracle importierbar gemacht, die operative Scheduler-Dokumentation muss aber weiter mitgezogen werden. |
+| **Success Signal** | Worker-/Scheduler-Pfad dokumentiert und belastbar betreibbar. |
 
 ---
 
 ## Verification Ledger
 
-### Targeted suites
-
-- `tests/validators.test.js` -> **PASS**
-- `tests/navigation.test.js` -> **PASS**
-- `tests/finance_logic.test.js` -> **PASS**
-- `shared/core/logic/synergy.test.js` -> **PASS**
-
-### Full gate
-
-- `node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand` -> **PASS**
-- `10 suites passed`
-- `194 tests passed`
-- `1 skipped`
-- no hang observed at process exit
+- `git status --short` -> **clean**
+- aktive Markdown-Dateien im Repo -> **18**
+- Archiv-Markdown-Dateien im Repo -> **0**
+- Market Sentiment Mirror -> `shared/data/market_sentiment.json`
+- Oracle Shared Mirror -> `shared/data/oracle_prediction.json`
+- Oracle Backtest Store -> `shared/data/oracle_backtest.json`
 
 ---
 
 ## Next Action
 
-The next healing move is no longer a code repair sprint. It is a **review and commit hygiene pass**:
-
-1. Review the canonicalization diff.
-2. Decide whether `market_sentiment.json` remains versioned churn or should be handled differently.
-3. Add the legitimate new docs/helpers to version control.
-4. Commit the batch.
-5. Refresh this manifest header from the post-commit git truth.
+1. Doku-Kern auf Runtime-Wahrheit halten.
+2. Oracle-Card auf Safe-DOM + MBRN-Wording umbauen.
+3. Mobile-Navigation gegen Overlay-Konflikte härten.
+4. Phase-6.0-Blocker separat schließen: Tuning, Synergy-Finalisierung, Template-Ausbau, Scheduler-Dokumentation.
 
 ---
 
-**Status:** CANONICALIZATION_ACTIVE  
-**Next Decision:** review, classify, and commit the repair batch
+**Status:** TRUTH_MATRIX_ACTIVE
+**Nächste Entscheidung:** Governance-Konsistenz halten und Phase-6.0-Blocker gezielt abarbeiten

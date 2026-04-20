@@ -7,20 +7,21 @@ import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
 import { storage } from '../../shared/core/storage.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../../shared/ui/dom_utils.js';
-import { nav, renderNavigation } from '../../shared/ui/navigation.js';
+import { getRepoRoot, nav, renderNavigation } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { calculateChronos } from '../../shared/core/logic/chronos_v2.js';
+import { injectLegalBlock } from '../../shared/ui/legal_system.js';
 
 const FOCUS_EXPLANATIONS = {
-  1: 'Du befindest dich in einer Startphase. Jetzt zählt Initiative, klare Richtung und mutige Entscheidungen.',
-  2: 'Diese Phase fordert Feingefühl. Stärke Verbindungen, kläre Rollen und arbeite mit ruhigem Timing.',
-  3: 'Du befindest dich in einer Phase der Expansion. Jetzt ist der perfekte Moment, um sichtbar zu werden und dein Momentum zu nutzen. Baue Strukturen auf, die dich im nächsten Zyklus tragen.',
-  4: 'Jetzt geht es um Fundament. Prozesse stabilisieren, Routinen festigen und Dinge sauber aufbauen.',
-  5: 'Diese Phase bringt Bewegung. Bleib flexibel, nutze Chancen schnell und halte deinen Fokus aktiv.',
-  6: 'Verantwortung steht im Zentrum. Stabilität, Verlässlichkeit und klare Prioritäten geben dir Rückenwind.',
-  7: 'Zeit für Analyse und Tiefgang. Sortiere Informationen, ziehe Erkenntnisse und schärfe deinen Kurs.',
-  8: 'Du bist in einer Umsetzungsphase. Entscheide klar, handle konsequent und mach Wirkung messbar.',
-  9: 'Diese Phase steht für Abschluss und Reset. Räume auf, beende offene Schleifen und schaffe Platz für Neues.'
+  1: 'Das Modell liest diese Phase oft als Startpunkt. Initiative, Richtung und mutige Entscheidungen rücken stärker nach vorn.',
+  2: 'Das Modell betont in dieser Phase Feingefühl, Verbindungen und ruhiges Timing.',
+  3: 'Das Modell ordnet diese Phase häufig Expansion und Sichtbarkeit zu. Strukturen, die jetzt entstehen, können später tragen.',
+  4: 'Das Modell rückt hier Fundament, Routinen und sauberen Aufbau in den Vordergrund.',
+  5: 'Das Modell verbindet diese Phase oft mit Bewegung, Flexibilität und schnellen Anpassungen.',
+  6: 'Das Modell markiert in dieser Phase Verantwortung, Stabilität und klare Prioritäten.',
+  7: 'Das Modell betont jetzt Analyse, Tiefgang und bewusstes Sortieren.',
+  8: 'Das Modell ordnet diese Phase häufig Umsetzung, Entscheidungskraft und sichtbare Wirkung zu.',
+  9: 'Das Modell verbindet diese Phase oft mit Abschluss, Reset und dem Schaffen von Raum für Neues.'
 };
 
 function getFocusNumber(data) {
@@ -36,7 +37,7 @@ function getFocusNarrative(focusNumber, topic) {
     return FOCUS_EXPLANATIONS[focusNumber];
   }
   const safeTopic = topic || 'dein aktuelles Thema';
-  return `Diese Phase aktiviert ${safeTopic}. Nutze den Zeitraum bewusst, um deinen nächsten Schritt strategisch aufzubauen.`;
+  return `Das Modell verbindet diese Phase mit ${safeTopic}. Nutze den Zeitraum bewusst, um deinen nächsten Schritt klar einzuordnen.`;
 }
 
 function calculateDaysInCurrentPhase(data) {
@@ -127,7 +128,7 @@ export const chronosRender = {
 
     dom.createEl('p', {
       className: 'text-secondary mb-16',
-      text: 'Gib dein Datum ein, um deinen aktuellen Rhythmus zu entschlüsseln.',
+      text: 'Gib dein Datum ein, um deinen aktuellen Rhythmus modellbasiert einzuordnen.',
       parent: card
     });
 
@@ -189,6 +190,18 @@ export const chronosRender = {
     btn.addEventListener('click', clickHandler);
     this._listeners.push({ element: btn, type: 'click', handler: clickHandler });
 
+    const legalMount = dom.createEl('div', {
+      id: 'chronos-form-legal',
+      className: 'mt-24',
+      parent: card
+    });
+    injectLegalBlock(legalMount, {
+      variant: 'chronos_timing',
+      basePath: getRepoRoot(),
+      includePolicyLinks: true,
+      compactLinks: true
+    });
+
     const timerId = setTimeout(() => card.classList.add('visible'), 100);
     this._timers.push(timerId);
   },
@@ -231,7 +244,7 @@ export const chronosRender = {
 
     dom.createEl('p', {
       className: 'text-secondary mb-24',
-      text: 'Jede Phase hat ihren eigenen Rhythmus. Hier siehst du genau, wie lange dein aktuelles Thema noch präsent ist und wann der nächste Wechsel ansteht.',
+      text: 'Jede Phase hat ihren eigenen Rhythmus. Hier siehst du, wie lange dein aktuelles Thema im Modell noch präsent ist und wann der nächste Wechsel ansteht.',
       parent: cyclesCard
     });
 
@@ -310,6 +323,18 @@ export const chronosRender = {
       className: 'btn-secondary mt-24 text-size-sm',
       text: 'Neue Analyse',
       parent: cyclesCard
+    });
+
+    const legalMount = dom.createEl('div', {
+      id: 'chronos-results-legal',
+      className: 'mt-24',
+      parent: cyclesCard
+    });
+    injectLegalBlock(legalMount, {
+      variant: 'chronos_timing',
+      basePath: getRepoRoot(),
+      includePolicyLinks: true,
+      compactLinks: true
     });
 
     const resetHandler = () => {

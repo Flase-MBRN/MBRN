@@ -6,11 +6,12 @@
 import { state } from '../shared/core/state.js';
 import { actions } from '../shared/core/actions.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../shared/ui/dom_utils.js';
-import { nav, renderNavigation } from '../shared/ui/navigation.js';
+import { getRepoRoot, nav, renderNavigation } from '../shared/ui/navigation.js';
 import { renderAuth } from '../shared/ui/render_auth.js';
 import { sentimentWidget } from '../shared/ui/widgets/sentiment_widget.js';
 import { errorBoundary } from '../shared/ui/error_boundary.js';
 import { api } from '../shared/core/api.js';
+import { injectLegalBlock } from '../shared/ui/legal_system.js';
 
 const HEARTBEAT_STALE_MS = 65 * 60 * 1000;
 const HEARTBEAT_POLL_MS = 60 * 1000;
@@ -37,8 +38,90 @@ function getOracleState(recommendation = '') {
   const text = String(recommendation).toLowerCase();
   if (text.startsWith('buy')) return 'buy';
   if (text.startsWith('sell')) return 'sell';
-  if (text.startsWith('caution')) return 'caution';
-  return 'hold';
+  return 'caution';
+}
+
+function getOracleStrategyLabel(state) {
+  if (state === 'buy') return 'BUY';
+  if (state === 'sell') return 'SELL';
+  return 'ABWARTEN';
+}
+
+function getMarketVibeLabel(score) {
+  const safeScore = Number.isFinite(Number(score)) ? Number(score) : 50;
+  if (safeScore <= 20) return 'Sehr vorsichtig';
+  if (safeScore <= 40) return 'Vorsichtig';
+  if (safeScore <= 60) return 'Neutral';
+  if (safeScore <= 80) return 'Optimistisch';
+  return 'Sehr optimistisch';
+}
+
+function getBiasLabel(signal = 'neutral') {
+  const text = String(signal).toLowerCase();
+  if (text.includes('bull')) return 'Bullisch';
+  if (text.includes('bear')) return 'Bearisch';
+  return 'Neutral';
+}
+
+function formatScoreOutOfHundred(value, fallback = 50) {
+  const safeValue = Number.isFinite(Number(value)) ? Number(value) : fallback;
+  return `${Math.round(safeValue)}/100`;
+}
+
+function formatCryptoDetails(snapshot = {}) {
+  const segments = ['BTC-USD', 'ETH-USD']
+    .map((symbol) => {
+      const item = snapshot?.[symbol];
+      if (!item) return null;
+
+      const shortLabel = symbol === 'BTC-USD' ? 'BTC' : 'ETH';
+      const change = Number(item.change_percent ?? 0);
+      const prefix = change > 0 ? '+' : '';
+      return `${shortLabel} ${prefix}${change.toFixed(1)}%`;
+    })
+    .filter(Boolean);
+
+  return segments.length ? segments.join(' · ') : 'Kein frischer BTC/ETH-Impuls';
+}
+
+function formatNewsDetails(newsSignal = 'neutral', headlineCount = 0) {
+  const count = Number.isFinite(Number(headlineCount)) ? Number(headlineCount) : 0;
+  const countLabel = count === 1 ? 'Meldung' : 'Meldungen';
+  return `${getBiasLabel(newsSignal)} · ${count} ${countLabel}`;
+}
+
+function buildOracleExplanation(prediction, signal, context, state) {
+  const dayNumber = prediction?.day_numerology?.day_number ?? '–';
+  const dayDescription = prediction?.day_numerology?.description || 'klare Ausrichtung';
+  const marketVibe = getMarketVibeLabel(signal?.sentiment_prediction ?? 50);
+  const strategy = getOracleStrategyLabel(state);
+  const cryptoPressure = formatScoreOutOfHundred(context?.crypto_sentiment ?? 50);
+  const newsFlow = getBiasLabel(context?.news_signal ?? 'neutral');
+  const reasoning = String(signal?.reasoning || '').trim();
+
+  let text = `Energetischer Status: TAG ${dayNumber}. Fokus auf ${dayDescription}. Markt-Vibe heute: ${marketVibe}. KRYPTO-DRUCK bei ${cryptoPressure}, NEWS-FLOW ${newsFlow}. ${strategy}.`;
+  if (reasoning) {
+    text += ` ${reasoning}`;
+  }
+
+  return text;
+}
+
+function createOracleStat(parent, label, valueId) {
+  const stat = dom.createEl('div', { className: 'oracle-mini-stat', parent });
+  dom.createEl('span', { className: 'oracle-kicker', text: label, parent: stat });
+  dom.createEl('span', { id: valueId, className: 'oracle-mini-value', text: '--', parent: stat });
+  return stat;
+}
+
+function createOracleSignalChip(parent, label, valueId, detailId) {
+  const chip = dom.createEl('div', { className: 'oracle-signal-chip', parent });
+  dom.createEl('span', { className: 'oracle-chip-label', text: label, parent: chip });
+  dom.createEl('span', { id: valueId, className: 'oracle-chip-value', text: '--', parent: chip });
+  if (detailId) {
+    dom.createEl('span', { id: detailId, className: 'oracle-chip-detail', text: '', parent: chip });
+  }
+  return chip;
 }
 
 export const dashboardRender = {
@@ -72,7 +155,6 @@ export const dashboardRender = {
         this._listeners.push({ element: btnCheckin, type: 'click', handler: checkinHandler });
       }
 
-      // FIX: Dead Navigation umleiten via JS-Router statt reinem href
       document.querySelectorAll('.app-card-link').forEach(link => {
         link.addEventListener('click', (e) => {
           e.preventDefault();
@@ -110,11 +192,22 @@ export const dashboardRender = {
       sentimentWidget.init('sentiment-widget');
       this.initOracleCard();
       this.buildSynergyWidget();
+      this.renderLegalSurface();
       this.startHeartbeatMonitor();
     } catch (err) {
       console.error('Dashboard Init Error:', err);
       document.body.textContent = 'Dashboard konnte nicht geladen werden. Bitte Seite neu laden.';
     }
+  },
+
+  renderLegalSurface() {
+    injectLegalBlock('dashboard-legal-mount', {
+      variant: 'sync',
+      basePath: getRepoRoot(),
+      includePolicyLinks: true,
+      includeReset: true,
+      reloadOnSuccess: true
+    });
   },
 
   buildSynergyWidget() {
@@ -292,61 +385,62 @@ export const dashboardRender = {
     const container = document.getElementById('oracle-widget');
     if (!container) return;
 
-    container.innerHTML = `
-      <div id="oracle-card" class="glass-card oracle-card oracle-state-hold">
-        <div class="oracle-card-header">
-          <div>
-            <div class="section-eyebrow-left">Oracle</div>
-            <p class="text-secondary oracle-subtitle">Numerologie, Markt und News im selben Signal.</p>
-          </div>
-          <div id="oracle-recommendation-badge" class="oracle-pill oracle-pill-hold">Hold</div>
-        </div>
+    dom.clear('oracle-widget');
 
-        <div class="oracle-main-grid">
-          <div class="oracle-score-block">
-            <span class="oracle-kicker">Alignment</span>
-            <span id="oracle-alignment-score" class="value-massive oracle-score-value">--</span>
-            <span id="oracle-target-date" class="value-label">Nächster Handelstag</span>
-          </div>
+    const card = dom.createEl('div', {
+      id: 'oracle-card',
+      className: 'glass-card oracle-card oracle-state-caution',
+      parent: container
+    });
 
-          <div class="oracle-mini-grid">
-            <div class="oracle-mini-stat">
-              <span class="oracle-kicker">Confidence</span>
-              <span id="oracle-confidence" class="oracle-mini-value">--</span>
-            </div>
-            <div class="oracle-mini-stat">
-              <span class="oracle-kicker">Accuracy</span>
-              <span id="oracle-accuracy" class="oracle-mini-value">--</span>
-            </div>
-            <div class="oracle-mini-stat">
-              <span class="oracle-kicker">Trend</span>
-              <span id="oracle-trend" class="oracle-mini-value">--</span>
-            </div>
-            <div class="oracle-mini-stat">
-              <span class="oracle-kicker">News Bias</span>
-              <span id="oracle-news-signal" class="oracle-mini-value">--</span>
-            </div>
-          </div>
-        </div>
+    const header = dom.createEl('div', { className: 'oracle-card-header', parent: card });
+    const headerCopy = dom.createEl('div', { className: 'oracle-header-copy', parent: header });
+    dom.createEl('div', { className: 'section-eyebrow-left', text: 'Oracle', parent: headerCopy });
+    dom.createEl('p', {
+      className: 'text-secondary oracle-subtitle',
+      text: 'Synchronizität, KI-Resonanz und Live-Druck in einem Blick.',
+      parent: headerCopy
+    });
+    dom.createEl('div', {
+      id: 'oracle-recommendation-badge',
+      className: 'oracle-pill oracle-pill-caution',
+      text: 'ABWARTEN',
+      parent: header
+    });
 
-        <div class="oracle-signal-strip">
-          <div class="oracle-signal-chip">
-            <span class="oracle-chip-label">Forecast</span>
-            <span id="oracle-sentiment-forecast" class="oracle-chip-value">--</span>
-          </div>
-          <div class="oracle-signal-chip">
-            <span class="oracle-chip-label">Crypto</span>
-            <span id="oracle-crypto-signal" class="oracle-chip-value">--</span>
-          </div>
-          <div class="oracle-signal-chip">
-            <span class="oracle-chip-label">Headlines</span>
-            <span id="oracle-headline-count" class="oracle-chip-value">0</span>
-          </div>
-        </div>
+    const mainGrid = dom.createEl('div', { className: 'oracle-main-grid', parent: card });
+    const scoreBlock = dom.createEl('div', { className: 'oracle-score-block', parent: mainGrid });
+    dom.createEl('span', { className: 'oracle-kicker', text: 'SYNCHRONIZITÄT', parent: scoreBlock });
+    dom.createEl('span', {
+      id: 'oracle-alignment-score',
+      className: 'value-massive oracle-score-value',
+      text: '--',
+      parent: scoreBlock
+    });
+    dom.createEl('span', {
+      id: 'oracle-target-date',
+      className: 'value-label',
+      text: 'Nächster Handelstag',
+      parent: scoreBlock
+    });
 
-        <p id="oracle-reasoning" class="oracle-reasoning text-secondary">Oracle synchronisiert noch.</p>
-      </div>
-    `;
+    const miniGrid = dom.createEl('div', { className: 'oracle-mini-grid', parent: mainGrid });
+    createOracleStat(miniGrid, 'VERTRAUEN', 'oracle-confidence');
+    createOracleStat(miniGrid, 'KI-PRÄZISION', 'oracle-accuracy');
+    createOracleStat(miniGrid, 'MARKT-VIBE', 'oracle-market-vibe');
+    createOracleStat(miniGrid, 'STRATEGIE', 'oracle-strategy');
+
+    const signalStrip = dom.createEl('div', { className: 'oracle-signal-strip', parent: card });
+    createOracleSignalChip(signalStrip, 'KI-RESONANZ', 'oracle-sentiment-forecast', 'oracle-sentiment-label');
+    createOracleSignalChip(signalStrip, 'KRYPTO-DRUCK', 'oracle-crypto-signal', 'oracle-crypto-detail');
+    createOracleSignalChip(signalStrip, 'NEWS-FLOW', 'oracle-news-flow', 'oracle-news-detail');
+
+    dom.createEl('p', {
+      id: 'oracle-reasoning',
+      className: 'oracle-reasoning text-secondary',
+      text: 'Oracle synchronisiert noch.',
+      parent: card
+    });
   },
 
   async refreshOracleCard() {
@@ -362,13 +456,15 @@ export const dashboardRender = {
       const context = prediction?.market_context || {};
       const backtesting = prediction?.backtesting || {};
       const state = getOracleState(signal.trading_recommendation);
+      const strategyLabel = getOracleStrategyLabel(state);
+      const marketVibe = getMarketVibeLabel(signal.sentiment_prediction ?? 50);
 
       card.classList.remove('oracle-state-buy', 'oracle-state-caution', 'oracle-state-sell', 'oracle-state-hold');
       card.classList.add(`oracle-state-${state}`);
 
       const badge = document.getElementById('oracle-recommendation-badge');
       if (badge) {
-        badge.textContent = signal.trading_recommendation || 'Hold';
+        badge.textContent = strategyLabel;
         badge.className = `oracle-pill oracle-pill-${state}`;
       }
 
@@ -376,12 +472,15 @@ export const dashboardRender = {
       dom.setText('oracle-target-date', prediction?.target_date || 'Nächster Handelstag');
       dom.setText('oracle-confidence', formatPercent((Number(signal.confidence ?? 0) * 100)));
       dom.setText('oracle-accuracy', formatPercent(Number(backtesting.accuracy_pct ?? signal.oracle_accuracy ?? 0)));
-      dom.setText('oracle-trend', context.sentiment_trend || 'neutral');
-      dom.setText('oracle-news-signal', context.news_signal || 'neutral');
-      dom.setText('oracle-sentiment-forecast', `${Math.round(Number(signal.sentiment_prediction ?? 0))}/100`);
-      dom.setText('oracle-crypto-signal', `${Math.round(Number(context.crypto_sentiment ?? 50))}/100`);
-      dom.setText('oracle-headline-count', String(context.headline_count ?? 0));
-      dom.setText('oracle-reasoning', signal.reasoning || 'Noch keine Begründung verfügbar.');
+      dom.setText('oracle-market-vibe', marketVibe);
+      dom.setText('oracle-strategy', strategyLabel);
+      dom.setText('oracle-sentiment-forecast', formatScoreOutOfHundred(signal.sentiment_prediction ?? 50));
+      dom.setText('oracle-sentiment-label', marketVibe);
+      dom.setText('oracle-crypto-signal', formatScoreOutOfHundred(context.crypto_sentiment ?? 50));
+      dom.setText('oracle-crypto-detail', formatCryptoDetails(context.crypto_snapshot ?? {}));
+      dom.setText('oracle-news-flow', getBiasLabel(context.news_signal ?? 'neutral'));
+      dom.setText('oracle-news-detail', formatNewsDetails(context.news_signal ?? 'neutral', context.headline_count ?? 0));
+      dom.setText('oracle-reasoning', buildOracleExplanation(prediction, signal, context, state));
     } catch (error) {
       console.error('[Oracle Card] Update failed:', error);
     }

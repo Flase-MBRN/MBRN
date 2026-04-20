@@ -1,126 +1,107 @@
-# MBRN Hub v1.0
+# MBRN Hub v1.1
 
-Core & Viral Framework.
+Core, Data Arbitrage und Oracle-Vertical-Slice.
 
-MBRN Hub is a modular pattern-intelligence system built to run fast in the browser, stay deterministic in the core, and scale toward heavier data and AI workloads without rewriting the product surface.
+MBRN Hub ist ein modulares System, das im Browser leicht bleibt, im Core deterministisch arbeitet und lokal durch Python, Ollama und datengetriebene Worker erweitert wird. Der aktive Kern ist kein Prototyp mehr, sondern ein operativer Vertical Slice zwischen Säule 3 und Säule 4.
 
-The current milestone seals four things:
-- a canonical headless core
-- a production-facing Observatory UI
-- a dormant commerce layer running in Ghost Mode
-- a dual-export viral engine for image-based sharing
+## Architektur
 
-## Architecture
+MBRN Hub ist um vier Säulen organisiert:
 
-MBRN Hub is organized around four pillars:
+1. **Vanilla-JS-App-Layer**
+   Reine ES-Module für Landing, Dashboard und modulare Apps ohne Framework-Lock-in.
 
-1. Vanilla JavaScript application layer
-   Clean ES module apps with a direct browser runtime, no framework lock-in, and canonical UI entrypoints for dashboard and tool experiences.
+2. **Headless Core Logic**
+   Geschäftslogik, Orchestrierung, State, Storage und numerologische Engines leben in `shared/core/` und bleiben außerhalb des DOM testbar.
 
-2. Headless core logic
-   Shared business logic lives in `shared/core/` and is designed to stay importable, testable, and deterministic outside the DOM. Numerology, orchestration, export payloads, storage behavior, and state coordination are centralized here.
+3. **Data Arbitrage**
+   Python-Worker unter `scripts/pipelines/` sammeln Marktdaten, Krypto-Druck und RSS-News, härten externe Quellen ab und reichern lokal mit Ollama/Llama 3.1 an.
 
-3. Supabase data and realtime bridge
-   Supabase is the single cloud bridge for auth, profile persistence, realtime subscriptions, and future cloud synchronization. The public browser bridge is intentionally reduced to the canonical client path.
+4. **Ecosystem / Oracle**
+   Das Dashboard und `scripts/oracle/` verbinden numerologische Tageswerte mit Markt- und News-Signalen, erzeugen Prognosen und spiegeln die Ergebnisse in `shared/data/`.
 
-4. Python / local inference preparation
-   The repo already contains the pipeline foundation for heavier external enrichment and local model workflows. This includes the preparation layer for Python-driven data ingestion and Llama/Ollama-style enrichment without contaminating the browser core.
-
-## Current System State
+## Aktueller Systemstand
 
 ### Headless Core
 
-The core has been hardened around a strict separation between browser UI and shared logic:
-- canonical orchestrator entrypoints
-- isolated browser guards where runtime access is required
-- no dependency on UI rendering paths for business logic
-- test-first exports for report and canvas payload generation
+Der Core ist auf Trennung zwischen UI und Logik ausgelegt:
 
-This allows the core to remain stable under Node/Jest while the frontend evolves independently.
-
-### Ghost Mode
-
-Commerce infrastructure remains physically disconnected from the user journey.
-
-- No live buy or subscribe path is surfaced in the UI.
-- Commercial branches remain technically present but deactivated.
-- The current mode prioritizes free product discovery, profile generation, and signal validation.
-
-This gives the repo a truthful surface: no fake checkout promises, no monetization bait, no documentation drift.
+- orchestrierte Entry-Points statt Wildwuchs
+- Browser-Guards an den Stellen, an denen Runtime-Zugriff nötig ist
+- testbare Pure Functions in den Engine-Modulen
+- Shared Storage- und State-Layer für Dashboard und Apps
 
 ### Observatory UI
 
-The active UI layer uses the Observatory visual language:
-- void-first dark canvas
-- accent-glow hierarchy
-- glass panels and cinematic spacing
-- direct, frictionless tool entry
+Das aktive Frontend folgt dem Observatory-/MBRN-OS-Stil:
 
-The landing experience and active tool surfaces are aligned around a single visual identity rather than mixed legacy patterns.
+- Void-first Dark Surface
+- Glassmorphism-Karten mit kontrollierten Glow-Akzenten
+- direkte Tool-Einstiege ohne Framework-Build
+- mobile Navigation mit Sidebar-/Hamburger-Muster
 
-### Dual-Export Viral Engine
+### Data Arbitrage
 
-Numerology now exposes two distinct share assets:
+Die Pipeline-Schicht ist operativ:
 
-- Detail Report Card
-  A high-information export for users who want the fuller picture as an image.
+- `market_sentiment_fetcher.py` zieht `SPY`, `QQQ`, `DIA`, `IWM`, `^VIX`, `BTC-USD` und `ETH-USD`
+- RSS-Feeds kommen aus Reuters, CNBC und Google News Fallbacks
+- JSON-Hardening für Ollama-Ausgaben läuft über `pipeline_utils.py`
+- alle JSON-Schreibvorgänge nutzen `save_json_atomic()`
+- Market-Sentiment wird nach `AI/models/data/` und `shared/data/market_sentiment.json` gespiegelt
 
-- Mystery Teaser
-  A stripped, curiosity-driven score asset optimized for story sharing and organic pull.
+### Oracle
 
-Both exports are powered by structured canvas payloads from the headless core and rendered through dedicated browser canvas helpers. The frontend now presents them as a deliberate two-tier action group with the teaser visually prioritized.
+Das Oracle-Modul ist nicht mehr Vorbereitung, sondern produktiv nutzbar:
 
-## Product Modules
+- `oracle_core.py` baut Prognosen für den nächsten Handelstag
+- `oracle_backtest.json` speichert die laufende Trefferhistorie
+- `oracle_prediction.json` wird als Shared Mirror für das Dashboard atomar geschrieben
+- Backfill über `scripts/oracle/backfill_history.py` erzeugt historische Trainingsbasis
+- Bias-Warnungen bei überhöhter Accuracy bleiben intern und verändern das Schema nicht
 
-The current canonical product stack centers on:
-- unified profile orchestration
-- numerology computation and report generation
-- dashboard runtime with realtime-ready widgets
-- Supabase-backed auth and storage coordination
+## Produktmodule
 
-Legacy compatibility edges removed during canonicalization are intentionally not part of the active product contract anymore.
+Aktive Oberflächen:
+
+- `dashboard/`
+- `apps/numerology/`
+- `apps/finance/`
+- `apps/chronos/`
+- `apps/synergy/` als noch nicht finalisierter Ausbaupfad
+
+Offene Vorbedingungen vor Phase 6.0:
+
+- `apps/tuning/` fehlt noch
+- Synergy ist noch nicht als eigenständige Voll-App finalisiert
+- der Template-Layer ist mit `templates/app_blueprint.json` noch zu schmal
 
 ## Engineering Posture
 
-This repo is optimized around clarity over sprawl:
-- canonical imports over compatibility shims
-- explicit interfaces over hidden side effects
-- offline-aware behavior over cloud dependency by default
-- hard coverage pressure on active modules instead of inflated dead scope
+Dieses Repo priorisiert Wahrheit vor Zierde:
 
-The result is a system that is easier to audit, easier to test, and materially safer to extend.
-
-## Milestone Release Notes
-
-### Phase 4
-- Canonicalized the active repo surface and reduced dead compatibility edges.
-- Hardened the headless core boundary and stabilized Node-safe imports.
-- Elevated the active test surface around the true product modules.
-
-### Phase D1
-- Shipped the Observatory landing layer and aligned the main user entry with the current design system.
-- Preserved frictionless access while keeping commerce dormant.
-
-### Phase D2
-- Shipped the cinematic share card pipeline.
-- Added the mystery teaser export for high-curiosity social distribution.
-- Integrated dual export actions directly into the numerology results flow.
+- aktive Dokumentation statt Archivballast
+- relative Projektpfade statt lokale Sonderwege
+- lokale AI-/Datenverarbeitung vor kostenpflichtigen APIs
+- strukturierte Returns und atomische File-Writes
+- No-Build-Architektur für Production-Code
 
 ## Repository Hygiene
 
-Local cache artifacts and machine-generated data must not be treated as product source.
+Der aktive Markdown-Kern umfasst aktuell `18` Dokumente. Historische Vaults wurden aus dem Live-Repo entfernt und extern nach `C:\DevLab_Archive\MBRN-HUB-V1_docs_archive_20260419_205331` gesichert.
 
-Protected by ignore policy:
-- Python cache directories such as `__pycache__/`
-- local sentiment snapshots such as `shared/data/market_sentiment.json`
-- local-only JSON variants under `shared/data/*.local.json`
+Machine-generated Daten bleiben Artefakte und keine Primärquellen für Produktlogik:
 
-If a previously tracked machine-generated file still exists in Git history, it should be explicitly untracked in a later repository hygiene pass. The ignore policy now prevents new accidental inclusion.
+- `shared/data/market_sentiment.json`
+- `shared/data/oracle_prediction.json`
+- `shared/data/oracle_backtest.json`
+- `AI/models/data/*.json`
 
 ## Status
 
-MBRN Hub v1.0 is not a prototype dump. It is a sealed foundation:
-- headless where the logic must stay pure
-- expressive where the UI must create pull
-- dormant where monetization would currently distort truth
-- prepared where future data and local AI layers need room to attach
+MBRN Hub v1.1 ist ein operativer Kern mit echtem Vertical Slice:
+
+- Browser-UI für den Nutzer
+- lokaler Daten- und LLM-Stack für Anreicherung
+- Oracle als System-Brücke zwischen Numerologie und Markt
+- dokumentierte Phase-6.0-Blocker statt verdrängter Restschuld

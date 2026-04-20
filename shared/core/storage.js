@@ -3,13 +3,13 @@
  * LocalStorage Wrapper - Enforces 'mbrn_' prefix and structured returns.
  */
 
-const PREFIX = 'mbrn_';
+export const STORAGE_PREFIX = 'mbrn_';
 
 // RACE CONDITION FIX: Write queue for sequential LocalStorage access
 const _queue = [];
 let _processing = false;
 
-function getStorageBackend() {
+export function getStorageBackend() {
   return typeof globalThis !== 'undefined' && globalThis.localStorage
     ? globalThis.localStorage
     : null;
@@ -63,7 +63,7 @@ export const storage = {
           }
 
           try {
-            const prefixedKey = `${PREFIX}${key}`;
+            const prefixedKey = `${STORAGE_PREFIX}${key}`;
             const serializedValue = JSON.stringify(value);
             backend.setItem(prefixedKey, serializedValue);
             return { success: true, data: null };
@@ -95,7 +95,7 @@ export const storage = {
     }
 
     try {
-      const prefixedKey = `${PREFIX}${key}`;
+      const prefixedKey = `${STORAGE_PREFIX}${key}`;
       const item = backend.getItem(prefixedKey);
       
       if (item === null) {
@@ -123,7 +123,7 @@ export const storage = {
     }
 
     try {
-      const prefixedKey = `${PREFIX}${key}`;
+      const prefixedKey = `${STORAGE_PREFIX}${key}`;
       backend.removeItem(prefixedKey);
       return { success: true, data: null };
     } catch (error) {

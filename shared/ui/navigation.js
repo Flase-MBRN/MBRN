@@ -12,6 +12,7 @@ import { MBRN_ROUTE_META, MBRN_ROUTES } from '../core/config.js';
 import { state } from '../core/state.js';
 import { touchManager } from './touch_manager.js';
 import { dom } from './dom_utils.js';
+import { renderPolicyLinks } from './legal_system.js';
 
 function getKnownRouteSegments() {
   return Object.values(MBRN_ROUTES)
@@ -81,6 +82,28 @@ export function renderNavigation(containerId = 'nav-menu') {
       parent: link
     });
   }
+
+  renderGlobalLegalRail();
+}
+
+function renderGlobalLegalRail() {
+  const footer = document.querySelector('.nav-footer');
+  if (!footer) return;
+
+  let rail = document.getElementById('nav-legal-rail');
+  if (!rail) {
+    rail = dom.createEl('div', {
+      id: 'nav-legal-rail',
+      className: 'legal-rail',
+      parent: footer
+    });
+  }
+
+  rail.replaceChildren();
+  renderPolicyLinks(rail, {
+    basePath: getRepoRoot(),
+    compact: true
+  });
 }
 
 export function getCurrentRoute(pathname = window.location.pathname) {

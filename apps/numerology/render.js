@@ -7,29 +7,30 @@ import { state } from '../../shared/core/state.js';
 import { actions } from '../../shared/core/actions.js';
 import { storage } from '../../shared/core/storage.js';
 import { dom, animateValue, showTerminalLoader, createGlowRing, bindSmartDateInput } from '../../shared/ui/dom_utils.js';
-import { nav, renderNavigation } from '../../shared/ui/navigation.js';
+import { getRepoRoot, nav, renderNavigation } from '../../shared/ui/navigation.js';
 import { renderAuth } from '../../shared/ui/render_auth.js';
 import { generateShareCard, generateTeaserAsset, generateOperatorReport } from '../../shared/core/logic/orchestrator.js';
 import { renderShareCardToCanvas, renderTeaserCardToCanvas } from '../../shared/ui/helpers/canvas_renderer.js';
 import { OPERATOR_MATRIX } from '../../shared/core/logic/numerology/index.js';
 import { i18n } from '../../shared/core/i18n.js';
 import { errorBoundary } from '../../shared/ui/error_boundary.js';
+import { injectLegalBlock } from '../../shared/ui/legal_system.js';
 
 const STORAGE_KEY = 'numerology_input';
 
 const NUMBER_MEANINGS = {
-  1: 'Klarer Antrieb und der Mut, Dinge als Erste:r zu starten.',
-  2: 'Balance, Verbindung und präzises Gespür für dein Umfeld.',
-  3: 'Präsenz und klare Kommunikation mit starker Wirkung.',
-  4: 'Struktur, Ausdauer und stabile Systeme, die lange tragen.',
-  5: 'Bewegung, Veränderung und Freiheit als Wachstumstreiber.',
-  6: 'Verantwortung, Stabilität und verlässliche Fürsorge.',
-  7: 'Tiefe Analyse, Mustererkennung und strategisches Denken.',
-  8: 'Führungskraft, Umsetzung und messbare Resultate.',
-  9: 'Globale Perspektive und systemisches Denken.',
-  11: 'Intuitive Klarheit und hoher innerer Radar.',
-  22: 'Vision auf großem Maßstab und starke Realisierungskraft.',
-  33: 'Mentor-Energie, Reife und ruhige Führung.'
+  1: 'Im Modell steht diese Zahl oft für Antrieb, Initiative und den ersten klaren Schritt.',
+  2: 'Im Modell betont diese Zahl häufig Balance, Verbindung und feines Gespür für das Umfeld.',
+  3: 'Im Modell verweist diese Zahl oft auf Präsenz, Ausdruck und klare Kommunikation.',
+  4: 'Im Modell rückt diese Zahl Struktur, Ausdauer und belastbare Systeme in den Vordergrund.',
+  5: 'Im Modell steht diese Zahl häufig für Bewegung, Veränderung und flexible Entwicklung.',
+  6: 'Im Modell verbindet diese Zahl Verantwortung, Stabilität und verlässliche Fürsorge.',
+  7: 'Im Modell betont diese Zahl Analyse, Mustererkennung und strategisches Denken.',
+  8: 'Im Modell weist diese Zahl oft auf Führung, Umsetzung und sichtbare Resultate hin.',
+  9: 'Im Modell steht diese Zahl oft für Perspektive und systemisches Denken.',
+  11: 'Im Modell wird diese Zahl häufig mit klarer Wahrnehmung und feinen Impulsen verbunden.',
+  22: 'Im Modell steht diese Zahl oft für große Vorhaben und tragfähige Realisierung.',
+  33: 'Im Modell verweist diese Zahl häufig auf Orientierung, Reife und ruhige Führung.'
 };
 
 function getPrimaryNumber(value) {
@@ -38,7 +39,7 @@ function getPrimaryNumber(value) {
   return Number.isNaN(parsed) ? null : parsed;
 }
 
-function getNumberMeaning(value, fallback = 'Diese Zahl zeigt einen wichtigen Teil deines Musters.') {
+function getNumberMeaning(value, fallback = 'Diese Zahl markiert im Modell einen wichtigen Teil deines Musters.') {
   const primary = getPrimaryNumber(value);
   return NUMBER_MEANINGS[primary] || fallback;
 }
@@ -51,17 +52,17 @@ function getLifeTheme(value) {
 function getChallengeMeaning(value) {
   const primary = getPrimaryNumber(value);
   if (primary === 0) {
-    return 'Wenig innere Reibung - achte darauf, nicht in Komfort hängen zu bleiben.';
+    return 'Im Modell zeigt sich hier wenig innere Reibung. Achte trotzdem darauf, nicht im Komfort hängen zu bleiben.';
   }
   return getNumberMeaning(value);
 }
 
 function getBridgeMeaning(value) {
   const primary = getPrimaryNumber(value);
-  if (primary === null) return 'Verbindung zwischen zwei Seiten deines Systems.';
-  if (primary <= 2) return 'Natürliche Synergie. Diese Eigenschaften arbeiten perfekt zusammen.';
-  if (primary <= 5) return 'Stabile Verbindung mit punktuellem Feintuning.';
-  return 'Dynamische Spannung. Erfordert bewussten Fokus, bringt aber enormes Wachstum.';
+  if (primary === null) return 'Verbindung zwischen zwei Seiten deines Modells.';
+  if (primary <= 2) return 'Im Modell wirkt diese Verbindung sehr stimmig und leicht anschlussfähig.';
+  if (primary <= 5) return 'Im Modell zeigt sich eine stabile Verbindung mit punktuellem Feintuning.';
+  return 'Im Modell entsteht hier spürbare Spannung, die bewussten Fokus und Entwicklung anstoßen kann.';
 }
 
 function getPhaseDescription(value) {
@@ -77,7 +78,7 @@ function getPhaseDescription(value) {
     .replace(/^Fokus der\s*/i, '')
     .replace(/\.$/, '');
   const normalized = cleaned.length > 0 ? `${cleaned.charAt(0).toLowerCase()}${cleaned.slice(1)}` : 'dein Thema klar ausrichten';
-  return `Deine Lernaufgabe in dieser Phase: ${normalized}.`;
+  return `Im Modell rückt in dieser Phase besonders in den Vordergrund, ${normalized}.`;
 }
 
 function describeField(label, value) {
@@ -290,6 +291,7 @@ export const numerologyRender = {
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
+    this.renderLegalSurfaces();
   },
 
   destroy() {
@@ -318,6 +320,33 @@ export const numerologyRender = {
     }
     dom.setText('num-error', '');
     this.bindAccordionEvents();
+    this.renderLegalSurfaces();
+  },
+
+  renderLegalSurfaces() {
+    const basePath = getRepoRoot();
+    injectLegalBlock('num-form-legal', {
+      variant: 'data',
+      basePath,
+      includePolicyLinks: true,
+      compactLinks: true
+    });
+    injectLegalBlock('num-results-legal', {
+      variant: 'numerology',
+      basePath,
+      includePolicyLinks: true,
+      compactLinks: true
+    });
+    injectLegalBlock('num-share-legal', {
+      variant: 'export_privacy',
+      basePath,
+      compactLinks: true
+    });
+    injectLegalBlock('num-pdf-legal', {
+      variant: 'export_privacy',
+      basePath,
+      compactLinks: true
+    });
   },
 
   bindAccordionEvents() {
@@ -412,7 +441,7 @@ export const numerologyRender = {
     }
 
     infoEl.textContent =
-      "Dieser Wert zeigt, wie deine Eigenschaften verteilt sind. Wichtig: Es gibt kein 'Besser' oder 'Schlechter'. Ein hoher Wert bedeutet eine breite, ausgeglichene Balance. Ein niedriger Wert steht für extreme Spezialisierung und einen messerscharfen Fokus auf wenige Talente.";
+      "Dieser Wert zeigt, wie sich deine Eigenschaften im Modell verteilen. Wichtig: Es gibt kein 'Besser' oder 'Schlechter'. Ein hoher Wert steht für eine breite Balance, ein niedriger Wert eher für stärkere Spezialisierung.";
   },
 
   async handleTeaserShare() {
@@ -501,7 +530,7 @@ export const numerologyRender = {
     const lines = loshu.activeLines.join(', ') || 'keine';
     dom.setText(
       'num-loshu-lines',
-      `Dein persönliches Raster. Lila hervorgehobene Zahlen sind deine stärksten Eigenschaften. Wenn drei Zahlen eine horizontale, vertikale oder diagonale Linie bilden, hast du eine Aktive Linie - ein Zeichen für ein besonderes Talent in diesem Bereich. Aktive Linien: ${lines}.`
+      `Dein persönliches Raster im Modell. Lila hervorgehobene Zahlen markieren deutliche Schwerpunkte. Wenn drei Zahlen eine horizontale, vertikale oder diagonale Linie bilden, zeigt das eine aktive Linie als Hinweis auf ein markantes Thema in diesem Bereich. Aktive Linien: ${lines}.`
     );
   },
 
@@ -606,14 +635,14 @@ export const numerologyRender = {
       karmaGrid,
       'Lektionen',
       data.karma.lessons.join(', ') || 'Keine',
-      'Dein verborgenes Potenzial. Hier liegt dein größter Hebel für persönliches Wachstum.',
+      'Ein mögliches Lernfeld im Modell. Hier kann sich ein relevanter Entwicklungshebel zeigen.',
       5
     );
     createDataCard(
       karmaGrid,
       'Starker Zug',
       data.karma.passion.join(', ') || '-',
-      'Dein unbewusster Motor. Diese Energie treibt deine Entscheidungen im Hintergrund an.',
+      'Ein wiederkehrender innerer Antrieb im Modell. Diese Energie kann Entscheidungen im Hintergrund mitprägen.',
       6
     );
     karmaList.appendChild(karmaGrid);
@@ -629,7 +658,7 @@ export const numerologyRender = {
 
     const bridgeNote = document.createElement('p');
     bridgeNote.className = 'text-sm opacity-50 mt-16 text-center';
-    bridgeNote.textContent = 'Verbindungen zeigen die Synergie zwischen deinen Zahlen. Werte nahe 0 fließen ganz natürlich ineinander. Höhere Werte erzeugen eine innere Spannung, die du aktiv nutzen kannst, um über dich hinauszuwachsen.';
+    bridgeNote.textContent = 'Verbindungen zeigen die Synergie zwischen deinen Zahlen im Modell. Werte nahe 0 wirken meist leichter verbunden, höhere Werte deuten eher auf Spannung und bewussten Entwicklungsbedarf hin.';
     bridgeList.appendChild(bridgeNote);
   }
 };

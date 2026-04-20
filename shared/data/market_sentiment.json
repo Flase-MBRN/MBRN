@@ -1,15 +1,15 @@
 {
-  "timestamp_utc": "2026-04-19T18:36:03.380917+00:00",
+  "timestamp_utc": "2026-04-20T12:22:45.593943+00:00",
   "source": "market_sentiment_pipeline",
   "sentiment_score": 85,
   "sentiment_label": "Extreme Greed",
   "confidence": 0.8,
-  "analysis": "Equities are showing strong gains, with the IWM leading the pack at +2.16%, while the VIX is down -2.56%. Crypto prices are declining, but news headlines suggest a positive outlook for AI stocks and fintech companies.",
+  "analysis": "Equities are showing broad-based gains, with the IWM leading the pack, while the VIX is surging due to increased volatility.",
   "recommendation": "buy",
-  "crypto_bias": "neutral",
-  "news_bias": "bullish",
+  "crypto_bias": "bullish",
+  "news_bias": "neutral",
   "news_impact": 0,
-  "key_theme": "growth",
+  "key_theme": "equity rally",
   "market_data": [
     {
       "ticker": "SPY",
@@ -22,7 +22,7 @@
       "low": 705.76,
       "market_cap": 651753750528,
       "pe_ratio": 28.155151,
-      "timestamp": "2026-04-19T18:35:43.603137+00:00",
+      "timestamp": "2026-04-20T12:22:07.564060+00:00",
       "source": "yfinance"
     },
     {
@@ -36,7 +36,7 @@
       "low": 644.07,
       "market_cap": 255062933504,
       "pe_ratio": 34.27903,
-      "timestamp": "2026-04-19T18:35:44.025804+00:00",
+      "timestamp": "2026-04-20T12:22:07.991089+00:00",
       "source": "yfinance"
     },
     {
@@ -50,7 +50,7 @@
       "low": 490.36,
       "market_cap": 40151863296,
       "pe_ratio": 24.224075,
-      "timestamp": "2026-04-19T18:35:44.476734+00:00",
+      "timestamp": "2026-04-20T12:22:08.485154+00:00",
       "source": "yfinance"
     },
     {
@@ -64,134 +64,134 @@
       "low": 273.12,
       "market_cap": 77507960832,
       "pe_ratio": 19.965326,
-      "timestamp": "2026-04-19T18:35:44.895060+00:00",
+      "timestamp": "2026-04-20T12:22:08.925471+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "^VIX",
       "asset_class": "equity",
-      "price": 17.48,
-      "change": -0.46,
-      "change_percent": -2.56,
+      "price": 19.29,
+      "change": 1.81,
+      "change_percent": 10.35,
       "volume": 0,
-      "high": 18.24,
-      "low": 16.87,
+      "high": 19.99,
+      "low": 19.26,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-19T18:35:45.282213+00:00",
+      "timestamp": "2026-04-20T12:22:09.344735+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "BTC-USD",
       "asset_class": "crypto",
-      "price": 74738.97,
-      "change": -987.24,
-      "change_percent": -1.3,
-      "volume": 27579691008,
-      "high": 76132.13,
-      "low": 74688.86,
-      "market_cap": 1496096440320,
+      "price": 75568.98,
+      "change": 1712.62,
+      "change_percent": 2.32,
+      "volume": 34918903808,
+      "high": 75470.66,
+      "low": 73820.11,
+      "market_cap": 1510809534464,
       "pe_ratio": null,
-      "timestamp": "2026-04-19T18:35:45.757587+00:00",
+      "timestamp": "2026-04-20T12:22:09.740300+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "ETH-USD",
       "asset_class": "crypto",
-      "price": 2294.3,
-      "change": -56.8,
-      "change_percent": -2.42,
-      "volume": 14530032640,
-      "high": 2355.15,
-      "low": 2292.49,
-      "market_cap": 277249228800,
+      "price": 2317.86,
+      "change": 52.94,
+      "change_percent": 2.34,
+      "volume": 17822720000,
+      "high": 2324.5,
+      "low": 2263.49,
+      "market_cap": 279502061568,
       "pe_ratio": null,
-      "timestamp": "2026-04-19T18:35:46.146969+00:00",
+      "timestamp": "2026-04-20T12:22:10.143085+00:00",
       "source": "yfinance"
     }
   ],
   "news_feed": [
     {
       "source": "Google News Business",
-      "title": "Prediction: The Biggest Winners of 2026 Are These 5 AI Stocks Nobody's Paying Attention to Right Now - Yahoo Finance",
-      "summary": "Prediction: The Biggest Winners of 2026 Are These 5 AI Stocks Nobody's Paying Attention to Right Now Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOZ2QyNFlBZnNXWHRFY2VhbFl3Y0FlbnVtMHI3WU9HdnNIUzQ0ZlpzRHZZb05SZFdENk5nZUlwdXNmNGRJclIwUElUT3o5Nm1hX1lWdkZ1NVZGZ3ZMNUFlUzZxSl94WWtkSGhvSFh2SmNqVlgzQ19RYUlfMExqdHRKZnFsYl9ZNFlPR08weGdLZGgtWDBCU1gtQ0xHR1NfUWtIUTVwNw?oc=5",
-      "published_at": "2026-04-19T17:21:00+00:00"
+      "title": "Vertical Aerospace Announces Execution and Closing of Comprehensive Financing Package of up to $850 Million - Yahoo Finance Singapore",
+      "summary": "Vertical Aerospace Announces Execution and Closing of Comprehensive Financing Package of up to $850 Million Yahoo Finance Singapore",
+      "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNWklOaVpfSHZuVFRjbFNnZ1oyRlJqWFZEWER5Ul9ON0tvbzhVMW5FU3Z4Vm9rWHJwRFpqM0ZPU3BOUXVocEhLMlEzVndma0dDNGlOZHUzMFhERXJXTWptYVVRNlBqdkw4elQwemIyNnZJNjNNNkd5dzA5WG9WQzBXcnB1ZkQ4NjlqYjVzaVZCMVNKQnBDVlRNWVktQQ?oc=5",
+      "published_at": "2026-04-20T12:06:00+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "The Spine: New hub for finance, business and tourism in Egypt by 2026 - Dailynewsegypt",
-      "summary": "The Spine: New hub for finance, business and tourism in Egypt by 2026 Dailynewsegypt",
-      "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNVWJkak94ZzlpTmJlUm15bFo5ck5BN2Qydk9kNjV3MHNMYk9yVnI3eWdCczRoWFBfbFFzbDRpVXN1dkhoUVk4ZHM3SGl4VGN6YXdPYWNQRGJNZVRlU1FyMndlZzJCblBmU3NDOFJ1VUdEWjhpYi00aDZRTnIxNU5YR3lqTE1zenNWdUh6SGNJMUozZTFtdHVpMG1VZkdhZjFUM3k3Rlhqcl9vQmloWUp3?oc=5",
-      "published_at": "2026-04-19T16:46:20+00:00"
-    },
-    {
-      "source": "CNBC Finance",
-      "title": "Software stock dogs have joined market rally. There's a classic investing lesson in the rebound",
-      "summary": "In a 2026 market that had Microsoft down close to 20%, looking for opportunities to buy after big drawdowns is coming to more tech and software stocks.",
-      "link": "https://www.cnbc.com/2026/04/19/software-tech-stocks-market-rally-microsoft.html",
-      "published_at": "2026-04-19T16:10:03+00:00"
+      "title": "German union renews calls for Commerzbank independence after UniCredit's latest push - Reuters",
+      "summary": "German union renews calls for Commerzbank independence after UniCredit's latest push Reuters",
+      "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOZkZYUk93aHo3VWFmN2JPOEFxSlJocy16RHFVaUhhZkdLamZSZGlhVE1uekswMWFid1hIdTBidVZuR1dLSVhYR3hFT0VfcHNWQ3hFV2ZNbWw2VUhLTWdYRi0yeFFSdzNDQjlHRzdVUTdlN0xCQXNYSFRLQkpyYjhNMjV5dFBlNXpNaDR0ZzJPT2dCaXE3YzhTOTlKSzBhY3hMdHRDa2F0ZzJ6dUpMeWRKRFVyeTlZSDJsRzlOZFJlcDN4YTNfcGg3NlpVS1M?oc=5",
+      "published_at": "2026-04-20T12:03:43+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Turning global ambition into action: how Australia-founded Airwallex builds financial infrastructure to power growth - South China Morning Post",
-      "summary": "Turning global ambition into action: how Australia-founded Airwallex builds financial infrastructure to power growth South China Morning Post",
-      "link": "https://news.google.com/rss/articles/CBMilgJBVV95cUxNTWh2WVhoX3A4LWVsbUwtbEpVWFdDQW1nMG93NFoyMzlsM1VSRW9xdkR5Tkp3WDlfampzbWJ4c2RvVERmNnhLTEZyMkFDVkFjcVlaVmtJTU40R3FNTTdCcklUc3psR2xEVFY5dUlmdWt2M1VXYkhsQnVrbThsdmRVWTd2VExIa3RkdHhYcFBxakdPZFBMTnBKYWMzTE83TDB6VXBodTZwNDl0VVlINlBwWmRseXd0VlYzdEt3UFU0OF9uVzNJS2tmTVpiZXBJUng2OElJZVNqR25VOXNKTE4tSnpjLUZlM1ZoWWxTdEpoSUhuR3dJV2lncWs5cS1qaXZFajUxbGpuQW52MnV2TDBXVHZXZE4wZw?oc=5",
-      "published_at": "2026-04-19T16:00:12+00:00"
+      "title": "Companies Are Spending Millions On Enterprise AI Tools, But Employees Are Boycotting Them, Study Finds - Yahoo Finance",
+      "summary": "Companies Are Spending Millions On Enterprise AI Tools, But Employees Are Boycotting Them, Study Finds Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOalMtVzFkc09lOGE3UVFtRFAzU045TElKNjZHQ21hcHhheEhLV3VaR1J1SUROZWR1VFZ5MWtTb2tyVmRkMWRIWHZQMGt6TDFHWEdEamN6V19KTDVlcXlCZDdyV29qdlRtMjh4a0wxTDZZZzNWS21VY1hBcC1IV19WOXFMdnVLUEJ3LXg3S21SNkQwZXVQdjFTaUNjQkVlVWlCU0ZjcW95amk0QVhxZ25B?oc=5",
+      "published_at": "2026-04-20T12:01:04+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Wright: Gas prices dropping below $3 ‘might not happen until next year’ - The Hill",
-      "summary": "Wright: Gas prices dropping below $3 ‘might not happen until next year’ The Hill",
-      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPeGI4SXhqQWZJVXF3eGtFdkJxWlFwNWc4QWdvdnE2LUo1TkZpSFdiTjNOSjl6XzYwQVpiY2V1cC1xakxSbjJrb05FcVpKOWRGTnEwekhqbXk0ZnhoSV92ZE0xVmNnRXZ2eVc4b3VEdVVuQW9QeXVtNlQ1dmxVOW5Oc2FjNNIBiAFBVV95cUxNRHR1UjZCZlZSXzNsa0taWHZremt5N3YtQTAwNWxac3lpODBFWF9ISlNFajN2UHVIeF91THAxeEJZVmNxSEtfQUZWeWhjRUtHN2prS2p2bVU4XzlnN0hKZ213Rmhyc0c4bGNtNVpLSExmRDQ1dlJFUHF3TFpCVjhQS2s0RnpIZkZ2?oc=5",
-      "published_at": "2026-04-19T15:13:00+00:00"
+      "title": "Bond investors propose crisis 'pause clauses' for emerging countries - Reuters",
+      "summary": "Bond investors propose crisis 'pause clauses' for emerging countries Reuters",
+      "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOSW9wTUlGQ1hkclBTU1ZfaFdmMmVCNnZGOV9mc3FHTVNOTmF3aEwybEV0UldPNkRfMUR4VUk0dVZvOHE2eE5FbktfbUdwbnM0M3lPdGttTy1qaWNyakkwcEpnSHZsTm9IU3pBRXZabUFLeEc5MlUxZVhzbVItNFg3YXhXcWJVb1IzTzYxZDBpdERjdFJxeWR3by1vYWpoS0FnbFdMWWp0b3BLM0Z5UGhRRGxuR3hfdw?oc=5",
+      "published_at": "2026-04-20T11:50:09+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Visa backed one idea that turned into $4 billion lifeline - thestreet.com",
-      "summary": "Visa backed one idea that turned into $4 billion lifeline thestreet.com",
-      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPZl9HWl9YdTdFc05LSUlYM1ZVXzdVMkhBMzBwOWtQNlc1cE4tWEhsZm0tS2NETlQ4a0x3R190T2gwMWprY0ZkZUg3WUMzVGhjckdBaXJNLTYtTzVCaUwzRHdZSkxxTko0X05EQmRJbDlYRXlGZVhBRm1MOTIySHU3c2M1emYza055Ykx0RjFmVnpra2NTdFRNTDQ5V2k0LS1t?oc=5",
-      "published_at": "2026-04-19T13:17:00+00:00"
+      "title": "NAMSA Names Veteran MedTech Commercial Leader Scott Day as Vice President, Clinical and Consulting Business Development - Yahoo Finance Singapore",
+      "summary": "NAMSA Names Veteran MedTech Commercial Leader Scott Day as Vice President, Clinical and Consulting Business Development Yahoo Finance Singapore",
+      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPZ0thd3E3NEp6RkF1ZFQ0LWpVdUlad2NBRzVLcGNZc2VqRWlJTkFzUkhJZExOWVVOMzIzU3hDUnVBOURTaG5VZU1xUTdfVEFxQmRlVHNNTUcyM0RnZzkwMC16Q2tMYmdWRERZNUZVQ2Nvc053a2JWNWhRQzBSa19TajZXT3hGWXRyS0g5OG80ZFQ?oc=5",
+      "published_at": "2026-04-20T11:39:00+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "We Think Contineum Therapeutics (NASDAQ:CTNM) Can Afford To Drive Business Growth - Yahoo Finance",
-      "summary": "We Think Contineum Therapeutics (NASDAQ:CTNM) Can Afford To Drive Business Growth Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxObVBaTTlOeGdmRnBHMVhVbGtZeTUycmNYcXVtc1BDbmFmb2J3aTkxYUJGWFg2MnRxbEtySmhqM0djVmhMYU1XT1VVem93ejJIMjR1anFBTnplV20tb2JSZ1luaGw4VUJ2dzJWVjY3RFlRWEpsMXYzMDhBdTdURkxLOURXbjlyYWN6S3djSXN3UTdNbkxycHJEUk9aTHVhMEQzMGRQaURNZ1M?oc=5",
-      "published_at": "2026-04-19T12:03:52+00:00"
+      "title": "AlphaTON Capital Rebrands as Alpha Compute Corp. to Reflect Its Growing AI Compute Business - Yahoo Finance",
+      "summary": "AlphaTON Capital Rebrands as Alpha Compute Corp. to Reflect Its Growing AI Compute Business Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxNZkpHdkY0NWFIQWJUcDZjdW16QkNEdlhpeEpzalR3dDRGS0dockJOY0sxSDFLdENEZlhjaC1naXJLcmR5TEZSRHJRWXdmZXJMR1h6ajRYNEtDcHpDcXViZ19pZ2tTbGRVZ1NGN0pJYVNsR0pUTUpmZGRvaWo4SHhpYk5LQzBkYzd4NldPVGZFMmk4YUp6ZzBjekFLYXlnM3lyMUFrMm5SSnV5Q25D?oc=5",
+      "published_at": "2026-04-20T11:30:00+00:00"
+    },
+    {
+      "source": "Google News Markets",
+      "title": "Private markets have soared to $10 trillion in AUM. But why have they underperformed public markets? - Fortune",
+      "summary": "Private markets have soared to $10 trillion in AUM. But why have they underperformed public markets? Fortune",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNcldUQXJORWpncmRXenJDLVo3YlpINThjUUdYSDBjLWtjcUp3ZzFOTzBUVXFmZXZjUEt5Q29OSUJvY0JZOW1RalhncTlMdFpGa0xRM0ZJSkt4S1dlYnRRSW1lVDF6OThHaDlVdmxtOVZBczRMMWRMN2hUM2RFZ3R0SnpXSGpJbFE0XzYwT1RhOHl0aFZzUXVodTJEVkVDb3B3?oc=5",
+      "published_at": "2026-04-20T11:25:00+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Black Entrepreneur Wins SBA Small Business Person Of The Year To Represent Mississippi During National Small Business Week - Yahoo Finance",
-      "summary": "Black Entrepreneur Wins SBA Small Business Person Of The Year To Represent Mississippi During National Small Business Week Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOSGNlTURvY1dsRXRXMVRFN1k4WTZMb2RSOE9WZ3VKZWk3MFdtSWJEZ2dsSUlYSFRsWWNoTlNMX3NxckFtTUpFM21aZHNKRkRQUFZrT3hIYkR1aUxLUGloeVpWcHR0Nmtsbmd4U0xZZkFVMkFIZHNrbk9INDNaaGVhd1JvMjB1dGpXMWxQeVRmOTZPOHZyNGM0LW1CQWI5SGs?oc=5",
-      "published_at": "2026-04-19T12:00:00+00:00"
+      "title": "New Found Gold Announces $205M Finance Package - The Manila Times",
+      "summary": "New Found Gold Announces $205M Finance Package The Manila Times",
+      "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPVFRuN1lPa2RzdmdITGxpbk1VQng0TkJIZnBhVWhCNmx3V3dEQkhWRXdWNHEwWGg0a3pmbExncnR0TXRSSDl2Z3M2SUNfNV9pM2hSSzc5UGNDLVBYbElYdlpFODVqeU41S0Q2X01CeUFYaGdPcWJxOWpmdmRiQ3pWQmhuVndNTk1uVnJSMnRuV2JhMzR5OHFNRHA5QTE1TWJCTk55UXdNZnNSZF9GSVR1QmxYX1NIcHJhLThN0gHAAUFVX3lxTE5RTkxJdi1zUzNzd1RIMWtuQTFPSUNiUjRoaHFCTTR2Qk5zWWZXeGZ4blEtQ1RZRFItenVnYUp3Y1UyRmV3ODhHX3VyUXpscENHekNQN3VEM0FnV0ZqYi1LNk04SVRPNEtnbThTc19MNmxZUTlkbzNya0dXbEx4SmtzS0U4UmtIRWJfbEw3RWRTSHBHRGNxQzRhbmlEN3VPUWwzX3k0MjdZa1pIdEVSMjNsUFU0OVNSRjFtU2JLY2xZbA?oc=5",
+      "published_at": "2026-04-20T11:19:59+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Why The First Business Financial Services (FBIZ) Story Is Shifting As Fair Value Gets Reworked - Yahoo Finance",
-      "summary": "Why The First Business Financial Services (FBIZ) Story Is Shifting As Fair Value Gets Reworked Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPQ2lQNFBuQ1RZOE5HNE12T3hadWlnVnhMTXBvYzRqVlVEMUwyZ0tLNDFWLUVJenZCYXc3Q05mLVh2cVFPRG1PWWdHLXNUNW82OWFnSjdiWlMwRzFIdFk0UDNZQmg2d09qVVR4eXFaZlJzNXZ0ZlZKVS12aVF5Qy1yS1lybGNhT3NtMUtKdi1ycFhzUFVnRzZuZWh1ZnZmckp3bklRWA?oc=5",
-      "published_at": "2026-04-19T11:06:54+00:00"
+      "title": "3 Services Stocks Walking a Fine Line - Yahoo Finance",
+      "summary": "3 Services Stocks Walking a Fine Line Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNYlZ2UEFkZFYyUEtZOU9TVHkwQnNCaGQ1Tmd0U3E4bk9hWU9ITDVUbU96TVBVeUR2TFZsZkZhZGt4YUJkb19lVU85T2l2bTB2ZjNodlduTmJvWUx5U2RpQWhSOVBaa3hsdjhhemxUQTlaeXVJODhUNWdIVURuNUx2Wkx5d3gzZl94TWpQYXA3dlJQR0dtdk5udnF1WQ?oc=5",
+      "published_at": "2026-04-20T11:09:32+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Finance minister calls for global efforts on supply chain stability at G20 meeting - Korea JoongAng Daily",
-      "summary": "Finance minister calls for global efforts on supply chain stability at G20 meeting Korea JoongAng Daily",
-      "link": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxQOGtOd0E5SzkxcGNDUjA4eEo5WjhyUUtuRFk5RFJfeEdVWmNKYlBWTzNuRDA2ZS0wZ1JidENyT1pRR0QybkhrdmtJQjJvcVI0TmdkckFRSzVDMmtBUDktV2tNY2RWYXN0N3hXbDNyczFuam1sQzZTVU5TX1Rza3ZaR1BYM3pKcDNMZjQyeHZCRlhRWWxCQmZJVl9kNGpfc3ZUTWZrQV9kQVpSRUcyX1dXNmdxenJienRVNXpfdjZKbmZrRWgzV19ET25EM3hCS2NCeFpkTEh6ZF81amhibGJ0d1lURVA2cDMzVjNkR0JSc2UtUQ?oc=5",
-      "published_at": "2026-04-19T07:39:20+00:00"
+      "title": "MACCO Restructuring Group Expands National Team with Senior Leadership and Financial Advisory Hires - Yahoo Finance",
+      "summary": "MACCO Restructuring Group Expands National Team with Senior Leadership and Financial Advisory Hires Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPZWxybmRYYjlEWDZMVXRrYUZTTGQ4VlRQbHlDUnlyek1TNzZsaHhoMV9oWlBvdkg4UnZwUGlsNi0yMXJ5dGV6TXB0TlVmMmd3S0FlY1llWjhFMm8zVXl4Qmtlcmw3azhVVFdVcnhiQnIxQWl0Z0VhTlBjQTUwOE1ybS1XMXZiTEw4VkFWdEtGZEtDMmhHSUdoUGpJQXU1SlNiT1JWWGJTcEFQd3M?oc=5",
+      "published_at": "2026-04-20T11:00:00+00:00"
     }
   ],
   "mbrn_enriched": {
     "sentiment_score": 85,
     "confidence": 0.8,
-    "analysis": "Equities are showing strong gains, with the IWM leading the pack at +2.16%, while the VIX is down -2.56%. Crypto prices are declining, but news headlines suggest a positive outlook for AI stocks and fintech companies.",
+    "analysis": "Equities are showing broad-based gains, with the IWM leading the pack, while the VIX is surging due to increased volatility.",
     "recommendation": "buy",
-    "crypto_bias": "neutral",
-    "news_bias": "bullish",
+    "crypto_bias": "bullish",
+    "news_bias": "neutral",
     "news_impact": 0,
-    "key_theme": "growth",
+    "key_theme": "equity rally",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-19T18:36:03.380854+00:00"
+    "processed_at": "2026-04-20T12:22:45.593717+00:00"
   }
 }

@@ -3,8 +3,6 @@
    Sternenhimmel Theme - v5.0 Master Directive
    ======================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600&display=swap');
-
 :root {
   /* ========================================
      MBRN-STARRY-SKY SYSTEM
@@ -70,8 +68,8 @@
   --radius-lg: 20px;
   
   /* Fonts */
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -204,7 +202,7 @@ aside[class*="nav"] {
 
 .nav-brand,
 .nav-logo {
-  font-family: 'Syne', sans-serif;
+  font-family: var(--font-display);
   font-weight: 800;
   color: var(--accent);
   padding: 24px;

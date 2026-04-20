@@ -3,26 +3,27 @@
  * Landing-Flow für Einstieg, Skip und ersten Blick aufs Muster.
  */
 
-import { nav, renderNavigation } from './navigation.js';
+import { getRepoRoot, nav, renderNavigation } from './navigation.js';
 import { storage } from '../core/storage.js';
 import { i18n } from '../core/i18n.js';
 import { calculateLifePathTotal, formatValue } from '../core/logic/numerology/index.js';
 import { renderAuth } from './render_auth.js';
 import { bindSmartDateInput } from './dom_utils.js';
+import { injectLegalBlock } from './legal_system.js';
 
 const ARCHETYPES = {
-  1: { title: 'Der Initiator', desc: 'Dein Fokus liegt auf Eigeninitiative und klaren Entscheidungen.' },
-  2: { title: 'Der Verbinder', desc: 'Dein System ist auf Kooperation, Timing und Balance ausgerichtet.' },
-  3: { title: 'Der Kreative', desc: 'Dein Fokus liegt auf Ausdruck und Präsenz. Du besitzt das Talent, Räume durch klare Kommunikation zu dominieren.' },
-  4: { title: 'Der Architekt', desc: 'Dein Muster baut auf Struktur, Stabilität und verlässliche Umsetzung.' },
-  5: { title: 'Der Freigeist', desc: 'Du gewinnst durch Anpassung, Bewegung und schnelle Kurswechsel.' },
-  6: { title: 'Der Träger', desc: 'Dein Profil steht für Verantwortung, Halt und langfristige Verlässlichkeit.' },
-  7: { title: 'Der Analytiker', desc: 'Du erkennst tiefe Muster und denkst in klaren Systemen.' },
-  8: { title: 'Der Macher', desc: 'Deine Stärke ist Wirkung in der Realität: führen, entscheiden, liefern.' },
-  9: { title: 'Der Weitblicker', desc: 'Du arbeitest mit großer Perspektive und starkem Sinn für Zusammenhänge.' },
-  11: { title: 'Der Wegweiser', desc: 'Du nimmst Signale früh wahr und setzt Impulse mit hoher Präzision.' },
-  22: { title: 'Der Baumeister', desc: 'Du kannst Visionen in belastbare Strukturen übersetzen.' },
-  33: { title: 'Der Mentor', desc: 'Du führst über Klarheit, Ruhe und starke Orientierung.' }
+  1: { title: 'Der Initiator', desc: 'Das Modell betont hier Eigeninitiative und klare Entscheidungen.' },
+  2: { title: 'Der Verbinder', desc: 'Das Modell rückt Kooperation, Timing und Balance in den Vordergrund.' },
+  3: { title: 'Der Kreative', desc: 'Das Modell verbindet diese Zahl oft mit Ausdruck, Präsenz und klarer Kommunikation.' },
+  4: { title: 'Der Architekt', desc: 'Das Modell zeigt einen starken Fokus auf Struktur, Stabilität und verlässliche Umsetzung.' },
+  5: { title: 'Der Freigeist', desc: 'Das Modell markiert hier häufig Anpassung, Bewegung und flexible Kurswechsel.' },
+  6: { title: 'Der Träger', desc: 'Das Modell ordnet diese Zahl oft Verantwortung, Halt und Verlässlichkeit zu.' },
+  7: { title: 'Der Analytiker', desc: 'Das Modell hebt Analyse, Mustererkennung und klares Denken hervor.' },
+  8: { title: 'Der Macher', desc: 'Das Modell betont Umsetzung, Entscheidungskraft und sichtbare Wirkung.' },
+  9: { title: 'Der Weitblicker', desc: 'Das Modell verbindet diese Zahl oft mit Perspektive und Sinn für Zusammenhänge.' },
+  11: { title: 'Der Wegweiser', desc: 'Das Modell liest hier häufig feine Wahrnehmung und präzise Impulse heraus.' },
+  22: { title: 'Der Baumeister', desc: 'Das Modell ordnet diese Zahl oft belastbaren Strukturen und großen Vorhaben zu.' },
+  33: { title: 'Der Mentor', desc: 'Das Modell betont Orientierung, Ruhe und tragende Präsenz.' }
 };
 
 const TERMINAL_MESSAGES = i18n.getArray('terminal.sequence');
@@ -45,6 +46,7 @@ export const landingRender = {
 
     this.bindForm();
     this.bindButtons();
+    this.injectLegalSurfaces();
     this.initScrollReveal();
   },
 
@@ -123,6 +125,23 @@ export const landingRender = {
         nav.navigateTo('dashboard');
       });
     }
+  },
+
+  injectLegalSurfaces() {
+    const basePath = getRepoRoot();
+    injectLegalBlock('landing-legal-mount', {
+      variant: 'data',
+      basePath,
+      includePolicyLinks: true,
+      includeReset: true,
+      redirectToHome: true
+    });
+    injectLegalBlock('reveal-legal-mount', {
+      variant: 'numerology',
+      basePath,
+      includePolicyLinks: true,
+      compactLinks: true
+    });
   },
 
   async startAnalysis(name, birthDate) {
