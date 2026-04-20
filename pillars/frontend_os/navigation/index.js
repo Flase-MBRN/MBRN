@@ -92,13 +92,16 @@ function renderGlobalLegalRail() {
 }
 
 export function getCurrentRoute(pathname = window.location.pathname) {
+  // GitHub Pages: /MBRN/ Präfix entfernen für Route-Erkennung
+  const cleanPath = pathname.replace(/^\/MBRN\//, '/');
+  
   const systemMatch = SYSTEM_SURFACES.find((surface) => {
-    if (surface.id === 'home') return pathname === '/' || pathname.endsWith('/index.html');
-    return pathname.includes(`/${surface.route.replace(/index\.html$/, '')}`);
+    if (surface.id === 'home') return cleanPath === '/' || cleanPath.endsWith('/index.html');
+    return cleanPath.includes(`/${surface.route.replace(/index\.html$/, '')}`);
   });
   if (systemMatch) return systemMatch.id;
 
-  const appMatch = APP_MANIFEST.find((app) => pathname.includes(`/${app.route.replace(/index\.html$/, '')}`));
+  const appMatch = APP_MANIFEST.find((app) => cleanPath.includes(`/${app.route.replace(/index\.html$/, '')}`));
   return appMatch?.id || 'home';
 }
 
