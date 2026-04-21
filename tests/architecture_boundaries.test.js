@@ -37,6 +37,10 @@ function isOracleApplicationReadModel(filePath) {
   return normalized.includes('shared/application/read_models/') && normalized.includes('oracle');
 }
 
+function isFrontendOsAppSurface(filePath) {
+  return normalize(filePath).includes('pillars/frontend_os/app_surfaces/');
+}
+
 describe('architecture boundaries', () => {
   test('shared/core does not import bridges, commerce or frontend_os', () => {
     const files = walkJsFiles(path.join(REPO_ROOT, 'shared', 'core'))
@@ -68,11 +72,20 @@ describe('architecture boundaries', () => {
     const files = walkJsFiles(path.join(REPO_ROOT, 'pillars', 'frontend_os'));
 
     files.forEach((file) => {
+      const normalized = normalize(file);
       const imports = getImportMatches(file);
       imports.forEach((specifier) => {
         expect(specifier).not.toMatch(/bridges|commerce|pillars\/oracle|pillars\/monetization/);
+        if (specifier.includes('shared/core/i18n.js')) {
+          expect(isFrontendOsAppSurface(normalized)).toBe(true);
+          return;
+        }
         if (specifier.includes('shared/core/')) {
-          expect(specifier).toMatch(/shared\/core\/(registries|contracts)\//);
+          if (isFrontendOsAppSurface(normalized)) {
+            expect(specifier).toMatch(/shared\/core\/(registries|contracts|state|storage|logic)\//);
+          } else {
+            expect(specifier).toMatch(/shared\/core\/(registries|contracts)\//);
+          }
         }
       });
     });

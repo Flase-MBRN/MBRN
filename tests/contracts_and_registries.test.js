@@ -24,7 +24,7 @@ describe('registries and contracts', () => {
       expect.objectContaining({ status: 'seed' })
     );
     expect(PILLAR_REGISTRY.find((pillar) => pillar.id === 'frontend_os')).toEqual(
-      expect.objectContaining({ capabilities: ['shell', 'navigation', 'dashboard', 'cards', 'ui_states'] })
+      expect.objectContaining({ capabilities: ['shell', 'navigation', 'dashboard', 'cards', 'ui_states', 'app_surfaces'] })
     );
     PILLAR_REGISTRY.forEach((pillar) => {
       expect(pillar).toEqual(expect.objectContaining({

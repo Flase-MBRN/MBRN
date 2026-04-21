@@ -24,3 +24,11 @@ Dieses Pillar ist die fachliche JS-Runtime- und Consumption-Wahrheit fuer Oracle
 - UI liest nur ueber `shared/application/read_models/*`
 - UI-relevante Oracle-Outputs muessen am `oracleSnapshotContract` haengen
 - `scripts/oracle/*` produziert operative Artefakte, ist aber keine JS-Consumption-Quelle
+
+## Marker-Wahrheit
+
+Oracle-Unterzonen mit aktivem Code oder aktivem Adapter-Manifest werden nicht mehr als `NOT_IMPLEMENTED` markiert.
+
+- aktive JS-Zonen tragen `README.md`
+- `processing/` ist bewusst als `ADAPTER MANIFEST` dokumentiert
+- reservierte Oracle-Zonen ohne Runtime-Substanz waeren separat zu markieren, existieren im aktuellen Pillar aber nicht

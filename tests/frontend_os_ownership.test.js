@@ -5,26 +5,28 @@ import { describe, expect, test } from '@jest/globals';
 const repoRoot = process.cwd();
 const JS_EXTENSIONS = new Set(['.js', '.mjs']);
 const ALLOWED_NAV_IMPORTERS = new Set([
-  'apps/chronos/render.js',
-  'apps/finance/render.js',
-  'apps/numerology/render.js',
-  'dashboard/render_dashboard.js',
+  'pillars/frontend_os/ui_states/auth_controller.js',
+  'pillars/frontend_os/app_surfaces/chronos_surface.js',
+  'pillars/frontend_os/app_surfaces/dashboard_surface.js',
+  'pillars/frontend_os/app_surfaces/finance_surface.js',
+  'pillars/frontend_os/app_surfaces/numerology_surface.js',
   'pillars/frontend_os/shell/render_landing.js',
   'pillars/frontend_os/shell/render_legal_page.js'
 ]);
 const ALLOWED_AUTH_IMPORTERS = new Set([
-  'apps/chronos/render.js',
-  'apps/finance/render.js',
-  'apps/numerology/render.js',
-  'dashboard/render_dashboard.js',
+  'pillars/frontend_os/app_surfaces/chronos_surface.js',
+  'pillars/frontend_os/app_surfaces/dashboard_surface.js',
+  'pillars/frontend_os/app_surfaces/finance_surface.js',
+  'pillars/frontend_os/app_surfaces/numerology_surface.js',
   'pillars/frontend_os/shell/render_landing.js',
   'pillars/frontend_os/shell/render_legal_page.js'
 ]);
 const ALLOWED_LEGAL_IMPORTERS = new Set([
-  'apps/chronos/render.js',
-  'apps/finance/render.js',
-  'apps/numerology/render.js',
-  'dashboard/render_dashboard.js',
+  'pillars/frontend_os/navigation/index.js',
+  'pillars/frontend_os/app_surfaces/chronos_surface.js',
+  'pillars/frontend_os/app_surfaces/dashboard_surface.js',
+  'pillars/frontend_os/app_surfaces/finance_surface.js',
+  'pillars/frontend_os/app_surfaces/numerology_surface.js',
   'pillars/frontend_os/shell/render_landing.js'
 ]);
 
@@ -62,30 +64,30 @@ function findImporters(pattern) {
 describe('frontend_os ownership', () => {
   test('surface composition imports only come from known runtime entrypoints', () => {
     expect(findImporters('renderNavigation')).toEqual([
-      'apps/chronos/render.js',
-      'apps/finance/render.js',
-      'apps/numerology/render.js',
-      'dashboard/render_dashboard.js',
+      'pillars/frontend_os/app_surfaces/chronos_surface.js',
+      'pillars/frontend_os/app_surfaces/dashboard_surface.js',
+      'pillars/frontend_os/app_surfaces/finance_surface.js',
+      'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/navigation/index.js',
       'pillars/frontend_os/shell/render_landing.js',
       'pillars/frontend_os/shell/render_legal_page.js'
     ]);
 
     expect(findImporters('renderAuth')).toEqual([
-      'apps/chronos/render.js',
-      'apps/finance/render.js',
-      'apps/numerology/render.js',
-      'dashboard/render_dashboard.js',
+      'pillars/frontend_os/app_surfaces/chronos_surface.js',
+      'pillars/frontend_os/app_surfaces/dashboard_surface.js',
+      'pillars/frontend_os/app_surfaces/finance_surface.js',
+      'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/shell/render_landing.js',
       'pillars/frontend_os/shell/render_legal_page.js',
       'pillars/frontend_os/ui_states/auth_controller.js'
     ]);
 
     expect(findImporters('injectLegalBlock')).toEqual([
-      'apps/chronos/render.js',
-      'apps/finance/render.js',
-      'apps/numerology/render.js',
-      'dashboard/render_dashboard.js',
+      'pillars/frontend_os/app_surfaces/chronos_surface.js',
+      'pillars/frontend_os/app_surfaces/dashboard_surface.js',
+      'pillars/frontend_os/app_surfaces/finance_surface.js',
+      'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/shell/legal_blocks.js',
       'pillars/frontend_os/shell/render_landing.js'
     ]);
@@ -94,9 +96,29 @@ describe('frontend_os ownership', () => {
   test('only approved runtime entrypoints import frontend_os composition helpers', () => {
     expect(findImporters("from '../../pillars/frontend_os/navigation/index.js'").every((file) => ALLOWED_NAV_IMPORTERS.has(file))).toBe(true);
     expect(findImporters("from '../pillars/frontend_os/navigation/index.js'").every((file) => ALLOWED_NAV_IMPORTERS.has(file))).toBe(true);
+    expect(findImporters("from '../navigation/index.js'").every((file) => ALLOWED_NAV_IMPORTERS.has(file))).toBe(true);
     expect(findImporters("from '../../pillars/frontend_os/ui_states/auth_controller.js'").every((file) => ALLOWED_AUTH_IMPORTERS.has(file))).toBe(true);
     expect(findImporters("from '../pillars/frontend_os/ui_states/auth_controller.js'").every((file) => ALLOWED_AUTH_IMPORTERS.has(file))).toBe(true);
+    expect(findImporters("from '../ui_states/auth_controller.js'").every((file) => ALLOWED_AUTH_IMPORTERS.has(file))).toBe(true);
     expect(findImporters("from '../../pillars/frontend_os/shell/legal_blocks.js'").every((file) => ALLOWED_LEGAL_IMPORTERS.has(file))).toBe(true);
     expect(findImporters("from '../pillars/frontend_os/shell/legal_blocks.js'").every((file) => ALLOWED_LEGAL_IMPORTERS.has(file))).toBe(true);
+    expect(findImporters("from '../shell/legal_blocks.js'").every((file) => ALLOWED_LEGAL_IMPORTERS.has(file))).toBe(true);
+  });
+
+  test('public route entrypoints are thin bootstraps, not composition owners', () => {
+    [
+      'apps/chronos/render.js',
+      'apps/finance/render.js',
+      'apps/numerology/render.js',
+      'dashboard/render_dashboard.js'
+    ].forEach((relativePath) => {
+      const filePath = path.join(repoRoot, relativePath);
+      const source = fs.readFileSync(filePath, 'utf8').trim();
+
+      expect(source).not.toContain('renderNavigation');
+      expect(source).not.toContain('renderAuth');
+      expect(source).not.toContain('injectLegalBlock');
+      expect(source).toMatch(/^export \{ .+ \} from /);
+    });
   });
 });

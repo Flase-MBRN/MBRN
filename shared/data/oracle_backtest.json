@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-21T00:01:06.491633+00:00",
+  "updated_at": "2026-04-21T01:01:07.577450+00:00",
   "history": [
     {
       "generated_at": "2026-04-19T18:23:09.744083+00:00",
@@ -1104,20 +1104,20 @@
       "confidence": 0.62,
       "sentiment_prediction": 63.2,
       "oracle_version": "1.1.0",
-      "evaluated_at": null,
-      "was_correct": null,
-      "actual_sentiment": null,
-      "previous_sentiment": null,
-      "sentiment_delta": null,
-      "actual_trend": null
+      "evaluated_at": "2026-04-21T01:01:07.576899+00:00",
+      "was_correct": false,
+      "actual_sentiment": 62.0,
+      "previous_sentiment": 85.0,
+      "sentiment_delta": -23.0,
+      "actual_trend": "falling"
     },
     {
-      "generated_at": "2026-04-21T00:01:06.469563+00:00",
+      "generated_at": "2026-04-21T01:01:07.361887+00:00",
       "target_date": "22.04.2026",
       "recommendation": "Hold",
-      "alignment_score": 46.73,
-      "confidence": 0.47,
-      "sentiment_prediction": 39.91,
+      "alignment_score": 48.03,
+      "confidence": 0.48,
+      "sentiment_prediction": 37.21,
       "oracle_version": "1.1.0",
       "evaluated_at": null,
       "was_correct": null,
@@ -1128,25 +1128,25 @@
     }
   ],
   "summary": {
-    "accuracy_pct": 97.26,
+    "accuracy_pct": 95.95,
     "total_predictions": 75,
-    "evaluated_predictions": 73,
+    "evaluated_predictions": 74,
     "correct_predictions": 71,
-    "pending_predictions": 2,
+    "pending_predictions": 1,
     "latest_result": {
-      "generated_at": "2026-04-19T18:36:10.399752+00:00",
-      "target_date": "20.04.2026",
+      "generated_at": "2026-04-20T23:01:05.618034+00:00",
+      "target_date": "21.04.2026",
       "recommendation": "Hold",
-      "alignment_score": 61.02,
-      "confidence": 0.61,
-      "sentiment_prediction": 53.67,
+      "alignment_score": 61.96,
+      "confidence": 0.62,
+      "sentiment_prediction": 63.2,
       "oracle_version": "1.1.0",
-      "evaluated_at": "2026-04-20T12:31:26.223929+00:00",
+      "evaluated_at": "2026-04-21T01:01:07.576899+00:00",
       "was_correct": false,
-      "actual_sentiment": 85.0,
-      "previous_sentiment": 60.0,
-      "sentiment_delta": 25.0,
-      "actual_trend": "rising"
+      "actual_sentiment": 62.0,
+      "previous_sentiment": 85.0,
+      "sentiment_delta": -23.0,
+      "actual_trend": "falling"
     }
   }
 }

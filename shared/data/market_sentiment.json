@@ -1,14 +1,14 @@
 {
-  "timestamp_utc": "2026-04-21T00:08:01.575085+00:00",
+  "timestamp_utc": "2026-04-21T01:08:40.143722+00:00",
   "source": "market_sentiment_pipeline",
   "sentiment_score": 62,
   "sentiment_label": "Greed",
   "confidence": 0.8,
-  "analysis": "Equities are mixed, with IWM leading gains and DIA lagging behind, while VIX spikes to 18.87. Crypto momentum is strong, with BTC-USD up 2.67%.",
+  "analysis": "Equities are mixed, with IWM showing strength, while VIX is rising; crypto prices are increasing.",
   "recommendation": "hold",
   "crypto_bias": "bullish",
   "news_bias": "neutral",
-  "news_impact": 0,
+  "news_impact": 2,
   "key_theme": "macroeconomic uncertainty",
   "market_data": [
     {
@@ -22,7 +22,7 @@
       "low": 706.14,
       "market_cap": 650450436096,
       "pe_ratio": 28.09885,
-      "timestamp": "2026-04-21T00:07:24.402241+00:00",
+      "timestamp": "2026-04-21T01:08:03.359693+00:00",
       "source": "yfinance"
     },
     {
@@ -36,7 +36,7 @@
       "low": 642.52,
       "market_cap": 254253137920,
       "pe_ratio": 34.170197,
-      "timestamp": "2026-04-21T00:07:24.865085+00:00",
+      "timestamp": "2026-04-21T01:08:03.654813+00:00",
       "source": "yfinance"
     },
     {
@@ -50,7 +50,7 @@
       "low": 492.31,
       "market_cap": 40160800768,
       "pe_ratio": 24.229465,
-      "timestamp": "2026-04-21T00:07:25.337786+00:00",
+      "timestamp": "2026-04-21T01:08:03.954076+00:00",
       "source": "yfinance"
     },
     {
@@ -64,7 +64,7 @@
       "low": 274.53,
       "market_cap": 77949214720,
       "pe_ratio": 20.078989,
-      "timestamp": "2026-04-21T00:07:25.797004+00:00",
+      "timestamp": "2026-04-21T01:08:04.247022+00:00",
       "source": "yfinance"
     },
     {
@@ -78,39 +78,53 @@
       "low": 18.77,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-21T00:07:26.192309+00:00",
+      "timestamp": "2026-04-21T01:08:04.503806+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "BTC-USD",
       "asset_class": "crypto",
-      "price": 75826.69,
-      "change": 1970.34,
-      "change_percent": 2.67,
-      "volume": 39286566912,
-      "high": 76469.56,
-      "low": 73820.11,
-      "market_cap": 1518635319296,
+      "price": 76218.92,
+      "change": 2362.57,
+      "change_percent": 3.2,
+      "volume": 38728998912,
+      "high": 76103.85,
+      "low": 75735.26,
+      "market_cap": 1523498221568,
       "pe_ratio": null,
-      "timestamp": "2026-04-21T00:07:26.585218+00:00",
+      "timestamp": "2026-04-21T01:08:04.759905+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "ETH-USD",
       "asset_class": "crypto",
-      "price": 2314.7,
-      "change": 49.78,
-      "change_percent": 2.2,
-      "volume": 18836101120,
-      "high": 2342.29,
-      "low": 2263.49,
-      "market_cap": 279496556544,
+      "price": 2323.6,
+      "change": 58.68,
+      "change_percent": 2.59,
+      "volume": 18620340224,
+      "high": 2322.19,
+      "low": 2312.97,
+      "market_cap": 280167809024,
       "pe_ratio": null,
-      "timestamp": "2026-04-21T00:07:26.990985+00:00",
+      "timestamp": "2026-04-21T01:08:05.018758+00:00",
       "source": "yfinance"
     }
   ],
   "news_feed": [
+    {
+      "source": "Google News Business",
+      "title": "Why this sleepy Swiss town has become a ‘bolt-hole’ for the Gulf elite - The Week",
+      "summary": "Why this sleepy Swiss town has become a ‘bolt-hole’ for the Gulf elite The Week",
+      "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOMDgtdUFBY09kUm9ENHMxY0FrbWNCWm5YQ0I2OHlrMGE5TW1iUVBvSkpoa0FRc2ZEX0RELWhrUm5tTGw0cml4bndCMWZ1U1NmYzdXTUtJYlAwa2g5Rll6U2xVY1d5UklIOUkwZmV3NlFSdmtYWmhBOVNTTFRKVGI0eHI3Ul9FZw?oc=5",
+      "published_at": "2026-04-21T00:25:08+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Bessent says Korea-U.S. critical minerals framework finalized - Korea JoongAng Daily",
+      "summary": "Bessent says Korea-U.S. critical minerals framework finalized Korea JoongAng Daily",
+      "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOR0FiVWViOHNoYmNUU1NwaDhnd1JMLVB2dEFkV05rMmFJcTFQXzdtY1dpVExuSXJUUmQ3M0Z6YXpMMVJ1dTNtcWVDUS1ESlRRR0tkVmZ6dno3VDFiUnZTRTdaamdMbFBrdWZ0bXliUS1aMW5NVkpjUld2amQtODl3a2s4UXBFVGdBako1N19mZjlIcFo4V0wweU5fT01lazNDaEpxZktpVURqXy1QdmhYV0lKeDYxQW10SWROUDBZS3JoR2VrTU1MYmcwcVZMRGw1dmc?oc=5",
+      "published_at": "2026-04-21T00:18:32+00:00"
+    },
     {
       "source": "Google News Business",
       "title": "Grand Forks School Board Finance Committee hears update on scoreboard funding - Grand Forks Herald",
@@ -134,31 +148,17 @@
     },
     {
       "source": "Google News Business",
-      "title": "TikTok content creators to benefit from new feature to help grow their businesses - Yahoo Finance UK",
-      "summary": "TikTok content creators to benefit from new feature to help grow their businesses Yahoo Finance UK",
-      "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQdmIwNkhOQURFbUM5QXB1b3BWQ1M1NVVyS3Nic1RlcE0yMkNZM01WUUVZaERVbG56ZHZESVM2Y0lScUhMOVdSWlNvNUx6X280elpJUmNpRTB2MUhudmdjTFh2STE5aXdjMkJ0UlFERXBRNm1IaUxRLWt4c2lnZHNobEttRGx4eWpGWVFFRl9PZkVHQQ?oc=5",
-      "published_at": "2026-04-20T23:01:00+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Fidelity spotlights the IRA quietly working for small firms - thestreet.com",
-      "summary": "Fidelity spotlights the IRA quietly working for small firms thestreet.com",
-      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNVy1yS3VLUDhBNWNabk95dmZvdkFXXzlsTU4yZjZwYUgwUjBBRHVHRUpPNGNkSUJIX1FDZk1ybTNpeDZOM2ZlY0loejk3Q3VsYVRpSGwzR01hcXN1N3BkWjNKajVpNVppSVp0QWdWbmRQNm1Fcl9Ob0J2SFpkNkc0Y1gtZmxmWWFKZ191b2dJWnZLQ0xvS2FySElUUi1LTGc1NlppZg?oc=5",
-      "published_at": "2026-04-20T22:37:00+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Rio Tinto releases first quarter 2026 production results - Yahoo Finance UK",
-      "summary": "Rio Tinto releases first quarter 2026 production results Yahoo Finance UK",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPbVNETmZhME0xaVVNQkVRZk8tZWl1TEVXN05peGtIM2paUXVtaGx2YU1QemdYaWladmswcl9NVVZZVHRBSmlqc2J6c0YtQ0hkaGdTVnNYUEtkTEhBbGRVaUk4UFNoS0R3WlNXUzFOcGxNS0RsdmthSF96VDlKOUJibkctWkFBS2xG?oc=5",
-      "published_at": "2026-04-20T22:24:00+00:00"
-    },
-    {
-      "source": "Google News Business",
       "title": "Rich Products Launches First Responsible Business Report, Reflecting a Long-standing, Values-Driven Approach to Responsible Growth - Yahoo Finance",
       "summary": "Rich Products Launches First Responsible Business Report, Reflecting a Long-standing, Values-Driven Approach to Responsible Growth Yahoo Finance",
       "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOdHRWcy12QjBHTG5Nb3FtVjZZalc4ZzcxQm5nY2tiT282cndaLUJMR0F0VHJFZ3ZTVTRCN0E1WnZPYV84ZW5OTWRfTFFvYXlmYXlnTk9aTWptRGo4RGk5UnBPSHhSZk95T3g1YWV4M1N5ODhQci1uMGtLTU1MUkU4UEF5WWM2R3hicW1kYS1fME9lOWtqd0J1RmNhQ19EQzhzV01GeHVjY0tuLUdSM0E?oc=5",
       "published_at": "2026-04-20T22:04:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "$166 billion in tariff refunds just became available, but small businesses may already be at a disadvantage - Yahoo Finance UK",
+      "summary": "$166 billion in tariff refunds just became available, but small businesses may already be at a disadvantage Yahoo Finance UK",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNWlBLQ0dNcWlvMTc5VklEM1JTUkQzcFpTeExudnlsRERYS0o1VWhaNjEwSnVIcFdvenJ0dTJXRjBjdW9hcWt1RG5lUl9kaElYOTJCcjdmWUM5ZTNIQUs5Tk5DRVlZV0tMTU5QTGVLaGVBTXRVVVc3S2lJUUw4WURGZDRxTmpLeTA?oc=5",
+      "published_at": "2026-04-20T21:29:02+00:00"
     },
     {
       "source": "Google News Business",
@@ -168,30 +168,30 @@
       "published_at": "2026-04-20T21:00:00+00:00"
     },
     {
+      "source": "Google News Markets",
+      "title": "Why the Stock Market Refuses to Give Up Its Gains - Barron's",
+      "summary": "Why the Stock Market Refuses to Give Up Its Gains Barron's",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxON1NzSXBRX1gwUHBZTEhPWkhBaWtONkQ1YVkxd2NEeDZkZWhGb2ZYLTgzR3JRX0xyNjVDa0ZybUdVYzI2Y2ZRb0w0T0FEMXhrczhIaE9abGN3eHNTUkgtdjF5SktIdldPcDFQendKR0oyVXRFaTFiYmVILUZuS1hxR000bUlqczVG?oc=5",
+      "published_at": "2026-04-20T20:20:00+00:00"
+    },
+    {
       "source": "Google News Business",
       "title": "Tariff refunds are coming for US businesses: 3 things to know - Yahoo Finance",
       "summary": "Tariff refunds are coming for US businesses: 3 things to know Yahoo Finance",
       "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOT2RSMldGNWdjWTVPREIzb0ExbG1yeGdzODBQUTZDbmcxQ1lDbE0wSHB2U3FFam53eElxUkh2QTNNdXRnZndpNHctNjN1NWtOZzVELURzcWh2MGRYREZ1Y0ktX2U1c05NQkQtamQ4eFZwSUtmODZIal9neF9Yc3pYd19EVVR2cXhRelpfT1lvLThYYXQ2R25rUDd0Qld3LWk0Qzd0Q0U5SHdPVjA?oc=5",
       "published_at": "2026-04-20T20:09:34+00:00"
-    },
-    {
-      "source": "CNBC Finance",
-      "title": "AST SpaceMobile shares drop after its satellite is placed in wrong orbit by Bezos' Blue Origin",
-      "summary": "Blue Origin acknowledged the satellite was placed in the wrong orbit, but has not commented since it was deemed lost.",
-      "link": "https://www.cnbc.com/2026/04/20/ast-falls-after-bezos-blue-origin-places-satellite-in-wrong-orbit.html",
-      "published_at": "2026-04-20T20:01:02+00:00"
     }
   ],
   "mbrn_enriched": {
     "sentiment_score": 62,
     "confidence": 0.8,
-    "analysis": "Equities are mixed, with IWM leading gains and DIA lagging behind, while VIX spikes to 18.87. Crypto momentum is strong, with BTC-USD up 2.67%.",
+    "analysis": "Equities are mixed, with IWM showing strength, while VIX is rising; crypto prices are increasing.",
     "recommendation": "hold",
     "crypto_bias": "bullish",
     "news_bias": "neutral",
-    "news_impact": 0,
+    "news_impact": 2,
     "key_theme": "macroeconomic uncertainty",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-21T00:08:01.574863+00:00"
+    "processed_at": "2026-04-21T01:08:40.143522+00:00"
   }
 }

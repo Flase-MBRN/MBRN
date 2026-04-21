@@ -14,6 +14,12 @@ Reale Module:
 - `assets/`
 - `agent_adapters/`
 
+Marker-Wahrheit:
+
+- aktive Seed-Module tragen `README.md`
+- aktive Seed-Module tragen kein `NOT_IMPLEMENTED.md`
+- `seed` bedeutet hier: real und konsumiert, aber bewusst noch nicht `active`
+
 Aktiv konsumiert:
 
 - `scripts/devlab/generate_post_v3_roadmap.mjs`
@@ -53,6 +59,13 @@ Nicht erlaubt:
 - fachfremde Businesslogik
 
 Die harte technische Scope-Grenze liegt in `scope_manifest.js`.
+
+## Dokumentierte Seed-Realitaet
+
+- `blueprints` und `content` sind reale Seed-Module fuer den Roadmap-Workflow
+- `modules`, `assets` und `agent_adapters` sind reale Seed-Module fuer den Preview-Bundle-Workflow
+- die Subzonen sind aktiv, aber absichtlich leichtgewichtig
+- der Meta Generator ist damit kein leerer Platzhalter mehr, aber weiterhin kein Produktions-Pillar
 
 ## Noch nicht fertig
 

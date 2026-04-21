@@ -11,11 +11,7 @@ export const MBRN_CONFIG = {
 
   accessLevels: {
     FREE: 0,
-    SPARK: 1,
-    BUILDER: 2,
-    OPERATOR: 3,
-    MEMBER: 4,
-    PAID_PRO: 10,
+    PRO: 10,
     BUSINESS: 20
   },
   tiers: { spark: 7, builder: 30, operator: 90, member: 365 },

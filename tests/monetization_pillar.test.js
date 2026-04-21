@@ -1,4 +1,6 @@
 import { jest } from '@jest/globals';
+import fs from 'node:fs';
+import path from 'node:path';
 import { resolvePrice } from '../commerce/provider_maps/index.js';
 import { getApiProductCatalog, getApiProductById } from '../pillars/monetization/api_products/index.js';
 import { buildCheckoutSessionRequest, resolveBillingState } from '../pillars/monetization/billing/index.js';
@@ -6,6 +8,8 @@ import { resolveEntitlements } from '../pillars/monetization/entitlements/index.
 import { resolveMonetizationFlow } from '../pillars/monetization/index.js';
 import { getPlanCatalog, resolvePlanByAccessLevel } from '../pillars/monetization/plans/index.js';
 import { getPricingByProductId } from '../pillars/monetization/pricing/index.js';
+
+const REPO_ROOT = process.cwd();
 
 async function loadGateWithCommercialMode(commercialActive) {
   jest.resetModules();
@@ -38,7 +42,7 @@ async function loadMonetizationFlowWithCommercialMode(commercialActive) {
       },
       accessLevels: {
         FREE: 0,
-        PAID_PRO: 10,
+        PRO: 10,
         BUSINESS: 20
       }
     }
@@ -199,5 +203,13 @@ describe('monetization pillar modules', () => {
     }));
     expect(resolvePrice('premium_monthly', 'stripe')).toBeNull();
     expect(resolvePrice('oracle_credits_10', 'stripe')).toBeNull();
+  });
+
+  test('active monetization zones use synchronized README markers instead of NOT_IMPLEMENTED', () => {
+    ['api_products', 'billing', 'entitlements', 'plans', 'pricing'].forEach((zoneId) => {
+      const zoneDir = path.join(REPO_ROOT, 'pillars', 'monetization', zoneId);
+      expect(fs.existsSync(path.join(zoneDir, 'README.md'))).toBe(true);
+      expect(fs.existsSync(path.join(zoneDir, 'NOT_IMPLEMENTED.md'))).toBe(false);
+    });
   });
 });

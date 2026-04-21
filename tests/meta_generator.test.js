@@ -1,11 +1,15 @@
 import { describe, expect, test } from '@jest/globals';
 import { execFileSync } from 'child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 import { buildAgentAdapterRequest } from '../pillars/meta_generator/agent_adapters/index.js';
 import { buildAssetSpec } from '../pillars/meta_generator/assets/index.js';
 import { buildPillarCompletionBlueprint, getPillarStageSequence } from '../pillars/meta_generator/blueprints/index.js';
 import { buildPostV3RoadmapMarkdown } from '../pillars/meta_generator/content/index.js';
 import { buildModuleScaffold } from '../pillars/meta_generator/modules/index.js';
 import { assertMetaGeneratorSubsystem, META_GENERATOR_SCOPE } from '../pillars/meta_generator/scope_manifest.js';
+
+const REPO_ROOT = process.cwd();
 
 describe('meta generator seed modules', () => {
   test('blueprints and content produce real internal workflow artifacts', () => {
@@ -91,5 +95,13 @@ describe('meta generator seed modules', () => {
     }));
     expect(assertMetaGeneratorSubsystem('content')).toBe('content');
     expect(() => assertMetaGeneratorSubsystem('prompt_dump')).toThrow(/outside the seed scope/);
+  });
+
+  test('active meta generator seed zones use synchronized README markers instead of NOT_IMPLEMENTED', () => {
+    for (const subsystemId of META_GENERATOR_SCOPE.allowedSubsystems) {
+      const subsystemPath = path.join(REPO_ROOT, 'pillars', 'meta_generator', subsystemId);
+      expect(fs.existsSync(path.join(subsystemPath, 'README.md'))).toBe(true);
+      expect(fs.existsSync(path.join(subsystemPath, 'NOT_IMPLEMENTED.md'))).toBe(false);
+    }
   });
 });

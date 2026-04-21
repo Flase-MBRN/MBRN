@@ -1,4 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
+import fs from 'node:fs';
+import path from 'node:path';
 import { getOracleArtifactById, ORACLE_ARTIFACTS } from '../pillars/oracle/artifacts.js';
 import { summarizeOracleBacktest } from '../pillars/oracle/backtesting/index.js';
 import { getOracleCapabilityById, ORACLE_CAPABILITY_MAP } from '../pillars/oracle/capability_map.js';
@@ -6,6 +8,8 @@ import { buildOracleFusion } from '../pillars/oracle/fusion/index.js';
 import { getOracleProcessingManifest, listOracleProcessingJobs } from '../pillars/oracle/processing/index.js';
 import { buildOracleSignals } from '../pillars/oracle/signals/index.js';
 import { createOracleDashboardSnapshot } from '../pillars/oracle/snapshots/index.js';
+
+const REPO_ROOT = process.cwd();
 
 describe('oracle pillar modules', () => {
   test('signals and fusion produce stable oracle-facing summaries', () => {
@@ -131,5 +135,16 @@ describe('oracle pillar modules', () => {
       path: '../../shared/data/oracle_backtest.json',
       producer: 'scripts/oracle/backfill_history.py'
     }));
+  });
+
+  test('active oracle zones use synchronized README markers instead of NOT_IMPLEMENTED', () => {
+    ORACLE_CAPABILITY_MAP.forEach((capability) => {
+      const zoneDir = path.join(REPO_ROOT, 'pillars', 'oracle', capability.id);
+      const readmePath = path.join(zoneDir, 'README.md');
+      const notImplementedPath = path.join(zoneDir, 'NOT_IMPLEMENTED.md');
+
+      expect(fs.existsSync(readmePath)).toBe(true);
+      expect(fs.existsSync(notImplementedPath)).toBe(false);
+    });
   });
 });

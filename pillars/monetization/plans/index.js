@@ -1,10 +1,10 @@
 import { MBRN_CONFIG } from '../../../shared/core/config/index.js';
 
-const ACCESS_LEVELS = MBRN_CONFIG.accessLevels || {
-  FREE: 0,
-  PAID_PRO: 10,
-  BUSINESS: 20
-};
+const ACCESS_LEVELS = Object.freeze({
+  FREE: MBRN_CONFIG.accessLevels?.FREE ?? 0,
+  PRO: MBRN_CONFIG.accessLevels?.PRO ?? 10,
+  BUSINESS: MBRN_CONFIG.accessLevels?.BUSINESS ?? 20
+});
 
 export const PLAN_CATALOG = Object.freeze([
   {
@@ -18,7 +18,7 @@ export const PLAN_CATALOG = Object.freeze([
   {
     id: 'pro',
     label: 'Pro',
-    accessLevel: ACCESS_LEVELS.PAID_PRO,
+    accessLevel: ACCESS_LEVELS.PRO,
     productIds: ['artifact'],
     monthlyPrice: 19,
     availability: 'checkout_ready'
