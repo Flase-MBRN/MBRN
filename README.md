@@ -1,5 +1,9 @@
 # MBRN Hub v3 Platform
 
+> Official current-state authority: [000_CANONICAL_STATE.json](file:///c:/DevLab/MBRN-HUB-V1/000_CANONICAL_STATE.json)  
+> This README is a human-readable mirror only.  
+> In any conflict between README text and the canonical state file, the canonical state file wins.
+
 MBRN Hub ist aktuell eine plattformsaubere v3-Basis rund um einen IO-freien Core, einen klaren Application-Layer und eine bewusst ehrliche Pillar-Struktur.
 
 Der aktuelle Stand ist nicht die volle Vision mit 11 Dimensions oder 4 voll ausgebauten Businesses. Der aktuelle Stand ist die bereinigte Plattform, auf der diese spaetere Vision sauber wachsen kann.
@@ -49,13 +53,19 @@ Produktiv aktiv:
 
 - `bridges/supabase/`
 - `bridges/python/`
+
+Intern vorbereitet / nicht oeffentlich freigeschaltet:
+
 - `commerce/stripe/`
 - `commerce/payment_adapters/`
 - `commerce/provider_maps/`
 
-Bewusst reserviert:
+Experimentell / intern aktiv:
 
 - `bridges/local_llm/`
+
+Bewusst reserviert:
+
 - `bridges/external_apis/`
 
 ### Pillars

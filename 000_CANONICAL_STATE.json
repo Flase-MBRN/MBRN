@@ -1,1 +1,162 @@
-Pflege nur den echten Stand, maschinenlesbar.
+{
+  "version": "v3.1",
+  "last_updated": "2026-04-21T00:00:00Z",
+  "authority": {
+    "rule": "This file is the single source of truth for current system state.",
+    "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
+  },
+  "policies": {
+    "state_labels": [
+      "active",
+      "provisional",
+      "experimental",
+      "internal",
+      "reserved",
+      "deprecated"
+    ],
+    "maturity_labels": [
+      "none",
+      "partial",
+      "implemented",
+      "stable"
+    ],
+    "existence_rule": "Anything not declared here does not officially exist."
+  },
+  "pillars": {
+    "frontend_os": {
+      "state": "active",
+      "maturity": "stable",
+      "since": "v3.0"
+    },
+    "oracle": {
+      "state": "active",
+      "maturity": "stable",
+      "since": "v3.0"
+    },
+    "monetization": {
+      "state": "active",
+      "maturity": "stable",
+      "since": "v3.0"
+    },
+    "meta_generator": {
+      "state": "active",
+      "maturity": "stable",
+      "since": "v3.0"
+    }
+  },
+  "bridges": {
+    "supabase": {
+      "state": "active",
+      "maturity": "implemented",
+      "since": "v3.0"
+    },
+    "python": {
+      "state": "active",
+      "maturity": "implemented",
+      "since": "v3.0"
+    },
+    "local_llm": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "since": "v3.1",
+      "note": "Local LLM infrastructure exists and is in use locally, but is not yet treated as fully supported public runtime architecture."
+    },
+    "external_apis": {
+      "state": "reserved",
+      "maturity": "none",
+      "since": "v3.0"
+    }
+  },
+  "dimensions": {
+    "growth": {
+      "state": "active",
+      "maturity": "stable",
+      "primary_app": "finance"
+    },
+    "pattern": {
+      "state": "active",
+      "maturity": "stable",
+      "primary_app": "numerology"
+    },
+    "time": {
+      "state": "active",
+      "maturity": "partial",
+      "primary_app": "chronos"
+    },
+    "signal": {
+      "state": "active",
+      "maturity": "partial",
+      "primary_app": null
+    }
+  },
+  "apps": {
+    "finance": {
+      "state": "active",
+      "maturity": "stable",
+      "dimension": "growth",
+      "ui": "complete"
+    },
+    "numerology": {
+      "state": "active",
+      "maturity": "stable",
+      "dimension": "pattern",
+      "ui": "complete"
+    },
+    "chronos": {
+      "state": "provisional",
+      "maturity": "partial",
+      "dimension": "time",
+      "ui": "partial"
+    },
+    "synergy": {
+      "state": "provisional",
+      "maturity": "partial",
+      "dimension": "pattern",
+      "ui": "minimal"
+    },
+    "tuning": {
+      "state": "reserved",
+      "maturity": "none",
+      "dimension": null,
+      "ui": "none"
+    }
+  },
+  "systems": {
+    "market_sentiment_pipeline": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/market_sentiment_fetcher.py",
+      "owner_domain": "oracle",
+      "note": "Implemented local pipeline with enrichment and data processing. Not yet declared as fully supported canonical runtime surface."
+    },
+    "sentinel_daemon": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/sentinel_daemon.py",
+      "owner_domain": "oracle",
+      "note": "Internal monitoring and automation daemon. Real and operative, but not part of the public product promise."
+    },
+    "templates_blueprint": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "templates/app_blueprint.json",
+      "owner_domain": "meta_generator",
+      "note": "Blueprint asset exists and is used internally, but is not yet treated as a fully stabilized generator contract."
+    }
+  },
+  "paths": {
+    "pillar_root": "pillars/",
+    "bridge_root": "bridges/",
+    "dimension_root": "dimensions/",
+    "app_root": "apps/",
+    "pipeline_root": "scripts/pipelines/",
+    "templates_root": "templates/",
+    "docs_root": "docs/"
+  },
+  "documentation_scope": {
+    "readme_role": "human-readable mirror",
+    "architecture_role": "human-readable architecture explanation",
+    "vision_role": "future-state direction only",
+    "agent_rule_role": "behavioral enforcement for analysis and reporting"
+  }
+}

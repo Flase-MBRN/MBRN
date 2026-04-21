@@ -1,15 +1,15 @@
 {
-  "timestamp_utc": "2026-04-21T11:07:14.913034+00:00",
+  "timestamp_utc": "2026-04-21T12:07:53.257713+00:00",
   "source": "market_sentiment_pipeline",
   "sentiment_score": 60,
   "sentiment_label": "Neutral",
-  "confidence": 0.7,
-  "analysis": "Mixed market sentiment with equities slightly down and VIX low, but crypto prices rising",
+  "confidence": 0.8,
+  "analysis": "Equities are mixed, VIX is low, and crypto is bullish, with news headlines being neutral.",
   "recommendation": "hold",
   "crypto_bias": "bullish",
   "news_bias": "neutral",
-  "news_impact": 10,
-  "key_theme": "economic growth",
+  "news_impact": 5,
+  "key_theme": "market stability",
   "market_data": [
     {
       "ticker": "SPY",
@@ -22,7 +22,7 @@
       "low": 706.14,
       "market_cap": 650450436096,
       "pe_ratio": 28.09885,
-      "timestamp": "2026-04-21T11:06:38.801705+00:00",
+      "timestamp": "2026-04-21T12:07:16.535425+00:00",
       "source": "yfinance"
     },
     {
@@ -36,7 +36,7 @@
       "low": 642.52,
       "market_cap": 254253137920,
       "pe_ratio": 34.170197,
-      "timestamp": "2026-04-21T11:06:39.092338+00:00",
+      "timestamp": "2026-04-21T12:07:16.845571+00:00",
       "source": "yfinance"
     },
     {
@@ -50,7 +50,7 @@
       "low": 492.31,
       "market_cap": 40160800768,
       "pe_ratio": 24.229465,
-      "timestamp": "2026-04-21T11:06:39.401352+00:00",
+      "timestamp": "2026-04-21T12:07:17.191901+00:00",
       "source": "yfinance"
     },
     {
@@ -64,134 +64,134 @@
       "low": 274.53,
       "market_cap": 77949214720,
       "pe_ratio": 20.078989,
-      "timestamp": "2026-04-21T11:06:39.858688+00:00",
+      "timestamp": "2026-04-21T12:07:17.511311+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "^VIX",
       "asset_class": "equity",
-      "price": 18.85,
-      "change": -0.02,
-      "change_percent": -0.11,
+      "price": 18.81,
+      "change": -0.06,
+      "change_percent": -0.32,
       "volume": 0,
       "high": 19.19,
-      "low": 18.85,
+      "low": 18.76,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-21T11:06:40.255399+00:00",
+      "timestamp": "2026-04-21T12:07:17.801402+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "BTC-USD",
       "asset_class": "crypto",
-      "price": 76722.42,
-      "change": 849.9,
-      "change_percent": 1.12,
-      "volume": 37955264512,
+      "price": 76440.26,
+      "change": 567.73,
+      "change_percent": 0.75,
+      "volume": 38448885760,
       "high": 76861.13,
       "low": 75526.38,
-      "market_cap": 1535443075072,
+      "market_cap": 1529568428032,
       "pe_ratio": null,
-      "timestamp": "2026-04-21T11:06:40.653364+00:00",
+      "timestamp": "2026-04-21T12:07:18.100704+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "ETH-USD",
       "asset_class": "crypto",
-      "price": 2330.91,
-      "change": 15.7,
-      "change_percent": 0.68,
-      "volume": 16918073344,
+      "price": 2320.98,
+      "change": 5.77,
+      "change_percent": 0.25,
+      "volume": 17036711936,
       "high": 2335.36,
       "low": 2302.32,
-      "market_cap": 281303941120,
+      "market_cap": 280167809024,
       "pe_ratio": null,
-      "timestamp": "2026-04-21T11:06:40.916116+00:00",
+      "timestamp": "2026-04-21T12:07:18.450309+00:00",
       "source": "yfinance"
     }
   ],
   "news_feed": [
     {
       "source": "Google News Business",
-      "title": "Halliburton Announces First Quarter 2026 Results - Yahoo Finance Singapore",
-      "summary": "Halliburton Announces First Quarter 2026 Results Yahoo Finance Singapore",
-      "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPelFpZ1Y2dE9VWVA5dEZWNEk3bUxhTmlXM0FKYVdRV0N2WWhwVFBjSk9lMi1PSXNnVlRhbUgxV2Y4QmVOLUFUbWhXRUI4a3FVX2ZBbmVIc2U5YThlTHJfbzNXTGFFNVpIbXdrRU9PTjRHOS1KUUlGazFIemNwM1JYMjhwaWFDUzA4WTZTMlNXOUJiSlE?oc=5",
-      "published_at": "2026-04-21T10:45:00+00:00"
+      "title": "Baird raises $450 million amid sluggish private equity environment - Crain's Chicago Business",
+      "summary": "Baird raises $450 million amid sluggish private equity environment Crain's Chicago Business",
+      "link": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNSjJzVUlGcUt6MnlmdzUyQmFVZXBaM0dMUzQ1N2g5Z2thZjRsOW1oRE1keThMb2FpcTRSb0lCRVJ3SWRZbHU0dWF4LWNXVGc1YjlwYTlUQmZQM2JiWDBQWERGUXNxcjJkcjZhSFhibUVXZkFkdW0ya0Q1Q3JpOFRVQjVYcmhIUUdrRzlJSUQybnYtRU9zMDl0cXNjWQ?oc=5",
+      "published_at": "2026-04-21T12:00:00+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Business Jet Maintenance Market Expected to Generate USD 10.4 Billion by 2032, at a CAGR of 4.5% : Allied Market Research - Yahoo Finance",
-      "summary": "Business Jet Maintenance Market Expected to Generate USD 10.4 Billion by 2032, at a CAGR of 4.5% : Allied Market Research Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOaWxSa0FpVXRLOXJpNEgtOU9iMmYyWDl2V2Q2ZTQ2cnJqSTFpYU95Y2ZGVURhcks2eTdfaFA3bS1LM2Y2aGppLXhsdUVLTkpKZDRVRGx6NHdvNXB5ckdIR29iT3hReGMyeS0wUWUtOU5faE56WXlTX09RWmtDM1RBMG92eWRlM2xKd010bm1zanpJdTBzQWdSRmVfeUxLVF8zdC12dC1RcmpaZ2NhOVE?oc=5",
-      "published_at": "2026-04-21T10:44:00+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Talaat Moustafa unveils $27bn urban development in Cairo - Yahoo Finance",
-      "summary": "Talaat Moustafa unveils $27bn urban development in Cairo Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQZ1lZU2huRk1ONzJkNjFVS0dIX1pCWXFrTGx5QXB4NW1PcTZaMmlZTHFBNlprei1FT1pLNFZoY0lmaTFILWZfajdBQ2RqNXhSUU1iU3gtaXJUWFI2TDFqYkdHTzRCejZpZEVFalEwMUhYMGJudERaTHA0aFRNQVk1M1ZBOXdfUXBTSjNDMG9wdWJkakpVZ19sN1NibWFOSnBF?oc=5",
-      "published_at": "2026-04-21T10:37:09+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "EBRD extends €7 million for MSMEs and women entrepreneurs in Kosovo - EBRD",
-      "summary": "EBRD extends €7 million for MSMEs and women entrepreneurs in Kosovo EBRD",
-      "link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQYWdrcHYxOHB2ZFlSTXg2WjhhX3JzS2U5ZVdPaUx2RUZ1Z1FkWERVdHU0RVN5N25RcFlhXzJhWEdJM19RY0pTZ2pxbXFhY0Z0SjBHZjhGRDZFZG9ZdjZLVVBZVTZSU18xcEs4UlhQLU1HTUxtSFJvekMzejF4RlhHNkd2SjczY3VZWk9XcWItRmx5TDU1UUFEYWFYSjJ1emw5LXotcU9tdnVXQjdXWEk3cTBhbHMwVEZfd1pBLXdn?oc=5",
-      "published_at": "2026-04-21T10:34:24+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Associated British Foods to Spin-off Primark as Fiscal First-half Profits Fall - Yahoo Finance UK",
-      "summary": "Associated British Foods to Spin-off Primark as Fiscal First-half Profits Fall Yahoo Finance UK",
-      "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOcFFGN3VvY2pOaElfVnYydXJWTkdNUFV2ZFYtV0RVZ3ZMb1pkcFdDX0lqY2tMU21SbFpFVExtXzY3VWh5RTRPWXdISEliMUtwcFpKVDJpc0ZfOFM1V0p5Qm5aWTI5eHpud09BQzRLNkhwN0FBVk1MeXdvdWVraXFjbGJjY093azJzeFE?oc=5",
-      "published_at": "2026-04-21T10:34:11+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Retirees and Pre-retirees, it’s not too late to de-risk your portfolio - The Washington Post",
-      "summary": "Retirees and Pre-retirees, it’s not too late to de-risk your portfolio The Washington Post",
-      "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxOMFVtWjZ4cjFPdFZ4Q3Zuc25TaXZwZmNVUTh0MTdxUm1ib0JtOUdiQjN4QXRjV3poXzRmb20wYllXdHJobVZISXcxczhSR3FWbUxvRllCVnBSYTMxZTc0UmlrdUlvaXItcGtUSTZwMXR1bjFSZFVtQ185eGVKMC1zX2RRU0pfUmJRazg1Mk1FdDdwSEU5ajBpRkphYmVXWVByREh3dXpxdUlpQXlnMnJvUTQzcmNJcWZmcXZWOVF3RlJ5dTVReS1OQ19yQnltYV9fUEUtZg?oc=5",
-      "published_at": "2026-04-21T10:10:42+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "CFO Corner: Iker Etxezarreta Fraile, Faes Farma - Global Finance Magazine",
-      "summary": "CFO Corner: Iker Etxezarreta Fraile, Faes Farma Global Finance Magazine",
-      "link": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPeWNMNFVsQ19QbEFqZ3VqcHl6Vmp0TkhBNFo4OG5RVk5sVGhGc0dacmFFS3Ribl9TcTRtN2tSVXJRVXk3T0VOZGxYaEZ6Nm0xN05RVE9TVG9zTGtPOHNhNU9IRVhmNTk5cGxWRW5vZUJwY19uT2tidDJMU3BaazR0U0NVWjM2Mk9rNXNrWVJ3?oc=5",
-      "published_at": "2026-04-21T10:06:19+00:00"
+      "title": "PERSONAL FINANCE: Staying on track when markets feel uncertain - Finger Lakes Times",
+      "summary": "PERSONAL FINANCE: Staying on track when markets feel uncertain Finger Lakes Times",
+      "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxOVVBGLXZMWFVIMVJQLTlzTjVmUFJ4OUhHUTFvazFnU1dSWFhpOER5d0lnYkRMX3VTcWdoNWhfaElEMjlMcWJwcFA3YjAzNEpfSnUzaDhOSi0xX1ZUOTZGUHhJQTQ2Tk5vMm94bUZaR2tpeWxpWXN2cnZld0ZxblVDS2dNZ2xDUDNPT2JWN083YnhHREU3b2t3c2J2VXRWQ2U3d0lhamJHMWRzUFlyUnlDQ0RzdFVfZ0lkS09fcEh0OGVYeWJmMmQ0eFhPZ2d5Q1FtN282QmZ5dGQzNk5p?oc=5",
+      "published_at": "2026-04-21T11:45:00+00:00"
     },
     {
       "source": "CNBC Finance",
       "title": "Here's what to expect from Fed chair nominee Kevin Warsh's Senate hearing Tuesday",
       "summary": "In a much-anticipated hearing before the Banking Committee, the former Fed governor will face questioning over a variety of subjects",
       "link": "https://www.cnbc.com/2026/04/21/kevin-warshs-senate-hearing-what-to-expect.html",
-      "published_at": "2026-04-21T10:00:57+00:00"
+      "published_at": "2026-04-21T11:43:43+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "Youxin Technology Ltd Announces Audited Financials of Celnet and Unaudited Pro Forma Condensed Combined Financials - Yahoo Finance Singapore",
-      "summary": "Youxin Technology Ltd Announces Audited Financials of Celnet and Unaudited Pro Forma Condensed Combined Financials Yahoo Finance Singapore",
-      "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxORVRZTS1uSFJZQ2JDV3puMnR3clhwSWRLR3kyN3NPWnJlMF9qT1RDM0lJU1VUYWUwV0N5M3JjVXRRXzc0Ujk4VGpOYVdIZ1BpUzRPczRVeXJrVmE3ZDF6bHRUSUdCZVVkMVFDLXB1cG9nU3VXSnFfYTNrWUZfYVpWZTVUNjZTM0VnQjVpd3lDSl9vQQ?oc=5",
-      "published_at": "2026-04-21T10:00:00+00:00"
+      "title": "HKICPA, IFAC host PAIB conference in Hong Kong - Yahoo Finance",
+      "summary": "HKICPA, IFAC host PAIB conference in Hong Kong Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxOV3pWYV8tYVpzbGxwOGtfelJCQnJyQUdkU0ktTHVndFh0NUwtcEI5ZEEyeTRHSmE0Tk55TUVmTjJZQ2xURlZfSWRaNHBlSnJqYXhtNjB3eTJuaV8xUTJiVDFIdG1QWU5oUEhGNUNSeXVqaEVOUkF2TkdHdXZKajFOV0txSHFiSkNKODVZTWpzMVdOZ0w3YVZrQzdrRVpWQQ?oc=5",
+      "published_at": "2026-04-21T11:34:29+00:00"
+    },
+    {
+      "source": "CNBC Finance",
+      "title": "Volkswagen announces voice AI in its Chinese cars from later this year",
+      "summary": "Volkswagen revealed four cars, including the ID. UNYX 09, which the company said it co-developed with EV maker Xpeng in two years.",
+      "link": "https://www.cnbc.com/2026/04/21/volkswagen-voice-ai-chinese-cars-automaker.html",
+      "published_at": "2026-04-21T11:30:01+00:00"
     },
     {
       "source": "Google News Business",
-      "title": "World’s Best Investment Banks 2026: Good Times Fizzle Away - Global Finance Magazine",
-      "summary": "World’s Best Investment Banks 2026: Good Times Fizzle Away Global Finance Magazine",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPYVJQX3dJUkxZSFhLZVg2dmpfUDZUQXd2VUVUellrVzQ3OUI4ZHRiTGdWbUpsd0FlYVZERHVSVUN0ZVdIMElucUZkSzJJd3Z6eHRYcld5LTFQZ0JFUGNyTk52WGI4alJTYmVjbURUYk45VENiVW9FQl85MnROSlJETjNpN1BZOEZ2?oc=5",
-      "published_at": "2026-04-21T09:54:43+00:00"
+      "title": "PHINIA to Participate in Oppenheimer’s 21st Annual Industrial Growth Conference - Yahoo Finance Singapore",
+      "summary": "PHINIA to Participate in Oppenheimer’s 21st Annual Industrial Growth Conference Yahoo Finance Singapore",
+      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNYjd4c2xvVURiSzR6eXdPOUQySUlOaUdDalZCN04wbDZybHh0MDNZdmp4RGQwVXB0MS1JYjBvTFhoS2hoNk9ZNDItVDMyS3VTZWFtOTRCTFBXNDdtd3NLeFJ2YmhYNUxLT29HMmFkRnVZZE5TcFMwQngxWEF4WHpiQVFUTFBObzRkUUVaZXZmQWdJU1pFQ0E?oc=5",
+      "published_at": "2026-04-21T11:30:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "$166 Billion Tariff Refund Shock: Businesses Cash In as Americans Question Who Really Pays - Yahoo Finance",
+      "summary": "$166 Billion Tariff Refund Shock: Businesses Cash In as Americans Question Who Really Pays Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPZGxPUHpYRWVpTkpXMjcwb1UwT0lpbHlzeW1ueDRkOGdLRU1zQTNQSUc2N05Jdy1ORWN4YUh1cHlwbmZwaHhZY3R6LWs2S2laTDUtWWZxWFNaMjFMWFFOcm1kZmNoU3h4WVVodzNEaEVOUE1ZcTV5QlR5MzhrZmExV2hCMlpLTVduUFA1aVVlZTNKTHFISUJMRXZ6LVI?oc=5",
+      "published_at": "2026-04-21T11:14:21+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "BDR launches Q2 BDRU classes, equipping contractors with advanced strategies for sales, accounting and more - Yahoo Finance",
+      "summary": "BDR launches Q2 BDRU classes, equipping contractors with advanced strategies for sales, accounting and more Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMingFBVV95cUxPVkRkdVlDcndOZFFSeEVtMkRlY3hya2lNN3FCX1VwMVZOLWs1ZmM5NzNVMkh6LTRvV3hpMTBEa3NLOE80UFQxY25pMHp2ZTROTG5pRGdydEk3OTF6Rzd0N0otYzg3X2hITWpkRVdCMXo1blZnX2MtQlM3czEyclBWSXRjR3EtaHh3eDc3WW5xbXdVZ2VIQmdScE1OaW52UQ?oc=5",
+      "published_at": "2026-04-21T11:03:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Upbound Group Announces Agreement Between Its Rent-A-Center Business and Amazon to Offer Easy Order Pickups and Returns - Yahoo Finance Singapore",
+      "summary": "Upbound Group Announces Agreement Between Its Rent-A-Center Business and Amazon to Offer Easy Order Pickups and Returns Yahoo Finance Singapore",
+      "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQaFJhNnVNNkN2aDFKcDVMRlp5QkhiTmJNeXo4dTVMVWdQQ1lMVDFzSmlHOXFGZFdDem93bEV4WlpNdXQ1MkpEa3RtblVjWDJfcE04UHl6MlZ2T043V0lvWkU4ZHMwVFlaX2FpMVBGcmp0Uk5ISjVTbXcwM1RpQnFMcUp3RGkxOGRIQXFidC1TMlpvSzR4?oc=5",
+      "published_at": "2026-04-21T11:00:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Kikoff Appoints Chief Financial Officer and Chief Legal Officer, Deepening Executive Bench Amid Rapid Growth - Yahoo! Finance Canada",
+      "summary": "Kikoff Appoints Chief Financial Officer and Chief Legal Officer, Deepening Executive Bench Amid Rapid Growth Yahoo! Finance Canada",
+      "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNRXpDYVdLTktfYm5fQWR1eVNVdGU2Y09XSHoyNXFncjVLaGxYSVNOMDZnS3VBdEtkd0gxNXRtTVhRLXVYOFJ0dGxYeUJzdEYtVFlWS0E5aG44cDFYUUxBeHhHVE9jaF9jelVRLXU2cWFJcUQzcVVjdkluelpyelRFTDNzaHZQUExVdTJvR1ZQVXpPUQ?oc=5",
+      "published_at": "2026-04-21T11:00:00+00:00"
     }
   ],
   "mbrn_enriched": {
     "sentiment_score": 60,
-    "confidence": 0.7,
-    "analysis": "Mixed market sentiment with equities slightly down and VIX low, but crypto prices rising",
+    "confidence": 0.8,
+    "analysis": "Equities are mixed, VIX is low, and crypto is bullish, with news headlines being neutral.",
     "recommendation": "hold",
     "crypto_bias": "bullish",
     "news_bias": "neutral",
-    "news_impact": 10,
-    "key_theme": "economic growth",
+    "news_impact": 5,
+    "key_theme": "market stability",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-21T11:07:14.912816+00:00"
+    "processed_at": "2026-04-21T12:07:53.257490+00:00"
   }
 }
