@@ -14,6 +14,7 @@ import { renderAuth } from '../ui_states/auth_controller.js';
 import { sentimentWidget } from '../cards/sentiment_widget.js';
 import { errorBoundary } from '../../../shared/ui/base_components/error_boundary.js';
 import { injectLegalBlock } from '../shell/legal_blocks.js';
+import { renderSurfaceFlowRail } from '../shell/flow_rail.js';
 import { readOracleDashboardSnapshot } from '../../../shared/application/read_models/oracle_dashboard.js';
 import { readSystemHeartbeat } from '../../../shared/application/read_models/system_status.js';
 import { renderDashboardAppCards } from '../dashboard/app_cards.js';
@@ -181,6 +182,7 @@ export const dashboardRender = {
       sentimentWidget.init('sentiment-widget');
       this.initOracleCard();
       this.buildSynergyWidget();
+      renderSurfaceFlowRail('dashboard-flow-rail', 'dashboard');
       renderDashboardAppCards();
       this.bindDashboardAppCards();
       this.renderLegalSurface();

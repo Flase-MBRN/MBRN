@@ -56,7 +56,7 @@
           </div>
 
           <button type="submit" class="btn-primary mt-24">Analyse starten</button>
-          <a href="./dashboard/index.html" id="skip-dashboard-link" class="skip-link text-center mt-16">Überspringen →</a>
+          <a href="./dashboard/index.html" id="skip-dashboard-link" class="skip-link text-center mt-16">Direkt zum Dashboard →</a>
         </form>
         <div id="landing-legal-mount" class="mt-24"></div>
       </div>
@@ -106,7 +106,15 @@
         <div id="reveal-legal-mount" class="mt-24"></div>
       </div>
 
-      <button id="btn-dashboard" class="btn-primary mt-24">Zum Dashboard</button>
+      <div class="share-action-group__buttons mt-24">
+        <button id="btn-dashboard" class="btn-primary share-action-group__primary">Zur Kernflaeche</button>
+        <a
+          href="./dashboard/index.html"
+          id="btn-dashboard-secondary"
+          class="btn-secondary share-action-group__secondary"
+          style="display:inline-flex; text-decoration:none;"
+        >Direkt zum Dashboard</a>
+      </div>
     </div>
   </section>
 

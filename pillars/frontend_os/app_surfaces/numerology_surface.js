@@ -21,6 +21,7 @@ import { getRepoRoot, nav, renderNavigation } from '../navigation/index.js';
 import { renderAuth } from '../ui_states/auth_controller.js';
 import { errorBoundary } from '../../../shared/ui/base_components/error_boundary.js';
 import { injectLegalBlock } from '../shell/legal_blocks.js';
+import { renderSurfaceFlowRail } from '../shell/flow_rail.js';
 import { exportNumerologyShareCard } from '../export_entrypoints/share_export_entry.js';
 import { exportNumerologyTeaserAsset } from '../export_entrypoints/asset_export_entry.js';
 import { exportNumerologyPdf } from '../export_entrypoints/pdf_export_entry.js';
@@ -137,6 +138,7 @@ export const numerologyRender = {
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
+    renderSurfaceFlowRail('numerology-flow-rail', 'numerology');
     this.renderLegalSurfaces();
   },
 

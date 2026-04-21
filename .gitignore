@@ -69,6 +69,7 @@ __pycache__/
 000_plan.md
 000_roadmap.md
 000_MBRN_MASTER.md
+000_SESSION_FREEZE.md
 scripts/pipelines/
 scripts/oracle/
 supabase/migrations/

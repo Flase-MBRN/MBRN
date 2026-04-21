@@ -211,6 +211,31 @@ describe('meta generator active modules', () => {
     }));
   });
 
+  test('generator scaffold for synergy is materialized as a real frontend_os surface and consumed by a thin route bootstrap', () => {
+    const blueprint = buildAppBlueprint({
+      appId: 'synergy',
+      displayName: 'Vibe Check',
+      route: 'apps/synergy/index.html',
+      dimensionId: 'pattern',
+      status: 'provisional'
+    });
+    const scaffoldBundle = buildAppScaffoldBundle(blueprint);
+    const generatedSurface = fs.readFileSync(
+      path.join(REPO_ROOT, 'pillars', 'frontend_os', 'app_surfaces', 'synergy_surface.js'),
+      'utf8'
+    );
+    const routeBootstrap = fs.readFileSync(
+      path.join(REPO_ROOT, 'apps', 'synergy', 'render.js'),
+      'utf8'
+    ).trim();
+
+    expect(scaffoldBundle.frontendSurface).toEqual(expect.objectContaining({
+      path: 'pillars/frontend_os/app_surfaces/synergy_surface.js'
+    }));
+    expect(generatedSurface).toBe(scaffoldBundle.frontendSurface.contents);
+    expect(routeBootstrap).toBe("export { synergySurface } from '../../pillars/frontend_os/app_surfaces/synergy_surface.js';");
+  });
+
   test('roadmap generator workflow consumes scoped seed modules outside tests', () => {
     const output = execFileSync(
       process.execPath,

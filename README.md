@@ -74,9 +74,6 @@ Aktiv fuer:
 - Dashboard-Komposition
 - Cards
 - UI States
-
-Bewusst reserviert:
-
 - `app_surfaces/`
 - `dimension_views/`
 - `export_entrypoints/`
@@ -103,6 +100,8 @@ Aktiv entlang einer klaren Fachkette:
 - `plan_id` ist die repo-weite Persistenzwahrheit
 - `artifact` ist das kaufbare Einzelprodukt fuer `pro`
 - `business` ist die kaufbare Bundle-Subscription
+- `pillars/monetization/*` bleibt die oeffentliche fachliche Wahrheit fuer Plans, Entitlements, Billing-Zustaende und Gates
+- `supabase/functions/stripe-checkout/index.ts` und `supabase/functions/stripe-webhook/index.ts` bleiben technische private Ausfuehrung, nicht die Fachquelle
 
 #### `meta_generator`
 Aktiv als Generator-Pillar:

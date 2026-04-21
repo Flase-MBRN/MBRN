@@ -9,6 +9,8 @@ import {
   buildSurfaceCopyBundle
 } from '../../../pillars/meta_generator/content/index.js';
 
+const FRONTEND_OS_ENTRY_DIMENSION_ID = 'pattern';
+
 const FRONTEND_OS_SYSTEM_SURFACES = Object.freeze([
   { id: 'home', label: 'Start', route: 'index.html', type: 'system' },
   { id: 'dashboard', label: 'Dashboard', route: 'dashboard/index.html', type: 'system' }
@@ -26,6 +28,43 @@ export function getFrontendOsSystemSurfaces() {
 
 export function getFrontendOsExportEntrypoints() {
   return [...FRONTEND_OS_EXPORT_ENTRYPOINTS];
+}
+
+function buildAppSurfaceEntry(app) {
+  const surfaceCopy = buildSurfaceCopyBundle(app.id);
+
+  return {
+    id: app.id,
+    label: surfaceCopy?.title || app.label,
+    route: app.route,
+    type: 'app',
+    dimensionId: app.dimensionId,
+    status: app.status
+  };
+}
+
+function getDashboardOrderedAppSurfaces() {
+  return APP_MANIFEST
+    .filter((app) => app.surfaceFlags?.includeInDashboard)
+    .map((app) => ({
+      ...buildAppSurfaceEntry(app),
+      navigationOrder: getDimensionById(app.dimensionId)?.surfaceFlags?.navigationOrder ?? 999
+    }))
+    .sort((left, right) => left.navigationOrder - right.navigationOrder);
+}
+
+function getSystemSurfaceById(surfaceId) {
+  return FRONTEND_OS_SYSTEM_SURFACES.find((surface) => surface.id === surfaceId) || null;
+}
+
+function getAppSurfaceById(surfaceId) {
+  const app = APP_MANIFEST.find((item) => item.id === surfaceId);
+  return app ? buildAppSurfaceEntry(app) : null;
+}
+
+function getCoreEntrySurface() {
+  const coreDimension = getDimensionById(FRONTEND_OS_ENTRY_DIMENSION_ID);
+  return getAppSurfaceById(coreDimension?.defaultApp || 'numerology');
 }
 
 export function getDimensionSurfaceModel(dimensionId) {
@@ -64,17 +103,66 @@ export function getAllDimensionSurfaceModels() {
   return DIMENSION_REGISTRY.map((dimension) => getDimensionSurfaceModel(dimension.id));
 }
 
+export function getFrontendProductJourney() {
+  const entrySurface = getCoreEntrySurface();
+  const hubSurface = getSystemSurfaceById('dashboard');
+  const dashboardApps = getDashboardOrderedAppSurfaces();
+  const dashboardNextSurface =
+    dashboardApps.find((surface) => surface.id !== entrySurface?.id) || dashboardApps[0] || null;
+
+  return {
+    entrySurface,
+    hubSurface,
+    dashboardNextSurface,
+    dashboardAppSurfaces: dashboardApps
+  };
+}
+
+export function getSurfaceJourney(surfaceId = 'home') {
+  const journey = getFrontendProductJourney();
+  const currentSurface = getSystemSurfaceById(surfaceId) || getAppSurfaceById(surfaceId);
+
+  if (!currentSurface) return null;
+
+  if (surfaceId === 'home') {
+    return {
+      currentSurface,
+      primaryTarget: journey.entrySurface,
+      secondaryTarget: journey.hubSurface,
+      summary: `${journey.entrySurface?.label || 'Die Kernflaeche'} ist der kontrollierte Einstieg. Das Dashboard bleibt dein Hub fuer den naechsten Schritt.`
+    };
+  }
+
+  if (surfaceId === 'dashboard') {
+    return {
+      currentSurface,
+      primaryTarget: journey.dashboardNextSurface,
+      secondaryTarget: journey.entrySurface,
+      summary: `${journey.hubSurface?.label || 'Dashboard'} ist der Hub. Als naechste relevante Flaeche fuehrt der Strom in ${journey.dashboardNextSurface?.label || 'die naechste App'}.`
+    };
+  }
+
+  if (surfaceId === journey.entrySurface?.id) {
+    return {
+      currentSurface,
+      primaryTarget: journey.hubSurface,
+      secondaryTarget: journey.dashboardNextSurface,
+      summary: `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt ins Dashboard und von dort weiter in ${journey.dashboardNextSurface?.label || 'die naechste Flaeche'}.`
+    };
+  }
+
+  return {
+    currentSurface,
+    primaryTarget: journey.hubSurface,
+    secondaryTarget: journey.entrySurface,
+    summary: `Von ${currentSurface.label} geht der kontrollierte Rueckweg ins Dashboard. Die Kernflaeche bleibt ${journey.entrySurface?.label || 'die Einstiegssurface'}.`
+  };
+}
+
 export function getFrontendSurfaceCatalog() {
   return {
     systemSurfaces: getFrontendOsSystemSurfaces(),
-    appSurfaces: APP_MANIFEST.map((app) => ({
-      id: app.id,
-      label: app.label,
-      route: app.route,
-      type: 'app',
-      dimensionId: app.dimensionId,
-      status: app.status
-    })),
+    appSurfaces: APP_MANIFEST.map((app) => buildAppSurfaceEntry(app)),
     dimensionViews: DIMENSION_REGISTRY.map((dimension) => ({
       id: dimension.id,
       label: dimension.publicLabel,
@@ -83,6 +171,7 @@ export function getFrontendSurfaceCatalog() {
       content: buildDimensionContentBundle(dimension.id),
       blueprint: buildDimensionBlueprint(dimension.id)
     })),
-    exportEntrypoints: getFrontendOsExportEntrypoints()
+    exportEntrypoints: getFrontendOsExportEntrypoints(),
+    journey: getFrontendProductJourney()
   };
 }

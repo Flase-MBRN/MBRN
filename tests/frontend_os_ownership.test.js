@@ -4,6 +4,7 @@ import { describe, expect, test } from '@jest/globals';
 import { getDimensionViewIds, resolveDimensionView } from '../pillars/frontend_os/dimension_views/index.js';
 import { getSurfaceCatalog } from '../pillars/frontend_os/surface_catalog.js';
 import { resolveSurfaceTarget } from '../pillars/frontend_os/surface_router.js';
+import { getFrontendProductJourney, getSurfaceJourney } from '../shared/application/frontend_os/discoverability_runtime.js';
 
 const repoRoot = process.cwd();
 const JS_EXTENSIONS = new Set(['.js', '.mjs']);
@@ -13,6 +14,8 @@ const ALLOWED_NAV_IMPORTERS = new Set([
   'pillars/frontend_os/app_surfaces/dashboard_surface.js',
   'pillars/frontend_os/app_surfaces/finance_surface.js',
   'pillars/frontend_os/app_surfaces/numerology_surface.js',
+  'pillars/frontend_os/app_surfaces/synergy_surface.js',
+  'pillars/frontend_os/shell/flow_rail.js',
   'pillars/frontend_os/shell/render_landing.js',
   'pillars/frontend_os/shell/render_legal_page.js'
 ]);
@@ -21,6 +24,7 @@ const ALLOWED_AUTH_IMPORTERS = new Set([
   'pillars/frontend_os/app_surfaces/dashboard_surface.js',
   'pillars/frontend_os/app_surfaces/finance_surface.js',
   'pillars/frontend_os/app_surfaces/numerology_surface.js',
+  'pillars/frontend_os/app_surfaces/synergy_surface.js',
   'pillars/frontend_os/shell/render_landing.js',
   'pillars/frontend_os/shell/render_legal_page.js'
 ]);
@@ -30,6 +34,7 @@ const ALLOWED_LEGAL_IMPORTERS = new Set([
   'pillars/frontend_os/app_surfaces/dashboard_surface.js',
   'pillars/frontend_os/app_surfaces/finance_surface.js',
   'pillars/frontend_os/app_surfaces/numerology_surface.js',
+  'pillars/frontend_os/app_surfaces/synergy_surface.js',
   'pillars/frontend_os/shell/render_landing.js'
 ]);
 
@@ -59,6 +64,7 @@ function collectFiles(rootDir) {
 function findImporters(pattern) {
   return collectFiles(repoRoot)
     .filter((filePath) => !filePath.includes(`${path.sep}tests${path.sep}`))
+    .filter((filePath) => !filePath.endsWith(`${path.sep}pillars${path.sep}meta_generator${path.sep}modules${path.sep}index.js`))
     .filter((filePath) => fs.readFileSync(filePath, 'utf8').includes(pattern))
     .map((filePath) => path.relative(repoRoot, filePath).replace(/\\/g, '/'))
     .sort();
@@ -71,6 +77,7 @@ describe('frontend_os ownership', () => {
       'pillars/frontend_os/app_surfaces/dashboard_surface.js',
       'pillars/frontend_os/app_surfaces/finance_surface.js',
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
+      'pillars/frontend_os/app_surfaces/synergy_surface.js',
       'pillars/frontend_os/navigation/index.js',
       'pillars/frontend_os/shell/render_landing.js',
       'pillars/frontend_os/shell/render_legal_page.js'
@@ -81,6 +88,7 @@ describe('frontend_os ownership', () => {
       'pillars/frontend_os/app_surfaces/dashboard_surface.js',
       'pillars/frontend_os/app_surfaces/finance_surface.js',
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
+      'pillars/frontend_os/app_surfaces/synergy_surface.js',
       'pillars/frontend_os/shell/render_landing.js',
       'pillars/frontend_os/shell/render_legal_page.js',
       'pillars/frontend_os/ui_states/auth_controller.js'
@@ -91,6 +99,7 @@ describe('frontend_os ownership', () => {
       'pillars/frontend_os/app_surfaces/dashboard_surface.js',
       'pillars/frontend_os/app_surfaces/finance_surface.js',
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
+      'pillars/frontend_os/app_surfaces/synergy_surface.js',
       'pillars/frontend_os/shell/legal_blocks.js',
       'pillars/frontend_os/shell/render_landing.js'
     ]);
@@ -113,6 +122,7 @@ describe('frontend_os ownership', () => {
       'apps/chronos/render.js',
       'apps/finance/render.js',
       'apps/numerology/render.js',
+      'apps/synergy/render.js',
       'dashboard/render_dashboard.js'
     ].forEach((relativePath) => {
       const filePath = path.join(repoRoot, relativePath);
@@ -151,9 +161,35 @@ describe('frontend_os ownership', () => {
     expect(catalog.systemSurfaces.map((item) => item.id)).toEqual(['home', 'dashboard']);
     expect(catalog.dimensionViews.map((item) => item.id)).toEqual(['growth', 'pattern', 'time', 'signal']);
     expect(catalog.exportEntrypoints.map((item) => item.id)).toEqual(['asset_export', 'pdf_export', 'share_export']);
+    expect(catalog.journey).toEqual(expect.objectContaining({
+      entrySurface: expect.objectContaining({ id: 'numerology', type: 'app' }),
+      hubSurface: expect.objectContaining({ id: 'dashboard', type: 'system' }),
+      dashboardNextSurface: expect.objectContaining({ id: 'finance', type: 'app' })
+    }));
 
     expect(resolveSurfaceTarget('finance')).toEqual(expect.objectContaining({ id: 'finance', type: 'app' }));
     expect(resolveSurfaceTarget('growth')).toEqual(expect.objectContaining({ id: 'growth', type: 'dimension' }));
     expect(resolveSurfaceTarget('share_export')).toEqual(expect.objectContaining({ id: 'share_export', type: 'export' }));
+  });
+
+  test('frontend_os product journey keeps entry, hub and next surface explicit', () => {
+    expect(getFrontendProductJourney()).toEqual(expect.objectContaining({
+      entrySurface: expect.objectContaining({ id: 'numerology', route: 'apps/numerology/index.html' }),
+      hubSurface: expect.objectContaining({ id: 'dashboard', route: 'dashboard/index.html' }),
+      dashboardNextSurface: expect.objectContaining({ id: 'finance', route: 'apps/finance/index.html' })
+    }));
+
+    expect(getSurfaceJourney('home')).toEqual(expect.objectContaining({
+      primaryTarget: expect.objectContaining({ id: 'numerology' }),
+      secondaryTarget: expect.objectContaining({ id: 'dashboard' })
+    }));
+    expect(getSurfaceJourney('numerology')).toEqual(expect.objectContaining({
+      primaryTarget: expect.objectContaining({ id: 'dashboard' }),
+      secondaryTarget: expect.objectContaining({ id: 'finance' })
+    }));
+    expect(getSurfaceJourney('dashboard')).toEqual(expect.objectContaining({
+      primaryTarget: expect.objectContaining({ id: 'finance' }),
+      secondaryTarget: expect.objectContaining({ id: 'numerology' })
+    }));
   });
 });

@@ -27,6 +27,7 @@ Die eigentliche Surface-Komposition fuer die stabilen Route-Einstiege und OS-Ein
 - `apps/finance/render.js`
 - `apps/numerology/render.js`
 - `apps/chronos/render.js`
+- `apps/synergy/render.js`
 
 Diese Dateien bleiben nur als duenne Bootstraps erhalten, damit die oeffentlichen Routen stabil bleiben.
 
@@ -58,3 +59,4 @@ Verboten sind direkte Runtime-Imports aus:
 - `dimension_views/` stellt echte Dimensions-Einstiege fuer `growth`, `pattern`, `time` und `signal`.
 - `export_entrypoints/` buendelt die heute realen Share-, Asset- und PDF-Exporte.
 - `surface_catalog.js` und `surface_router.js` halten Discoverability und Surface-Aufloesung kompositorisch im Pillar.
+- der Produktstrom `Landing -> Kernflaeche -> Dashboard -> naechste relevante Flaeche` bleibt ueber Discoverability-Modelle und Surface-Flow-Hilfen explizit.

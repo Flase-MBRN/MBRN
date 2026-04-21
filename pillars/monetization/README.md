@@ -37,6 +37,24 @@ Wichtig:
 
 Provider-SDKs und Providerdetails gehoeren nicht in dieses Pillar.
 
+## Oeffentlich vs. privat
+
+Oeffentliche fachliche Wahrheit:
+
+- `pillars/monetization/api_products/index.js`
+- `pillars/monetization/plans/index.js`
+- `pillars/monetization/entitlements/index.js`
+- `pillars/monetization/billing/index.js`
+- `pillars/monetization/gates/entitlement_gate.js`
+- `pillars/monetization/index.js`
+
+Private technische Ausfuehrung:
+
+- `supabase/functions/stripe-checkout/index.ts`
+- `supabase/functions/stripe-webhook/index.ts`
+
+Diese technischen Pfade transportieren die fachlichen Felder, definieren sie aber nicht.
+
 ## Marker-Wahrheit
 
 Aktive Monetization-Zonen werden nicht mehr als `NOT_IMPLEMENTED` markiert.

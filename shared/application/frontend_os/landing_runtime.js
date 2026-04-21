@@ -40,10 +40,17 @@ export function calculateLandingLifePath(birthDate) {
 }
 
 export function saveLandingProfile({ name, birthDate, lifePath }) {
-  return storage.set('last_numerology_calc', {
+  const payload = {
     name,
     birthDate,
     lifePath,
     calculatedAt: new Date().toISOString()
+  };
+
+  void storage.set('numerology_input', {
+    name,
+    birthDate
   });
+
+  return storage.set('last_numerology_calc', payload);
 }

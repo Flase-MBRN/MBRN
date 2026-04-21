@@ -8,6 +8,7 @@ import {
 import { renderAuth } from '../ui_states/auth_controller.js';
 import { bindSmartDateInput } from '../../../shared/ui/dom_utils.js';
 import { injectLegalBlock } from './legal_blocks.js';
+import { getFrontendProductJourney } from '../../../shared/application/frontend_os/discoverability_runtime.js';
 
 const ARCHETYPES = {
   1: { title: 'Der Initiator', desc: 'Das Modell betont hier Eigeninitiative und klare Entscheidungen.' },
@@ -26,11 +27,13 @@ const ARCHETYPES = {
 
 export const landingRender = {
   userData: null,
+  productJourney: getFrontendProductJourney(),
 
   init() {
     const existingData = readExistingLandingProfile();
     if (existingData) {
-      window.location.href = getRepoRoot() + 'dashboard/index.html';
+      const entryRoute = this.productJourney.entrySurface?.route || 'dashboard/index.html';
+      window.location.href = getRepoRoot() + entryRoute;
       return;
     }
 
@@ -84,12 +87,21 @@ export const landingRender = {
   bindButtons() {
     const btnDashboard = document.getElementById('btn-dashboard');
     if (btnDashboard) {
-      btnDashboard.addEventListener('click', () => nav.navigateTo('dashboard'));
+      btnDashboard.textContent = `Zu ${this.productJourney.entrySurface?.label || 'deiner Kernflaeche'}`;
+      btnDashboard.addEventListener('click', () => nav.navigateTo(this.productJourney.entrySurface?.id || 'dashboard'));
     }
 
     const skipLink = document.getElementById('skip-dashboard-link');
     if (skipLink) {
       skipLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        nav.navigateTo('dashboard');
+      });
+    }
+
+    const dashboardLink = document.getElementById('btn-dashboard-secondary');
+    if (dashboardLink) {
+      dashboardLink.addEventListener('click', (e) => {
         e.preventDefault();
         nav.navigateTo('dashboard');
       });
@@ -193,6 +205,11 @@ export const landingRender = {
     numberEl.textContent = lifePath;
     titleEl.textContent = archetype.title;
     descEl.textContent = archetype.desc;
+
+    const revealHint = revealText.querySelector('.text-muted');
+    if (revealHint) {
+      revealHint.textContent = `${this.productJourney.entrySurface?.label || 'Die Kernflaeche'} ist dein erster kontrollierter Einstieg. Das Dashboard bleibt danach dein Hub fuer den naechsten Schritt.`;
+    }
 
     if (ringProgress) {
       const circumference = 2 * Math.PI * 90;

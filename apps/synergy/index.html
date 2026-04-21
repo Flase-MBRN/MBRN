@@ -2,7 +2,6 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="1;url=../../dashboard/">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibe Check - MBRN Hub</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;">
@@ -11,13 +10,32 @@
   <link rel="stylesheet" href="../../shared/ui/components.css">
 </head>
 <body class="void-bg bg-grid">
-  <main class="main-content" style="margin-left:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;">
-    <div class="glass-card text-center" style="max-width:480px;">
-      <div class="hero-eyebrow">Vibe Check</div>
-      <h1 class="hero-title" style="font-size:clamp(42px,8vw,72px);">Dashboard</h1>
-      <p class="text-secondary mt-16">Der Vibe Check lebt jetzt direkt im Dashboard. Du wirst gleich weitergeleitet.</p>
-      <a href="../../dashboard/" class="btn-primary mt-24" style="display:inline-flex; text-decoration:none;">Zum Dashboard</a>
+  <aside class="nav-sidebar">
+    <div class="nav-brand">
+      <span class="logo-text">MBRN</span>
     </div>
+
+    <nav class="nav-menu" id="nav-menu"></nav>
+
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
+    </div>
+  </aside>
+
+  <div class="bg-glow"></div>
+
+  <main class="main-content">
+    <section class="tool-hero reveal">
+      <div class="hero-eyebrow">Pattern Companion</div>
+      <h1 class="hero-title">VIBE<br>CHECK</h1>
+      <p class="hero-subtitle">Diese Flaeche bleibt bewusst klein und verweist kontrolliert zurueck in den Produktstrom.</p>
+    </section>
+
+    <section class="tool-section reveal">
+      <div id="synergy-surface-root"></div>
+    </section>
   </main>
+
+  <script type="module" src="./render.js"></script>
 </body>
 </html>

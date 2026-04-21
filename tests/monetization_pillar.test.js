@@ -286,4 +286,22 @@ describe('monetization pillar modules', () => {
     expect(webhookSource).toContain('product_id');
     expect(webhookSource).toContain('access_level');
   });
+
+  test('monetization docs keep the public pillar truth separate from private technical execution', () => {
+    const charterSource = fs.readFileSync(
+      path.join(REPO_ROOT, 'pillars', 'monetization', 'CHARTER.md'),
+      'utf8'
+    );
+    const readmeSource = fs.readFileSync(
+      path.join(REPO_ROOT, 'pillars', 'monetization', 'README.md'),
+      'utf8'
+    );
+
+    expect(charterSource).toContain('pillars/monetization/billing/index.js');
+    expect(charterSource).toContain('pillars/monetization/index.js');
+    expect(charterSource).not.toContain('shared/core/logic/monetization.js');
+    expect(readmeSource).toContain('Oeffentlich vs. privat');
+    expect(readmeSource).toContain('supabase/functions/stripe-checkout/index.ts');
+    expect(readmeSource).toContain('supabase/functions/stripe-webhook/index.ts');
+  });
 });

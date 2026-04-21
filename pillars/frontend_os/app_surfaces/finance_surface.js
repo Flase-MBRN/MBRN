@@ -13,6 +13,7 @@ import { dom, animateValue, showTerminalLoader } from '../../../shared/ui/dom_ut
 import { getRepoRoot, nav, renderNavigation } from '../navigation/index.js';
 import { renderAuth } from '../ui_states/auth_controller.js';
 import { injectLegalBlock } from '../shell/legal_blocks.js';
+import { renderSurfaceFlowRail } from '../shell/flow_rail.js';
 import { exportFinanceStoryAsset } from '../export_entrypoints/asset_export_entry.js';
 
 function formatEuro(value) {
@@ -77,6 +78,7 @@ export const financeRender = {
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     renderAuth.init();
+    renderSurfaceFlowRail('finance-flow-rail', 'finance');
     this.renderLegalSurfaces();
   },
 
