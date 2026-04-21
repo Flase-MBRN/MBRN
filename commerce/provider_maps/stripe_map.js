@@ -8,8 +8,8 @@
 import { MBRN_CONFIG } from '../../shared/core/config/index.js';
 
 /**
- * Stripe product to price ID mapping for the active MBRN catalog.
- * catalog_only products stay mirrored here without active checkout IDs.
+ * Stripe product to price ID mapping for the active checkout catalog.
+ * Only checkout-ready products are mirrored here.
  */
 export const STRIPE_PRODUCT_MAP = Object.freeze({
   artifact: {
@@ -17,13 +17,8 @@ export const STRIPE_PRODUCT_MAP = Object.freeze({
     mode: 'payment',
     billingPeriod: 'one_time'
   },
-  oracle_snapshot: {
-    priceId: null,
-    mode: 'subscription',
-    billingPeriod: 'monthly'
-  },
-  api_access: {
-    priceId: null,
+  business: {
+    priceId: MBRN_CONFIG.stripe.priceIdBusiness,
     mode: 'subscription',
     billingPeriod: 'monthly'
   }

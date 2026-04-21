@@ -3,7 +3,12 @@ import { resolveEntitlements } from '../../pillars/monetization/entitlements/ind
 import { getPlanById, resolvePlanByAccessLevel } from '../../pillars/monetization/plans/index.js';
 
 function getCurrentProfile() {
-  return state.get('systemInitialized') || { access_level: 0, unlocked_tools: [], features: {} };
+  return state.get('systemInitialized') || {
+    plan_id: 'free',
+    access_level: 0,
+    unlocked_tools: [],
+    features: {}
+  };
 }
 
 function resolveProfilePlan(profile = {}) {

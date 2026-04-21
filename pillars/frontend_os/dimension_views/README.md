@@ -1,7 +1,14 @@
 # /pillars/frontend_os/dimension_views/
 
-**Status:** RESERVED / NOT IMPLEMENTED
+**Status:** ACTIVE
 
-Diese Zone bleibt reserviert, bis eigenständige Dimension-Ansichten als Frontend-OS-Komposition gebraucht werden.
+Diese Zone stellt die aktiven Dimensions-Einstiege des Frontend OS bereit.
 
-Aktuell laufen Navigation und App-Zuordnung über Registry und Manifest, ohne zusätzliche Dimension-View-Implementierung.
+Aktive Runtime-Views:
+
+- `growth_view.js`
+- `pattern_view.js`
+- `time_view.js`
+- `signal_view.js`
+
+`index.js` loest `dimensionId` eindeutig auf die passende View auf. Die Views bleiben business-blind und konsumieren nur Registry-, Application- und UI-Daten.

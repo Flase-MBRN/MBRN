@@ -3,8 +3,11 @@
  * Dashboard mit klarem Check-in, Markt-Vibe und Vibe-Check.
  */
 
-import { state } from '../../../shared/core/state/index.js';
 import { actions } from '../../../shared/application/actions.js';
+import {
+  registerDashboardActions,
+  subscribeDashboardSurface
+} from '../../../shared/application/frontend_os/dashboard_runtime.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../../../shared/ui/dom_utils.js';
 import { getRepoRoot, nav, renderNavigation } from '../navigation/index.js';
 import { renderAuth } from '../ui_states/auth_controller.js';
@@ -133,16 +136,7 @@ export const dashboardRender = {
   _heartbeatInterval: null,
 
   async init() {
-    actions.register('calculateSynergyByDate', async (payload) => {
-      const { calculateSynergy } = await import('../../../shared/core/logic/synergy_engine.js');
-      const res = calculateSynergy(payload.birthdate1, payload.birthdate2);
-      if (res.success) {
-        state.emit('synergyByDateDone', res);
-      } else {
-        state.emit('synergyByDateFailed', res);
-      }
-      return res;
-    });
+    registerDashboardActions(actions);
 
     try {
       const btnCheckin = document.getElementById('btn-checkin');
@@ -157,14 +151,23 @@ export const dashboardRender = {
         this._listeners.push({ element: btnCheckin, type: 'click', handler: checkinHandler });
       }
 
-      this._unsubscribers.push(state.subscribe('systemInitialized', (profile) => this.renderStatus(profile)));
-      this._unsubscribers.push(state.subscribe('streakUpdated', (payload) => {
-        this.renderStatus(payload.profile);
-        dom.setText('dash-msg', 'Stark. Dein Puls läuft weiter.');
-      }));
-      this._unsubscribers.push(state.subscribe('checkInFailed', (payload) => {
-        dom.setText('dash-msg', payload.message || 'Heute war dein Puls schon da.');
-      }));
+      this._unsubscribers.push(
+        subscribeDashboardSurface({
+          onSystemInitialized: (profile) => this.renderStatus(profile),
+          onStreakUpdated: (payload) => {
+            this.renderStatus(payload.profile);
+            dom.setText('dash-msg', 'Stark. Dein Puls laeuft weiter.');
+          },
+          onCheckInFailed: (payload) => {
+            dom.setText('dash-msg', payload.message || 'Heute war dein Puls schon da.');
+          },
+          onSynergyByDateDone: (res) => this.buildSynergyResults(res.data),
+          onSynergyByDateFailed: (res) => {
+            dom.setText('syn-error', res.error || 'Da lief etwas schief.');
+            dom.clear('syn-results');
+          }
+        })
+      );
 
       dom.initScrollReveal();
       errorBoundary.init();
@@ -279,15 +282,6 @@ export const dashboardRender = {
     calcBtn.addEventListener('click', clickHandler);
     this._listeners.push({ element: calcBtn, type: 'click', handler: clickHandler });
 
-    this._unsubscribers.push(
-      state.subscribe('synergyByDateDone', (res) => this.buildSynergyResults(res.data))
-    );
-    this._unsubscribers.push(
-      state.subscribe('synergyByDateFailed', (res) => {
-        dom.setText('syn-error', res.error || 'Da lief etwas schief.');
-        dom.clear('syn-results');
-      })
-    );
   },
 
   buildSynergyResults(data) {

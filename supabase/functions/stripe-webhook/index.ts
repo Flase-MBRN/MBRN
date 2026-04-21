@@ -31,14 +31,24 @@ serve(async (req) => {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as any
       const userId = session.client_reference_id
+      const productId = session.metadata?.product_id
+      const planId = session.metadata?.plan_id
+      const accessLevel = Number(session.metadata?.access_level ?? '')
 
       if (userId) {
-        console.log(`[The Vault] Payment Success. Upgrading user ${userId} to PAID_PRO (Level 10)`)
+        if (!productId || !planId || Number.isNaN(accessLevel)) {
+          throw new Error('Missing monetization metadata on checkout session')
+        }
+
+        console.log(`[The Vault] Payment Success. Updating user ${userId} to plan ${planId} (${accessLevel})`)
 
         // 1. Upgrade User Level
         const { error: profileError } = await supabaseAdmin
           .from('profiles')
-          .update({ access_level: 10 })
+          .update({
+            plan_id: planId,
+            access_level: accessLevel
+          })
           .eq('id', userId)
 
         if (profileError) throw profileError
@@ -50,7 +60,8 @@ serve(async (req) => {
             {
               stripe_session_id: session.id,
               user_id: userId,
-              product_id: session.metadata?.product_id ?? 'deep_report',
+              product_id: productId,
+              plan_id: planId,
               amount_total: session.amount_total,
               currency: session.currency,
               status: 'completed'

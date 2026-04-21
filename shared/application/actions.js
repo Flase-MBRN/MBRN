@@ -16,6 +16,7 @@ import { supabaseBridge } from '../../bridges/supabase/index.js';
 import { getDefaultAdapter } from '../../commerce/payment_adapters/index.js';
 import { resolvePrice } from '../../commerce/provider_maps/index.js';
 import { resolveMonetizationFlow } from '../../pillars/monetization/index.js';
+import { getPlanById, resolvePlanByAccessLevel } from '../../pillars/monetization/plans/index.js';
 
 const registry = new Map();
 
@@ -34,6 +35,25 @@ function resolveCurrentProfile() {
 
 function resolveAuthenticatedUser() {
   return state.get('user') || null;
+}
+
+function resolveCurrentPlan(profile = {}) {
+  if (profile.plan_id) {
+    return getPlanById(profile.plan_id);
+  }
+
+  return resolvePlanByAccessLevel(profile.access_level ?? profile.level ?? 0);
+}
+
+function resolveCheckoutTargetPlan(profile = {}, monetizationFlow) {
+  const currentPlan = resolveCurrentPlan(profile);
+  const grantedPlan = monetizationFlow.product?.grantsPlanId
+    ? getPlanById(monetizationFlow.product.grantsPlanId)
+    : currentPlan;
+
+  return grantedPlan.accessLevel >= currentPlan.accessLevel
+    ? grantedPlan
+    : currentPlan;
 }
 
 export const actions = {
@@ -201,9 +221,13 @@ export const actions = {
       return { success: false, error: 'Auth required', offline: true };
     }
 
+    const currentPlan = resolveCurrentPlan(currentProfile);
     const response = await supabaseBridge.saveProfile({
       ...currentProfile,
-      id: currentProfile.id || user.id
+      id: currentProfile.id || user.id,
+      plan_id: currentProfile.plan_id || currentPlan.id,
+      access_level: currentProfile.access_level ?? currentProfile.level ?? currentPlan.accessLevel,
+      level: currentProfile.level ?? currentProfile.access_level ?? currentPlan.accessLevel
     });
 
     if (response.success) {
@@ -287,10 +311,12 @@ export const actions = {
     const cloudTime = new Date(cloudProfile.last_sync).getTime();
 
     if (cloudTime > localTime) {
+      const resolvedPlan = resolveCurrentPlan(cloudProfile);
       const mergedProfile = {
         ...localProfile,
-        level: cloudProfile.access_level,
-        access_level: cloudProfile.access_level,
+        plan_id: cloudProfile.plan_id || resolvedPlan.id,
+        level: cloudProfile.access_level ?? resolvedPlan.accessLevel,
+        access_level: cloudProfile.access_level ?? resolvedPlan.accessLevel,
         streak: cloudProfile.current_streak,
         current_streak: cloudProfile.current_streak,
         shields: cloudProfile.shields,
@@ -322,9 +348,11 @@ export const actions = {
 
   async startCheckout(productId = 'artifact') {
     const currentProfile = resolveCurrentProfile() || {};
+    const currentPlan = resolveCurrentPlan(currentProfile);
     const monetizationFlow = resolveMonetizationFlow({
       productId,
-      accessLevel: currentProfile.access_level ?? currentProfile.level ?? 0
+      planId: currentProfile.plan_id || currentPlan.id,
+      accessLevel: currentProfile.access_level ?? currentProfile.level ?? currentPlan.accessLevel
     });
 
     if (monetizationFlow.policyState === 'commercial_mode_inactive') {
@@ -358,7 +386,15 @@ export const actions = {
       return { success: false, error: 'Checkout product is not configured' };
     }
 
-    const res = await paymentAdapter.createCheckoutSession(providerConfig.priceId);
+    const targetPlan = resolveCheckoutTargetPlan(currentProfile, monetizationFlow);
+    const res = await paymentAdapter.createCheckoutSession({
+      priceId: providerConfig.priceId,
+      mode: providerConfig.mode,
+      billingPeriod: providerConfig.billingPeriod,
+      productId: monetizationFlow.product.id,
+      planId: targetPlan.id,
+      accessLevel: targetPlan.accessLevel
+    });
 
     if (res.success && res.data?.url) {
       state.emit('checkoutRedirectRequested', { url: res.data.url });

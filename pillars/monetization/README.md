@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE
 
-Dieses Pillar traegt die policy-grade Businesslogik fuer Produkte, Plaene, Entitlements, Billing-Zustaende und Gates.
+Dieses Pillar traegt die repo-weite Businesslogik fuer Produkte, Plaene, Entitlements, Billing-Zustaende und Gates.
 
 ## Kanonische Fachkette
 
@@ -18,17 +18,17 @@ Dieses Pillar traegt die policy-grade Businesslogik fuer Produkte, Plaene, Entit
 - `free`
   - keine kommerziellen Produktfeatures
 - `pro`
-  - enthaelt `artifact`
-  - ist das aktuelle checkout-faehige Basismodell
+  - wird ueber das kaufbare Einzelprodukt `artifact` aktiviert
 - `business`
-  - enthaelt `oracle_snapshot` und `api_access`
-  - ist fachlich real, aber in dieser Welle nicht automatisch voll kaufbar
+  - ist die kaufbare Bundle-Subscription
+  - enthaelt `artifact`, `oracle_snapshot` und `api_access`
 
 Wichtig:
 
 - `plan.productIds` und daraus abgeleitete Entitlements sind die primaere Fachwahrheit
 - `accessLevel` bleibt nur Aufloesungs- und Vergleichsschicht
-- `business` ist kein Marketing-Versprechen, sondern eine fachlich reale Policy-Stufe
+- `plan_id` ist die repo-weite Primaerwahrheit
+- `access_level` bleibt nur kompatibler Sortier- und Spiegelwert
 
 ## Trennung
 
@@ -46,4 +46,8 @@ Aktive Monetization-Zonen werden nicht mehr als `NOT_IMPLEMENTED` markiert.
 
 ## Repo-weite Wahrheit
 
-Legacy-Zugriffshilfen ausserhalb des Pillars muessen sich an dieser Plan- und Entitlement-Wahrheit ausrichten. Alte Tier-Namen sind keine eigenstaendige Policy-Quelle mehr.
+Legacy-Zugriffshilfen ausserhalb des Pillars muessen sich an dieser Plan- und Entitlement-Wahrheit ausrichten.
+
+- `profiles.plan_id` ist die kanonische Persistenzwahrheit
+- `transactions.plan_id` und `transactions.product_id` loggen dieselbe Fachkette
+- alte Tier-Namen sind keine eigenstaendige Policy-Quelle mehr

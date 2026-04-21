@@ -60,11 +60,12 @@ Dieser Stand ist nicht die volle Vision mit 11 Dimensions oder 4 komplett ausgeb
 Aktiv und produktiv genutzt.
 
 ### `oracle`
-Aktiv mit Pipeline-Adaptern:
+Aktiv als vollstaendige Oracle-Maschine:
 
 - `browser_read`, `signals`, `fusion`, `snapshots`, `backtesting` aktiv
-- `processing` als Manifest-/Adapter-Zone aktiv
-- Heavy-Processing weiter operativ in `scripts/oracle/`
+- `processing` als aktive Orchestrierungszone
+- Python-Heavy-Processing fachlich unter `pillars/oracle/processing/*`
+- `scripts/oracle/*` nur noch als duenne Runner fuer dieselbe Pillar-Logik
 - Browser-/Application-Consumption bleibt die Wahrheit unter `pillars/oracle/*`
 
 ### `monetization`
@@ -76,17 +77,18 @@ Aktiv entlang einer Fachkette:
 - `entitlements`
 - `billing`
 - `gates`
-- `free`, `pro`, `business` bilden die aktuelle policy-grade Planwahrheit
-- `business` ist fachlich real, aber nicht automatisch checkout-faehig
-- `billing`
-- `gates`
+- `free`, `pro`, `business` bilden die aktive Planwahrheit
+- `plan_id` ist die repo-weite Persistenzwahrheit
+- `artifact` ist das kaufbare Einzelprodukt fuer `pro`
+- `business` ist die kaufbare Bundle-Subscription
 
 ### `meta_generator`
-Seed-aktiv:
+Aktiv als Generator-Pillar:
 
-- erste Generator-Subsysteme vorhanden
-- mindestens zwei interne Workflow-Konsumenten vorhanden
-- noch nicht voll ausgebaut
+- `blueprints`, `content`, `modules`, `assets`, `agent_adapters` aktiv
+- Runtime-Konsumenten in `shared/application/frontend_os/*`
+- Workflow-Konsumenten in `scripts/devlab/*`
+- deterministischer Kern plus strukturierte AI-Adapter
 
 ## Dimensions
 

@@ -3,175 +3,29 @@
  * Mustererkennung - klar, direkt und ohne Paywall.
  */
 
-import { state } from '../../../shared/core/state/index.js';
 import { actions } from '../../../shared/application/actions.js';
-import { storage } from '../../../shared/core/storage/index.js';
+import {
+  describeNumerologyField,
+  getBridgeMeaning,
+  getChallengeMeaning,
+  getNumerologyUiText,
+  getPhaseDescription,
+  loadStoredNumerologyInput,
+  registerNumerologyActions,
+  resolveLegacyNumerologyProfile,
+  saveStoredNumerologyInput,
+  subscribeNumerologySurface
+} from '../../../shared/application/frontend_os/numerology_runtime.js';
 import { dom, animateValue, showTerminalLoader, createGlowRing, bindSmartDateInput } from '../../../shared/ui/dom_utils.js';
 import { getRepoRoot, nav, renderNavigation } from '../navigation/index.js';
 import { renderAuth } from '../ui_states/auth_controller.js';
-import { generateShareCard, generateTeaserAsset, generateOperatorReport } from '../../../shared/core/logic/orchestrator.js';
-import { renderShareCardToCanvas, renderTeaserCardToCanvas } from '../../../shared/ui/helpers/canvas_renderer.js';
-import { OPERATOR_MATRIX } from '../../../shared/core/logic/numerology/index.js';
-import { i18n } from '../../../shared/core/i18n.js';
 import { errorBoundary } from '../../../shared/ui/base_components/error_boundary.js';
 import { injectLegalBlock } from '../shell/legal_blocks.js';
+import { exportNumerologyShareCard } from '../export_entrypoints/share_export_entry.js';
+import { exportNumerologyTeaserAsset } from '../export_entrypoints/asset_export_entry.js';
+import { exportNumerologyPdf } from '../export_entrypoints/pdf_export_entry.js';
 
 const STORAGE_KEY = 'numerology_input';
-
-const NUMBER_MEANINGS = {
-  1: 'Im Modell steht diese Zahl oft für Antrieb, Initiative und den ersten klaren Schritt.',
-  2: 'Im Modell betont diese Zahl häufig Balance, Verbindung und feines Gespür für das Umfeld.',
-  3: 'Im Modell verweist diese Zahl oft auf Präsenz, Ausdruck und klare Kommunikation.',
-  4: 'Im Modell rückt diese Zahl Struktur, Ausdauer und belastbare Systeme in den Vordergrund.',
-  5: 'Im Modell steht diese Zahl häufig für Bewegung, Veränderung und flexible Entwicklung.',
-  6: 'Im Modell verbindet diese Zahl Verantwortung, Stabilität und verlässliche Fürsorge.',
-  7: 'Im Modell betont diese Zahl Analyse, Mustererkennung und strategisches Denken.',
-  8: 'Im Modell weist diese Zahl oft auf Führung, Umsetzung und sichtbare Resultate hin.',
-  9: 'Im Modell steht diese Zahl oft für Perspektive und systemisches Denken.',
-  11: 'Im Modell wird diese Zahl häufig mit klarer Wahrnehmung und feinen Impulsen verbunden.',
-  22: 'Im Modell steht diese Zahl oft für große Vorhaben und tragfähige Realisierung.',
-  33: 'Im Modell verweist diese Zahl häufig auf Orientierung, Reife und ruhige Führung.'
-};
-
-function getPrimaryNumber(value) {
-  const raw = Array.isArray(value) ? value[0] : String(value ?? '').split('/')[0];
-  const parsed = Number.parseInt(raw, 10);
-  return Number.isNaN(parsed) ? null : parsed;
-}
-
-function getNumberMeaning(value, fallback = 'Diese Zahl markiert im Modell einen wichtigen Teil deines Musters.') {
-  const primary = getPrimaryNumber(value);
-  return NUMBER_MEANINGS[primary] || fallback;
-}
-
-function getLifeTheme(value) {
-  const primary = getPrimaryNumber(value);
-  return OPERATOR_MATRIX.pinnacles?.[primary]?.desc || getNumberMeaning(value);
-}
-
-function getChallengeMeaning(value) {
-  const primary = getPrimaryNumber(value);
-  if (primary === 0) {
-    return 'Im Modell zeigt sich hier wenig innere Reibung. Achte trotzdem darauf, nicht im Komfort hängen zu bleiben.';
-  }
-  return getNumberMeaning(value);
-}
-
-function getBridgeMeaning(value) {
-  const primary = getPrimaryNumber(value);
-  if (primary === null) return 'Verbindung zwischen zwei Seiten deines Modells.';
-  if (primary <= 2) return 'Im Modell wirkt diese Verbindung sehr stimmig und leicht anschlussfähig.';
-  if (primary <= 5) return 'Im Modell zeigt sich eine stabile Verbindung mit punktuellem Feintuning.';
-  return 'Im Modell entsteht hier spürbare Spannung, die bewussten Fokus und Entwicklung anstoßen kann.';
-}
-
-function getPhaseDescription(value) {
-  const primary = getPrimaryNumber(value);
-  if (primary === 9) {
-    return 'Zeit für Transformation. Alte Strukturen auflösen, um Platz für Neues zu schaffen.';
-  }
-
-  const base = getLifeTheme(value) || getNumberMeaning(value);
-  const cleaned = String(base)
-    .replace(/^Fokus auf\s*/i, '')
-    .replace(/^Fokus im\s*/i, '')
-    .replace(/^Fokus der\s*/i, '')
-    .replace(/\.$/, '');
-  const normalized = cleaned.length > 0 ? `${cleaned.charAt(0).toLowerCase()}${cleaned.slice(1)}` : 'dein Thema klar ausrichten';
-  return `Im Modell rückt in dieser Phase besonders in den Vordergrund, ${normalized}.`;
-}
-
-function describeField(label, value) {
-  switch (label) {
-    case 'Lebenszahl': return { prefix: 'Dein Weg', body: getNumberMeaning(value) };
-    case 'Seelenzahl': return { prefix: 'Dein Antrieb', body: getNumberMeaning(value) };
-    case 'Persönlichkeit': return { prefix: 'Deine Wirkung', body: getNumberMeaning(value) };
-    case 'Ausdruck': return { prefix: 'Dein Potenzial', body: getNumberMeaning(value) };
-    case 'Reife': return { prefix: 'Dein Fundament', body: getNumberMeaning(value) };
-    case 'Geburtstag': return { prefix: 'Dein frühes Talent', body: getNumberMeaning(value) };
-    default: return { prefix: 'Dein Profil', body: getNumberMeaning(value) };
-  }
-}
-
-function downloadCanvas(canvas, filename) {
-  const link = document.createElement('a');
-  link.href = canvas.toDataURL('image/png');
-  link.download = filename;
-  link.click();
-}
-
-function downloadBlob(blob, filename) {
-  const objectUrl = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = objectUrl;
-  link.download = filename;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
-}
-
-function canvasToBlob(canvas) {
-  return new Promise((resolve, reject) => {
-    if (typeof canvas?.toBlob !== 'function') {
-      reject(new Error('Canvas blob export is not available'));
-      return;
-    }
-
-    canvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-        return;
-      }
-
-      reject(new Error('Canvas blob export failed'));
-    }, 'image/png');
-  });
-}
-
-function buildImageFilename(prefix, profile) {
-  const rawName = profile?.meta?.name || 'Operator';
-  const safeName = String(rawName)
-    .trim()
-    .replace(/\s+/g, '_')
-    .replace(/[^\w-]/g, '');
-
-  return `${prefix}_${safeName || 'Operator'}.png`;
-}
-
-async function exportCanvasAsset(canvas, { filename, title, text, preferShare = false } = {}) {
-  if (!preferShare) {
-    downloadCanvas(canvas, filename);
-    return 'downloaded';
-  }
-
-  try {
-    const blob = await canvasToBlob(canvas);
-    const supportsFiles =
-      typeof navigator !== 'undefined' &&
-      typeof navigator.share === 'function' &&
-      typeof File !== 'undefined';
-
-    if (supportsFiles) {
-      const file = new File([blob], filename, { type: 'image/png' });
-      const sharePayload = { title, text, files: [file] };
-      const canShareFiles = typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] });
-
-      if (canShareFiles) {
-        await navigator.share(sharePayload);
-        return 'shared';
-      }
-    }
-
-    downloadBlob(blob, filename);
-    return 'downloaded';
-  } catch (error) {
-    if (error?.name === 'AbortError') {
-      throw error;
-    }
-
-    downloadCanvas(canvas, filename);
-    return 'downloaded';
-  }
-}
 
 export const numerologyRender = {
   currentData: null,
@@ -181,16 +35,7 @@ export const numerologyRender = {
   _accordionContainerHandler: null,
 
   init() {
-    actions.register('calculateFullProfile', async (payload) => {
-      const { getUnifiedProfile } = await import('../../../shared/core/logic/orchestrator.js');
-      const res = await getUnifiedProfile(payload.name, payload.birthDate);
-      if (res.success) {
-        state.emit('numerologyDone', res);
-      } else {
-        state.emit('numerologyFailed', res);
-      }
-      return res;
-    });
+    registerNumerologyActions(actions);
 
     const calcBtn = document.getElementById('num-calc-btn');
     if (calcBtn) {
@@ -199,15 +44,15 @@ export const numerologyRender = {
         const date = document.getElementById('num-input-date')?.value.trim();
 
         if (!name || !date) {
-          dom.setText('num-error', i18n.t('enterNameDate'));
+          dom.setText('num-error', getNumerologyUiText('enterNameDate'));
           return;
         }
 
         calcBtn.disabled = true;
-        calcBtn.textContent = i18n.t('loadingDecrypt');
+        calcBtn.textContent = getNumerologyUiText('loadingDecrypt');
         await showTerminalLoader('num-results-area', 1500);
 
-        await storage.set(STORAGE_KEY, { name, birthDate: date });
+        await saveStoredNumerologyInput(STORAGE_KEY, { name, birthDate: date });
         actions.dispatch('calculateFullProfile', { name, birthDate: date });
 
         calcBtn.textContent = 'Muster ansehen';
@@ -245,9 +90,7 @@ export const numerologyRender = {
         pdfBtn.disabled = true;
 
         try {
-          const legacyData = this.currentData.legacy?.full_profile || this.currentData;
-          const doc = await generateOperatorReport(legacyData);
-          doc.save(`MBRN_Muster_${legacyData.meta.name.replace(/\s+/g, '_')}.pdf`);
+          await exportNumerologyPdf(this.currentData);
         } catch (err) {
           console.error('[Mustererkennung] PDF fehlgeschlagen:', err);
           errorBoundary.displayError({
@@ -265,17 +108,20 @@ export const numerologyRender = {
       this._listeners.push({ element: pdfBtn, type: 'click', handler: pdfHandler });
     }
 
-    this._unsubscribers.push(state.subscribe('numerologyDone', (res) => {
-      this.currentData = res.data;
-      this.showResultsPanel();
-      this.renderAll(res.data.legacy.full_profile);
-    }));
+    this._unsubscribers.push(
+      subscribeNumerologySurface({
+        onNumerologyDone: (res) => {
+          this.currentData = res.data;
+          this.showResultsPanel();
+          this.renderAll(resolveLegacyNumerologyProfile(res.data));
+        },
+        onNumerologyFailed: (res) => {
+          dom.setText('num-error', `Bitte pruef deine Eingaben. ${res.error}`);
+        }
+      })
+    );
 
-    this._unsubscribers.push(state.subscribe('numerologyFailed', (res) => {
-      dom.setText('num-error', `Bitte prüf deine Eingaben. ${res.error}`);
-    }));
-
-    const stored = storage.get(STORAGE_KEY);
+    const stored = loadStoredNumerologyInput(STORAGE_KEY);
     if (stored.success && stored.data) {
       const { name, birthDate } = stored.data;
       const nameInput = document.getElementById('num-input-name');
@@ -416,12 +262,12 @@ export const numerologyRender = {
     }
 
     const label = score <= 30
-      ? 'Extremer Fokus. Du besitzt hochspezialisierte Stärken.'
+      ? 'Extremer Fokus. Du besitzt hochspezialisierte Staerken.'
       : score <= 60
         ? 'Dynamisches Muster. Ein starker Mix aus klarem Fokus und Vielseitigkeit.'
         : score <= 80
           ? 'Ausgeglichene Struktur. Deine Zahlen greifen nahtlos ineinander.'
-          : 'Hohe Balance. Maximale Harmonie über alle Bereiche.';
+          : 'Hohe Balance. Maximale Harmonie ueber alle Bereiche.';
     dom.setText('num-balance-label', label);
 
     const parentCard = container.closest('.glass-card');
@@ -441,23 +287,14 @@ export const numerologyRender = {
     }
 
     infoEl.textContent =
-      "Dieser Wert zeigt, wie sich deine Eigenschaften im Modell verteilen. Wichtig: Es gibt kein 'Besser' oder 'Schlechter'. Ein hoher Wert steht für eine breite Balance, ein niedriger Wert eher für stärkere Spezialisierung.";
+      "Dieser Wert zeigt, wie sich deine Eigenschaften im Modell verteilen. Wichtig: Es gibt kein 'Besser' oder 'Schlechter'. Ein hoher Wert steht fuer eine breite Balance, ein niedriger Wert eher fuer staerkere Spezialisierung.";
   },
 
   async handleTeaserShare() {
     if (!this.currentData) return;
 
     try {
-      const legacyData = this.currentData.legacy?.full_profile || this.currentData;
-      const teaserData = generateTeaserAsset(legacyData);
-      const canvas = document.createElement('canvas');
-      renderTeaserCardToCanvas(canvas, teaserData);
-      await exportCanvasAsset(canvas, {
-        filename: buildImageFilename('MBRN_Story_Score', legacyData),
-        title: 'MBRN Pattern Score',
-        text: 'What is your pattern?',
-        preferShare: true
-      });
+      await exportNumerologyTeaserAsset(this.currentData);
     } catch (error) {
       if (error?.name === 'AbortError') {
         return;
@@ -476,14 +313,7 @@ export const numerologyRender = {
     if (!this.currentData) return;
 
     try {
-      const legacyData = this.currentData.legacy?.full_profile || this.currentData;
-      const cardData = generateShareCard(legacyData);
-      const canvas = document.createElement('canvas');
-      renderShareCardToCanvas(canvas, cardData);
-      await exportCanvasAsset(canvas, {
-        filename: buildImageFilename('MBRN_Muster_Details', legacyData),
-        preferShare: false
-      });
+      await exportNumerologyShareCard(this.currentData);
     } catch (error) {
       if (error?.name === 'AbortError') {
         return;
@@ -530,7 +360,7 @@ export const numerologyRender = {
     const lines = loshu.activeLines.join(', ') || 'keine';
     dom.setText(
       'num-loshu-lines',
-      `Dein persönliches Raster im Modell. Lila hervorgehobene Zahlen markieren deutliche Schwerpunkte. Wenn drei Zahlen eine horizontale, vertikale oder diagonale Linie bilden, zeigt das eine aktive Linie als Hinweis auf ein markantes Thema in diesem Bereich. Aktive Linien: ${lines}.`
+      `Dein persoenliches Raster im Modell. Lila hervorgehobene Zahlen markieren deutliche Schwerpunkte. Wenn drei Zahlen eine horizontale, vertikale oder diagonale Linie bilden, zeigt das eine aktive Linie als Hinweis auf ein markantes Thema in diesem Bereich. Aktive Linien: ${lines}.`
     );
   },
 
@@ -590,12 +420,12 @@ export const numerologyRender = {
     const coreList = document.getElementById('acc-core-list');
     coreList.replaceChildren();
     coreList.className = 'data-grid compact';
-    createDataCard(coreList, 'Lebenszahl', data.core.lifePath, describeField('Lebenszahl', data.core.lifePath), 1);
-    createDataCard(coreList, 'Seelenzahl', data.core.soulUrge, describeField('Seelenzahl', data.core.soulUrge), 2);
-    createDataCard(coreList, 'Persönlichkeit', data.core.personality, describeField('Persönlichkeit', data.core.personality), 3);
-    createDataCard(coreList, 'Ausdruck', data.core.expression, describeField('Ausdruck', data.core.expression), 4);
-    createDataCard(coreList, 'Reife', data.additional.maturity, describeField('Reife', data.additional.maturity), 5);
-    createDataCard(coreList, 'Geburtstag', data.additional.birthday, describeField('Geburtstag', data.additional.birthday), 6);
+    createDataCard(coreList, 'Lebenszahl', data.core.lifePath, describeNumerologyField('Lebenszahl', data.core.lifePath), 1);
+    createDataCard(coreList, 'Seelenzahl', data.core.soulUrge, describeNumerologyField('Seelenzahl', data.core.soulUrge), 2);
+    createDataCard(coreList, 'Persoenlichkeit', data.core.personality, describeNumerologyField('Persoenlichkeit', data.core.personality), 3);
+    createDataCard(coreList, 'Ausdruck', data.core.expression, describeNumerologyField('Ausdruck', data.core.expression), 4);
+    createDataCard(coreList, 'Reife', data.additional.maturity, describeNumerologyField('Reife', data.additional.maturity), 5);
+    createDataCard(coreList, 'Geburtstag', data.additional.birthday, describeNumerologyField('Geburtstag', data.additional.birthday), 6);
 
     const phasesList = document.getElementById('acc-phases-list');
     if (!phasesList) return;
@@ -603,9 +433,9 @@ export const numerologyRender = {
     createSectionHeader(phasesList, 'Lebenszyklen');
     const cyclesGrid = document.createElement('div');
     cyclesGrid.className = 'data-grid compact';
-    createDataCard(cyclesGrid, 'Früher Zyklus', data.cycles.c1, getPhaseDescription(data.cycles.c1), 1);
+    createDataCard(cyclesGrid, 'Frueher Zyklus', data.cycles.c1, getPhaseDescription(data.cycles.c1), 1);
     createDataCard(cyclesGrid, 'Mittlerer Zyklus', data.cycles.c2, getPhaseDescription(data.cycles.c2), 2);
-    createDataCard(cyclesGrid, 'Später Zyklus', data.cycles.c3, getPhaseDescription(data.cycles.c3), 3);
+    createDataCard(cyclesGrid, 'Spaeter Zyklus', data.cycles.c3, getPhaseDescription(data.cycles.c3), 3);
     phasesList.appendChild(cyclesGrid);
 
     createSectionHeader(phasesList, 'Meilensteine');
@@ -635,14 +465,14 @@ export const numerologyRender = {
       karmaGrid,
       'Lektionen',
       data.karma.lessons.join(', ') || 'Keine',
-      'Ein mögliches Lernfeld im Modell. Hier kann sich ein relevanter Entwicklungshebel zeigen.',
+      'Ein moegliches Lernfeld im Modell. Hier kann sich ein relevanter Entwicklungshebel zeigen.',
       5
     );
     createDataCard(
       karmaGrid,
       'Starker Zug',
       data.karma.passion.join(', ') || '-',
-      'Ein wiederkehrender innerer Antrieb im Modell. Diese Energie kann Entscheidungen im Hintergrund mitprägen.',
+      'Ein wiederkehrender innerer Antrieb im Modell. Diese Energie kann Entscheidungen im Hintergrund mitpraegen.',
       6
     );
     karmaList.appendChild(karmaGrid);
@@ -658,7 +488,7 @@ export const numerologyRender = {
 
     const bridgeNote = document.createElement('p');
     bridgeNote.className = 'text-sm opacity-50 mt-16 text-center';
-    bridgeNote.textContent = 'Verbindungen zeigen die Synergie zwischen deinen Zahlen im Modell. Werte nahe 0 wirken meist leichter verbunden, höhere Werte deuten eher auf Spannung und bewussten Entwicklungsbedarf hin.';
+    bridgeNote.textContent = 'Verbindungen zeigen die Synergie zwischen deinen Zahlen im Modell. Werte nahe 0 wirken meist leichter verbunden, hoehere Werte deuten eher auf Spannung und bewussten Entwicklungsbedarf hin.';
     bridgeList.appendChild(bridgeNote);
   }
 };

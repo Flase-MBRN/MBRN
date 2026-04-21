@@ -21,10 +21,12 @@ describe('registries and contracts', () => {
       'frontend_os'
     ]);
     expect(PILLAR_REGISTRY.find((pillar) => pillar.id === 'meta_generator')).toEqual(
-      expect.objectContaining({ status: 'seed' })
+      expect.objectContaining({ status: 'active' })
     );
     expect(PILLAR_REGISTRY.find((pillar) => pillar.id === 'frontend_os')).toEqual(
-      expect.objectContaining({ capabilities: ['shell', 'navigation', 'dashboard', 'cards', 'ui_states', 'app_surfaces'] })
+      expect.objectContaining({
+        capabilities: ['shell', 'navigation', 'dashboard', 'cards', 'ui_states', 'app_surfaces', 'dimension_views', 'export_entrypoints']
+      })
     );
     PILLAR_REGISTRY.forEach((pillar) => {
       expect(pillar).toEqual(expect.objectContaining({

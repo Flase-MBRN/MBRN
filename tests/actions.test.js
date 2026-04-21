@@ -40,9 +40,13 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
   const paymentAdapterRegistryMock = {
     getDefaultAdapter: jest.fn(() => stripePaymentAdapterMock)
   };
-  const resolvePriceMock = jest.fn(() => ({ priceId: 'price_test' }));
+  const resolvePriceMock = jest.fn(() => ({
+    priceId: 'price_test',
+    mode: 'payment',
+    billingPeriod: 'one_time'
+  }));
   const resolveMonetizationFlowMock = jest.fn(() => ({
-    product: { id: 'artifact', provider: 'stripe' },
+    product: { id: 'artifact', provider: 'stripe', grantsPlanId: 'pro' },
     pricing: { productId: 'artifact', amount: 19, currency: 'eur', billingPeriod: 'one_time' },
     plan: { id: 'pro', accessLevel: 10 },
     entitlements: { planId: 'pro', features: ['artifact'], canPurchase: true },
@@ -98,7 +102,8 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
         soonBadgeLabel: 'Bald verfuegbar'
       },
       stripe: {
-        priceIdArtifact: 'price_test'
+        priceIdArtifact: 'price_test',
+        priceIdBusiness: 'price_business_test'
       }
     }
   }));
@@ -405,6 +410,9 @@ describe('application actions', () => {
     await jest.advanceTimersByTimeAsync(250);
     expect(supabaseBridgeMock.saveProfile).toHaveBeenCalledWith({
       id: 'user-sync',
+      plan_id: 'free',
+      access_level: 0,
+      level: 0,
       streak: 4,
       shields: 1
     });
@@ -427,6 +435,7 @@ describe('application actions', () => {
     supabaseBridgeMock.getProfile.mockResolvedValueOnce({
       success: true,
       data: {
+        plan_id: 'pro',
         access_level: 10,
         current_streak: 5,
         shields: 2,
@@ -436,6 +445,7 @@ describe('application actions', () => {
     }).mockResolvedValueOnce({
       success: true,
       data: {
+        plan_id: 'free',
         access_level: 2,
         current_streak: 1,
         shields: 0,
@@ -449,6 +459,7 @@ describe('application actions', () => {
       'user_profile',
       expect.objectContaining({
         id: 'user-1',
+        plan_id: 'pro',
         streak: 5,
         shields: 2,
         display_name: 'Cloud User'
@@ -467,6 +478,9 @@ describe('application actions', () => {
     await actions.pullCloudData('user-1');
     expect(supabaseBridgeMock.saveProfile).toHaveBeenCalledWith({
       id: 'user-1',
+      plan_id: 'free',
+      access_level: 0,
+      level: 0,
       streak: 9,
       shields: 3,
       updatedAt: '2026-04-18T12:00:00.000Z'
@@ -529,9 +543,18 @@ describe('application actions', () => {
     expect(active.stateMock.emit).toHaveBeenCalledWith('checkoutRedirectRequested', { url: 'https://checkout.test' });
     expect(active.resolveMonetizationFlowMock).toHaveBeenCalledWith({
       productId: 'artifact',
+      planId: 'free',
       accessLevel: 0
     });
     expect(active.resolvePriceMock).toHaveBeenCalledWith('artifact', 'stripe');
+    expect(active.stripePaymentAdapterMock.createCheckoutSession).toHaveBeenCalledWith({
+      priceId: 'price_test',
+      mode: 'payment',
+      billingPeriod: 'one_time',
+      productId: 'artifact',
+      planId: 'pro',
+      accessLevel: 10
+    });
 
     active.stripePaymentAdapterMock.verifySession
       .mockResolvedValueOnce({ success: true, data: { sessionId: 'cs_success' } })

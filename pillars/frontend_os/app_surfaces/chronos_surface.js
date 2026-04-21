@@ -1,27 +1,31 @@
 /**
  * /apps/chronos/render.js
- * Zeit-Seite für Phasen und 7-Jahres-Zyklen.
+ * Zeit-Seite fuer Phasen und 7-Jahres-Zyklen.
  */
 
-import { state } from '../../../shared/core/state/index.js';
 import { actions } from '../../../shared/application/actions.js';
-import { storage } from '../../../shared/core/storage/index.js';
+import {
+  calculateChronosProfile,
+  clearChronosBirthdate,
+  loadChronosBirthdate,
+  registerChronosActions,
+  saveChronosBirthdate
+} from '../../../shared/application/frontend_os/chronos_runtime.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../../../shared/ui/dom_utils.js';
 import { getRepoRoot, nav, renderNavigation } from '../navigation/index.js';
 import { renderAuth } from '../ui_states/auth_controller.js';
-import { calculateChronos } from '../../../shared/core/logic/chronos_v2.js';
 import { injectLegalBlock } from '../shell/legal_blocks.js';
 
 const FOCUS_EXPLANATIONS = {
-  1: 'Das Modell liest diese Phase oft als Startpunkt. Initiative, Richtung und mutige Entscheidungen rücken stärker nach vorn.',
-  2: 'Das Modell betont in dieser Phase Feingefühl, Verbindungen und ruhiges Timing.',
-  3: 'Das Modell ordnet diese Phase häufig Expansion und Sichtbarkeit zu. Strukturen, die jetzt entstehen, können später tragen.',
-  4: 'Das Modell rückt hier Fundament, Routinen und sauberen Aufbau in den Vordergrund.',
-  5: 'Das Modell verbindet diese Phase oft mit Bewegung, Flexibilität und schnellen Anpassungen.',
-  6: 'Das Modell markiert in dieser Phase Verantwortung, Stabilität und klare Prioritäten.',
+  1: 'Das Modell liest diese Phase oft als Startpunkt. Initiative, Richtung und mutige Entscheidungen ruecken staerker nach vorn.',
+  2: 'Das Modell betont in dieser Phase Feingefuehl, Verbindungen und ruhiges Timing.',
+  3: 'Das Modell ordnet diese Phase haeufig Expansion und Sichtbarkeit zu. Strukturen, die jetzt entstehen, koennen spaeter tragen.',
+  4: 'Das Modell rueckt hier Fundament, Routinen und sauberen Aufbau in den Vordergrund.',
+  5: 'Das Modell verbindet diese Phase oft mit Bewegung, Flexibilitaet und schnellen Anpassungen.',
+  6: 'Das Modell markiert in dieser Phase Verantwortung, Stabilitaet und klare Prioritaeten.',
   7: 'Das Modell betont jetzt Analyse, Tiefgang und bewusstes Sortieren.',
-  8: 'Das Modell ordnet diese Phase häufig Umsetzung, Entscheidungskraft und sichtbare Wirkung zu.',
-  9: 'Das Modell verbindet diese Phase oft mit Abschluss, Reset und dem Schaffen von Raum für Neues.'
+  8: 'Das Modell ordnet diese Phase haeufig Umsetzung, Entscheidungskraft und sichtbare Wirkung zu.',
+  9: 'Das Modell verbindet diese Phase oft mit Abschluss, Reset und dem Schaffen von Raum fuer Neues.'
 };
 
 function getFocusNumber(data) {
@@ -37,7 +41,7 @@ function getFocusNarrative(focusNumber, topic) {
     return FOCUS_EXPLANATIONS[focusNumber];
   }
   const safeTopic = topic || 'dein aktuelles Thema';
-  return `Das Modell verbindet diese Phase mit ${safeTopic}. Nutze den Zeitraum bewusst, um deinen nächsten Schritt klar einzuordnen.`;
+  return `Das Modell verbindet diese Phase mit ${safeTopic}. Nutze den Zeitraum bewusst, um deinen naechsten Schritt klar einzuordnen.`;
 }
 
 function calculateDaysInCurrentPhase(data) {
@@ -72,11 +76,7 @@ export const chronosRender = {
   _timers: [],
 
   init() {
-    actions.register('calculateChronos', async (payload) => {
-      const res = calculateChronos(payload.birthDate);
-      state.emit('chronosCalculated', res);
-      return res;
-    });
+    registerChronosActions(actions);
 
     renderNavigation('nav-menu');
     nav.bindNavigation();
@@ -88,20 +88,7 @@ export const chronosRender = {
   },
 
   autoRenderLifeCycles() {
-    const userBirthdateResult = storage.get('user_birthdate');
-    if (userBirthdateResult.success && userBirthdateResult.data) {
-      this.renderLifeCycles(userBirthdateResult.data);
-      return;
-    }
-
-    const profile = state.get('systemInitialized');
-    let birthDate = profile?.birthDate || profile?.birth_date;
-
-    if (!birthDate) {
-      const stored = storage.get('last_numerology_calc');
-      birthDate = stored?.data?.birthDate || stored?.data?.birth_date;
-    }
-
+    const birthDate = loadChronosBirthdate();
     if (birthDate) {
       this.renderLifeCycles(birthDate);
     } else {
@@ -182,8 +169,7 @@ export const chronosRender = {
       btn.textContent = 'Ich schaue gerade nach.';
       await showTerminalLoader('chrono-content-area', 1000);
 
-      await storage.set('user_birthdate', birthDate);
-
+      await saveChronosBirthdate(birthDate);
       this.renderLifeCycles(birthDate);
     };
 
@@ -207,7 +193,7 @@ export const chronosRender = {
   },
 
   renderLifeCycles(birthDate) {
-    const result = calculateChronos(birthDate);
+    const result = calculateChronosProfile(birthDate);
 
     if (!result.success) {
       console.warn('[Zeit] Berechnung fehlgeschlagen:', result.error);
@@ -244,7 +230,7 @@ export const chronosRender = {
 
     dom.createEl('p', {
       className: 'text-secondary mb-24',
-      text: 'Jede Phase hat ihren eigenen Rhythmus. Hier siehst du, wie lange dein aktuelles Thema im Modell noch präsent ist und wann der nächste Wechsel ansteht.',
+      text: 'Jede Phase hat ihren eigenen Rhythmus. Hier siehst du, wie lange dein aktuelles Thema im Modell noch praesent ist und wann der naechste Wechsel ansteht.',
       parent: cyclesCard
     });
 
@@ -302,7 +288,7 @@ export const chronosRender = {
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Nächster Wechsel',
+      text: 'Naechster Wechsel',
       parent: nextItem
     });
 
@@ -338,7 +324,7 @@ export const chronosRender = {
     });
 
     const resetHandler = () => {
-      storage.remove('user_birthdate');
+      clearChronosBirthdate();
       dom.clear(container.id);
       this.renderInputForm();
     };

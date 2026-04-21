@@ -37,10 +37,6 @@ function isOracleApplicationReadModel(filePath) {
   return normalized.includes('shared/application/read_models/') && normalized.includes('oracle');
 }
 
-function isFrontendOsAppSurface(filePath) {
-  return normalize(filePath).includes('pillars/frontend_os/app_surfaces/');
-}
-
 describe('architecture boundaries', () => {
   test('shared/core does not import bridges, commerce or frontend_os', () => {
     const files = walkJsFiles(path.join(REPO_ROOT, 'shared', 'core'))
@@ -68,25 +64,17 @@ describe('architecture boundaries', () => {
     });
   });
 
-  test('frontend_os does not import bridges, oracle processing or monetization business logic directly', () => {
+  test('frontend_os consumes only application, registry, contract and ui layers', () => {
     const files = walkJsFiles(path.join(REPO_ROOT, 'pillars', 'frontend_os'));
 
     files.forEach((file) => {
-      const normalized = normalize(file);
       const imports = getImportMatches(file);
       imports.forEach((specifier) => {
         expect(specifier).not.toMatch(/bridges|commerce|pillars\/oracle|pillars\/monetization/);
-        if (specifier.includes('shared/core/i18n.js')) {
-          expect(isFrontendOsAppSurface(normalized)).toBe(true);
-          return;
-        }
         if (specifier.includes('shared/core/')) {
-          if (isFrontendOsAppSurface(normalized)) {
-            expect(specifier).toMatch(/shared\/core\/(registries|contracts|state|storage|logic)\//);
-          } else {
-            expect(specifier).toMatch(/shared\/core\/(registries|contracts)\//);
-          }
+          expect(specifier).toMatch(/shared\/core\/(registries|contracts)\//);
         }
+        expect(specifier).not.toContain('shared/core/i18n.js');
       });
     });
   });
@@ -160,6 +148,35 @@ describe('architecture boundaries', () => {
       if (importsSignals || importsFusion) {
         expect(normalized).toBe('pillars/oracle/snapshots/index.js');
       }
+    });
+  });
+
+  test('scripts/oracle stays thin and pillar-owned', () => {
+    const thinWrapperFiles = [
+      path.join(REPO_ROOT, 'scripts', 'oracle', 'oracle_core.py'),
+      path.join(REPO_ROOT, 'scripts', 'oracle', 'backfill_history.py'),
+      path.join(REPO_ROOT, 'scripts', 'oracle', 'data_bridge.py'),
+      path.join(REPO_ROOT, 'scripts', 'oracle', 'correlation_matrix.py'),
+      path.join(REPO_ROOT, 'scripts', 'oracle', 'numerology_engine.py')
+    ];
+
+    thinWrapperFiles.forEach((filePath) => {
+      const source = fs.readFileSync(filePath, 'utf8');
+      expect(source).toContain('pillars.oracle.processing.python');
+    });
+  });
+
+  test('productive monetization paths no longer carry legacy access and tier labels', () => {
+    const productiveFiles = [
+      path.join(REPO_ROOT, 'shared', 'core', 'config', 'index.js'),
+      path.join(REPO_ROOT, 'supabase', 'functions', 'stripe-webhook', 'index.ts'),
+      path.join(REPO_ROOT, 'supabase', 'migrations', '00_full_system_init.sql'),
+      path.join(REPO_ROOT, 'supabase', 'migrations', '11_payment_schema.sql')
+    ];
+
+    productiveFiles.forEach((filePath) => {
+      const source = fs.readFileSync(filePath, 'utf8');
+      expect(source).not.toMatch(/\bPAID_PRO\b|\bSpark\b|premium_monthly|oracle_credits_/);
     });
   });
 });

@@ -22,7 +22,7 @@ Alles ausserhalb dieses Repos ist kein paralleler Architekturbaum.
 - `frontend_os` = aktiv
 - `oracle` = aktiv mit Pipeline-Adaptern
 - `monetization` = aktiv entlang einer Fachkette
-- `meta_generator` = seed-active
+- `meta_generator` = active generator pillar
 
 ## Aktive Dimensions
 
@@ -45,6 +45,6 @@ Alles ausserhalb dieses Repos ist kein paralleler Architekturbaum.
 ## Nicht behaupten
 
 - nicht sagen, dass 11 Dimensions bereits aktiv sind
-- nicht sagen, dass `meta_generator` voll ausgebaut ist
+- nicht sagen, dass `meta_generator` eine freie Prompt-Ablage oder ungegrenzte KI-Autonomie ist
 - nicht sagen, dass alle 4 Pillars voll ausgebaut sind
 - nicht sagen, dass historische Audit-Dokumente die aktuelle Runtime-Wahrheit sind

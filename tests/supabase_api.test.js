@@ -117,8 +117,9 @@ describe('supabase bridge api', () => {
       },
       from: jest.fn((table) => {
         if (table === 'profiles') {
+          const upsert = jest.fn(() => ({ select: jest.fn().mockResolvedValue({ data: [{ id: 'user-1', plan_id: 'free' }], error: null }) }));
           return {
-            upsert: jest.fn(() => ({ select: jest.fn().mockResolvedValue({ data: [{ id: 'user-1' }], error: null }) })),
+            upsert,
             select: jest.fn(() => ({ eq: profileEq }))
           };
         }
@@ -140,7 +141,7 @@ describe('supabase bridge api', () => {
 
     await expect(api.saveProfile({ id: 'user-1', name: 'Erik' })).resolves.toMatchObject({
       success: true,
-      data: { id: 'user-1' },
+      data: { id: 'user-1', plan_id: 'free' },
       source: 'supabase.profile.save',
       error: null
     });
@@ -174,4 +175,3 @@ describe('supabase bridge api', () => {
     );
   });
 });
-

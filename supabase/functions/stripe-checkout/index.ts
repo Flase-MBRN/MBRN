@@ -33,20 +33,27 @@ serve(async (req) => {
     if (!user) throw new Error('Unauthorized')
 
     // 4. Parse Request
-    const { priceId } = await req.json()
+    const { priceId, mode = 'payment', productId, planId, accessLevel } = await req.json()
     if (!priceId) throw new Error('Missing priceId')
+    if (!productId) throw new Error('Missing productId')
+    if (!planId) throw new Error('Missing planId')
 
-    console.log(`[The Vault] Creating session for user: ${user.email}, Price: ${priceId}`)
+    console.log(`[The Vault] Creating session for user: ${user.email}, Price: ${priceId}, Product: ${productId}, Plan: ${planId}`)
 
     // 5. Create Stripe Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      mode: 'payment',
+      mode,
       success_url: `${req.headers.get('origin')}/index.html?session_id={CHECKOUT_SESSION_ID}&success=true`,
       cancel_url: `${req.headers.get('origin')}/index.html?canceled=true`,
       client_reference_id: user.id,
       customer_email: user.email,
+      metadata: {
+        product_id: productId,
+        plan_id: planId,
+        access_level: String(accessLevel ?? '')
+      }
     })
 
     return new Response(JSON.stringify({ url: session.url }), {

@@ -1,34 +1,36 @@
 # /pillars/oracle/
 
-**Status:** ACTIVE WITH DURABLE PIPELINE SPLIT
+**Status:** ACTIVE FULL DATA MACHINE
 
-Dieses Pillar ist die fachliche JS-Runtime- und Consumption-Wahrheit fuer Oracle-Daten in Browser- und Application-Consumption.
+Dieses Pillar ist die fachliche JS-Runtime-, Consumption- und Verarbeitungs-Wahrheit fuer Oracle-Daten in Browser-, Application- und operativer Pipeline-Steuerung.
 
 ## Aktive Runtime-Capabilities
 
 - `browser_read/`
+- `processing/`
 - `signals/`
 - `fusion/`
 - `snapshots/`
 - `backtesting/`
 
-## Adapter- und Pipeline-Zone
+## Ownership-Modell
 
-- `processing/` bildet den dauerhaften Manifest- und Adapter-Einstieg fuer die operative Pipeline
-- die eigentliche Rechen- und Pipeline-Substanz lebt gewollt weiter unter `scripts/oracle/`
-- `artifacts.js` ist die kanonische JS-Wahrheit fuer die konsumierten Snapshot-Artefakte
+- `processing/` ist der fachliche Steuerraum fuer Oracle
+- `python/` unter `processing/` enthaelt die pillar-owned Python-Substanz
+- `scripts/oracle/*` bleibt nur noch duenne CLI-/Worker-Huelle fuer dieselbe Pillar-Logik
+- `artifacts.js` ist die kanonische Artefakt-Wahrheit fuer Prediction-, Backtest- und interne Merge-Artefakte
 
 ## Harte Grenze
 
 - `bridges/python/*` bleibt technische IO-Bruecke
 - UI liest nur ueber `shared/application/read_models/*`
 - UI-relevante Oracle-Outputs muessen am `oracleSnapshotContract` haengen
-- `scripts/oracle/*` produziert operative Artefakte, ist aber keine JS-Consumption-Quelle
+- `scripts/oracle/*` ist keine zweite fachliche Oracle-Wahrheit
 
 ## Marker-Wahrheit
 
-Oracle-Unterzonen mit aktivem Code oder aktivem Adapter-Manifest werden nicht mehr als `NOT_IMPLEMENTED` markiert.
+Oracle-Unterzonen mit aktivem Code oder aktiver Orchestrierung werden nicht als `NOT_IMPLEMENTED` markiert.
 
-- aktive JS-Zonen tragen `README.md`
-- `processing/` ist bewusst als `ADAPTER MANIFEST` dokumentiert
-- reservierte Oracle-Zonen ohne Runtime-Substanz waeren separat zu markieren, existieren im aktuellen Pillar aber nicht
+- aktive Zonen tragen `README.md`
+- `processing/` ist bewusst als aktive Orchestrierung dokumentiert
+- der operative Heavy-Processing-Stack bleibt Python-basiert, aber nicht mehr ausserhalb des Pillars fachlich definiert

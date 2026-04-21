@@ -33,6 +33,26 @@ describe('stripePaymentAdapter', () => {
     expect(invoke).toHaveBeenCalledWith('stripe-checkout', {
       body: { priceId: 'price_123' }
     });
+
+    await expect(adapter.createCheckoutSession({
+      priceId: 'price_business',
+      mode: 'subscription',
+      productId: 'business',
+      planId: 'business',
+      accessLevel: 20
+    })).resolves.toEqual({
+      success: true,
+      data: { url: 'https://checkout.test' }
+    });
+    expect(invoke).toHaveBeenCalledWith('stripe-checkout', {
+      body: {
+        priceId: 'price_business',
+        mode: 'subscription',
+        productId: 'business',
+        planId: 'business',
+        accessLevel: 20
+      }
+    });
   });
 
   test('verifySession validates the input and reads transactions through the provider adapter', async () => {
@@ -48,7 +68,7 @@ describe('stripePaymentAdapter', () => {
           eq: jest.fn(() => ({
             in: jest.fn(() => ({
               single: jest.fn().mockResolvedValue({
-                data: { id: 'txn_1', status: 'paid' },
+                data: { id: 'txn_1', status: 'paid', plan_id: 'business' },
                 error: null
               })
             }))
@@ -61,7 +81,8 @@ describe('stripePaymentAdapter', () => {
       success: true,
       data: expect.objectContaining({
         sessionId: 'cs_123',
-        verified: true
+        verified: true,
+        transaction: expect.objectContaining({ plan_id: 'business' })
       })
     });
   });

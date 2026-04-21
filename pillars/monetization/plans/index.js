@@ -20,16 +20,16 @@ export const PLAN_CATALOG = Object.freeze([
     label: 'Pro',
     accessLevel: ACCESS_LEVELS.PRO,
     productIds: ['artifact'],
-    monthlyPrice: 19,
+    billingPeriod: 'one_time',
     availability: 'checkout_ready'
   },
   {
     id: 'business',
     label: 'Business',
     accessLevel: ACCESS_LEVELS.BUSINESS,
-    productIds: ['oracle_snapshot', 'api_access'],
-    monthlyPrice: null,
-    availability: 'catalog_only'
+    productIds: ['artifact', 'business', 'oracle_snapshot', 'api_access'],
+    billingPeriod: 'monthly',
+    availability: 'checkout_ready'
   }
 ]);
 
@@ -41,9 +41,21 @@ export function getPlanById(planId = 'free') {
   return PLAN_CATALOG.find((plan) => plan.id === planId) || PLAN_CATALOG[0];
 }
 
+export function getPlanAccessLevel(planId = 'free') {
+  return getPlanById(planId).accessLevel;
+}
+
 export function resolvePlanByAccessLevel(accessLevel = 0) {
   return PLAN_CATALOG
     .slice()
     .reverse()
     .find((plan) => Number(accessLevel) >= Number(plan.accessLevel)) || PLAN_CATALOG[0];
+}
+
+export function resolvePlanIdentity({ planId = null, accessLevel = null } = {}) {
+  if (planId) {
+    return getPlanById(planId);
+  }
+
+  return resolvePlanByAccessLevel(accessLevel ?? 0);
 }

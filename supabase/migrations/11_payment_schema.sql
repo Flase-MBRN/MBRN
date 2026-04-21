@@ -7,11 +7,15 @@ CREATE TABLE IF NOT EXISTS public.transactions (
     stripe_session_id TEXT UNIQUE NOT NULL,
     user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
     product_id TEXT NOT NULL,
+    plan_id TEXT,
     amount_total INTEGER NOT NULL, -- In Cents
     currency TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending', -- pending, completed, failed
     created_at TIMESTAMPTZ DEFAULT now()
 );
+
+ALTER TABLE public.transactions
+ADD COLUMN IF NOT EXISTS plan_id TEXT;
 
 -- Enable RLS
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
@@ -26,7 +30,19 @@ USING (auth.uid() = user_id);
 -- No explicit policy needed for service_role as it bypasses RLS.
 
 -- Evolution of Profiles table
--- Ensure access_level exists and has a default
--- (Profiles table was created in Milestone 6, here we just ensure it's ready for level 10)
+-- plan_id is the canonical monetization state; access_level remains the
+-- compatibility mirror used by older readers.
 
-COMMENT ON COLUMN public.profiles.access_level IS '0: Free, 1: Spark, 10: PAID_PRO';
+ALTER TABLE public.profiles
+ADD COLUMN IF NOT EXISTS plan_id TEXT DEFAULT 'free';
+
+UPDATE public.profiles
+SET plan_id = CASE
+    WHEN access_level >= 20 THEN 'business'
+    WHEN access_level >= 10 THEN 'pro'
+    ELSE 'free'
+END
+WHERE plan_id IS NULL OR plan_id NOT IN ('free', 'pro', 'business');
+
+COMMENT ON COLUMN public.profiles.plan_id IS 'Canonical monetization plan id (free, pro, business).';
+COMMENT ON COLUMN public.profiles.access_level IS 'Derived compatibility mirror from the canonical plan_id.';

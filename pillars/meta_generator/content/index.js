@@ -1,5 +1,96 @@
 import { buildPillarCompletionBlueprint, getPillarStageSequence } from '../blueprints/index.js';
 
+const DIMENSION_CONTENT_BUNDLES = Object.freeze({
+  growth: Object.freeze({
+    dimensionId: 'growth',
+    eyebrow: 'Dimension',
+    title: 'Wachstum lesen',
+    summary: 'Kapital, Fortschritt und Entwicklung in einer klaren Wachstumsflaeche.',
+    cta: 'Zur Wachstumsflaeche'
+  }),
+  pattern: Object.freeze({
+    dimensionId: 'pattern',
+    eyebrow: 'Dimension',
+    title: 'Muster erkennen',
+    summary: 'Numerologie, Signaturen und Profile in einer lesbaren Musterflaeche.',
+    cta: 'Zu den Mustern'
+  }),
+  time: Object.freeze({
+    dimensionId: 'time',
+    eyebrow: 'Dimension',
+    title: 'Zeit ordnen',
+    summary: 'Phasen, Timing und Zyklen als fokussierte Zeitflaeche.',
+    cta: 'Zur Zeitflaeche'
+  }),
+  signal: Object.freeze({
+    dimensionId: 'signal',
+    eyebrow: 'Dimension',
+    title: 'Signale verdichten',
+    summary: 'Oracle- und Marktsignale werden als eigene Signalebene lesbar.',
+    cta: 'Zu den Signalen'
+  })
+});
+
+const SURFACE_COPY_BUNDLES = Object.freeze({
+  home: Object.freeze({
+    surfaceId: 'home',
+    title: 'MBRN',
+    subtitle: 'Die Oberflaeche fuer Muster, Wachstum und Zeit.',
+    cta: 'Starten'
+  }),
+  dashboard: Object.freeze({
+    surfaceId: 'dashboard',
+    title: 'Dashboard',
+    subtitle: 'Alle aktiven Flaechen auf einen Blick.',
+    cta: 'Uebersicht laden'
+  }),
+  finance: Object.freeze({
+    surfaceId: 'finance',
+    title: 'Wachstum',
+    subtitle: 'So entwickelt sich dein Kapital ueber Zeit.',
+    cta: 'Szenario ansehen'
+  }),
+  numerology: Object.freeze({
+    surfaceId: 'numerology',
+    title: 'Muster',
+    subtitle: 'Dein Profil, deine Signaturen, deine exportierbaren Muster.',
+    cta: 'Profil lesen'
+  }),
+  chronos: Object.freeze({
+    surfaceId: 'chronos',
+    title: 'Zeit',
+    subtitle: 'Zyklen, Phasen und Timing in einer Zeitleiste.',
+    cta: 'Phasen lesen'
+  }),
+  synergy: Object.freeze({
+    surfaceId: 'synergy',
+    title: 'Vibe Check',
+    subtitle: 'Beziehungen, Dynamik und Resonanz als eigene Flaeche.',
+    cta: 'Verbindung lesen'
+  })
+});
+
+const EXPORT_COPY_BUNDLES = Object.freeze({
+  asset_export: Object.freeze({
+    exportId: 'asset_export',
+    title: 'Surface Asset',
+    subtitle: 'Ein visuelles Artefakt fuer deine aktive Surface.',
+    cta: 'Asset exportieren'
+  }),
+  pdf_export: Object.freeze({
+    exportId: 'pdf_export',
+    title: 'PDF Report',
+    subtitle: 'Ein lesbarer Report fuer spaetere Referenz.',
+    cta: 'PDF exportieren'
+  }),
+  share_export: Object.freeze({
+    exportId: 'share_export',
+    title: 'Share Card',
+    subtitle: 'Ein kompaktes Bild fuer Teilen oder Download.',
+    cta: 'Share Card erzeugen'
+  })
+});
+
 export function buildPostV3RoadmapMarkdown() {
   const stageSequence = getPillarStageSequence()
     .map((pillar, index) => `${index + 1}. ${pillar}`)
@@ -95,4 +186,16 @@ Bewertung:
 - Discoverability
 - Workspace-Komposition
 `;
+}
+
+export function buildDimensionContentBundle(dimensionId) {
+  return DIMENSION_CONTENT_BUNDLES[dimensionId] || null;
+}
+
+export function buildSurfaceCopyBundle(surfaceId) {
+  return SURFACE_COPY_BUNDLES[surfaceId] || null;
+}
+
+export function buildExportCopyBundle(exportId) {
+  return EXPORT_COPY_BUNDLES[exportId] || null;
 }

@@ -76,11 +76,12 @@ Bewusst reserviert:
 - `export_entrypoints/`
 
 #### `oracle`
-Aktiv mit Pipeline-Adaptern:
+Aktiv als Daten- und Verarbeitungsmaschine:
 
-- `browser_read`, `signals`, `fusion`, `snapshots`, `backtesting` liefern JS-Runtime-Substanz
-- `processing` bildet die operative Heavy-Processing-Wahrheit als Manifest-/Adapter-Zone ab
-- Heavy-Processing lebt weiterhin operativ unter `scripts/oracle/`
+- `browser_read`, `signals`, `fusion`, `snapshots`, `backtesting` liefern Runtime-Substanz
+- `processing` ist der aktive Oracle-Steuerraum fuer Ingestion, Prediction, Snapshot-Produktion und Backfill
+- operative Python-Worker werden unter `pillars/oracle/processing/*` fachlich besessen
+- `scripts/oracle/*` bleibt nur noch duenne CLI-/Worker-Huelle
 - Browser-/Application-Consumption liest nur ueber `pillars/oracle/*`
 
 #### `monetization`
@@ -92,18 +93,18 @@ Aktiv entlang einer klaren Fachkette:
 - `entitlements`
 - `billing`
 - `gates`
-- `free`, `pro`, `business` sind die aktuelle policy-grade Planwahrheit
-- `business` ist fachlich real, aber nicht automatisch voll kaufbar
-- `billing`
-- `gates`
+- `free`, `pro`, `business` sind die aktive Planwahrheit
+- `plan_id` ist die repo-weite Persistenzwahrheit
+- `artifact` ist das kaufbare Einzelprodukt fuer `pro`
+- `business` ist die kaufbare Bundle-Subscription
 
 #### `meta_generator`
-Seed-aktiv:
+Aktiv als Generator-Pillar:
 
-- erste Generator-Subsysteme real vorhanden
-- interner Workflow fuer Repo-Roadmap aktiv
-- zweiter interner Seed-Workflow fuer Modul-, Asset- und Adapter-Previews aktiv
-- noch nicht als voll ausgebauter Produktions-Pillar abgeschlossen
+- `blueprints`, `content`, `modules`, `assets`, `agent_adapters` sind aktiv
+- Runtime-Konsumenten leben in `shared/application/frontend_os/discoverability_runtime.js` und `shared/application/frontend_os/export_runtime.js`
+- Workflow-Konsumenten leben in `scripts/devlab/*` fuer Roadmap-, Blueprint- und Scaffold-Bundles
+- der Kern bleibt deterministisch; AI-Nutzung laeuft ueber strukturierte Adapter-/Work-Orders
 
 ## Dimensions und Apps
 
@@ -158,11 +159,11 @@ Der aktuelle Stand ist:
 - Registry/Manifest aktiv
 - Root-Wahrheit auf dieses Repo reduziert
 - aktives Close-out Gate und Stage A sichtbar im Repo
-- 4 Pillars ehrlich eingeordnet, aber nicht kuenstlich "voll ausgebaut"
+- 4 Pillars aktiv eingeordnet, ohne kuenstlich unendliche Produktbreite zu behaupten
 
 Nicht behauptet wird:
 
 - 11 Dimensions
-- fertiger Meta-Generator
-- voll ausgebautes Oracle-Heavy-Processing im Pillar
+- unendliche Generator-Autonomie oder Live-LLM-Zwang in der Runtime
+- JS-Port des Oracle-Heavy-Processing
 - fertige Monetization-Produkte jenseits der aktuellen Fachkette

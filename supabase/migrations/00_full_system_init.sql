@@ -8,7 +8,8 @@
 CREATE TABLE IF NOT EXISTS public.profiles (
     id uuid REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
     display_name TEXT,
-    access_level INTEGER DEFAULT 0, -- 0: Free, 1: Spark, 10: PAID_PRO
+    plan_id TEXT DEFAULT 'free',
+    access_level INTEGER DEFAULT 0, -- derived compatibility mirror for free/pro/business
     current_streak INTEGER DEFAULT 0,
     shields INTEGER DEFAULT 0,
     last_sync TIMESTAMPTZ DEFAULT now(),
@@ -48,6 +49,7 @@ CREATE TABLE IF NOT EXISTS public.transactions (
     stripe_session_id TEXT UNIQUE NOT NULL,
     user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
     product_id TEXT NOT NULL,
+    plan_id TEXT,
     amount_total INTEGER NOT NULL,
     currency TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
@@ -134,3 +136,6 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER tr_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 CREATE TRIGGER tr_app_data_updated_at BEFORE UPDATE ON public.app_data FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
+
+COMMENT ON COLUMN public.profiles.plan_id IS 'Canonical monetization plan id (free, pro, business).';
+COMMENT ON COLUMN public.profiles.access_level IS 'Derived compatibility mirror from the canonical plan_id.';

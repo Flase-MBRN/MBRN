@@ -1,15 +1,19 @@
 import { getSupabaseClient } from '../../bridges/supabase/client.js';
 
 export const stripePaymentAdapter = {
-  async createCheckoutSession(priceId) {
+  async createCheckoutSession(checkoutRequest) {
     const client = getSupabaseClient();
     if (!client) {
       return { success: false, error: 'Bezahlvorgang erfordert eine Cloud-Verbindung.' };
     }
 
+    const payload = typeof checkoutRequest === 'string'
+      ? { priceId: checkoutRequest }
+      : checkoutRequest;
+
     try {
       const { data, error } = await client.functions.invoke('stripe-checkout', {
-        body: { priceId }
+        body: payload
       });
 
       if (error) throw error;
@@ -33,7 +37,7 @@ export const stripePaymentAdapter = {
     try {
       const { data, error } = await client
         .from('transactions')
-        .select('id, status, user_id, product_id, amount_total, currency, stripe_session_id, created_at')
+        .select('id, status, user_id, product_id, plan_id, amount_total, currency, stripe_session_id, created_at')
         .eq('stripe_session_id', sessionId)
         .in('status', ['succeeded', 'complete', 'paid', 'completed'])
         .single();

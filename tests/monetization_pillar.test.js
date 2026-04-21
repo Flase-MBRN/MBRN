@@ -58,26 +58,52 @@ describe('monetization pillar modules', () => {
     expect(resolvePlanByAccessLevel(10).id).toBe('pro');
     expect(resolvePlanByAccessLevel(20).id).toBe('business');
     expect(getApiProductCatalog().map((product) => product.id)).toContain('artifact');
+    expect(getApiProductCatalog().map((product) => product.id)).toContain('business');
     expect(getApiProductById('artifact')).toEqual(expect.objectContaining({ provider: 'stripe' }));
+    expect(getApiProductById('business')).toEqual(expect.objectContaining({
+      provider: 'stripe',
+      grantsPlanId: 'business'
+    }));
     expect(getPricingByProductId('artifact')).toEqual(expect.objectContaining({
       provider: 'stripe',
       amount: 19
+    }));
+    expect(getPricingByProductId('business')).toEqual(expect.objectContaining({
+      provider: 'stripe',
+      amount: 49,
+      billingPeriod: 'monthly'
     }));
     expect(resolveEntitlements({ accessLevel: 10, productId: 'artifact' })).toEqual(expect.objectContaining({
       planId: 'pro',
       features: expect.arrayContaining(['artifact']),
       canPurchase: true
     }));
+    expect(resolveEntitlements({ planId: 'business', productId: 'business' })).toEqual(expect.objectContaining({
+      planId: 'business',
+      features: expect.arrayContaining(['artifact', 'business', 'oracle_snapshot', 'api_access']),
+      canPurchase: true
+    }));
     expect(buildCheckoutSessionRequest('artifact')).toEqual(expect.objectContaining({
       productId: 'artifact',
+      planId: 'pro',
       provider: 'stripe',
+      mode: 'payment',
+      availability: 'checkout_ready',
+      checkoutReady: true
+    }));
+    expect(buildCheckoutSessionRequest('business')).toEqual(expect.objectContaining({
+      productId: 'business',
+      planId: 'business',
+      provider: 'stripe',
+      mode: 'subscription',
       availability: 'checkout_ready',
       checkoutReady: true
     }));
     expect(resolveBillingState({ status: 'paid', product_id: 'artifact' })).toEqual({
       status: 'paid',
       isActive: true,
-      productId: 'artifact'
+      productId: 'artifact',
+      planId: null
     });
     expect(getApiProductById('artifact')).toEqual(expect.objectContaining({
       availability: 'checkout_ready'
@@ -101,6 +127,11 @@ describe('monetization pillar modules', () => {
       reason: 'allowed'
     }));
     expect(active.resolveCommercialGate('artifact', { planId: 'free' })).toEqual(expect.objectContaining({
+      allowed: false,
+      reason: 'upgrade_required',
+      meta: expect.objectContaining({ canPurchase: false })
+    }));
+    expect(active.resolveCommercialGate('business', { planId: 'free' })).toEqual(expect.objectContaining({
       allowed: false,
       reason: 'upgrade_required',
       meta: expect.objectContaining({ canPurchase: false })
@@ -148,6 +179,19 @@ describe('monetization pillar modules', () => {
       plan: expect.objectContaining({ id: 'business' }),
       gate: expect.objectContaining({ allowed: true })
     }));
+
+    const businessFlow = resolveFlow({
+      productId: 'business',
+      planId: 'business'
+    });
+
+    expect(businessFlow).toEqual(expect.objectContaining({
+      availability: 'checkout_ready',
+      checkoutReady: true,
+      policyState: 'checkout_ready',
+      plan: expect.objectContaining({ id: 'business' }),
+      pricing: expect.objectContaining({ productId: 'business', billingPeriod: 'monthly' })
+    }));
   });
 
   test('monetization flow exposes policy-grade states for checkout and unknown products', () => {
@@ -193,14 +237,12 @@ describe('monetization pillar modules', () => {
     expect(resolvePrice('artifact', 'stripe')).toEqual(expect.objectContaining({
       priceId: expect.any(String)
     }));
-    expect(resolvePrice('oracle_snapshot', 'stripe')).toEqual(expect.objectContaining({
-      priceId: null,
+    expect(resolvePrice('business', 'stripe')).toEqual(expect.objectContaining({
+      priceId: expect.any(String),
       billingPeriod: 'monthly'
     }));
-    expect(resolvePrice('api_access', 'stripe')).toEqual(expect.objectContaining({
-      priceId: null,
-      billingPeriod: 'monthly'
-    }));
+    expect(resolvePrice('oracle_snapshot', 'stripe')).toBeNull();
+    expect(resolvePrice('api_access', 'stripe')).toBeNull();
     expect(resolvePrice('premium_monthly', 'stripe')).toBeNull();
     expect(resolvePrice('oracle_credits_10', 'stripe')).toBeNull();
   });
@@ -211,5 +253,37 @@ describe('monetization pillar modules', () => {
       expect(fs.existsSync(path.join(zoneDir, 'README.md'))).toBe(true);
       expect(fs.existsSync(path.join(zoneDir, 'NOT_IMPLEMENTED.md'))).toBe(false);
     });
+  });
+
+  test('repo-wide monetization truth removes legacy labels from active config and supabase paths', () => {
+    const productiveFiles = [
+      path.join(REPO_ROOT, 'shared', 'core', 'config', 'index.js'),
+      path.join(REPO_ROOT, 'supabase', 'functions', 'stripe-webhook', 'index.ts'),
+      path.join(REPO_ROOT, 'supabase', 'migrations', '00_full_system_init.sql'),
+      path.join(REPO_ROOT, 'supabase', 'migrations', '11_payment_schema.sql')
+    ];
+
+    productiveFiles.forEach((filePath) => {
+      const source = fs.readFileSync(filePath, 'utf8');
+      expect(source).not.toMatch(/\bPAID_PRO\b|\bSpark\b|premium_monthly|oracle_credits_/);
+    });
+  });
+
+  test('stripe checkout and webhook functions carry canonical product and plan metadata', () => {
+    const checkoutSource = fs.readFileSync(
+      path.join(REPO_ROOT, 'supabase', 'functions', 'stripe-checkout', 'index.ts'),
+      'utf8'
+    );
+    const webhookSource = fs.readFileSync(
+      path.join(REPO_ROOT, 'supabase', 'functions', 'stripe-webhook', 'index.ts'),
+      'utf8'
+    );
+
+    expect(checkoutSource).toContain('product_id');
+    expect(checkoutSource).toContain('plan_id');
+    expect(checkoutSource).toContain('access_level');
+    expect(webhookSource).toContain('plan_id');
+    expect(webhookSource).toContain('product_id');
+    expect(webhookSource).toContain('access_level');
   });
 });

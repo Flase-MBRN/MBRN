@@ -20,8 +20,9 @@ Oracle-Snapshots werden in der dauerhaften Plattformstruktur nicht aus diesem Or
 
 - `pillars/oracle/browser_read/snapshot_reader.js`
 
-Die operative Python-Substanz bleibt weiterhin unter:
+Die operative Python-Substanz fuer Oracle wird fachlich unter dem Oracle-Pillar gesteuert und nur noch ueber duenne Worker-Huellen gestartet:
 
+- `pillars/oracle/processing/python/`
 - `scripts/oracle/`
 - `scripts/pipelines/`
 

@@ -12,17 +12,16 @@ Dieses Pillar ist die einzige aktive Surface-Kompositionszone.
 - `cards/`
 - `ui_states/`
 - `app_surfaces/`
-
-## Bewusst reserviert
-
 - `dimension_views/`
 - `export_entrypoints/`
 
-Diese Zonen bleiben markiert und werden nicht kuenstlich mit Dummy-Logik befuellt.
-
 ## Physische Surface-Wahrheit
 
-Die eigentliche Surface-Komposition fuer die stabilen Route-Einstiege lebt unter `app_surfaces/`.
+Die eigentliche Surface-Komposition fuer die stabilen Route-Einstiege und OS-Einstiege lebt unter:
+
+- `app_surfaces/`
+- `dimension_views/`
+- `export_entrypoints/`
 
 - `dashboard/render_dashboard.js`
 - `apps/finance/render.js`
@@ -33,21 +32,14 @@ Diese Dateien bleiben nur als duenne Bootstraps erhalten, damit die oeffentliche
 
 ## Boundary-Regel
 
-`frontend_os` konsumiert keine Bridges, kein Commerce und keine rohen Fach-Pillars.
+`frontend_os` konsumiert keine Bridges, kein Commerce, keine rohen Fach-Pillars und keine direkte Core-Fachlogik.
 
-Die aktiven Surface-Zonen `shell/`, `navigation/`, `dashboard/`, `cards/` und `ui_states/` konsumieren nur:
+Alle aktiven Surface-Zonen konsumieren nur:
 
 - `shared/application/*`
 - `shared/core/registries/*`
 - rein lesende `shared/core/contracts/*`
 - `shared/ui/*`
-
-Die physische App-Surface-Zone `app_surfaces/` darf fuer die stabilen Legacy-Routen zusaetzlich app-nahe Core-Bausteine konsumieren:
-
-- `shared/core/state/*`
-- `shared/core/storage/*`
-- `shared/core/logic/*`
-- `shared/core/i18n.js`
 
 Verboten sind direkte Runtime-Imports aus:
 
@@ -55,3 +47,14 @@ Verboten sind direkte Runtime-Imports aus:
 - `commerce/*`
 - `pillars/oracle/*`
 - `pillars/monetization/*`
+- `shared/core/logic/*`
+- `shared/core/state/*`
+- `shared/core/storage/*`
+- `shared/core/i18n.js`
+
+## OS-Faehigkeiten
+
+- `app_surfaces/` ist die einzige physische Zone fuer App-Surface-Komposition.
+- `dimension_views/` stellt echte Dimensions-Einstiege fuer `growth`, `pattern`, `time` und `signal`.
+- `export_entrypoints/` buendelt die heute realen Share-, Asset- und PDF-Exporte.
+- `surface_catalog.js` und `surface_router.js` halten Discoverability und Surface-Aufloesung kompositorisch im Pillar.

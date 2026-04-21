@@ -14,13 +14,13 @@ export const MBRN_CONFIG = {
     PRO: 10,
     BUSINESS: 20
   },
-  tiers: { spark: 7, builder: 30, operator: 90, member: 365 },
   shields: { earnRate: 7, max: 3 },
   powerPass: { triggerDay: 15, durationHours: 48 },
 
   stripe: {
     publicKey: 'pk_test_REPLACE_WITH_YOUR_KEY',
-    priceIdArtifact: 'price_REPLACE_WITH_YOUR_PRICE_ID'
+    priceIdArtifact: 'price_REPLACE_WITH_YOUR_PRICE_ID',
+    priceIdBusiness: 'price_REPLACE_WITH_YOUR_BUSINESS_PRICE_ID'
   },
 
   sentiment: {

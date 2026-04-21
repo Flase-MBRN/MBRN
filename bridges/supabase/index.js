@@ -8,6 +8,15 @@ import {
   resetSupabaseClientForTests,
   setSupabaseCredentials
 } from './client.js';
+import { getPlanById, resolvePlanByAccessLevel } from '../../pillars/monetization/plans/index.js';
+
+function resolvePersistedPlan(profileData = {}) {
+  if (profileData.plan_id) {
+    return getPlanById(profileData.plan_id);
+  }
+
+  return resolvePlanByAccessLevel(profileData.access_level ?? profileData.level ?? 0);
+}
 
 export const supabaseBridge = {
   _setCredentials(url, key) {
@@ -104,12 +113,14 @@ export const supabaseBridge = {
     }
 
     return withCircuitBreaker('supabase', async () => {
+      const plan = resolvePersistedPlan(profileData);
       const { data, error } = await client
         .from('profiles')
         .upsert({
           id: profileData.id,
           display_name: profileData.display_name || profileData.name,
-          access_level: profileData.access_level || profileData.level,
+          plan_id: profileData.plan_id || plan.id,
+          access_level: plan.accessLevel,
           current_streak: profileData.current_streak || profileData.streak,
           shields: profileData.shields,
           last_sync: new Date().toISOString()

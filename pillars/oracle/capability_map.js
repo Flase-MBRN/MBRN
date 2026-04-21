@@ -8,10 +8,11 @@ export const ORACLE_CAPABILITY_MAP = Object.freeze([
   },
   {
     id: 'processing',
-    status: 'adapter_manifest',
+    status: 'active',
     publicEntry: 'pillars/oracle/processing/index.js',
-    sourceOfTruth: 'scripts/oracle',
-    uiRelevant: false
+    sourceOfTruth: 'pillar',
+    uiRelevant: false,
+    runtime: 'python_worker'
   },
   {
     id: 'fusion',

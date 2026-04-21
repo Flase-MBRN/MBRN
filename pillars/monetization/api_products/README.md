@@ -7,6 +7,7 @@ Diese Zone definiert den aktuellen fachlichen Produktkatalog.
 ## Aktueller Stand
 
 - `artifact`
+- `business`
 - `oracle_snapshot`
 - `api_access`
 

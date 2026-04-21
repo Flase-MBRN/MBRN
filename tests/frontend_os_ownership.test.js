@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, test } from '@jest/globals';
+import { getDimensionViewIds, resolveDimensionView } from '../pillars/frontend_os/dimension_views/index.js';
+import { getSurfaceCatalog } from '../pillars/frontend_os/surface_catalog.js';
+import { resolveSurfaceTarget } from '../pillars/frontend_os/surface_router.js';
 
 const repoRoot = process.cwd();
 const JS_EXTENSIONS = new Set(['.js', '.mjs']);
@@ -120,5 +123,37 @@ describe('frontend_os ownership', () => {
       expect(source).not.toContain('injectLegalBlock');
       expect(source).toMatch(/^export \{ .+ \} from /);
     });
+  });
+
+  test('frontend_os active capability zones have README markers and no NOT_IMPLEMENTED remnants', () => {
+    [
+      'pillars/frontend_os/app_surfaces',
+      'pillars/frontend_os/dimension_views',
+      'pillars/frontend_os/export_entrypoints'
+    ].forEach((relativeDir) => {
+      const absoluteDir = path.join(repoRoot, relativeDir);
+      expect(fs.existsSync(path.join(absoluteDir, 'README.md'))).toBe(true);
+      expect(fs.existsSync(path.join(absoluteDir, 'NOT_IMPLEMENTED.md'))).toBe(false);
+    });
+  });
+
+  test('dimension views resolve for every active dimension', () => {
+    expect(getDimensionViewIds()).toEqual(['growth', 'pattern', 'time', 'signal']);
+
+    getDimensionViewIds().forEach((dimensionId) => {
+      expect(typeof resolveDimensionView(dimensionId)).toBe('function');
+    });
+  });
+
+  test('surface catalog and router expose the active frontend_os discoverability model', () => {
+    const catalog = getSurfaceCatalog();
+
+    expect(catalog.systemSurfaces.map((item) => item.id)).toEqual(['home', 'dashboard']);
+    expect(catalog.dimensionViews.map((item) => item.id)).toEqual(['growth', 'pattern', 'time', 'signal']);
+    expect(catalog.exportEntrypoints.map((item) => item.id)).toEqual(['asset_export', 'pdf_export', 'share_export']);
+
+    expect(resolveSurfaceTarget('finance')).toEqual(expect.objectContaining({ id: 'finance', type: 'app' }));
+    expect(resolveSurfaceTarget('growth')).toEqual(expect.objectContaining({ id: 'growth', type: 'dimension' }));
+    expect(resolveSurfaceTarget('share_export')).toEqual(expect.objectContaining({ id: 'share_export', type: 'export' }));
   });
 });

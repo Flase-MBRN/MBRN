@@ -1,8 +1,8 @@
 # /pillars/meta_generator/ - Meta Generator
 
-**Status:** SEED ACTIVE
+**Status:** ACTIVE
 
-Der Meta Generator ist nicht mehr nur Vision, aber auch noch kein voll ausgebauter Produktions-Pillar.
+Der Meta Generator ist ein aktiver Generator-Pillar mit produktiven Runtime- und Workflow-Konsumenten.
 
 ## Aktiver Stand
 
@@ -18,7 +18,7 @@ Marker-Wahrheit:
 
 - aktive Seed-Module tragen `README.md`
 - aktive Seed-Module tragen kein `NOT_IMPLEMENTED.md`
-- `seed` bedeutet hier: real und konsumiert, aber bewusst noch nicht `active`
+- `active` bedeutet hier: real, konsumiert und in Runtime wie Tooling verankert
 
 Aktiv konsumiert:
 
@@ -30,13 +30,22 @@ Aktiv konsumiert:
   - konsumiert `modules/`
   - konsumiert `assets/`
   - konsumiert `agent_adapters/`
-  - erzeugt einen wiederholbaren Seed-Bundle-Preview fuer interne Workflows
+  - erzeugt einen wiederholbaren Generator-Bundle-Preview fuer interne Workflows
+- `shared/application/frontend_os/discoverability_runtime.js`
+  - konsumiert `content/` und `blueprints/`
+- `shared/application/frontend_os/export_runtime.js`
+  - konsumiert `content/` und `assets/`
+- `scripts/devlab/generate_app_blueprint_bundle.mjs`
+  - konsumiert `blueprints/`
+- `scripts/devlab/preview_app_scaffold_bundle.mjs`
+  - konsumiert `blueprints/`, `modules/` und `agent_adapters/`
 
 ## Rolle
 
-Der Meta Generator transformiert wiederholbare Architektur- und Inhaltsmuster in reproduzierbare interne Artefakte:
+Der Meta Generator transformiert wiederholbare Architektur-, Inhalts- und Exportmuster in reproduzierbare Artefakte:
 
 - Roadmaps
+- Dimension- und Surface-Bundles
 - Blueprints
 - Modulgerueste
 - Asset-Spezifikationen
@@ -60,24 +69,16 @@ Nicht erlaubt:
 
 Die harte technische Scope-Grenze liegt in `scope_manifest.js`.
 
-## Dokumentierte Seed-Realitaet
+## Dokumentierte Active-Realitaet
 
-- `blueprints` und `content` sind reale Seed-Module fuer den Roadmap-Workflow
-- `modules`, `assets` und `agent_adapters` sind reale Seed-Module fuer den Preview-Bundle-Workflow
-- die Subzonen sind aktiv, aber absichtlich leichtgewichtig
-- der Meta Generator ist damit kein leerer Platzhalter mehr, aber weiterhin kein Produktions-Pillar
+- `blueprints` und `content` sind reale Generator-Module fuer Runtime- und Roadmap-Workflows
+- `modules`, `assets` und `agent_adapters` sind reale Generator-Module fuer Scaffold-, Export- und Adapter-Workflows
+- die Subzonen bleiben deterministisch und strukturiert
+- der Meta Generator ist damit kein Seed mehr, sondern ein aktiver Generator-Pillar
 
-## Noch nicht fertig
+## Architekturgrenze
 
-- kein voll ausgebauter Produktions-Workflow
-- keine breite Runtime-Nutzung
-- keine produktive KI-Orchestrierung
-
-## Trigger fuer den naechsten Ausbau
-
-Der Wechsel von `seed active` zu echtem Produktionsstatus passiert erst, wenn:
-
-1. Blueprints mehrfach im Repo real genutzt werden
-2. Modul-Scaffolds von internen Workflows konsumiert werden
-3. Asset- und Adapter-Pfade echte Nutzung bekommen
-4. KI-Integration stabil produktiv ist
+- keine freie Prompt-Ablage
+- keine fachfremde Businesslogik
+- keine harte Live-LLM-Abhaengigkeit in der Produkt-Runtime
+- AI-Nutzung nur ueber strukturierte Adapter-Work-Orders

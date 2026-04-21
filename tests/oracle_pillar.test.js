@@ -5,7 +5,14 @@ import { getOracleArtifactById, ORACLE_ARTIFACTS } from '../pillars/oracle/artif
 import { summarizeOracleBacktest } from '../pillars/oracle/backtesting/index.js';
 import { getOracleCapabilityById, ORACLE_CAPABILITY_MAP } from '../pillars/oracle/capability_map.js';
 import { buildOracleFusion } from '../pillars/oracle/fusion/index.js';
-import { getOracleProcessingManifest, listOracleProcessingJobs } from '../pillars/oracle/processing/index.js';
+import {
+  buildOracleMergedInputs,
+  getOracleProcessingManifest,
+  getOracleWorkerScript,
+  listOracleProcessingJobs,
+  runOracleBackfillJob,
+  runOraclePredictionJob
+} from '../pillars/oracle/processing/index.js';
 import { buildOracleSignals } from '../pillars/oracle/signals/index.js';
 import { createOracleDashboardSnapshot } from '../pillars/oracle/snapshots/index.js';
 
@@ -95,16 +102,25 @@ describe('oracle pillar modules', () => {
     }));
     const manifest = getOracleProcessingManifest();
     expect(manifest).toHaveLength(4);
-    expect(listOracleProcessingJobs()).toContain('oracle_core');
-    expect(manifest.find((job) => job.id === 'oracle_core')).toEqual(expect.objectContaining({
-      outputs: [ORACLE_ARTIFACTS.predictionSnapshot.id]
+    expect(listOracleProcessingJobs()).toEqual([
+      'merged_inputs',
+      'oracle_prediction',
+      'backfill_history',
+      'artifacts_writer'
+    ]);
+    expect(manifest.find((job) => job.id === 'oracle_prediction')).toEqual(expect.objectContaining({
+      runtime: 'python_worker',
+      owner: 'pillars/oracle/processing/python/prediction_pipeline.py',
+      outputs: [ORACLE_ARTIFACTS.predictionSnapshot.id, ORACLE_ARTIFACTS.backtestSnapshot.id]
     }));
     expect(manifest.find((job) => job.id === 'backfill_history')).toEqual(expect.objectContaining({
-      outputs: [ORACLE_ARTIFACTS.backtestSnapshot.id]
+      runtime: 'python_worker',
+      owner: 'pillars/oracle/processing/python/backfill_pipeline.py',
+      outputs: [ORACLE_ARTIFACTS.backtestSnapshot.id, ORACLE_ARTIFACTS.predictionSnapshot.id]
     }));
   });
 
-  test('oracle capability map documents pillar truth and pipeline adapter boundaries', () => {
+  test('oracle capability map documents pillar truth and active processing ownership', () => {
     expect(ORACLE_CAPABILITY_MAP.map((capability) => capability.id)).toEqual([
       'browser_read',
       'processing',
@@ -114,9 +130,10 @@ describe('oracle pillar modules', () => {
       'backtesting'
     ]);
     expect(getOracleCapabilityById('processing')).toEqual(expect.objectContaining({
-      status: 'adapter_manifest',
-      sourceOfTruth: 'scripts/oracle',
-      uiRelevant: false
+      status: 'active',
+      sourceOfTruth: 'pillar',
+      uiRelevant: false,
+      runtime: 'python_worker'
     }));
     expect(getOracleCapabilityById('snapshots')).toEqual(expect.objectContaining({
       status: 'active',
@@ -125,16 +142,68 @@ describe('oracle pillar modules', () => {
     }));
   });
 
-  test('oracle artifacts stay the canonical JS truth for pipeline-consumed snapshots', () => {
+  test('oracle artifacts stay the canonical JS truth for pillar-owned processing outputs', () => {
+    expect(ORACLE_ARTIFACTS.mergedInputsArtifact).toEqual(expect.objectContaining({
+      producer: 'pillars/oracle/processing/index.js',
+      uiRelevant: false
+    }));
     expect(ORACLE_ARTIFACTS.predictionSnapshot).toEqual(expect.objectContaining({
-      producer: 'scripts/oracle/oracle_core.py',
+      producer: 'pillars/oracle/processing/python/prediction_pipeline.py',
       consumer: 'pillars/oracle/browser_read/index.js',
       uiRelevant: true
     }));
     expect(getOracleArtifactById('backtest_snapshot')).toEqual(expect.objectContaining({
       path: '../../shared/data/oracle_backtest.json',
-      producer: 'scripts/oracle/backfill_history.py'
+      producer: 'pillars/oracle/processing/python/backfill_pipeline.py'
     }));
+  });
+
+  test('processing API exposes ingestion and worker orchestration hooks', async () => {
+    const mergedInputs = await buildOracleMergedInputs({
+      marketSentimentSnapshot: {
+        timestamp_utc: '2026-04-21T10:06:37.221826+00:00',
+        sentiment_score: 55,
+        sentiment_label: 'Neutral',
+        confidence: 0.8,
+        recommendation: 'hold',
+        crypto_bias: 'bullish',
+        news_bias: 'neutral',
+        news_impact: 20,
+        market_data: [
+          { ticker: 'BTC-USD', price: 1, change_percent: 3.2, volume: 10 },
+          { ticker: 'ETH-USD', price: 2, change_percent: 1.1, volume: 20 }
+        ],
+        news_feed: [{ title: 'Calm market' }]
+      },
+      numerologyHistory: [
+        { date: '21.04.2026', date_utc: '2026-04-21T00:00:00Z', day_number: 8, is_master: false, description: 'Macht' }
+      ]
+    });
+
+    expect(mergedInputs).toEqual(expect.objectContaining({
+      marketSentiment: expect.objectContaining({
+        sentimentScore: 55,
+        cryptoSnapshot: expect.objectContaining({
+          'BTC-USD': expect.any(Object)
+        })
+      }),
+      numerologyHistory: [
+        expect.objectContaining({ date: '21.04.2026', dayNumber: 8 })
+      ]
+    }));
+
+    expect(getOracleWorkerScript('oracle_prediction')).toBe('scripts/oracle/oracle_core.py');
+    expect(getOracleWorkerScript('backfill_history')).toBe('scripts/oracle/backfill_history.py');
+
+    const predictionRun = await runOraclePredictionJob({
+      runner: async (jobId) => ({ success: true, jobId, simulated: true })
+    });
+    const backfillRun = await runOracleBackfillJob({
+      runner: async (jobId) => ({ success: true, jobId, simulated: true })
+    });
+
+    expect(predictionRun).toEqual({ success: true, jobId: 'oracle_prediction', simulated: true });
+    expect(backfillRun).toEqual({ success: true, jobId: 'backfill_history', simulated: true });
   });
 
   test('active oracle zones use synchronized README markers instead of NOT_IMPLEMENTED', () => {
@@ -145,6 +214,21 @@ describe('oracle pillar modules', () => {
 
       expect(fs.existsSync(readmePath)).toBe(true);
       expect(fs.existsSync(notImplementedPath)).toBe(false);
+    });
+  });
+
+  test('scripts/oracle entry files are thin wrappers around pillar-owned processing modules', () => {
+    [
+      'scripts/oracle/oracle_core.py',
+      'scripts/oracle/backfill_history.py',
+      'scripts/oracle/data_bridge.py',
+      'scripts/oracle/correlation_matrix.py',
+      'scripts/oracle/numerology_engine.py'
+    ].forEach((relativePath) => {
+      const filePath = path.join(REPO_ROOT, relativePath);
+      const source = fs.readFileSync(filePath, 'utf8');
+
+      expect(source).toContain('pillars.oracle.processing.python');
     });
   });
 });

@@ -7,17 +7,8 @@ export const PRICING_TABLE = Object.freeze([
     billingPeriod: 'one_time'
   },
   {
-    productId: 'oracle_snapshot',
+    productId: 'business',
     provider: 'stripe',
-    priceId: null,
-    amount: 9,
-    currency: 'eur',
-    billingPeriod: 'monthly'
-  },
-  {
-    productId: 'api_access',
-    provider: 'stripe',
-    priceId: null,
     amount: 49,
     currency: 'eur',
     billingPeriod: 'monthly'

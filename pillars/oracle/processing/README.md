@@ -1,17 +1,25 @@
 # /pillars/oracle/processing/
 
-**Status:** ADAPTER MANIFEST
+**Status:** ACTIVE ORCHESTRATION
 
-Diese Zone ist bewusst keine JS-Heavy-Processing-Engine. Sie beschreibt die operative Oracle-Pipeline, die dauerhaft unter `scripts/oracle/*` lebt.
+Diese Zone ist der fachliche Steuerraum der Oracle-Pipeline.
 
 ## Verantwortung
 
-- die bekannten Oracle-Processing-Jobs als Manifest offenlegen
-- Artefakt-Outputs an die JS-Wahrheit unter `artifacts.js` anbinden
-- den dauerhaften Split zwischen Pipeline und Browser-/Application-Consumption dokumentieren
+- Oracle-owned Ingestion fuer Markt-/Sentiment- und Numerologie-Inputs
+- Prediction-Orchestrierung
+- Snapshot- und Artefakt-Schreiben
+- Backfill- und Replay-Orchestrierung
+- Koordination der Python-Worker unter Pillar-Ownership
+
+## Runtime-Modell
+
+- `index.js` ist die oeffentliche Processing-API
+- `python_worker.js` startet die duennen CLI-/Worker-Huellen unter `scripts/oracle/*`
+- `python/` enthaelt die pillar-owned Python-Substanz fuer Prediction, Ingestion, Korrelation und Backfill
 
 ## Grenze
 
 - kein In-Browser-Heavy-Processing
-- keine zweite Pipeline-Implementierung in JavaScript
-- `sourceOfTruth` bleibt fuer diese Zone `scripts/oracle/*`
+- keine zweite fachliche Wahrheit unter `scripts/oracle/*`
+- `shared/application/*` konsumiert Oracle weiter nur ueber die aktiven Pillar-Outputs
