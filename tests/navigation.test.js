@@ -86,10 +86,11 @@ async function loadNavigation() {
     renderPolicyLinks: renderPolicyLinksMock
   }));
 
-  const { nav, getNavigationEntries } = await import('../pillars/frontend_os/navigation/index.js');
+  const { nav, getCurrentRoute, getNavigationEntries } = await import('../pillars/frontend_os/navigation/index.js');
 
   return {
     nav,
+    getCurrentRoute,
     getNavigationEntries,
     stateMock,
     touchManagerMock,
@@ -181,12 +182,19 @@ describe('frontend_os navigation', () => {
 
   test('navigation entries follow manifest membership and dimension navigation order', async () => {
     const { getNavigationEntries } = await loadNavigation();
-    expect(getNavigationEntries().map((entry) => entry.id)).toEqual([
-      'home',
-      'dashboard',
-      'finance',
-      'numerology',
-      'chronos'
+    expect(getNavigationEntries()).toEqual([
+      expect.objectContaining({ id: 'home', label: 'Start' }),
+      expect.objectContaining({ id: 'dashboard', label: 'Dashboard' }),
+      expect.objectContaining({ id: 'finance', dimensionId: 'growth', label: 'Wachstum' }),
+      expect.objectContaining({ id: 'numerology', dimensionId: 'pattern', label: 'Muster' }),
+      expect.objectContaining({ id: 'chronos', dimensionId: 'time', label: 'Zeit' })
     ]);
+  });
+
+  test('getCurrentRoute resolves system surfaces and manifest-backed app routes deterministically', async () => {
+    const { getCurrentRoute } = await loadNavigation();
+    expect(getCurrentRoute('/dashboard/index.html')).toBe('dashboard');
+    expect(getCurrentRoute('/apps/finance/index.html')).toBe('finance');
+    expect(getCurrentRoute('/unknown')).toBe('home');
   });
 });

@@ -1,33 +1,35 @@
 # 000_ARCHITECTURE.md
 
 ## Zweck
-Dieses Dokument beschreibt die **aktive** Systemwahrheit von MBRN Hub.
 
-Es darf keinen zukünftigen Zustand als bereits umgesetzt behaupten.
+Dieses Dokument beschreibt die aktive Systemwahrheit von MBRN Hub.
+
+Es darf keinen zukuenftigen Zustand als bereits umgesetzt behaupten.
 
 ## Aktueller Zielzustand
 
-MBRN ist aktuell auf einen **plattformsauberen v3-Zustand** gebracht:
+MBRN ist aktuell auf einen plattformsauberen v3-Zustand gebracht:
 
 - nur eine technische Wahrheit im Repo
 - IO-freier Core
 - Cross-Pillar-Orchestrierung im Application-Layer
-- Bridges und Commerce als technische Außenhaut
+- Bridges und Commerce als technische Aussenhaut
 - Frontend OS als aktive Surface-Komposition
-- ehrliche, nicht überbehauptete Pillars
+- ehrliche, nicht ueberbehauptete Pillars
+- getrennte operative Dateien fuer v3-Abnahme und Post-v3-Folgeplanung
 
-Dieser Stand ist **nicht** die volle Vision mit 11 Dimensions oder 4 komplett ausgebauten Businesses.
+Dieser Stand ist nicht die volle Vision mit 11 Dimensions oder 4 komplett ausgebauten Businesses.
 
 ## Architekturgesetze
 
 1. `shared/core/` kennt keine externe IO.
-2. `shared/application/` verbindet Core, Bridges, Commerce und Oberflächen.
+2. `shared/application/` verbindet Core, Bridges, Commerce und Oberflaechen.
 3. `bridges/*` und `commerce/*` tragen technische Integrationen.
-4. `pillars/frontend_os/` enthält Surface-Komposition, nicht Primitive oder Providerlogik.
+4. `pillars/frontend_os/` enthaelt Surface-Komposition, nicht Primitive oder Providerlogik.
 5. `shared/ui/` bleibt business-blinde UI-Infrastruktur.
-6. `dimensionRegistry` ist die kanonische Runtime-Wahrheit für Dimensions.
-7. `dimensions/*/metadata.json` sind Spiegel, nicht Primärquelle.
-8. Reservierte Zielzonen bleiben markiert statt künstlich mit Fake-Logik gefüllt.
+6. `dimensionRegistry` ist die kanonische Runtime-Wahrheit fuer Dimensions.
+7. `dimensions/*/metadata.json` sind Spiegel, nicht Primaerquelle.
+8. Reservierte Zielzonen bleiben markiert statt kuenstlich mit Fake-Logik gefuellt.
 
 ## Aktive Struktur
 
@@ -58,23 +60,32 @@ Dieser Stand ist **nicht** die volle Vision mit 11 Dimensions oder 4 komplett au
 Aktiv und produktiv genutzt.
 
 ### `oracle`
-Teilweise aktiv:
+Aktiv mit Pipeline-Adaptern:
 
-- `browser_read` aktiv
+- `browser_read`, `signals`, `fusion`, `snapshots`, `backtesting` aktiv
+- `processing` als Manifest-/Adapter-Zone aktiv
 - Heavy-Processing weiter operativ in `scripts/oracle/`
-- übrige Unterzonen reserviert
+- Browser-/Application-Consumption bleibt die Wahrheit unter `pillars/oracle/*`
 
 ### `monetization`
-Minimal aktiv:
+Aktiv entlang einer Fachkette:
 
-- `gates` aktiv
-- weitere Businesszonen reserviert
+- `api_products`
+- `pricing`
+- `plans`
+- `entitlements`
+- `billing`
+- `gates`
+- `free`, `pro`, `business` bilden die aktuelle policy-grade Planwahrheit
+- `business` ist fachlich real, aber nicht automatisch checkout-faehig
+- `billing`
+- `gates`
 
 ### `meta_generator`
 Seed-aktiv:
 
 - erste Generator-Subsysteme vorhanden
-- erste interne Workflow-Konsumenten vorhanden
+- mindestens zwei interne Workflow-Konsumenten vorhanden
 - noch nicht voll ausgebaut
 
 ## Dimensions
@@ -86,8 +97,8 @@ Aktuell formalisierte Dimensions:
 - `time`
 - `signal`
 
-Die 11-Dimensions-Welt gehört nicht zum aktuellen Plattform-Abschluss.
+Die 11-Dimensions-Welt gehoert nicht zum aktuellen Plattform-Abschluss.
 
 ## Doku-Regel
 
-Wenn ein Dokument ältere Pfade oder Vor-Refactor-Zustände beschreibt, ist es nur noch als historische Referenz zulässig und darf nicht als aktive Runtime-Wahrheit gelten.
+Wenn ein Dokument aeltere Pfade oder Vor-Refactor-Zustaende beschreibt, ist es nur noch als historische Referenz zulaessig und darf nicht als aktive Runtime-Wahrheit gelten.

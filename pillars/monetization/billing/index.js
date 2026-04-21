@@ -5,17 +5,18 @@ export function buildCheckoutSessionRequest(productId) {
   const product = getApiProductById(productId);
   const pricing = getPricingByProductId(productId);
 
-  if (!product || !pricing || !pricing.priceId) {
+  if (!product || !pricing) {
     return null;
   }
 
   return {
     productId: product.id,
     provider: pricing.provider,
-    priceId: pricing.priceId,
     amount: pricing.amount,
     currency: pricing.currency,
-    billingPeriod: pricing.billingPeriod
+    billingPeriod: pricing.billingPeriod,
+    availability: product.availability,
+    checkoutReady: product.availability === 'checkout_ready'
   };
 }
 

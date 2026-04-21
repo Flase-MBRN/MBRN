@@ -1,25 +1,26 @@
 # MBRN Hub v3 Platform
 
-MBRN Hub ist aktuell eine **plattformsaubere v3-Basis** rund um einen IO-freien Core, einen klaren Application-Layer und eine bewusst ehrliche Pillar-Struktur.
+MBRN Hub ist aktuell eine plattformsaubere v3-Basis rund um einen IO-freien Core, einen klaren Application-Layer und eine bewusst ehrliche Pillar-Struktur.
 
-Der aktuelle Stand ist **nicht** die volle Vision mit 11 Dimensions oder 4 voll ausgebauten Businesses.  
-Der aktuelle Stand ist die bereinigte Plattform, auf der diese spätere Vision sauber wachsen kann.
+Der aktuelle Stand ist nicht die volle Vision mit 11 Dimensions oder 4 voll ausgebauten Businesses. Der aktuelle Stand ist die bereinigte Plattform, auf der diese spaetere Vision sauber wachsen kann.
 
 ## Aktive Systemwahrheit
 
 - Die einzige technische Wahrheit liegt in diesem Repo: `C:\DevLab\MBRN-HUB-V1`
 - `shared/core/` bleibt die IO-freie Mitte
-- `shared/application/` trägt Cross-Pillar-Orchestrierung
-- `bridges/*` und `commerce/*` tragen technische Außenwelt
-- `pillars/frontend_os/` ist die aktive Surface-Komposition
-- `dimensionRegistry` ist die primäre Runtime-Wahrheit für Dimensions
+- `shared/application/` traegt Cross-Pillar-Orchestrierung
+- `bridges/*` und `commerce/*` tragen technische Aussenwelt
+- `pillars/frontend_os/` ist die einzige aktive Surface-Komposition
+- `dimensionRegistry` ist die primaere Runtime-Wahrheit fuer Dimensions
 - `dimensions/*/metadata.json` sind Spiegel, nicht die kanonische Quelle
+- `000_MBRN_V3_100_PERCENT_CHECKLIST.md` ist die operative v3-Abnahme
+- `001_POST_V3_ROADMAP.md` ist reine Folgeplanung nach v3
 
 ## Aktuelle Architektur
 
 ### Headless Core
 
-`shared/core/` enthält:
+`shared/core/` enthaelt:
 
 - Contracts
 - Registries
@@ -33,20 +34,21 @@ Keine externe IO lebt dauerhaft im Core.
 
 ### Application Layer
 
-`shared/application/` verbindet Core, Bridges, Commerce und Oberflächen:
+`shared/application/` verbindet Core, Bridges, Commerce und Oberflaechen:
 
 - Actions
 - Auth
 - Sync
 - Observability
 - Read Models
-- Resilience
+- Frontend-OS Runtime-Fassaden
 
 ### Bridges und Commerce
 
 Produktiv aktiv:
 
 - `bridges/supabase/`
+- `bridges/python/`
 - `commerce/stripe/`
 - `commerce/payment_adapters/`
 - `commerce/provider_maps/`
@@ -59,32 +61,48 @@ Bewusst reserviert:
 ### Pillars
 
 #### `frontend_os`
-Aktiv für:
+Aktiv fuer:
 
 - Shell
 - Navigation
 - Dashboard-Komposition
 - Cards
-- Auth-/Legal-Surfaces
+- UI States
+
+Bewusst reserviert:
+
+- `app_surfaces/`
+- `dimension_views/`
+- `export_entrypoints/`
 
 #### `oracle`
-Teilweise aktiv:
+Aktiv mit Pipeline-Adaptern:
 
-- `browser_read` ist aktiv
-- weitere Unterzonen bleiben reserviert
-- Heavy-Processing lebt aktuell weiterhin operativ unter `scripts/oracle/`
+- `browser_read`, `signals`, `fusion`, `snapshots`, `backtesting` liefern JS-Runtime-Substanz
+- `processing` bildet die operative Heavy-Processing-Wahrheit als Manifest-/Adapter-Zone ab
+- Heavy-Processing lebt weiterhin operativ unter `scripts/oracle/`
+- Browser-/Application-Consumption liest nur ueber `pillars/oracle/*`
 
 #### `monetization`
-Minimal aktiv:
+Aktiv entlang einer klaren Fachkette:
 
-- `gates` ist aktiv
-- weitere Businesszonen bleiben reserviert
+- `api_products`
+- `pricing`
+- `plans`
+- `entitlements`
+- `billing`
+- `gates`
+- `free`, `pro`, `business` sind die aktuelle policy-grade Planwahrheit
+- `business` ist fachlich real, aber nicht automatisch voll kaufbar
+- `billing`
+- `gates`
 
 #### `meta_generator`
 Seed-aktiv:
 
 - erste Generator-Subsysteme real vorhanden
-- interne Workflow-Nutzung fuer Repo-Roadmap aktiv
+- interner Workflow fuer Repo-Roadmap aktiv
+- zweiter interner Seed-Workflow fuer Modul-, Asset- und Adapter-Previews aktiv
 - noch nicht als voll ausgebauter Produktions-Pillar abgeschlossen
 
 ## Dimensions und Apps
@@ -103,7 +121,7 @@ Aktive App-Bindungen:
 - `chronos -> time`
 - `synergy -> pattern` mit `status = provisional`
 
-Es gibt aktuell **4** formalisierte Dimensions, nicht 11.
+Es gibt aktuell 4 formalisierte Dimensions, nicht 11.
 
 ## UI-Grenzen
 
@@ -115,12 +133,9 @@ Es gibt aktuell **4** formalisierte Dimensions, nicht 11.
 - primitives
 - base components
 
+`shared/ui/theme.css` ist der finale oeffentliche Aggregate-Entry fuer no-build HTML-Surfaces.
+
 Surface-spezifische Dinge liegen in `pillars/frontend_os/`.
-
-Beispiel:
-
-- Landing-Styles liegen in `pillars/frontend_os/shell/landing.css`
-- mobile Sidebar-Gesten liegen in `pillars/frontend_os/navigation/touch_manager.js`
 
 ## Data und Oracle
 
@@ -129,7 +144,7 @@ Die Pipeline-Schicht bleibt operativ:
 - `scripts/pipelines/`
 - `scripts/oracle/`
 
-Runtime-Mirror-Artefakte bleiben Artefakte und keine Primärquelle für Produktlogik:
+Runtime-Mirror-Artefakte bleiben Artefakte und keine Primaerquelle fuer Produktlogik:
 
 - `shared/data/market_sentiment.json`
 - `shared/data/oracle_prediction.json`
@@ -140,14 +155,14 @@ Runtime-Mirror-Artefakte bleiben Artefakte und keine Primärquelle für Produktl
 Der aktuelle Stand ist:
 
 - Plattformbasis bereinigt
-- Tests grün
 - Registry/Manifest aktiv
 - Root-Wahrheit auf dieses Repo reduziert
-- 4 Pillars ehrlich eingeordnet, aber nicht künstlich „voll ausgebaut“
+- aktives Close-out Gate und Stage A sichtbar im Repo
+- 4 Pillars ehrlich eingeordnet, aber nicht kuenstlich "voll ausgebaut"
 
 Nicht behauptet wird:
 
 - 11 Dimensions
 - fertiger Meta-Generator
-- voll ausgebautes Oracle-Pillar
-- voll ausgebautes Monetization-Pillar
+- voll ausgebautes Oracle-Heavy-Processing im Pillar
+- fertige Monetization-Produkte jenseits der aktuellen Fachkette

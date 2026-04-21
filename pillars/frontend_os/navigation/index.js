@@ -1,6 +1,6 @@
 import { APP_MANIFEST } from '../../../shared/core/registries/app_manifest.js';
-import { DIMENSION_REGISTRY, getDimensionById } from '../../../shared/core/registries/dimension_registry.js';
-import { state } from '../../../shared/core/state/index.js';
+import { getDimensionById } from '../../../shared/core/registries/dimension_registry.js';
+import { emitFrontendOsEvent } from '../../../shared/application/frontend_os/navigation_events.js';
 import { touchManager } from './touch_manager.js';
 import { dom } from '../../../shared/ui/dom_utils.js';
 import { renderPolicyLinks } from '../shell/legal_blocks.js';
@@ -17,25 +17,42 @@ function getKnownRouteSegments() {
   ];
 }
 
+function normalizeRuntimePath(pathname = '/') {
+  const withoutRepoPrefix = pathname.replace(/^\/MBRN/, '');
+  const trimmed = withoutRepoPrefix.replace(/\/+$/, '');
+  return trimmed || '/';
+}
+
+function routeMatchesPath(pathname, route) {
+  const normalizedPath = normalizeRuntimePath(pathname);
+  const normalizedRoute = `/${String(route || '').replace(/^\/+/, '')}`.replace(/\/+$/, '');
+  const withoutIndex = normalizedRoute.replace(/\/index\.html$/, '').replace(/index\.html$/, '') || '/';
+
+  if (withoutIndex === '/') {
+    return normalizedPath === '/' || normalizedPath === '/index.html';
+  }
+
+  return normalizedPath === withoutIndex || normalizedPath === `${withoutIndex}/index.html`;
+}
+
 export function getRepoRoot() {
-  const path = window.location.pathname;
-  
-  // GitHub Pages: Wenn der Pfad mit /MBRN/ beginnt, ist das der Repo-Root
+  const currentPath = window.location.pathname;
   const mbrnPrefix = '/MBRN/';
-  if (path.startsWith(mbrnPrefix)) {
+
+  if (currentPath.startsWith(mbrnPrefix)) {
     return mbrnPrefix;
   }
-  
-  // Fallback: Suche nach bekannten Route-Segmenten
+
   const knownSegments = getKnownRouteSegments();
   for (const segment of knownSegments) {
-    const idx = path.indexOf(segment);
-    if (idx !== -1) return path.slice(0, idx) + '/';
+    const index = currentPath.indexOf(segment);
+    if (index !== -1) {
+      return currentPath.slice(0, index) + '/';
+    }
   }
-  
-  // Default: Aktuelles Verzeichnis
-  const root = path.replace(/\/[^/]*$/, '/') || '/';
-  return root.endsWith('/') ? root : root + '/';
+
+  const root = currentPath.replace(/\/[^/]*$/, '/') || '/';
+  return root.endsWith('/') ? root : `${root}/`;
 }
 
 function resolveSystemSurface(routeKey) {
@@ -66,10 +83,7 @@ function buildNavigationEntries() {
       return leftOrder - rightOrder;
     });
 
-  return [
-    ...systemEntries,
-    ...appEntries
-  ];
+  return [...systemEntries, ...appEntries];
 }
 
 export function getNavigationEntries() {
@@ -97,26 +111,18 @@ function renderGlobalLegalRail() {
 }
 
 export function getCurrentRoute(pathname = window.location.pathname) {
-  // GitHub Pages: /MBRN/ Präfix entfernen für Route-Erkennung
-  const cleanPath = pathname.replace(/^\/MBRN\//, '/');
-  
-  // 1. System-Surfaces prüfen (Start, Dashboard)
   for (const surface of SYSTEM_SURFACES) {
-    const routePath = surface.route.replace(/index\.html$/, '');
-    if (cleanPath.includes(`/${routePath}`)) {
+    if (routeMatchesPath(pathname, surface.route)) {
       return surface.id;
     }
   }
-  
-  // 2. Apps aus APP_MANIFEST prüfen (registry-driven)
+
   for (const app of APP_MANIFEST) {
-    const routePath = app.route.replace(/index\.html$/, '');
-    if (cleanPath.includes(`/${routePath}`)) {
+    if (routeMatchesPath(pathname, app.route)) {
       return app.id;
     }
   }
-  
-  // Default: Start
+
   return 'home';
 }
 
@@ -193,9 +199,9 @@ export const nav = {
 
     this._handlers.visibilitychange = () => {
       if (document.hidden && this._currentApp) {
-        state.emit('appPaused', { timestamp: Date.now() });
+        emitFrontendOsEvent('appPaused', { timestamp: Date.now() });
       } else if (!document.hidden && this._currentApp) {
-        state.emit('appResumed', { timestamp: Date.now() });
+        emitFrontendOsEvent('appResumed', { timestamp: Date.now() });
       }
     };
     document.addEventListener('visibilitychange', this._handlers.visibilitychange);
@@ -205,7 +211,7 @@ export const nav = {
         try {
           const estimate = await navigator.storage.estimate();
           if (estimate.usage && estimate.quota && estimate.usage > estimate.quota * 0.8) {
-            state.emit('memoryPressure', {
+            emitFrontendOsEvent('memoryPressure', {
               usage: estimate.usage,
               quota: estimate.quota,
               percentage: (estimate.usage / estimate.quota * 100).toFixed(1)
@@ -224,16 +230,18 @@ export const nav = {
 
   _cleanupOrphanedElements() {
     const errorContainers = document.querySelectorAll('[id^="global-error"]');
-    errorContainers.forEach((el) => {
-      if (!document.body.contains(el)) {
-        el.remove();
+    errorContainers.forEach((element) => {
+      if (!document.body.contains(element)) {
+        element.remove();
       }
     });
 
     const toasts = document.querySelectorAll('#mbrn-toast');
     if (toasts.length > 1) {
       toasts.forEach((toast, index) => {
-        if (index < toasts.length - 1) toast.remove();
+        if (index < toasts.length - 1) {
+          toast.remove();
+        }
       });
     }
   },
@@ -261,8 +269,8 @@ export const nav = {
     }
 
     document.querySelectorAll('[data-route]').forEach((link) => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
         this.navigateTo(link.getAttribute('data-route'));
       });
     });
@@ -270,10 +278,10 @@ export const nav = {
     touchManager.init();
     this.initMobileMenu();
 
-    this._handlers.outsideClick = (e) => {
+    this._handlers.outsideClick = (event) => {
       const sidebar = document.querySelector('.nav-sidebar');
-      const isClickInsideSidebar = sidebar?.contains(e.target);
-      const isClickOnNavToggle = e.target.closest('.nav-toggle, .nav-hamburger');
+      const isClickInsideSidebar = sidebar?.contains(event.target);
+      const isClickOnNavToggle = event.target.closest('.nav-toggle, .nav-hamburger');
 
       if (!isClickInsideSidebar && !isClickOnNavToggle && sidebar?.classList.contains('mobile-open')) {
         if (window.innerWidth <= 768) {
@@ -320,8 +328,8 @@ export const nav = {
     };
     backdrop.addEventListener('click', this._handlers.backdropClick);
 
-    this._handlers.keydownEscape = (e) => {
-      if (e.key === 'Escape' && this._mobileMenuOpen) {
+    this._handlers.keydownEscape = (event) => {
+      if (event.key === 'Escape' && this._mobileMenuOpen) {
         this._setMobileMenuOpen(false);
       }
     };

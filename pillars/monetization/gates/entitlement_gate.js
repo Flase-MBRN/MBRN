@@ -23,7 +23,7 @@ export function resolveCommercialGate(feature, context = {}) {
     });
   }
 
-  const entitlements = resolveEntitlements(context);
+  const entitlements = resolveEntitlements({ ...context, productId: feature });
   const allowed = context.planId || context.accessLevel != null
     ? entitlements.features.includes(feature)
     : true;
@@ -32,6 +32,10 @@ export function resolveCommercialGate(feature, context = {}) {
     allowed,
     feature,
     reason: allowed ? 'allowed' : 'upgrade_required',
-    badge: allowed ? null : MBRN_CONFIG.commercial.soonBadgeLabel
+    badge: allowed ? null : MBRN_CONFIG.commercial.soonBadgeLabel,
+    meta: {
+      planId: entitlements.planId,
+      canPurchase: entitlements.canPurchase
+    }
   });
 }

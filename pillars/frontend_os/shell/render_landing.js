@@ -1,7 +1,10 @@
 import { getRepoRoot, nav, renderNavigation } from '../navigation/index.js';
-import { storage } from '../../../shared/core/storage/index.js';
-import { i18n } from '../../../shared/core/i18n.js';
-import { calculateLifePathTotal, formatValue } from '../../../shared/core/logic/numerology/index.js';
+import {
+  calculateLandingLifePath,
+  getLandingTerminalMessages,
+  readExistingLandingProfile,
+  saveLandingProfile
+} from '../../../shared/application/frontend_os/landing_runtime.js';
 import { renderAuth } from '../ui_states/auth_controller.js';
 import { bindSmartDateInput } from '../../../shared/ui/dom_utils.js';
 import { injectLegalBlock } from './legal_blocks.js';
@@ -21,13 +24,11 @@ const ARCHETYPES = {
   33: { title: 'Der Mentor', desc: 'Das Modell betont Orientierung, Ruhe und tragende Präsenz.' }
 };
 
-const TERMINAL_MESSAGES = i18n.getArray('terminal.sequence');
-
 export const landingRender = {
   userData: null,
 
   init() {
-    const existingData = this.checkExistingProfile();
+    const existingData = readExistingLandingProfile();
     if (existingData) {
       window.location.href = getRepoRoot() + 'dashboard/index.html';
       return;
@@ -61,31 +62,6 @@ export const landingRender = {
     document.querySelectorAll('.reveal').forEach((el) => {
       observer.observe(el);
     });
-  },
-
-  checkExistingProfile() {
-    const lastCalc = storage.get('last_numerology_calc');
-    if (lastCalc.success && lastCalc.data?.name && lastCalc.data?.birthDate && lastCalc.data?.lifePath) {
-      return {
-        name: lastCalc.data.name,
-        birthDate: lastCalc.data.birthDate,
-        lifePath: lastCalc.data.lifePath,
-        firstName: lastCalc.data.name.split(' ')[0]
-      };
-    }
-
-    const profile = storage.get('profile');
-    if (profile.success && profile.data?.name && (profile.data.birthDate || profile.data.birth_date)) {
-      const birthDate = profile.data.birthDate || profile.data.birth_date;
-      return {
-        name: profile.data.name,
-        birthDate,
-        lifePath: this.calculateLifePath(profile.data.name, birthDate),
-        firstName: profile.data.name.split(' ')[0]
-      };
-    }
-
-    return null;
   },
 
   bindForm() {
@@ -148,12 +124,7 @@ export const landingRender = {
   },
 
   saveUserData(name, birthDate, lifePath) {
-    storage.set('last_numerology_calc', {
-      name,
-      birthDate,
-      lifePath,
-      calculatedAt: new Date().toISOString()
-    });
+    saveLandingProfile({ name, birthDate, lifePath });
   },
 
   runTerminalSequence() {
@@ -170,17 +141,18 @@ export const landingRender = {
 
       let messageIndex = 0;
       const totalDuration = 2500;
-      const messageInterval = totalDuration / TERMINAL_MESSAGES.length;
+      const terminalMessages = getLandingTerminalMessages();
+      const messageInterval = totalDuration / terminalMessages.length;
 
       setTimeout(() => {
         progressBar.style.width = '100%';
       }, 100);
 
       const typeMessage = () => {
-        if (messageIndex < TERMINAL_MESSAGES.length) {
+        if (messageIndex < terminalMessages.length) {
           const line = document.createElement('div');
           line.className = 'terminal-line';
-          line.textContent = TERMINAL_MESSAGES[messageIndex];
+          line.textContent = terminalMessages[messageIndex];
           terminalText.appendChild(line);
           terminalText.scrollTop = terminalText.scrollHeight;
           messageIndex += 1;
@@ -194,10 +166,7 @@ export const landingRender = {
   },
 
   calculateLifePath(_name, birthDate) {
-    const normalizedDate = birthDate.includes('-')
-      ? birthDate.split('-').reverse().join('.')
-      : birthDate;
-    return Number(formatValue(calculateLifePathTotal(normalizedDate)));
+    return calculateLandingLifePath(birthDate);
   },
 
   showReveal(lifePath, isReturningUser) {

@@ -20,6 +20,11 @@ Aktiv konsumiert:
   - konsumiert `content/`
   - konsumiert `blueprints/`
   - erzeugt `001_POST_V3_ROADMAP.md`
+- `scripts/devlab/preview_meta_generator_seed_bundle.mjs`
+  - konsumiert `modules/`
+  - konsumiert `assets/`
+  - konsumiert `agent_adapters/`
+  - erzeugt einen wiederholbaren Seed-Bundle-Preview fuer interne Workflows
 
 ## Rolle
 
@@ -30,6 +35,24 @@ Der Meta Generator transformiert wiederholbare Architektur- und Inhaltsmuster in
 - Modulgerueste
 - Asset-Spezifikationen
 - Adapter-Requests
+
+## Scope-Regel
+
+Erlaubt:
+
+- wiederholbare Blueprints
+- strukturierte Inhaltsartefakte
+- Modul-Scaffolds
+- Asset-Spezifikationen
+- Agent-Adapter-Requests
+
+Nicht erlaubt:
+
+- beliebige KI-Experimente ohne echten Konsumenten
+- allgemeine Prompt-Ablage ohne Workflow
+- fachfremde Businesslogik
+
+Die harte technische Scope-Grenze liegt in `scope_manifest.js`.
 
 ## Noch nicht fertig
 

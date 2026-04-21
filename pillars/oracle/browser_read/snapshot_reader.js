@@ -1,5 +1,6 @@
 import { createBridgeFailure, createBridgeSuccess } from '../../../shared/core/contracts/bridge_result.js';
 import { validateOracleSnapshot } from '../../../shared/core/contracts/oracle_snapshot.js';
+import { ORACLE_ARTIFACTS } from '../artifacts.js';
 
 /**
  * Oracle Snapshot Reader
@@ -12,7 +13,7 @@ import { validateOracleSnapshot } from '../../../shared/core/contracts/oracle_sn
  * - Diese Funktion liest im Browser via fetch()
  * - BridgeResultContract für konsistente Fehlerbehandlung
  */
-export async function readOracleSnapshot(snapshotUrl = '../../shared/data/oracle_prediction.json') {
+export async function readOracleSnapshot(snapshotUrl = ORACLE_ARTIFACTS.predictionSnapshot.path) {
   try {
     const response = await fetch(`${snapshotUrl}?t=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) {

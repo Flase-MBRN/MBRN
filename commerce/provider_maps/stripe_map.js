@@ -1,57 +1,41 @@
 /**
  * /commerce/provider_maps/stripe_map.js
  * Stripe Provider Mapping
- * Maps MBRN product concepts to Stripe technical IDs
+ * Maps active MBRN product IDs to Stripe technical IDs
  * LAW: No business logic, only provider-technical mappings
  */
 
+import { MBRN_CONFIG } from '../../shared/core/config/index.js';
+
 /**
- * Stripe product to price ID mapping
- * These should match the Price IDs created in Stripe Dashboard
+ * Stripe product to price ID mapping for the active MBRN catalog.
+ * catalog_only products stay mirrored here without active checkout IDs.
  */
 export const STRIPE_PRODUCT_MAP = Object.freeze({
-  // Subscription products
-  'premium_monthly': {
-    priceId: 'price_premium_monthly',
+  artifact: {
+    priceId: MBRN_CONFIG.stripe.priceIdArtifact,
+    mode: 'payment',
+    billingPeriod: 'one_time'
+  },
+  oracle_snapshot: {
+    priceId: null,
     mode: 'subscription',
-    tier: 'premium',
-    interval: 'month'
+    billingPeriod: 'monthly'
   },
-  'premium_yearly': {
-    priceId: 'price_premium_yearly',
+  api_access: {
+    priceId: null,
     mode: 'subscription',
-    tier: 'premium',
-    interval: 'year'
-  },
-  
-  // One-time purchases
-  'oracle_credits_10': {
-    priceId: 'price_credits_10',
-    mode: 'payment',
-    type: 'credits',
-    amount: 10
-  },
-  'oracle_credits_50': {
-    priceId: 'price_credits_50',
-    mode: 'payment',
-    type: 'credits',
-    amount: 50
-  },
-  'oracle_credits_100': {
-    priceId: 'price_credits_100',
-    mode: 'payment',
-    type: 'credits',
-    amount: 100
+    billingPeriod: 'monthly'
   }
 });
 
 /**
  * Resolve Stripe price configuration from product key
- * @param {string} productKey - MBRN product key
+ * @param {string} productId - MBRN product id
  * @returns {Object|null} Stripe price configuration or null if not found
  */
-export function resolveStripePrice(productKey) {
-  return STRIPE_PRODUCT_MAP[productKey] || null;
+export function resolveStripePrice(productId) {
+  return STRIPE_PRODUCT_MAP[productId] || null;
 }
 
 /**
@@ -67,11 +51,11 @@ export function getStripeProducts() {
 
 /**
  * Check if a product key exists in Stripe mapping
- * @param {string} productKey
+ * @param {string} productId
  * @returns {boolean}
  */
-export function isStripeProduct(productKey) {
-  return productKey in STRIPE_PRODUCT_MAP;
+export function isStripeProduct(productId) {
+  return productId in STRIPE_PRODUCT_MAP;
 }
 
 /**
@@ -80,7 +64,7 @@ export function isStripeProduct(productKey) {
  * @returns {Array<Object>}
  */
 export function getProductsByType(type) {
-  return getStripeProducts().filter(p => p.mode === type);
+  return getStripeProducts().filter((product) => product.mode === type);
 }
 
 export default {

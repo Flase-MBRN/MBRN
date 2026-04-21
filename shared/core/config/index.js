@@ -15,7 +15,8 @@ export const MBRN_CONFIG = {
     BUILDER: 2,
     OPERATOR: 3,
     MEMBER: 4,
-    PAID_PRO: 10
+    PAID_PRO: 10,
+    BUSINESS: 20
   },
   tiers: { spark: 7, builder: 30, operator: 90, member: 365 },
   shields: { earnRate: 7, max: 3 },

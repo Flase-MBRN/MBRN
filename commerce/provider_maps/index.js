@@ -61,20 +61,20 @@ export function hasProvider(providerName) {
 }
 
 /**
- * Resolve price for a product across all providers
- * @param {string} productKey
+ * Resolve provider configuration for a product across all providers
+ * @param {string} productId
  * @param {string} [providerName] - Optional: specific provider
  * @returns {Object|null} Price configuration
  */
-export function resolvePrice(productKey, providerName = null) {
+export function resolvePrice(productId, providerName = null) {
   if (providerName) {
     const provider = getProvider(providerName);
-    return provider?.resolvePrice?.(productKey) || null;
+    return provider?.resolvePrice?.(productId) || null;
   }
   
   // Try all providers
   for (const provider of Object.values(PROVIDER_REGISTRY)) {
-    const price = provider.resolvePrice?.(productKey);
+    const price = provider.resolvePrice?.(productId);
     if (price) return price;
   }
   

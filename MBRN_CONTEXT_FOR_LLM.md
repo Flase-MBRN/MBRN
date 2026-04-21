@@ -6,7 +6,7 @@ Die einzige technische Wahrheit liegt in:
 
 - `C:\DevLab\MBRN-HUB-V1`
 
-Alles außerhalb dieses Repos ist kein paralleler Architekturbaum.
+Alles ausserhalb dieses Repos ist kein paralleler Architekturbaum.
 
 ## Architektur in Kurzform
 
@@ -20,8 +20,8 @@ Alles außerhalb dieses Repos ist kein paralleler Architekturbaum.
 ## Aktive Pillars
 
 - `frontend_os` = aktiv
-- `oracle` = teilweise aktiv
-- `monetization` = minimal aktiv
+- `oracle` = aktiv mit Pipeline-Adaptern
+- `monetization` = aktiv entlang einer Fachkette
 - `meta_generator` = seed-active
 
 ## Aktive Dimensions
@@ -33,11 +33,14 @@ Alles außerhalb dieses Repos ist kein paralleler Architekturbaum.
 
 ## Wichtige Wahrheiten
 
-- `dimensionRegistry` ist die primäre Runtime-Wahrheit.
+- `dimensionRegistry` ist die primaere Runtime-Wahrheit.
 - `dimensions/*/metadata.json` sind Spiegel.
 - `synergy` bleibt `pattern` + `provisional`.
+- `000_MBRN_V3_100_PERCENT_CHECKLIST.md` ist die operative v3-Abnahme.
+- `001_POST_V3_ROADMAP.md` ist reine Folgeplanung.
 - Oracle-Heavy-Processing lebt operativ weiter unter `scripts/oracle/`.
-- Reservierte Zielzonen werden markiert, nicht mit Fake-Code gefüllt.
+- `shared/ui/theme.css` ist der finale Aggregate-Entry fuer no-build Surfaces.
+- Reservierte Zielzonen werden markiert, nicht mit Fake-Code gefuellt.
 
 ## Nicht behaupten
 

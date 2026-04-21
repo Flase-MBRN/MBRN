@@ -1,5 +1,8 @@
-import { LEGAL_LINKS, LEGAL_TEXTS } from '../../../shared/core/legal/config.js';
-import { clearMBRNLocalData } from '../../../shared/core/legal/storage.js';
+import {
+  clearFrontendOsLocalData,
+  getLegalLinks,
+  getLegalTexts
+} from '../../../shared/application/frontend_os/legal_runtime.js';
 import { dom } from '../../../shared/ui/dom/index.js';
 
 function resolveElement(target) {
@@ -21,7 +24,8 @@ function joinWithBase(basePath, relativePath) {
 
 export function renderLegalNotice(container, variant = 'general') {
   const root = resolveElement(container);
-  const notice = LEGAL_TEXTS[variant] || LEGAL_TEXTS.general;
+  const legalTexts = getLegalTexts();
+  const notice = legalTexts[variant] || legalTexts.general;
   if (!root || !notice) return null;
 
   const card = dom.createEl('div', {
@@ -44,6 +48,7 @@ export function renderLegalNotice(container, variant = 'general') {
 export function renderPolicyLinks(container, options = {}) {
   const root = resolveElement(container);
   const basePath = options.basePath || '/';
+  const legalLinks = getLegalLinks();
   if (!root) return null;
 
   const rail = dom.createEl('div', {
@@ -52,8 +57,8 @@ export function renderPolicyLinks(container, options = {}) {
   });
 
   [
-    { label: 'Impressum', href: joinWithBase(basePath, LEGAL_LINKS.impressum) },
-    { label: 'Datenschutz', href: joinWithBase(basePath, LEGAL_LINKS.datenschutz) }
+    { label: 'Impressum', href: joinWithBase(basePath, legalLinks.impressum) },
+    { label: 'Datenschutz', href: joinWithBase(basePath, legalLinks.datenschutz) }
   ].forEach((item) => {
     dom.createEl('a', {
       className: 'legal-link',
@@ -84,7 +89,7 @@ export function renderLocalDataReset(container, options = {}) {
   });
 
   const handleClick = () => {
-    const result = clearMBRNLocalData();
+    const result = clearFrontendOsLocalData();
     if (!result.success) {
       status.textContent = 'Löschen gerade nicht möglich.';
       return;
@@ -143,4 +148,3 @@ export function injectLegalBlock(target, options = {}) {
 
   return block;
 }
-

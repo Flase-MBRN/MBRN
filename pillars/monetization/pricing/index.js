@@ -1,10 +1,7 @@
-import { MBRN_CONFIG } from '../../../shared/core/config/index.js';
-
 export const PRICING_TABLE = Object.freeze([
   {
     productId: 'artifact',
     provider: 'stripe',
-    priceId: MBRN_CONFIG.stripe.priceIdArtifact,
     amount: 19,
     currency: 'eur',
     billingPeriod: 'one_time'

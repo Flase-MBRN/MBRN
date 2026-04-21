@@ -1,5 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
+import { getOracleArtifactById, ORACLE_ARTIFACTS } from '../pillars/oracle/artifacts.js';
 import { summarizeOracleBacktest } from '../pillars/oracle/backtesting/index.js';
+import { getOracleCapabilityById, ORACLE_CAPABILITY_MAP } from '../pillars/oracle/capability_map.js';
 import { buildOracleFusion } from '../pillars/oracle/fusion/index.js';
 import { getOracleProcessingManifest, listOracleProcessingJobs } from '../pillars/oracle/processing/index.js';
 import { buildOracleSignals } from '../pillars/oracle/signals/index.js';
@@ -87,7 +89,47 @@ describe('oracle pillar modules', () => {
       correctCount: 2,
       accuracyPct: expect.any(Number)
     }));
-    expect(getOracleProcessingManifest()).toHaveLength(4);
+    const manifest = getOracleProcessingManifest();
+    expect(manifest).toHaveLength(4);
     expect(listOracleProcessingJobs()).toContain('oracle_core');
+    expect(manifest.find((job) => job.id === 'oracle_core')).toEqual(expect.objectContaining({
+      outputs: [ORACLE_ARTIFACTS.predictionSnapshot.id]
+    }));
+    expect(manifest.find((job) => job.id === 'backfill_history')).toEqual(expect.objectContaining({
+      outputs: [ORACLE_ARTIFACTS.backtestSnapshot.id]
+    }));
+  });
+
+  test('oracle capability map documents pillar truth and pipeline adapter boundaries', () => {
+    expect(ORACLE_CAPABILITY_MAP.map((capability) => capability.id)).toEqual([
+      'browser_read',
+      'processing',
+      'fusion',
+      'signals',
+      'snapshots',
+      'backtesting'
+    ]);
+    expect(getOracleCapabilityById('processing')).toEqual(expect.objectContaining({
+      status: 'adapter_manifest',
+      sourceOfTruth: 'scripts/oracle',
+      uiRelevant: false
+    }));
+    expect(getOracleCapabilityById('snapshots')).toEqual(expect.objectContaining({
+      status: 'active',
+      sourceOfTruth: 'pillar',
+      uiRelevant: true
+    }));
+  });
+
+  test('oracle artifacts stay the canonical JS truth for pipeline-consumed snapshots', () => {
+    expect(ORACLE_ARTIFACTS.predictionSnapshot).toEqual(expect.objectContaining({
+      producer: 'scripts/oracle/oracle_core.py',
+      consumer: 'pillars/oracle/browser_read/index.js',
+      uiRelevant: true
+    }));
+    expect(getOracleArtifactById('backtest_snapshot')).toEqual(expect.objectContaining({
+      path: '../../shared/data/oracle_backtest.json',
+      producer: 'scripts/oracle/backfill_history.py'
+    }));
   });
 });

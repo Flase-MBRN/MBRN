@@ -1,8 +1,11 @@
+import { ORACLE_ARTIFACTS } from '../artifacts.js';
+
 export const ORACLE_PROCESSING_MANIFEST = Object.freeze([
   {
     id: 'oracle_core',
     path: 'scripts/oracle/oracle_core.py',
-    responsibility: 'Generate next-day oracle predictions and dashboard snapshot artifacts.'
+    responsibility: 'Generate next-day oracle predictions and dashboard snapshot artifacts.',
+    outputs: [ORACLE_ARTIFACTS.predictionSnapshot.id]
   },
   {
     id: 'correlation_matrix',
@@ -17,7 +20,8 @@ export const ORACLE_PROCESSING_MANIFEST = Object.freeze([
   {
     id: 'backfill_history',
     path: 'scripts/oracle/backfill_history.py',
-    responsibility: 'Replay historical oracle predictions and backtesting artifacts.'
+    responsibility: 'Replay historical oracle predictions and backtesting artifacts.',
+    outputs: [ORACLE_ARTIFACTS.backtestSnapshot.id]
   }
 ]);
 

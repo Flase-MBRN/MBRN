@@ -1,9 +1,11 @@
 import { describe, expect, test } from '@jest/globals';
+import { execFileSync } from 'child_process';
 import { buildAgentAdapterRequest } from '../pillars/meta_generator/agent_adapters/index.js';
 import { buildAssetSpec } from '../pillars/meta_generator/assets/index.js';
 import { buildPillarCompletionBlueprint, getPillarStageSequence } from '../pillars/meta_generator/blueprints/index.js';
 import { buildPostV3RoadmapMarkdown } from '../pillars/meta_generator/content/index.js';
 import { buildModuleScaffold } from '../pillars/meta_generator/modules/index.js';
+import { assertMetaGeneratorSubsystem, META_GENERATOR_SCOPE } from '../pillars/meta_generator/scope_manifest.js';
 
 describe('meta generator seed modules', () => {
   test('blueprints and content produce real internal workflow artifacts', () => {
@@ -48,5 +50,46 @@ describe('meta generator seed modules', () => {
       task: 'generate_blueprint',
       payload: { pillarId: 'oracle' }
     }));
+  });
+
+  test('seed preview workflow consumes module, asset and adapter generators outside tests', () => {
+    const output = execFileSync(
+      process.execPath,
+      ['scripts/devlab/preview_meta_generator_seed_bundle.mjs'],
+      { cwd: process.cwd(), encoding: 'utf8' }
+    );
+    const parsed = JSON.parse(output);
+
+    expect(parsed.module).toEqual(expect.objectContaining({
+      path: 'stage_a_seed_bundle/index.js'
+    }));
+    expect(parsed.asset).toEqual(expect.objectContaining({
+      id: 'stage-a-seed-bundle',
+      outputFormat: 'png'
+    }));
+    expect(parsed.adapterRequest).toEqual(expect.objectContaining({
+      adapter: 'local_llm',
+      task: 'preview_seed_bundle'
+    }));
+  });
+
+  test('roadmap generator workflow consumes scoped seed modules outside tests', () => {
+    const output = execFileSync(
+      process.execPath,
+      ['scripts/devlab/generate_post_v3_roadmap.mjs'],
+      { cwd: process.cwd(), encoding: 'utf8' }
+    );
+
+    expect(output).toContain('Generated');
+    expect(buildPostV3RoadmapMarkdown()).toContain('# 001 Post-v3 Roadmap');
+  });
+
+  test('scope manifest keeps the seed pillar inside allowed subsystems only', () => {
+    expect(META_GENERATOR_SCOPE).toEqual(expect.objectContaining({
+      status: 'seed',
+      allowedSubsystems: expect.arrayContaining(['blueprints', 'content', 'modules', 'assets', 'agent_adapters'])
+    }));
+    expect(assertMetaGeneratorSubsystem('content')).toBe('content');
+    expect(() => assertMetaGeneratorSubsystem('prompt_dump')).toThrow(/outside the seed scope/);
   });
 });

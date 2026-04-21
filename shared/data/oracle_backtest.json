@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-20T23:01:05.638436+00:00",
+  "updated_at": "2026-04-21T00:01:06.491633+00:00",
   "history": [
     {
       "generated_at": "2026-04-19T18:23:09.744083+00:00",
@@ -1110,14 +1110,29 @@
       "previous_sentiment": null,
       "sentiment_delta": null,
       "actual_trend": null
+    },
+    {
+      "generated_at": "2026-04-21T00:01:06.469563+00:00",
+      "target_date": "22.04.2026",
+      "recommendation": "Hold",
+      "alignment_score": 46.73,
+      "confidence": 0.47,
+      "sentiment_prediction": 39.91,
+      "oracle_version": "1.1.0",
+      "evaluated_at": null,
+      "was_correct": null,
+      "actual_sentiment": null,
+      "previous_sentiment": null,
+      "sentiment_delta": null,
+      "actual_trend": null
     }
   ],
   "summary": {
     "accuracy_pct": 97.26,
-    "total_predictions": 74,
+    "total_predictions": 75,
     "evaluated_predictions": 73,
     "correct_predictions": 71,
-    "pending_predictions": 1,
+    "pending_predictions": 2,
     "latest_result": {
       "generated_at": "2026-04-19T18:36:10.399752+00:00",
       "target_date": "20.04.2026",

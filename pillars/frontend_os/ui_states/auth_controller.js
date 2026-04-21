@@ -1,7 +1,12 @@
-import { state } from '../../../shared/core/state/index.js';
-import { actions } from '../../../shared/application/actions.js';
+import {
+  getAuthText,
+  getCurrentAuthUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+  subscribeAuthUi
+} from '../../../shared/application/frontend_os/auth_runtime.js';
 import { dom } from '../../../shared/ui/dom/index.js';
-import { i18n } from '../../../shared/core/i18n.js';
 import { getRepoRoot } from '../navigation/index.js';
 
 export const renderAuth = {
@@ -9,23 +14,14 @@ export const renderAuth = {
   _timers: [],
 
   init() {
-    this._unsubscribers.push(
-      state.subscribe('userAuthChanged', (user) => {
-        this.updateNavigation(user);
-      })
-    );
+    this._unsubscribers.push(subscribeAuthUi({
+      onUserAuthChanged: (user) => this.updateNavigation(user),
+      onSyncStarted: () => this.setSyncing(true),
+      onSyncSuccess: () => this.setSyncing(false),
+      onSyncFailed: () => this.setSyncing(false)
+    }));
 
-    this.updateNavigation(state.get('user'));
-
-    this._unsubscribers.push(
-      state.subscribe('syncStarted', () => this.setSyncing(true))
-    );
-    this._unsubscribers.push(
-      state.subscribe('syncSuccess', () => this.setSyncing(false))
-    );
-    this._unsubscribers.push(
-      state.subscribe('syncFailed', () => this.setSyncing(false))
-    );
+    this.updateNavigation(getCurrentAuthUser());
 
     this.bindAuthForms();
   },
@@ -72,15 +68,15 @@ export const renderAuth = {
       const logoutBtn = dom.createEl('button', {
         className: 'btn-secondary',
         id: 'auth-logout-btn',
-        text: i18n.t('logout'),
+        text: getAuthText('logout'),
         parent: navRight
       });
-      logoutBtn.addEventListener('click', () => actions.logout());
+      logoutBtn.addEventListener('click', () => logoutUser());
     } else {
       const loginBtn = dom.createEl('button', {
         className: 'btn-primary',
         id: 'auth-login-btn',
-        text: i18n.t('login'),
+        text: getAuthText('login'),
         parent: navRight
       });
       loginBtn.addEventListener('click', () => {
@@ -113,12 +109,12 @@ export const renderAuth = {
 
       const button = loginForm.querySelector('button[type="submit"]');
       const originalText = button.textContent;
-      button.textContent = i18n.t('loading');
+      button.textContent = getAuthText('loading');
       button.disabled = true;
 
       const result = mode === 'login'
-        ? await actions.login(email, password)
-        : await actions.registerAccount(email, password);
+        ? await loginUser(email, password)
+        : await registerUser(email, password);
 
       button.textContent = originalText;
       button.disabled = false;
@@ -136,9 +132,9 @@ export const renderAuth = {
       toggleBtn.addEventListener('click', () => {
         const mode = loginForm.dataset.mode === 'register' ? 'login' : 'register';
         loginForm.dataset.mode = mode;
-        dom.setText('auth-title', mode === 'login' ? i18n.t('authErrorTitle') : i18n.t('authRegisterTitle'));
-        dom.setText('auth-submit-text', mode === 'login' ? i18n.t('authLoginBtn') : i18n.t('authRegisterBtn'));
-        toggleBtn.textContent = mode === 'login' ? i18n.t('noAccount') : i18n.t('hasAccount');
+        dom.setText('auth-title', mode === 'login' ? getAuthText('authErrorTitle') : getAuthText('authRegisterTitle'));
+        dom.setText('auth-submit-text', mode === 'login' ? getAuthText('authLoginBtn') : getAuthText('authRegisterBtn'));
+        toggleBtn.textContent = mode === 'login' ? getAuthText('noAccount') : getAuthText('hasAccount');
       });
     }
   },
@@ -158,4 +154,3 @@ export const renderAuth = {
     if (existing) existing.remove();
   }
 };
-

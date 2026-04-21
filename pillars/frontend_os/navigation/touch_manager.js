@@ -6,7 +6,7 @@
  * It knows about the sidebar shell and is not shared UI infrastructure.
  */
 
-import { state } from '../../../shared/core/state/index.js';
+import { emitFrontendOsEvent } from '../../../shared/application/frontend_os/navigation_events.js';
 
 export class TouchManager {
   constructor() {
@@ -165,7 +165,7 @@ export class TouchManager {
     this.backdrop.classList.add('active');
     document.body.classList.add('sidebar-open');
 
-    state.emit('sidebarOpened', { source: 'touch' });
+    emitFrontendOsEvent('sidebarOpened', { source: 'touch' });
   }
 
   closeSidebar() {
@@ -175,7 +175,7 @@ export class TouchManager {
     this.backdrop.classList.remove('active');
     document.body.classList.remove('sidebar-open');
 
-    state.emit('sidebarClosed', { source: 'touch' });
+    emitFrontendOsEvent('sidebarClosed', { source: 'touch' });
   }
 
   toggleSidebar() {

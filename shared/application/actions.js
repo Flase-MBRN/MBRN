@@ -13,9 +13,9 @@ import { IS_COMMERCIAL_MODE_ACTIVE, MBRN_CONFIG } from '../core/config/index.js'
 import { i18n } from '../core/i18n.js';
 import { validateEmail } from '../core/validators.js';
 import { supabaseBridge } from '../../bridges/supabase/index.js';
-import { stripePaymentAdapter } from '../../commerce/payment_adapters/stripe_payment_adapter.js';
-import { buildCheckoutSessionRequest } from '../../pillars/monetization/billing/index.js';
-import { resolveCommercialGate } from '../../pillars/monetization/gates/entitlement_gate.js';
+import { getDefaultAdapter } from '../../commerce/payment_adapters/index.js';
+import { resolvePrice } from '../../commerce/provider_maps/index.js';
+import { resolveMonetizationFlow } from '../../pillars/monetization/index.js';
 
 const registry = new Map();
 
@@ -321,9 +321,22 @@ export const actions = {
   },
 
   async startCheckout(productId = 'artifact') {
-    const gate = resolveCommercialGate(productId);
-    if (!gate.allowed) {
+    const currentProfile = resolveCurrentProfile() || {};
+    const monetizationFlow = resolveMonetizationFlow({
+      productId,
+      accessLevel: currentProfile.access_level ?? currentProfile.level ?? 0
+    });
+
+    if (monetizationFlow.policyState === 'commercial_mode_inactive') {
       return this.showPaywall(productId);
+    }
+
+    if (monetizationFlow.policyState === 'unknown_product') {
+      return { success: false, error: 'unknown_product' };
+    }
+
+    if (monetizationFlow.policyState === 'catalog_only') {
+      return { success: false, error: 'catalog_only' };
     }
 
     const user = state.get('user');
@@ -332,14 +345,20 @@ export const actions = {
       return { success: false, error: 'Auth required' };
     }
 
+    if (!monetizationFlow.checkoutReady) {
+      return { success: false, error: monetizationFlow.policyState };
+    }
+
     state._authorizedEmit('syncStarted');
-    const checkoutRequest = buildCheckoutSessionRequest(productId);
-    if (!checkoutRequest?.priceId) {
+    const providerName = monetizationFlow.product?.provider || 'stripe';
+    const providerConfig = resolvePrice(productId, providerName);
+    const paymentAdapter = getDefaultAdapter();
+    if (!providerConfig?.priceId || !paymentAdapter) {
       state._authorizedEmit('syncFailed');
       return { success: false, error: 'Checkout product is not configured' };
     }
 
-    const res = await stripePaymentAdapter.createCheckoutSession(checkoutRequest.priceId);
+    const res = await paymentAdapter.createCheckoutSession(providerConfig.priceId);
 
     if (res.success && res.data?.url) {
       state.emit('checkoutRedirectRequested', { url: res.data.url });
@@ -360,7 +379,17 @@ export const actions = {
       return { success: false, error: 'Commercial mode inactive' };
     }
 
-    const res = await stripePaymentAdapter.verifySession(sessionId);
+    const paymentAdapter = getDefaultAdapter();
+    if (!paymentAdapter) {
+      state._authorizedEmit('paymentFailed', {
+        sessionId,
+        error: 'Payment adapter unavailable',
+        code: 'ADAPTER_UNAVAILABLE'
+      });
+      return { success: false, error: 'Payment adapter unavailable' };
+    }
+
+    const res = await paymentAdapter.verifySession(sessionId);
 
     if (res.success) {
       state._authorizedEmit('paymentVerified', res.data);

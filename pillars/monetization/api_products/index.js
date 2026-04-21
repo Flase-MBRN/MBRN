@@ -3,19 +3,22 @@ export const API_PRODUCT_CATALOG = Object.freeze([
     id: 'artifact',
     label: 'Artifact Export',
     type: 'workspace',
-    provider: 'stripe'
+    provider: 'stripe',
+    availability: 'checkout_ready'
   },
   {
     id: 'oracle_snapshot',
     label: 'Oracle Snapshot',
     type: 'oracle',
-    provider: 'stripe'
+    provider: 'stripe',
+    availability: 'catalog_only'
   },
   {
     id: 'api_access',
     label: 'API Access',
     type: 'api',
-    provider: 'stripe'
+    provider: 'stripe',
+    availability: 'catalog_only'
   }
 ]);
 

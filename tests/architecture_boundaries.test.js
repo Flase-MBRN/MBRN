@@ -32,6 +32,11 @@ function normalize(filePath) {
   return filePath.split(path.sep).join('/');
 }
 
+function isOracleApplicationReadModel(filePath) {
+  const normalized = normalize(filePath);
+  return normalized.includes('shared/application/read_models/') && normalized.includes('oracle');
+}
+
 describe('architecture boundaries', () => {
   test('shared/core does not import bridges, commerce or frontend_os', () => {
     const files = walkJsFiles(path.join(REPO_ROOT, 'shared', 'core'))
@@ -65,7 +70,10 @@ describe('architecture boundaries', () => {
     files.forEach((file) => {
       const imports = getImportMatches(file);
       imports.forEach((specifier) => {
-        expect(specifier).not.toMatch(/bridges|pillars\/oracle|pillars\/monetization/);
+        expect(specifier).not.toMatch(/bridges|commerce|pillars\/oracle|pillars\/monetization/);
+        if (specifier.includes('shared/core/')) {
+          expect(specifier).toMatch(/shared\/core\/(registries|contracts)\//);
+        }
       });
     });
   });
@@ -78,6 +86,67 @@ describe('architecture boundaries', () => {
       imports.forEach((specifier) => {
         expect(specifier).not.toMatch(/commerce/);
       });
+    });
+  });
+
+  test('runtime and tests no longer import deprecated UI or legal facades', () => {
+    const files = walkJsFiles(REPO_ROOT);
+
+    files.forEach((file) => {
+      const imports = getImportMatches(file);
+      imports.forEach((specifier) => {
+        expect(specifier).not.toContain('shared/ui/error_boundary.js');
+        expect(specifier).not.toContain('shared/core/legal_storage.js');
+      });
+    });
+  });
+
+  test('oracle application read models consume only pillar outputs, not scripts, shared data or python bridges', () => {
+    const files = walkJsFiles(path.join(REPO_ROOT, 'shared', 'application', 'read_models'))
+      .filter((file) => isOracleApplicationReadModel(file));
+
+    files.forEach((file) => {
+      const imports = getImportMatches(file);
+      imports.forEach((specifier) => {
+        expect(specifier).not.toMatch(/scripts\/oracle|shared\/data|bridges\/python/);
+        if (specifier.includes('pillars/oracle/')) {
+          expect(specifier).toMatch(/pillars\/oracle\/(browser_read|backtesting|fusion|signals|snapshots)\//);
+        }
+      });
+    });
+  });
+
+  test('oracle snapshot literals stay confined to pillars/oracle/artifacts.js', () => {
+    const files = walkJsFiles(REPO_ROOT);
+    const oracleSnapshotLiterals = ['oracle_prediction.json', 'oracle_backtest.json'];
+
+    files.forEach((file) => {
+      const normalized = normalize(file);
+      const source = fs.readFileSync(file, 'utf8');
+
+      oracleSnapshotLiterals.forEach((literal) => {
+        if (!source.includes(literal)) return;
+        if (normalized.endsWith('pillars/oracle/artifacts.js')) return;
+        if (normalized.includes('/tests/')) return;
+
+        throw new Error(`Oracle snapshot literal '${literal}' must not appear outside pillars/oracle/artifacts.js: ${normalized}`);
+      });
+    });
+  });
+
+  test('oracle signals and fusion are derived only inside the pillar snapshot flow', () => {
+    const files = walkJsFiles(REPO_ROOT)
+      .filter((file) => !normalize(file).includes('/tests/'));
+
+    files.forEach((file) => {
+      const normalized = normalize(file);
+      const imports = getImportMatches(file);
+      const importsSignals = imports.some((specifier) => specifier.includes('pillars/oracle/signals'));
+      const importsFusion = imports.some((specifier) => specifier.includes('pillars/oracle/fusion'));
+
+      if (importsSignals || importsFusion) {
+        expect(normalized).toBe('pillars/oracle/snapshots/index.js');
+      }
     });
   });
 });

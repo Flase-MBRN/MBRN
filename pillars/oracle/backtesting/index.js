@@ -1,4 +1,5 @@
 import { createBridgeFailure, createBridgeSuccess } from '../../../shared/core/contracts/bridge_result.js';
+import { ORACLE_ARTIFACTS } from '../artifacts.js';
 
 function roundPercent(value) {
   return Math.round(Number(value || 0) * 100) / 100;
@@ -23,7 +24,7 @@ export function summarizeOracleBacktest(payload = {}) {
   };
 }
 
-export async function readOracleBacktest(backtestUrl = '../../shared/data/oracle_backtest.json') {
+export async function readOracleBacktest(backtestUrl = ORACLE_ARTIFACTS.backtestSnapshot.path) {
   try {
     const response = await fetch(`${backtestUrl}?t=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) {

@@ -1,15 +1,15 @@
 {
-  "timestamp_utc": "2026-04-20T23:07:22.480357+00:00",
+  "timestamp_utc": "2026-04-21T00:08:01.575085+00:00",
   "source": "market_sentiment_pipeline",
-  "sentiment_score": 78,
+  "sentiment_score": 62,
   "sentiment_label": "Greed",
-  "confidence": 0.85,
-  "analysis": "Mixed market sentiment with equities slightly down and VIX up, but crypto prices rising.",
+  "confidence": 0.8,
+  "analysis": "Equities are mixed, with IWM leading gains and DIA lagging behind, while VIX spikes to 18.87. Crypto momentum is strong, with BTC-USD up 2.67%.",
   "recommendation": "hold",
   "crypto_bias": "bullish",
   "news_bias": "neutral",
-  "news_impact": 2,
-  "key_theme": "regulatory risks",
+  "news_impact": 0,
+  "key_theme": "macroeconomic uncertainty",
   "market_data": [
     {
       "ticker": "SPY",
@@ -22,7 +22,7 @@
       "low": 706.14,
       "market_cap": 650450436096,
       "pe_ratio": 28.09885,
-      "timestamp": "2026-04-20T23:06:47.095441+00:00",
+      "timestamp": "2026-04-21T00:07:24.402241+00:00",
       "source": "yfinance"
     },
     {
@@ -36,7 +36,7 @@
       "low": 642.52,
       "market_cap": 254253137920,
       "pe_ratio": 34.170197,
-      "timestamp": "2026-04-20T23:06:47.381140+00:00",
+      "timestamp": "2026-04-21T00:07:24.865085+00:00",
       "source": "yfinance"
     },
     {
@@ -50,7 +50,7 @@
       "low": 492.31,
       "market_cap": 40160800768,
       "pe_ratio": 24.229465,
-      "timestamp": "2026-04-20T23:06:47.676164+00:00",
+      "timestamp": "2026-04-21T00:07:25.337786+00:00",
       "source": "yfinance"
     },
     {
@@ -64,7 +64,7 @@
       "low": 274.53,
       "market_cap": 77949214720,
       "pe_ratio": 20.078989,
-      "timestamp": "2026-04-20T23:06:47.991339+00:00",
+      "timestamp": "2026-04-21T00:07:25.797004+00:00",
       "source": "yfinance"
     },
     {
@@ -78,45 +78,80 @@
       "low": 18.77,
       "market_cap": null,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T23:06:48.261255+00:00",
+      "timestamp": "2026-04-21T00:07:26.192309+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "BTC-USD",
       "asset_class": "crypto",
-      "price": 75796.39,
-      "change": 1940.04,
-      "change_percent": 2.63,
-      "volume": 39759020032,
+      "price": 75826.69,
+      "change": 1970.34,
+      "change_percent": 2.67,
+      "volume": 39286566912,
       "high": 76469.56,
       "low": 73820.11,
-      "market_cap": 1518247215104,
+      "market_cap": 1518635319296,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T23:06:48.520803+00:00",
+      "timestamp": "2026-04-21T00:07:26.585218+00:00",
       "source": "yfinance"
     },
     {
       "ticker": "ETH-USD",
       "asset_class": "crypto",
-      "price": 2313.86,
-      "change": 48.94,
-      "change_percent": 2.16,
-      "volume": 19224115200,
+      "price": 2314.7,
+      "change": 49.78,
+      "change_percent": 2.2,
+      "volume": 18836101120,
       "high": 2342.29,
       "low": 2263.49,
-      "market_cap": 279272456192,
+      "market_cap": 279496556544,
       "pe_ratio": null,
-      "timestamp": "2026-04-20T23:06:48.771581+00:00",
+      "timestamp": "2026-04-21T00:07:26.990985+00:00",
       "source": "yfinance"
     }
   ],
   "news_feed": [
     {
       "source": "Google News Business",
-      "title": "Banking industry scrambles for Anthropic's Mythos as global regulators review risks - Reuters",
-      "summary": "Banking industry scrambles for Anthropic's Mythos as global regulators review risks Reuters",
-      "link": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPRHBGdXc4MW82dlM2U21Kc05mVkdsbERMSEVKQ3Y4Ty12WElOQ3dkdmRKQTF2S18zQzcweXhQSmJZWEY2UTFnTEFEazl6Q1ZnakxuRXZocnhwY0NwVjVLMTB5bDdCdW41THBWQXluLTdQM0tTaS1aVHV1UHp0RGtmN3F5bWNYeWdQSjJ1OEdEX0hIYXBad04tMFBwN0dXT2RCTzQtV294bVlma2pRS1A0dloyVWtUN1FzdVhqb3EyZC1RaTRX?oc=5",
-      "published_at": "2026-04-20T22:11:38+00:00"
+      "title": "Grand Forks School Board Finance Committee hears update on scoreboard funding - Grand Forks Herald",
+      "summary": "Grand Forks School Board Finance Committee hears update on scoreboard funding Grand Forks Herald",
+      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE03eWZnX1BaSzBMUnoxbWV6SjVVYzg1WFZvR3VPMWxMa2t3YXZqWkllcmRzdnlJQmp3clJHaGZYdG5RdEZBcUhWUUFPcHVzMEM2N1M2V3dieVFmeVhKZnhiSGpkRXdQVzdvSDU4S2VCTUlrMjRTOHc?oc=5",
+      "published_at": "2026-04-21T00:01:48+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Creative Technology (SGX:C76) Is In A Strong Position To Grow Its Business - Yahoo Finance",
+      "summary": "Creative Technology (SGX:C76) Is In A Strong Position To Grow Its Business Yahoo Finance",
+      "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNWDNTSU1xUEhsbDFoVml4VGpCU3dTbDkxTlFKdmVaNHUyVUs1WkxYR05MQmlCa1NGWEJGUnJYSngycXB0MV9qc0l2UFJqbkxMcjZVallmNkxwbXppT250MXloVlltQi1xSTIwZ3o1QVFDLWZOcnpwdXdmcTg5cXdRVjZTaUpyZU8wRVI4OWxhdmJhd29hYW9vNlRGc1BqaW0w?oc=5",
+      "published_at": "2026-04-20T23:40:14+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Visa and TikTok launch ‘creator card’ to support entrepreneurs - Yahoo Finance UK",
+      "summary": "Visa and TikTok launch ‘creator card’ to support entrepreneurs Yahoo Finance UK",
+      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNMlkwWmpxVXJ3TzFNdmh4NHpjaUItSGJ4ZHdBcGhoTkhCTjVQeFMxRk5fV1EtaV9tZUQ5T3JwZVU4VUVFLWU5X1BwcjNIMlJfZnRTWlZvcVNMLVh1V3hDQWpkUVh3TDNfcE1naWd5aUVoRHJkb2d3SXk0QVlkVE5ZOEFmb3haN0E?oc=5",
+      "published_at": "2026-04-20T23:01:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "TikTok content creators to benefit from new feature to help grow their businesses - Yahoo Finance UK",
+      "summary": "TikTok content creators to benefit from new feature to help grow their businesses Yahoo Finance UK",
+      "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQdmIwNkhOQURFbUM5QXB1b3BWQ1M1NVVyS3Nic1RlcE0yMkNZM01WUUVZaERVbG56ZHZESVM2Y0lScUhMOVdSWlNvNUx6X280elpJUmNpRTB2MUhudmdjTFh2STE5aXdjMkJ0UlFERXBRNm1IaUxRLWt4c2lnZHNobEttRGx4eWpGWVFFRl9PZkVHQQ?oc=5",
+      "published_at": "2026-04-20T23:01:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Fidelity spotlights the IRA quietly working for small firms - thestreet.com",
+      "summary": "Fidelity spotlights the IRA quietly working for small firms thestreet.com",
+      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNVy1yS3VLUDhBNWNabk95dmZvdkFXXzlsTU4yZjZwYUgwUjBBRHVHRUpPNGNkSUJIX1FDZk1ybTNpeDZOM2ZlY0loejk3Q3VsYVRpSGwzR01hcXN1N3BkWjNKajVpNVppSVp0QWdWbmRQNm1Fcl9Ob0J2SFpkNkc0Y1gtZmxmWWFKZ191b2dJWnZLQ0xvS2FySElUUi1LTGc1NlppZg?oc=5",
+      "published_at": "2026-04-20T22:37:00+00:00"
+    },
+    {
+      "source": "Google News Business",
+      "title": "Rio Tinto releases first quarter 2026 production results - Yahoo Finance UK",
+      "summary": "Rio Tinto releases first quarter 2026 production results Yahoo Finance UK",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPbVNETmZhME0xaVVNQkVRZk8tZWl1TEVXN05peGtIM2paUXVtaGx2YU1QemdYaWladmswcl9NVVZZVHRBSmlqc2J6c0YtQ0hkaGdTVnNYUEtkTEhBbGRVaUk4UFNoS0R3WlNXUzFOcGxNS0RsdmthSF96VDlKOUJibkctWkFBS2xG?oc=5",
+      "published_at": "2026-04-20T22:24:00+00:00"
     },
     {
       "source": "Google News Business",
@@ -145,53 +180,18 @@
       "summary": "Blue Origin acknowledged the satellite was placed in the wrong orbit, but has not commented since it was deemed lost.",
       "link": "https://www.cnbc.com/2026/04/20/ast-falls-after-bezos-blue-origin-places-satellite-in-wrong-orbit.html",
       "published_at": "2026-04-20T20:01:02+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "The government's new tariff refund portal is open. Will you get one? - The Providence Journal",
-      "summary": "The government's new tariff refund portal is open. Will you get one? The Providence Journal",
-      "link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxOd3VGM2JmUTBaRlZXN3Z2ai1rN0hCUHl3Z1ctM2ltSWxSV1ZqQmdPTGdiTmRLNnhydTkwaVhvTUpMdkpWVTJzaVg3cTNEMmlaek9TclJwOVdMTXNnTlVVYU53NkhSbmduNWdLMy1LcGljTmpzZ2RkSUNWdzU4aW5wTnd1cGhHWUNEY09YTUtDM3UzVVNnSmk1TFhuaVEtZGVLS1dQcFdKSl9MQjV5VWJOeXVEMC1TTjdsSzNIWm1nWkd4WWdVUkU2dHh6bzdoQVRmYUxNRE9MMXlwREVncjVXdjJoYnk1b01E?oc=5",
-      "published_at": "2026-04-20T19:33:00+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "EverBank Opens Two Branches - Los Angeles Business Journal",
-      "summary": "EverBank Opens Two Branches Los Angeles Business Journal",
-      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBCN29fQ25IWVFWNTVnVUtXNU5QWGRNT3N3YlVTdkdMRjJZT0JYTXR5QjQwLVh1Zmg3N0tKT2lIOW5JVXY0VWkySkRWVGwxRk9lNWdoLVlCQ09qdTN3ZUVJTzA2UjJpYldDOTk1UXo4Uko1bWJ0?oc=5",
-      "published_at": "2026-04-20T19:26:33+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Former SBS Finance Exec Roberto Castro Joins MediaCo Leadership Team. - Insideradio.com",
-      "summary": "Former SBS Finance Exec Roberto Castro Joins MediaCo Leadership Team. Insideradio.com",
-      "link": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQTWQ0SzBiUVZ0cHpaOGtOU2h3Y1BXNzQ2dUVEYVRreHlnLTZLYmQwUmVMM1JZZmVKZFNXbk9tLThoVk5aOGRrdWNQci1ablc2bDI0R0padXRyNUxETE9LX1cxUWcwenNyQnMtUVVzWGdVYkpuWjcxb1A0eE1aa3dMYm9zbXJxSzNRRUUxOWRpODM0UFNHMU9kaDJwbDdoVkQyY2JCMXQwckFWd1NDY3JnbWlqbnRvdS1EUjI2dWItNXdZTEFwd3g5NlFfTjdQNXdBb0d3cEdKR2NyUkZYQTNUUG5ZSWNXdw?oc=5",
-      "published_at": "2026-04-20T19:15:00+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Following National Stage Debut, Strategic Architect Michelle May O’Neil of Concierra Business Announces Free Live Training on Founder Overload for April 28 - Yahoo Finance",
-      "summary": "Following National Stage Debut, Strategic Architect Michelle May O’Neil of Concierra Business Announces Free Live Training on Founder Overload for April 28 Yahoo Finance",
-      "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQQjl3MjQyLVhJdHRGbF9waUdLczFYYnZCUlF4TmQxUkdybjB2YTBZZzdZZkhOT3hCYW9yTEFBWExOc2FZcDhuN21QMmlDLTdRVjV1YVNKdWFxbHF4MlZ2VHd5WDlRdk1zQjlldG9QUmp6VmNpT2VoYVpFS2VMZ2dNdHUtUWZOT2hWNVV0dmthU3JGaTJWenZDWnhmS1lSdGR0OFZTckxCWFkyMV9NZEE?oc=5",
-      "published_at": "2026-04-20T19:15:00+00:00"
-    },
-    {
-      "source": "Google News Business",
-      "title": "Oaktree-Backed Firm Buys Advisory - Los Angeles Business Journal",
-      "summary": "Oaktree-Backed Firm Buys Advisory Los Angeles Business Journal",
-      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1OS2xnRXZKWmdnaGdHREJZYkxwelF0bjl2T3p0SUVrazVidnU5OW5icW5ZRTRQMzNFY0J6QW1Tclc1SnViR0ZpTm9na2l4TER1el9iTGt1cGVxY1NRQzN5ZE91TUhiVVpzYUhzUmhtdmZjQlZmRjNtWmVTeEI?oc=5",
-      "published_at": "2026-04-20T18:54:05+00:00"
     }
   ],
   "mbrn_enriched": {
-    "sentiment_score": 78,
-    "confidence": 0.85,
-    "analysis": "Mixed market sentiment with equities slightly down and VIX up, but crypto prices rising.",
+    "sentiment_score": 62,
+    "confidence": 0.8,
+    "analysis": "Equities are mixed, with IWM leading gains and DIA lagging behind, while VIX spikes to 18.87. Crypto momentum is strong, with BTC-USD up 2.67%.",
     "recommendation": "hold",
     "crypto_bias": "bullish",
     "news_bias": "neutral",
-    "news_impact": 2,
-    "key_theme": "regulatory risks",
+    "news_impact": 0,
+    "key_theme": "macroeconomic uncertainty",
     "model": "llama3.1:8b",
-    "processed_at": "2026-04-20T23:07:22.480082+00:00"
+    "processed_at": "2026-04-21T00:08:01.574863+00:00"
   }
 }

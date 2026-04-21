@@ -37,6 +37,21 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
     createCheckoutSession: jest.fn(),
     verifySession: jest.fn()
   };
+  const paymentAdapterRegistryMock = {
+    getDefaultAdapter: jest.fn(() => stripePaymentAdapterMock)
+  };
+  const resolvePriceMock = jest.fn(() => ({ priceId: 'price_test' }));
+  const resolveMonetizationFlowMock = jest.fn(() => ({
+    product: { id: 'artifact', provider: 'stripe' },
+    pricing: { productId: 'artifact', amount: 19, currency: 'eur', billingPeriod: 'one_time' },
+    plan: { id: 'pro', accessLevel: 10 },
+    entitlements: { planId: 'pro', features: ['artifact'], canPurchase: true },
+    billing: { status: 'unpaid', isActive: false },
+    gate: { allowed: gateAllowed, reason: gateAllowed ? 'allowed' : 'commercial_mode_inactive' },
+    availability: 'checkout_ready',
+    checkoutReady: gateAllowed,
+    policyState: commercialActive ? (gateAllowed ? 'checkout_ready' : 'commercial_mode_inactive') : 'commercial_mode_inactive'
+  }));
 
   const i18nMock = {
     t: jest.fn((key) => key)
@@ -63,15 +78,16 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
     supabaseBridge: supabaseBridgeMock
   }));
 
-  await jest.unstable_mockModule('../commerce/payment_adapters/stripe_payment_adapter.js', () => ({
-    stripePaymentAdapter: stripePaymentAdapterMock
+  await jest.unstable_mockModule('../commerce/payment_adapters/index.js', () => ({
+    getDefaultAdapter: paymentAdapterRegistryMock.getDefaultAdapter
   }));
 
-  await jest.unstable_mockModule('../pillars/monetization/gates/entitlement_gate.js', () => ({
-    resolveCommercialGate: jest.fn(() => ({
-      allowed: gateAllowed,
-      reason: gateAllowed ? null : 'commercial_mode_inactive'
-    }))
+  await jest.unstable_mockModule('../commerce/provider_maps/index.js', () => ({
+    resolvePrice: resolvePriceMock
+  }));
+
+  await jest.unstable_mockModule('../pillars/monetization/index.js', () => ({
+    resolveMonetizationFlow: resolveMonetizationFlowMock
   }));
 
   await jest.unstable_mockModule('../shared/core/config/index.js', () => ({
@@ -109,6 +125,9 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
     streakManagerMock,
     supabaseBridgeMock,
     stripePaymentAdapterMock,
+    paymentAdapterRegistryMock,
+    resolvePriceMock,
+    resolveMonetizationFlowMock,
     i18nMock,
     validateEmailMock,
     errorLoggerMock
@@ -508,6 +527,11 @@ describe('application actions', () => {
       error: 'checkout failed'
     });
     expect(active.stateMock.emit).toHaveBeenCalledWith('checkoutRedirectRequested', { url: 'https://checkout.test' });
+    expect(active.resolveMonetizationFlowMock).toHaveBeenCalledWith({
+      productId: 'artifact',
+      accessLevel: 0
+    });
+    expect(active.resolvePriceMock).toHaveBeenCalledWith('artifact', 'stripe');
 
     active.stripePaymentAdapterMock.verifySession
       .mockResolvedValueOnce({ success: true, data: { sessionId: 'cs_success' } })
@@ -521,5 +545,42 @@ describe('application actions', () => {
       success: false,
       error: 'verification failed'
     });
+  });
+
+  test('startCheckout returns policy-state errors for unknown and catalog-only products', async () => {
+    const context = await loadActions({ commercialActive: true, gateAllowed: true });
+    context.resolveMonetizationFlowMock
+      .mockReturnValueOnce({
+        product: null,
+        pricing: null,
+        plan: { id: 'free', accessLevel: 0 },
+        entitlements: { planId: 'free', features: [], canPurchase: false },
+        billing: { status: 'unpaid', isActive: false },
+        gate: { allowed: false, reason: 'unknown_product' },
+        availability: 'unknown',
+        checkoutReady: false,
+        policyState: 'unknown_product'
+      })
+      .mockReturnValueOnce({
+        product: { id: 'oracle_snapshot', provider: 'stripe' },
+        pricing: { productId: 'oracle_snapshot', amount: 9, currency: 'eur', billingPeriod: 'monthly' },
+        plan: { id: 'business', accessLevel: 20 },
+        entitlements: { planId: 'business', features: ['oracle_snapshot'], canPurchase: false },
+        billing: { status: 'unpaid', isActive: false },
+        gate: { allowed: true, reason: 'allowed' },
+        availability: 'catalog_only',
+        checkoutReady: false,
+        policyState: 'catalog_only'
+      });
+
+    await expect(context.actions.startCheckout('missing')).resolves.toEqual({
+      success: false,
+      error: 'unknown_product'
+    });
+    await expect(context.actions.startCheckout('oracle_snapshot')).resolves.toEqual({
+      success: false,
+      error: 'catalog_only'
+    });
+    expect(context.stripePaymentAdapterMock.createCheckoutSession).not.toHaveBeenCalled();
   });
 });

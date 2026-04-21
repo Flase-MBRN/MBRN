@@ -16,7 +16,7 @@ Dieser Ordner bleibt die technische Browser-Brücke zu lokal erzeugten Python-Ar
 
 ## Wichtige Architekturgrenze
 
-Oracle-Snapshots werden in der aktuellen Plattformstruktur nicht mehr aus diesem Ordner gelesen, sondern aus:
+Oracle-Snapshots werden in der dauerhaften Plattformstruktur nicht aus diesem Ordner gelesen, sondern aus:
 
 - `pillars/oracle/browser_read/snapshot_reader.js`
 

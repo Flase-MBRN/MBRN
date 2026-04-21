@@ -24,7 +24,7 @@ export const PILLAR_REGISTRY = Object.freeze([
     id: 'frontend_os',
     label: 'Frontend OS',
     status: 'active',
-    capabilities: ['shell', 'navigation', 'dashboard', 'dimension_views', 'app_surfaces', 'cards', 'export_entrypoints'],
+    capabilities: ['shell', 'navigation', 'dashboard', 'cards', 'ui_states'],
     serviceContracts: ['surface_entries']
   }
 ]);
