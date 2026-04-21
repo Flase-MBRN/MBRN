@@ -137,11 +137,11 @@
       "note": "Internal monitoring and automation daemon. Real and operative, but not part of the public product promise."
     },
     "templates_blueprint": {
-      "state": "experimental",
-      "maturity": "implemented",
+      "state": "reserved",
+      "maturity": "none",
       "location": "templates/app_blueprint.json",
       "owner_domain": "meta_generator",
-      "note": "Blueprint asset exists and is used internally, but is not yet treated as a fully stabilized generator contract."
+      "note": "Blueprint asset is currently reserved/not-present on disk. This corrects the previous 'implemented' drift."
     }
   },
   "paths": {
