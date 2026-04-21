@@ -46,3 +46,15 @@
 3. No agent may leave `README.md` in a state that contradicts `000_CANONICAL_STATE.json`.
 4. README must not describe internal, experimental, reserved, or not-yet-public systems as publicly active unless the canonical state explicitly says so.
 5. Commerce and monetization components that are technically implemented but not publicly enabled must be described as internal, prepared, experimental, or not publicly released.
+
+## Public/Private Boundary Rule
+1. Canonical state, agent governance, architecture mirrors, and active pillar charters are public governance truth and must remain Git-tracked.
+2. Private operator or machine-room material may remain intentionally ignored when it describes internal execution rather than official product or governance state.
+3. `scripts/pipelines/` and `docs/S3_Data/` are private machine-room zones and must not be used as primary system-status authority.
+4. No ignored internal document may silently override a tracked canonical or governance file.
+
+## Archive Policy
+1. Historical root documents that are no longer active truth must be moved under `_archive_docs/`.
+2. Files inside `_archive_docs/` are historical only and must not be used for current status claims, architecture decisions, or agent reporting.
+3. Archived files must carry an explicit deprecation marker at the top of the document.
+4. If an active document is replaced by an archived one, the active replacement must be clear before the archive move is considered complete.
