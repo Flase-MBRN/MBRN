@@ -13,8 +13,6 @@ import { IS_COMMERCIAL_MODE_ACTIVE, MBRN_CONFIG } from '../core/config/index.js'
 import { i18n } from '../core/i18n.js';
 import { validateEmail } from '../core/validators.js';
 import { supabaseBridge } from '../../bridges/supabase/index.js';
-import { getDefaultAdapter } from '../../commerce/payment_adapters/index.js';
-import { resolvePrice } from '../../commerce/provider_maps/index.js';
 import { resolveMonetizationFlow } from '../../pillars/monetization/index.js';
 import { getPlanById, resolvePlanByAccessLevel } from '../../pillars/monetization/plans/index.js';
 
@@ -23,6 +21,7 @@ const registry = new Map();
 let syncDebounceTimer = null;
 let systemInitialized = false;
 let errorLoggerInitialized = false;
+let commerceRuntimePromise = null;
 
 const dispatchingLocks = new Map();
 
@@ -56,6 +55,20 @@ function resolveCheckoutTargetPlan(profile = {}, monetizationFlow) {
     : currentPlan;
 }
 
+async function loadCommerceRuntime() {
+  if (!commerceRuntimePromise) {
+    commerceRuntimePromise = Promise.all([
+      import('../../commerce/payment_adapters/index.js'),
+      import('../../commerce/provider_maps/index.js')
+    ]).then(([paymentAdapters, providerMaps]) => ({
+      getDefaultAdapter: paymentAdapters.getDefaultAdapter,
+      resolvePrice: providerMaps.resolvePrice
+    }));
+  }
+
+  return commerceRuntimePromise;
+}
+
 export const actions = {
   _resetForTests() {
     if (syncDebounceTimer) {
@@ -64,6 +77,7 @@ export const actions = {
     syncDebounceTimer = null;
     systemInitialized = false;
     errorLoggerInitialized = false;
+    commerceRuntimePromise = null;
     dispatchingLocks.clear();
     registry.clear();
   },
@@ -378,9 +392,17 @@ export const actions = {
     }
 
     state._authorizedEmit('syncStarted');
+    let commerceRuntime;
+    try {
+      commerceRuntime = await loadCommerceRuntime();
+    } catch {
+      state._authorizedEmit('syncFailed');
+      return { success: false, error: 'Checkout runtime unavailable' };
+    }
+
     const providerName = monetizationFlow.product?.provider || 'stripe';
-    const providerConfig = resolvePrice(productId, providerName);
-    const paymentAdapter = getDefaultAdapter();
+    const providerConfig = commerceRuntime.resolvePrice(productId, providerName);
+    const paymentAdapter = commerceRuntime.getDefaultAdapter();
     if (!providerConfig?.priceId || !paymentAdapter) {
       state._authorizedEmit('syncFailed');
       return { success: false, error: 'Checkout product is not configured' };
@@ -415,7 +437,19 @@ export const actions = {
       return { success: false, error: 'Commercial mode inactive' };
     }
 
-    const paymentAdapter = getDefaultAdapter();
+    let commerceRuntime;
+    try {
+      commerceRuntime = await loadCommerceRuntime();
+    } catch {
+      state._authorizedEmit('paymentFailed', {
+        sessionId,
+        error: 'Payment runtime unavailable',
+        code: 'RUNTIME_UNAVAILABLE'
+      });
+      return { success: false, error: 'Payment runtime unavailable' };
+    }
+
+    const paymentAdapter = commerceRuntime.getDefaultAdapter();
     if (!paymentAdapter) {
       state._authorizedEmit('paymentFailed', {
         sessionId,

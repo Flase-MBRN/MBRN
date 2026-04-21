@@ -1,6 +1,10 @@
 import { jest } from '@jest/globals';
 
-async function loadActions({ commercialActive = false, gateAllowed = true } = {}) {
+async function loadActions({
+  commercialActive = false,
+  gateAllowed = true,
+  commerceRuntimeAvailable = true
+} = {}) {
   jest.resetModules();
 
   const stateMock = {
@@ -65,6 +69,8 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
   const errorLoggerMock = {
     init: jest.fn()
   };
+  let paymentAdapterModuleLoadCount = 0;
+  let providerMapsModuleLoadCount = 0;
 
   await jest.unstable_mockModule('../shared/core/state/index.js', () => ({
     state: stateMock
@@ -83,11 +89,23 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
   }));
 
   await jest.unstable_mockModule('../commerce/payment_adapters/index.js', () => ({
-    getDefaultAdapter: paymentAdapterRegistryMock.getDefaultAdapter
+    getDefaultAdapter: (() => {
+      paymentAdapterModuleLoadCount += 1;
+      if (!commerceRuntimeAvailable) {
+        throw new Error('payment adapter runtime unavailable');
+      }
+      return paymentAdapterRegistryMock.getDefaultAdapter;
+    })()
   }));
 
   await jest.unstable_mockModule('../commerce/provider_maps/index.js', () => ({
-    resolvePrice: resolvePriceMock
+    resolvePrice: (() => {
+      providerMapsModuleLoadCount += 1;
+      if (!commerceRuntimeAvailable) {
+        throw new Error('provider map runtime unavailable');
+      }
+      return resolvePriceMock;
+    })()
   }));
 
   await jest.unstable_mockModule('../pillars/monetization/index.js', () => ({
@@ -135,7 +153,13 @@ async function loadActions({ commercialActive = false, gateAllowed = true } = {}
     resolveMonetizationFlowMock,
     i18nMock,
     validateEmailMock,
-    errorLoggerMock
+    errorLoggerMock,
+    getCommerceModuleLoadCounts() {
+      return {
+        paymentAdapters: paymentAdapterModuleLoadCount,
+        providerMaps: providerMapsModuleLoadCount
+      };
+    }
   };
 }
 
@@ -518,6 +542,10 @@ describe('application actions', () => {
         badge: 'Bald verfuegbar'
       }
     });
+    expect(gated.getCommerceModuleLoadCounts()).toEqual({
+      paymentAdapters: 0,
+      providerMaps: 0
+    });
     expect(gated.stripePaymentAdapterMock.createCheckoutSession).not.toHaveBeenCalled();
 
     const active = await loadActions({ commercialActive: true, gateAllowed: true });
@@ -525,6 +553,10 @@ describe('application actions', () => {
     await expect(active.actions.startCheckout('artifact')).resolves.toEqual({
       success: false,
       error: 'Auth required'
+    });
+    expect(active.getCommerceModuleLoadCounts()).toEqual({
+      paymentAdapters: 0,
+      providerMaps: 0
     });
 
     active.stateMock.get.mockReturnValue({ id: 'user-pay' });
@@ -539,6 +571,10 @@ describe('application actions', () => {
     await expect(active.actions.startCheckout('artifact')).resolves.toEqual({
       success: false,
       error: 'checkout failed'
+    });
+    expect(active.getCommerceModuleLoadCounts()).toEqual({
+      paymentAdapters: 1,
+      providerMaps: 1
     });
     expect(active.stateMock.emit).toHaveBeenCalledWith('checkoutRedirectRequested', { url: 'https://checkout.test' });
     expect(active.resolveMonetizationFlowMock).toHaveBeenCalledWith({
@@ -568,6 +604,31 @@ describe('application actions', () => {
       success: false,
       error: 'verification failed'
     });
+  });
+
+  test('checkout and payment fail gracefully when the private commerce runtime is unavailable', async () => {
+    const context = await loadActions({
+      commercialActive: true,
+      gateAllowed: true,
+      commerceRuntimeAvailable: false
+    });
+    context.stateMock.get.mockReturnValue({ id: 'user-pay' });
+
+    await expect(context.actions.startCheckout('artifact')).resolves.toEqual({
+      success: false,
+      error: 'Checkout runtime unavailable'
+    });
+    await expect(context.actions.handlePaymentSuccess('cs_fail')).resolves.toEqual({
+      success: false,
+      error: 'Payment runtime unavailable'
+    });
+
+    expect(context.getCommerceModuleLoadCounts()).toEqual({
+      paymentAdapters: 1,
+      providerMaps: 1
+    });
+    expect(context.stripePaymentAdapterMock.createCheckoutSession).not.toHaveBeenCalled();
+    expect(context.stripePaymentAdapterMock.verifySession).not.toHaveBeenCalled();
   });
 
   test('startCheckout returns policy-state errors for unknown and catalog-only products', async () => {
