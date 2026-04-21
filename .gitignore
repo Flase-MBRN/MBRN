@@ -61,3 +61,15 @@ docs/OPTION_A_QUICKSTART.md
 __pycache__/
 *.py[cod]
 *$py.class
+
+# MBRN Private Boundary (Internal Operator & Engine)
+000_CANONICAL_STATE.json
+000_AGENT_RULES.md
+000_DRIFT_REPORT.json
+000_plan.md
+000_roadmap.md
+000_MBRN_MASTER.md
+scripts/pipelines/
+scripts/oracle/
+supabase/migrations/
+commerce/

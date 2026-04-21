@@ -54,11 +54,7 @@ Produktiv aktiv:
 - `bridges/supabase/`
 - `bridges/python/`
 
-Intern vorbereitet / nicht oeffentlich freigeschaltet:
-
-- `commerce/stripe/`
-- `commerce/payment_adapters/`
-- `commerce/provider_maps/`
+- `commerce/*` (intern vorbereitete Infrastruktur; nicht Teil der öffentlichen Repo-Oberfläche)
 
 Experimentell / intern aktiv:
 

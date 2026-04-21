@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-04-21T12:04:58.721960+00:00",
+  "timestamp_utc": "2026-04-21T13:04:59.969551+00:00",
   "target_date": "22.04.2026",
   "oracle_version": "1.1.0",
   "day_numerology": {
@@ -125,9 +125,9 @@
       "avg_sentiment": 50.0
     },
     "weakest_correlation": {
-      "day_number": 6,
-      "alignment_score": 55.98,
-      "avg_sentiment": 51.43
+      "day_number": 1,
+      "alignment_score": 54.76,
+      "avg_sentiment": 50.0
     },
     "overall_trend": "weak_or_no_correlation",
     "statistical_significance": "high"
