@@ -52,3 +52,8 @@ export function getBrowserOrigin(defaultValue = 'http://localhost') {
 export function getBrowserHref(defaultValue = '') {
   return getBrowserLocation()?.href || defaultValue;
 }
+
+export function isGitHubPagesRuntime() {
+  const origin = getBrowserOrigin('');
+  return origin.includes('.github.io');
+}

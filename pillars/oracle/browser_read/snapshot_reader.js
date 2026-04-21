@@ -1,6 +1,6 @@
 import { createBridgeFailure, createBridgeSuccess } from '../../../shared/core/contracts/bridge_result.js';
 import { validateOracleSnapshot } from '../../../shared/core/contracts/oracle_snapshot.js';
-import { ORACLE_ARTIFACTS } from '../artifacts.js';
+import { ORACLE_ARTIFACTS, resolveOracleArtifactUrl } from '../artifacts.js';
 
 /**
  * Oracle Snapshot Reader
@@ -15,7 +15,8 @@ import { ORACLE_ARTIFACTS } from '../artifacts.js';
  */
 export async function readOracleSnapshot(snapshotUrl = ORACLE_ARTIFACTS.predictionSnapshot.path) {
   try {
-    const response = await fetch(`${snapshotUrl}?t=${Date.now()}`, { cache: 'no-store' });
+    const resolvedSnapshotUrl = resolveOracleArtifactUrl(snapshotUrl);
+    const response = await fetch(`${resolvedSnapshotUrl}?t=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) {
       return createBridgeFailure('oracle.browser_read.snapshot', `HTTP ${response.status}`, {
         statusCode: response.status

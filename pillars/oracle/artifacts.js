@@ -28,3 +28,8 @@ export const ORACLE_ARTIFACTS = Object.freeze({
 export function getOracleArtifactById(artifactId) {
   return Object.values(ORACLE_ARTIFACTS).find((artifact) => artifact.id === artifactId) || null;
 }
+
+export function resolveOracleArtifactUrl(artifactPath) {
+  if (!artifactPath) return null;
+  return new URL(artifactPath, import.meta.url).href;
+}

@@ -7,6 +7,7 @@ import {
   getBrowserWindow,
   hasBrowserRuntime,
   hasBrowserWindow,
+  isGitHubPagesRuntime,
   isBrowserOnline
 } from '../shared/core/browser_runtime.js';
 
@@ -41,6 +42,7 @@ describe('browser_runtime', () => {
     expect(getBrowserUserAgent()).toBe('unknown');
     expect(getBrowserOrigin()).toBe('http://localhost');
     expect(getBrowserHref()).toBe('');
+    expect(isGitHubPagesRuntime()).toBe(false);
   });
 
   test('reads live values from browser globals', () => {
@@ -63,5 +65,22 @@ describe('browser_runtime', () => {
     expect(getBrowserUserAgent()).toBe('JestBrowser/1.0');
     expect(getBrowserOrigin()).toBe('https://mbrn.test');
     expect(getBrowserHref()).toBe('https://mbrn.test/dashboard');
+    expect(isGitHubPagesRuntime()).toBe(false);
+  });
+
+  test('detects GitHub Pages origins', () => {
+    globalThis.window = {
+      location: {
+        origin: 'https://flase-mbrn.github.io',
+        href: 'https://flase-mbrn.github.io/MBRN/dashboard/index.html'
+      }
+    };
+    globalThis.navigator = {
+      onLine: true,
+      language: 'de-DE',
+      userAgent: 'Firefox'
+    };
+
+    expect(isGitHubPagesRuntime()).toBe(true);
   });
 });

@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getOracleArtifactById, ORACLE_ARTIFACTS } from '../pillars/oracle/artifacts.js';
+import { getOracleArtifactById, ORACLE_ARTIFACTS, resolveOracleArtifactUrl } from '../pillars/oracle/artifacts.js';
 import { summarizeOracleBacktest } from '../pillars/oracle/backtesting/index.js';
 import { getOracleCapabilityById, ORACLE_CAPABILITY_MAP } from '../pillars/oracle/capability_map.js';
 import { buildOracleFusion } from '../pillars/oracle/fusion/index.js';
@@ -156,6 +156,16 @@ describe('oracle pillar modules', () => {
       path: '../../shared/data/oracle_backtest.json',
       producer: 'pillars/oracle/processing/python/backfill_pipeline.py'
     }));
+  });
+
+  test('oracle artifact URLs resolve against the pillar module, not the current page path', () => {
+    const predictionUrl = resolveOracleArtifactUrl(ORACLE_ARTIFACTS.predictionSnapshot.path);
+    const backtestUrl = resolveOracleArtifactUrl(ORACLE_ARTIFACTS.backtestSnapshot.path);
+
+    expect(predictionUrl).toContain('/shared/data/oracle_prediction.json');
+    expect(backtestUrl).toContain('/shared/data/oracle_backtest.json');
+    expect(predictionUrl).not.toContain('/dashboard/shared/data');
+    expect(backtestUrl).not.toContain('/dashboard/shared/data');
   });
 
   test('processing API exposes ingestion and worker orchestration hooks', async () => {

@@ -1,5 +1,6 @@
 import { getSupabaseClient } from '../../../bridges/supabase/client.js';
 import { readMarketSentimentSnapshot } from '../../../bridges/python/market_sentiment_reader.js';
+import { isGitHubPagesRuntime } from '../../core/browser_runtime.js';
 
 function getVerdictLabel(score, label = '') {
   if (label) return label;
@@ -27,7 +28,8 @@ export function normalizeMarketSentiment(payload = {}) {
 }
 
 export async function readLatestMarketSentiment() {
-  const client = getSupabaseClient();
+  const shouldUseSnapshotOnly = isGitHubPagesRuntime();
+  const client = shouldUseSnapshotOnly ? null : getSupabaseClient();
   if (client) {
     try {
       const { data, error } = await client
@@ -54,6 +56,10 @@ export async function readLatestMarketSentiment() {
 }
 
 export function subscribeMarketSentiment(onUpdate) {
+  if (isGitHubPagesRuntime()) {
+    return () => {};
+  }
+
   const client = getSupabaseClient();
   if (!client || typeof onUpdate !== 'function') {
     return () => {};
@@ -74,4 +80,3 @@ export function subscribeMarketSentiment(onUpdate) {
     }
   };
 }
-
