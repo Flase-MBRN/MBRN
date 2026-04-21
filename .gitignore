@@ -63,10 +63,7 @@ __pycache__/
 *$py.class
 
 # MBRN Private Boundary (Internal Operator & Engine)
-000_CANONICAL_STATE.json
-000_AGENT_RULES.md
 000_DRIFT_REPORT.json
-000_SESSION_FREEZE.md
 scripts/pipelines/
 scripts/oracle/
 supabase/migrations/
