@@ -1,6 +1,7 @@
 import { state } from '../../core/state/index.js';
 import { storage } from '../../core/storage/index.js';
 import { calculateChronos } from '../../core/logic/chronos_v2.js';
+import { resolveCommercialGate } from '../../../pillars/monetization/gates/entitlement_gate.js';
 
 export function registerChronosActions(actions) {
   actions.register('calculateChronos', async (payload) => {
@@ -36,4 +37,32 @@ export function clearChronosBirthdate() {
 
 export function calculateChronosProfile(birthDate) {
   return calculateChronos(birthDate);
+}
+
+export function readChronosAccessState() {
+  const profile = state.get('systemInitialized') || {};
+  const user = state.get('user') || null;
+  const gate = resolveCommercialGate('chronos', {
+    planId: profile.plan_id ?? null,
+    accessLevel: profile.access_level ?? profile.level ?? null
+  });
+
+  return { user, gate };
+}
+
+export function subscribeChronosAccess(onAccessChanged) {
+  const unsubscribers = [];
+
+  if (typeof onAccessChanged === 'function') {
+    unsubscribers.push(state.subscribe('systemInitialized', onAccessChanged));
+    unsubscribers.push(state.subscribe('userAuthChanged', onAccessChanged));
+  }
+
+  return () => {
+    unsubscribers.forEach((unsubscribe) => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    });
+  };
 }

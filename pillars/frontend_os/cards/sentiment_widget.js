@@ -106,7 +106,7 @@ export const sentimentWidget = {
 
     dom.createEl('p', {
       className: 'text-sm opacity-70 mt-16',
-      text: 'Was bedeutet das? Der Wert zeigt, ob die Masse gerade Panik schiebt und ihr Geld zusammenhält (0), oder ob alle im absoluten Kauf-Modus sind (100).',
+      text: 'Was bedeutet das? Der Wert zeigt, ob die Masse gerade Panik schiebt und ihr Geld zusammenhaelt (0), oder ob alle im absoluten Kauf-Modus sind (100).',
       parent: card
     });
   },

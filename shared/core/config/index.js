@@ -6,11 +6,12 @@
 export const MBRN_CONFIG = {
   commercial: {
     isActive: false,
-    soonBadgeLabel: 'Bald verfügbar'
+    soonBadgeLabel: 'Bald verfuegbar'
   },
 
   accessLevels: {
     FREE: 0,
+    CHRONOS: 5,
     PRO: 10,
     BUSINESS: 20
   },
@@ -52,7 +53,7 @@ export const MBRN_CONFIG = {
       hasAccount: 'Bereits ein Konto? Hier anmelden',
 
       securityBlock: 'SICHERHEITSBLOCKADE',
-      invalidEmail: 'Ungültige E-Mail-Adresse.',
+      invalidEmail: 'Ungueltige E-Mail-Adresse.',
       blockedDomain: 'Domain ist gesperrt.',
       disposableEmail: 'E-Mail sieht nach einer Wegwerf-Adresse aus.',
       useRealEmail: 'Bitte nutze eine echte E-Mail oder einen Gmail-Alias (name+test@gmail.com).',
@@ -67,12 +68,12 @@ export const MBRN_CONFIG = {
       },
 
       enterNameDate: 'Bitte Name und Geburtsdatum eingeben.',
-      enterBothOperators: 'Bitte beide Daten vollständig eingeben.',
+      enterBothOperators: 'Bitte beide Daten vollstaendig eingeben.',
       enterBirthdate: 'Bitte Geburtsdatum eingeben.',
-      invalidDate: 'Bitte prüfe dein Geburtsdatum. Dieses Datum gibt es nicht im Kalender.',
-      dateNotExist: 'Dieses Datum gibt es nicht. Bitte prüfe Tag und Monat.',
+      invalidDate: 'Bitte pruefe dein Geburtsdatum. Dieses Datum gibt es nicht im Kalender.',
+      dateNotExist: 'Dieses Datum gibt es nicht. Bitte pruefe Tag und Monat.',
       nameTooShort: 'Name muss mindestens 2 Zeichen haben.',
-      invalidNumber: 'Bitte eine gültige Zahl eingeben.',
+      invalidNumber: 'Bitte eine gueltige Zahl eingeben.',
 
       checkinSuccess: 'Check-in erfolgreich. Dein Puls bleibt dran.',
 

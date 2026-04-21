@@ -2,6 +2,7 @@ import { MBRN_CONFIG } from '../../../shared/core/config/index.js';
 
 const ACCESS_LEVELS = Object.freeze({
   FREE: MBRN_CONFIG.accessLevels?.FREE ?? 0,
+  CHRONOS: MBRN_CONFIG.accessLevels?.CHRONOS ?? 5,
   PRO: MBRN_CONFIG.accessLevels?.PRO ?? 10,
   BUSINESS: MBRN_CONFIG.accessLevels?.BUSINESS ?? 20
 });
@@ -16,10 +17,18 @@ export const PLAN_CATALOG = Object.freeze([
     availability: 'included'
   },
   {
+    id: 'chronos',
+    label: 'Chronos',
+    accessLevel: ACCESS_LEVELS.CHRONOS,
+    productIds: ['chronos'],
+    monthlyPrice: 0,
+    availability: 'internal'
+  },
+  {
     id: 'pro',
     label: 'Pro',
     accessLevel: ACCESS_LEVELS.PRO,
-    productIds: ['artifact'],
+    productIds: ['chronos', 'artifact'],
     billingPeriod: 'one_time',
     availability: 'checkout_ready'
   },
@@ -27,7 +36,7 @@ export const PLAN_CATALOG = Object.freeze([
     id: 'business',
     label: 'Business',
     accessLevel: ACCESS_LEVELS.BUSINESS,
-    productIds: ['artifact', 'business', 'oracle_snapshot', 'api_access'],
+    productIds: ['chronos', 'artifact', 'business', 'oracle_snapshot', 'api_access'],
     billingPeriod: 'monthly',
     availability: 'checkout_ready'
   }

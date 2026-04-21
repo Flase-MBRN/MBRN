@@ -23,11 +23,11 @@ const HEARTBEAT_STALE_MS = 65 * 60 * 1000;
 const HEARTBEAT_POLL_MS = 60 * 1000;
 
 function getVibeLabel(score) {
-  if (score >= 90) return 'Ihr seid voll auf einer Wellenlänge.';
+  if (score >= 90) return 'Ihr seid voll auf einer Wellenlaenge.';
   if (score >= 75) return 'Das passt schon sehr gut zusammen.';
   if (score >= 60) return 'Da ist gute Verbindung drin.';
   if (score >= 45) return 'Da knirscht es noch, aber da ist Potenzial.';
-  return 'Das braucht Geduld und klare Gespräche.';
+  return 'Das braucht Geduld und klare Gespraeche.';
 }
 
 function formatCheckinDays(value) {
@@ -87,17 +87,17 @@ function formatCryptoDetails(snapshot = {}) {
     })
     .filter(Boolean);
 
-  return segments.length ? segments.join(' · ') : 'Kein frischer BTC/ETH-Impuls';
+  return segments.length ? segments.join(' | ') : 'Kein frischer BTC/ETH-Impuls';
 }
 
 function formatNewsDetails(newsSignal = 'neutral', headlineCount = 0) {
   const count = Number.isFinite(Number(headlineCount)) ? Number(headlineCount) : 0;
   const countLabel = count === 1 ? 'Meldung' : 'Meldungen';
-  return `${getBiasLabel(newsSignal)} · ${count} ${countLabel}`;
+  return `${getBiasLabel(newsSignal)} | ${count} ${countLabel}`;
 }
 
 function buildOracleExplanation(prediction, signal, context, state) {
-  const dayNumber = prediction?.day_numerology?.day_number ?? '–';
+  const dayNumber = prediction?.day_numerology?.day_number ?? '--';
   const dayDescription = prediction?.day_numerology?.description || 'klare Ausrichtung';
   const marketVibe = getMarketVibeLabel(signal?.sentiment_prediction ?? 50);
   const strategy = getOracleStrategyLabel(state);
@@ -226,7 +226,7 @@ export const dashboardRender = {
     dom.createEl('div', { className: 'section-eyebrow-left', text: 'Vibe Check', parent: card });
     dom.createEl('p', {
       className: 'text-secondary mb-24',
-      text: 'Gib zwei Geburtstage ein und ich zeige dir, wie leicht es zwischen euch fließt.',
+      text: 'Gib zwei Geburtstage ein und ich zeige dir, wie leicht es zwischen euch fliesst.',
       parent: card
     });
 
@@ -283,7 +283,6 @@ export const dashboardRender = {
 
     calcBtn.addEventListener('click', clickHandler);
     this._listeners.push({ element: calcBtn, type: 'click', handler: clickHandler });
-
   },
 
   buildSynergyResults(data) {
@@ -396,7 +395,7 @@ export const dashboardRender = {
     dom.createEl('div', { className: 'section-eyebrow-left', text: 'Oracle', parent: headerCopy });
     dom.createEl('p', {
       className: 'text-secondary oracle-subtitle',
-      text: 'Synchronizität, KI-Resonanz und Live-Druck in einem Blick.',
+      text: 'Synchronizitaet, KI-Resonanz und Live-Druck in einem Blick.',
       parent: headerCopy
     });
     dom.createEl('div', {
@@ -408,7 +407,7 @@ export const dashboardRender = {
 
     const mainGrid = dom.createEl('div', { className: 'oracle-main-grid', parent: card });
     const scoreBlock = dom.createEl('div', { className: 'oracle-score-block', parent: mainGrid });
-    dom.createEl('span', { className: 'oracle-kicker', text: 'SYNCHRONIZITÄT', parent: scoreBlock });
+    dom.createEl('span', { className: 'oracle-kicker', text: 'SYNCHRONIZITAET', parent: scoreBlock });
     dom.createEl('span', {
       id: 'oracle-alignment-score',
       className: 'value-massive oracle-score-value',
@@ -418,13 +417,13 @@ export const dashboardRender = {
     dom.createEl('span', {
       id: 'oracle-target-date',
       className: 'value-label',
-      text: 'Nächster Handelstag',
+      text: 'Naechster Handelstag',
       parent: scoreBlock
     });
 
     const miniGrid = dom.createEl('div', { className: 'oracle-mini-grid', parent: mainGrid });
     createOracleStat(miniGrid, 'VERTRAUEN', 'oracle-confidence');
-    createOracleStat(miniGrid, 'KI-PRÄZISION', 'oracle-accuracy');
+    createOracleStat(miniGrid, 'KI-PRAEZISION', 'oracle-accuracy');
     createOracleStat(miniGrid, 'MARKT-VIBE', 'oracle-market-vibe');
     createOracleStat(miniGrid, 'STRATEGIE', 'oracle-strategy');
 
@@ -480,7 +479,7 @@ export const dashboardRender = {
       }
 
       dom.setText('oracle-alignment-score', Math.round(prediction.alignmentScore).toString());
-      dom.setText('oracle-target-date', prediction.targetDate || 'Nächster Handelstag');
+      dom.setText('oracle-target-date', prediction.targetDate || 'Naechster Handelstag');
       dom.setText('oracle-confidence', formatPercent(prediction.confidence * 100));
       dom.setText('oracle-accuracy', formatPercent(prediction.accuracyPct));
       dom.setText('oracle-market-vibe', marketVibe);

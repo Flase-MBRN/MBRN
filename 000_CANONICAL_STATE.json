@@ -136,12 +136,19 @@
       "owner_domain": "oracle",
       "note": "Internal monitoring and automation daemon. Real and operative, but not part of the public product promise."
     },
+    "admin_entitlement_cli": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/admin_entitlement_cli.py",
+      "owner_domain": "monetization",
+      "note": "Local-only entitlement tool for internal profile plan_id changes via Supabase service role."
+    },
     "templates_blueprint": {
-      "state": "reserved",
-      "maturity": "none",
+      "state": "active",
+      "maturity": "implemented",
       "location": "templates/app_blueprint.json",
       "owner_domain": "meta_generator",
-      "note": "Blueprint asset is currently reserved/not-present on disk. This corrects the previous 'implemented' drift."
+      "note": "Blueprint asset exists on disk and is part of the active meta_generator surface."
     }
   },
   "paths": {
@@ -150,6 +157,14 @@
     "dimension_root": "dimensions/",
     "app_root": "apps/",
     "pipeline_root": "scripts/pipelines/",
+    "shared_root": "shared/",
+    "supabase_root": "supabase/",
+    "dashboard_root": "dashboard/",
+    "tests_root": "tests/",
+    "commerce_root": "commerce/",
+    "ai_root": "AI/",
+    "scratch_root": "scratch/",
+    "archive_docs_root": "_archive_docs/",
     "templates_root": "templates/",
     "docs_root": "docs/"
   },

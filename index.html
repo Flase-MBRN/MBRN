@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MBRN - built to be used</title>
   <meta name="description" content="MBRN zeigt dir dein Muster, dein Wachstum und deine Phasen. Klar, direkt und ohne Umwege.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;">
 
   <link rel="stylesheet" href="./shared/ui/theme.css">
   <link rel="stylesheet" href="./shared/ui/components.css">
@@ -13,7 +13,6 @@
 </head>
 <body class="void-bg bg-grid">
 
-  <!-- Sidebar Navigation -->
   <aside class="nav-sidebar">
     <div class="nav-brand">
       <span class="logo-text">MBRN</span>
@@ -26,27 +25,22 @@
     </div>
   </aside>
 
-  <!-- Background Glow -->
   <div class="bg-glow"></div>
 
-  <!-- Main Content -->
   <main class="main-content">
-
-    <!-- ===== HERO SECTION ===== -->
     <section id="hero-section" class="tool-hero reveal">
       <div class="hero-eyebrow">Pattern Intelligence</div>
-      <h1 class="hero-title">Entschlüssele<br>deine Muster</h1>
-      <p class="hero-subtitle">Modellbasierte Analyse auf Basis deiner Eingaben. Klar, direkt und ohne unnötigen Nebel.</p>
+      <h1 class="hero-title">Entschluessle<br>deine Muster</h1>
+      <p class="hero-subtitle">Modellbasierte Analyse auf Basis deiner Eingaben. Klar, direkt und ohne unnoetigen Nebel.</p>
     </section>
 
-    <!-- ===== ENTRY SECTION (FORM) ===== -->
     <section id="entry-section" class="tool-section reveal">
       <div id="hook-section" class="section-card">
         <h2 class="text-accent mb-24">Starte deine Analyse</h2>
 
         <form id="frequency-form" class="input-grid grid-1fr">
           <div class="form-group">
-            <label for="input-name">Vollständiger Name</label>
+            <label for="input-name">Vollstaendiger Name</label>
             <input type="text" id="input-name" placeholder="z.B. Max Mustermann" required>
           </div>
 
@@ -56,14 +50,17 @@
           </div>
 
           <button type="submit" class="btn-primary mt-24">Analyse starten</button>
-          <a href="./dashboard/index.html" id="skip-dashboard-link" class="skip-link text-center mt-16">Direkt zum Dashboard →</a>
+          <a href="./dashboard/index.html" id="skip-dashboard-link" class="skip-link text-center mt-16">Direkt zum Dashboard</a>
         </form>
         <div id="landing-legal-mount" class="mt-24"></div>
       </div>
     </section>
+
+    <section id="auth-section" class="tool-section reveal">
+      <div id="auth-surface-root"></div>
+    </section>
   </main>
 
-  <!-- ===== LOADER OVERLAY ===== -->
   <section id="loader-section" class="loader-overlay hidden">
     <div class="glass-card loader-card">
       <div class="terminal-header">
@@ -81,7 +78,6 @@
     </div>
   </section>
 
-  <!-- ===== REVEAL OVERLAY ===== -->
   <section id="reveal-section" class="reveal-overlay hidden">
     <div class="glass-card reveal-card text-center">
       <div class="number-display">
@@ -118,7 +114,6 @@
     </div>
   </section>
 
-  <!-- Scripts -->
   <script type="module" src="./pillars/frontend_os/shell/render_landing.js"></script>
 </body>
 </html>

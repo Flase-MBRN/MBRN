@@ -9,7 +9,9 @@ import {
   clearChronosBirthdate,
   loadChronosBirthdate,
   registerChronosActions,
-  saveChronosBirthdate
+  saveChronosBirthdate,
+  readChronosAccessState,
+  subscribeChronosAccess
 } from '../../../shared/application/frontend_os/chronos_runtime.js';
 import { dom, animateValue, showTerminalLoader, bindSmartDateInput } from '../../../shared/ui/dom_utils.js';
 import { getRepoRoot, nav, renderNavigation } from '../navigation/index.js';
@@ -75,16 +77,77 @@ export const chronosRender = {
   _listeners: [],
   _timers: [],
 
-  init() {
+  async init() {
     registerChronosActions(actions);
+
+    this._unsubscribers.push(subscribeChronosAccess(() => this.renderSurfaceState()));
 
     renderNavigation('nav-menu');
     nav.bindNavigation();
     nav.registerCurrentApp(this);
-    renderAuth.init();
+    await actions.initSystem();
+    await renderAuth.init();
+
+    this.renderSurfaceState();
+    this.initScrollReveal();
+  },
+
+  resolveAccessGate() {
+    return readChronosAccessState();
+  },
+
+  renderSurfaceState() {
+    const { user, gate } = this.resolveAccessGate();
+    if (!user || !gate.allowed) {
+      this.renderLockedState(user, gate);
+      return;
+    }
 
     this.autoRenderLifeCycles();
-    this.initScrollReveal();
+  },
+
+  renderLockedState(user, gate) {
+    const container = document.getElementById('chrono-content-area');
+    if (!container) return;
+
+    dom.clear(container.id);
+
+    const card = dom.createEl('div', {
+      className: 'glass-card text-center',
+      parent: container
+    });
+
+    dom.createEl('h3', {
+      className: 'section-eyebrow',
+      text: 'Interne Freischaltung',
+      parent: card
+    });
+
+    dom.createEl('p', {
+      className: 'text-secondary mb-16',
+      text: !user
+        ? 'Chronos ist intern abgesichert. Bitte melde dich mit einem internen Konto an.'
+        : 'Chronos ist fuer dieses Konto noch nicht freigeschaltet. Die Freischaltung erfolgt intern ueber Profilstatus und plan_id.',
+      parent: card
+    });
+
+    dom.createEl('p', {
+      className: 'text-sm opacity-70',
+      text: `Status: ${gate.reason}.`,
+      parent: card
+    });
+
+    const legalMount = dom.createEl('div', {
+      id: 'chronos-locked-legal',
+      className: 'mt-24',
+      parent: card
+    });
+    injectLegalBlock(legalMount, {
+      variant: 'chronos_timing',
+      basePath: getRepoRoot(),
+      includePolicyLinks: true,
+      compactLinks: true
+    });
   },
 
   autoRenderLifeCycles() {

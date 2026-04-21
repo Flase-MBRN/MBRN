@@ -1,5 +1,13 @@
 export const API_PRODUCT_CATALOG = Object.freeze([
   {
+    id: 'chronos',
+    label: 'Chronos Zugang',
+    type: 'internal',
+    provider: null,
+    availability: 'internal',
+    grantsPlanId: 'chronos'
+  },
+  {
     id: 'artifact',
     label: 'Artifact Export',
     type: 'workspace',

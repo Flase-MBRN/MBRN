@@ -8,10 +8,12 @@ import { getPricingByProductId } from './pricing/index.js';
 function resolvePolicyState({ product, pricing, gate, billing }) {
   if (!product) return 'unknown_product';
   if (billing.isActive) return 'active_subscription';
-  if (gate.reason === 'commercial_mode_inactive') return 'commercial_mode_inactive';
+  if (gate.reason === 'missing_context') return 'access_context_required';
+  if (gate.reason === 'internal_access_required') return 'commercial_mode_inactive';
   if (product.availability === 'catalog_only') return 'catalog_only';
+  if (!gate.allowed && gate.reason === 'upgrade_required') return 'upgrade_required';
+  if (!gate.meta?.commercialModeActive && gate.allowed) return 'allowed';
   if (product.availability === 'checkout_ready' && pricing) return 'checkout_ready';
-  if (gate.reason === 'upgrade_required') return 'upgrade_required';
   if (gate.allowed) return 'allowed';
   return 'blocked';
 }

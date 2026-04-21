@@ -15,47 +15,47 @@ export const LEGAL_TEXTS = Object.freeze({
   general: {
     title: 'Hinweis',
     body:
-      'MBRN ist ein digitales Modell für Einordnung, Planung und Reflexion auf Basis deiner Eingaben. Die Inhalte dienen der Orientierung und ersetzen keine fachliche Beratung.'
+      'MBRN ist ein digitales Modell fuer Einordnung, Planung und Reflexion auf Basis deiner Eingaben. Die Inhalte dienen der Orientierung und ersetzen keine fachliche Beratung.'
   },
   data: {
     title: 'Datennutzung',
     body:
-      'Für Berechnung und Darstellung nutzt MBRN Angaben wie Name und Geburtsdatum. Teile deines Profils können lokal in deinem Browser gespeichert werden, damit du später weitermachen kannst.'
+      'Fuer Berechnung und Darstellung nutzt MBRN Angaben wie Name und Geburtsdatum. Teile deines Profils koennen lokal in deinem Browser gespeichert werden, damit du spaeter weitermachen kannst.'
   },
   numerology: {
     title: 'Modell-Hinweis',
     body:
-      'Die Muster- und Zahlenansichten sind als modellbasierte Einordnung und Reflexionshilfe zu verstehen. Sie treffen keine objektiven oder wissenschaftlichen Wahrheitsaussagen über deine Person.'
+      'Die Muster- und Zahlenansichten sind als modellbasierte Einordnung und Reflexionshilfe zu verstehen. Sie treffen keine objektiven oder wissenschaftlichen Wahrheitsaussagen ueber deine Person.'
   },
   finance: {
     title: 'Finanz-Hinweis',
     body:
-      'Die Finanzansichten sind Rechen- und Orientierungshilfen. Sie sind keine Finanz-, Steuer- oder Rechtsberatung und bilden keine Garantie für reale Entwicklungen ab.'
+      'Die Finanzansichten sind Rechen- und Orientierungshilfen. Sie sind keine Finanz-, Steuer- oder Rechtsberatung und bilden keine Garantie fuer reale Entwicklungen ab.'
   },
   chronos_timing: {
     title: 'Timing-Hinweis',
     body:
-      'Chronos ist eine modellbasierte Zeit- und Phasen-Einordnung. Die Darstellung unterstützt Reflexion und Timing-Interpretation, trifft aber keine wissenschaftlichen, deterministischen oder vorhersagenden Aussagen.'
+      'Chronos ist eine modellbasierte Zeit- und Phasen-Einordnung. Die Darstellung unterstuetzt Reflexion und Timing-Interpretation, trifft aber keine wissenschaftlichen, deterministischen oder vorhersagenden Aussagen.'
   },
   export_privacy: {
     title: 'Teilen & Export',
     body:
-      'Exportierte Bilder, Storys oder PDFs können persönliche Informationen enthalten. Prüfe Inhalt und Sichtbarkeit vor dem Teilen oder Weitergeben sorgfältig.'
+      'Exportierte Bilder, Storys oder PDFs koennen persoenliche Informationen enthalten. Pruefe Inhalt und Sichtbarkeit vor dem Teilen oder Weitergeben sorgfaeltig.'
   },
   sync: {
     title: 'Sync-Hinweis',
     body:
-      'MBRN arbeitet lokal-first. Je nach aktivierten Funktionen können Anmelde-, Profil-, Realtime- oder Sync-Vorgänge technische Verbindungen zu externer Infrastruktur wie Supabase auslösen.'
+      'MBRN arbeitet lokal-first. Je nach aktivierten Funktionen koennen Anmelde-, Profil-, Realtime- oder Sync-Vorgaenge technische Verbindungen zu externer Infrastruktur wie Supabase ausloesen.'
   },
   commerce: {
-    title: 'Commerce-Hinweis',
+    title: 'Freischaltungs-Hinweis',
     body:
-      'Für künftige kostenpflichtige Module können Zahlungs- und Vertragsprozesse über externe Anbieter wie Stripe abgewickelt werden. Diese Schicht ist vorbereitet, aber in diesem Stand noch nicht aktiv.'
+      'Geschuetzte Bereiche werden in diesem Stand nur intern ueber Profilstatus und Systemkonfiguration freigeschaltet.'
   },
   auth_notice: {
     title: 'Anmelde-Hinweis',
     body:
-      'Bei Login und Registrierung können E-Mail-Adresse, Profilstatus und technische Sitzungsdaten verarbeitet werden. Dieser Hinweis ist als Hook für die spätere Auth-Fläche vorbereitet.'
+      'Bei Login und Registrierung koennen E-Mail-Adresse, Profilstatus und technische Sitzungsdaten verarbeitet werden. Dieser Hinweis gilt fuer die interne Auth-Flaeche.'
   }
 });
 

@@ -274,6 +274,7 @@ export const actions = {
     if (res.success) {
       state.set('user', res.data.user);
       state._authorizedEmit('userAuthChanged', res.data.user);
+      await this.syncProfileToCloud();
       return { success: true, data: res.data.user };
     }
     return res;
@@ -284,6 +285,7 @@ export const actions = {
     if (res.success) {
       state.set('user', res.data.user);
       state._authorizedEmit('userAuthChanged', res.data.user);
+      await this.pullCloudData(res.data.user.id);
       return { success: true, data: res.data.user };
     }
     return res;
@@ -314,8 +316,8 @@ export const actions = {
     state._authorizedEmit('syncStarted');
 
     const cloudRes = await supabaseBridge.getProfile(userId);
-    if (!cloudRes.success || !cloudRes.data) {
-      state._authorizedEmit('syncFailed', { error: cloudRes.error || 'Cloud profile unavailable' });
+    if (!cloudRes?.success || !cloudRes?.data) {
+      state._authorizedEmit('syncFailed', { error: cloudRes?.error || 'Cloud profile unavailable' });
       return;
     }
 

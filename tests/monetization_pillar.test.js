@@ -42,6 +42,7 @@ async function loadMonetizationFlowWithCommercialMode(commercialActive) {
       },
       accessLevels: {
         FREE: 0,
+        CHRONOS: 5,
         PRO: 10,
         BUSINESS: 20
       }
@@ -54,11 +55,18 @@ async function loadMonetizationFlowWithCommercialMode(commercialActive) {
 
 describe('monetization pillar modules', () => {
   test('plan, pricing, entitlement and billing modules expose minimal business substance', () => {
-    expect(getPlanCatalog().map((plan) => plan.id)).toEqual(['free', 'pro', 'business']);
+    expect(getPlanCatalog().map((plan) => plan.id)).toEqual(['free', 'chronos', 'pro', 'business']);
+    expect(resolvePlanByAccessLevel(5).id).toBe('chronos');
     expect(resolvePlanByAccessLevel(10).id).toBe('pro');
     expect(resolvePlanByAccessLevel(20).id).toBe('business');
+    expect(getApiProductCatalog().map((product) => product.id)).toContain('chronos');
     expect(getApiProductCatalog().map((product) => product.id)).toContain('artifact');
     expect(getApiProductCatalog().map((product) => product.id)).toContain('business');
+    expect(getApiProductById('chronos')).toEqual(expect.objectContaining({
+      provider: null,
+      availability: 'internal',
+      grantsPlanId: 'chronos'
+    }));
     expect(getApiProductById('artifact')).toEqual(expect.objectContaining({ provider: 'stripe' }));
     expect(getApiProductById('business')).toEqual(expect.objectContaining({
       provider: 'stripe',
@@ -73,14 +81,19 @@ describe('monetization pillar modules', () => {
       amount: 49,
       billingPeriod: 'monthly'
     }));
+    expect(resolveEntitlements({ accessLevel: 5, productId: 'chronos' })).toEqual(expect.objectContaining({
+      planId: 'chronos',
+      features: expect.arrayContaining(['chronos']),
+      canPurchase: false
+    }));
     expect(resolveEntitlements({ accessLevel: 10, productId: 'artifact' })).toEqual(expect.objectContaining({
       planId: 'pro',
-      features: expect.arrayContaining(['artifact']),
+      features: expect.arrayContaining(['chronos', 'artifact']),
       canPurchase: true
     }));
     expect(resolveEntitlements({ planId: 'business', productId: 'business' })).toEqual(expect.objectContaining({
       planId: 'business',
-      features: expect.arrayContaining(['artifact', 'business', 'oracle_snapshot', 'api_access']),
+      features: expect.arrayContaining(['chronos', 'artifact', 'business', 'oracle_snapshot', 'api_access']),
       canPurchase: true
     }));
     expect(buildCheckoutSessionRequest('artifact')).toEqual(expect.objectContaining({
@@ -116,15 +129,46 @@ describe('monetization pillar modules', () => {
 
   test('commercial gate stays UI-safe in inactive and active modes', async () => {
     const inactive = await loadGateWithCommercialMode(false);
+    expect(inactive.resolveCommercialGate('chronos')).toEqual(expect.objectContaining({
+      allowed: false,
+      reason: 'missing_context'
+    }));
+    expect(inactive.resolveCommercialGate('chronos', { planId: 'free' })).toEqual(expect.objectContaining({
+      allowed: false,
+      reason: 'internal_access_required'
+    }));
+    expect(inactive.resolveCommercialGate('chronos', { planId: 'chronos' })).toEqual(expect.objectContaining({
+      allowed: true,
+      reason: 'allowed'
+    }));
     expect(inactive.resolveCommercialGate('artifact')).toEqual(expect.objectContaining({
       allowed: false,
-      reason: 'commercial_mode_inactive'
+      reason: 'missing_context'
+    }));
+    expect(inactive.resolveCommercialGate('artifact', { planId: 'free' })).toEqual(expect.objectContaining({
+      allowed: false,
+      reason: 'internal_access_required',
+      meta: expect.objectContaining({ canPurchase: false, commercialModeActive: false })
+    }));
+    expect(inactive.resolveCommercialGate('artifact', { planId: 'pro' })).toEqual(expect.objectContaining({
+      allowed: true,
+      reason: 'allowed',
+      meta: expect.objectContaining({ commercialModeActive: false })
     }));
 
     const active = await loadGateWithCommercialMode(true);
-    expect(active.resolveCommercialGate('artifact')).toEqual(expect.objectContaining({
+    expect(active.resolveCommercialGate('chronos', { planId: 'free' })).toEqual(expect.objectContaining({
+      allowed: false,
+      reason: 'upgrade_required',
+      meta: expect.objectContaining({ canPurchase: false })
+    }));
+    expect(active.resolveCommercialGate('chronos', { planId: 'chronos' })).toEqual(expect.objectContaining({
       allowed: true,
       reason: 'allowed'
+    }));
+    expect(active.resolveCommercialGate('artifact')).toEqual(expect.objectContaining({
+      allowed: false,
+      reason: 'missing_context'
     }));
     expect(active.resolveCommercialGate('artifact', { planId: 'free' })).toEqual(expect.objectContaining({
       allowed: false,
@@ -143,6 +187,23 @@ describe('monetization pillar modules', () => {
   });
 
   test('monetization flow resolves the full business chain consistently', async () => {
+    const chronosFlow = resolveMonetizationFlow({
+      productId: 'chronos',
+      planId: 'chronos'
+    });
+
+    expect(chronosFlow).toEqual(expect.objectContaining({
+      availability: 'internal',
+      checkoutReady: false,
+      policyState: 'allowed',
+      plan: expect.objectContaining({ id: 'chronos' }),
+      entitlements: expect.objectContaining({
+        planId: 'chronos',
+        features: expect.arrayContaining(['chronos'])
+      }),
+      gate: expect.objectContaining({ feature: 'chronos', allowed: true })
+    }));
+
     const artifactFlow = resolveMonetizationFlow({
       productId: 'artifact',
       planId: 'pro',
@@ -157,7 +218,7 @@ describe('monetization pillar modules', () => {
       pricing: expect.objectContaining({ productId: 'artifact' }),
       entitlements: expect.objectContaining({
         planId: 'pro',
-        features: expect.arrayContaining(['artifact'])
+        features: expect.arrayContaining(['chronos', 'artifact'])
       }),
       billing: expect.objectContaining({
         isActive: true,
@@ -202,7 +263,7 @@ describe('monetization pillar modules', () => {
     expect(checkoutReadyFlow).toEqual(expect.objectContaining({
       availability: 'checkout_ready',
       checkoutReady: true,
-      policyState: 'commercial_mode_inactive'
+      policyState: 'allowed'
     }));
   });
 
@@ -267,6 +328,27 @@ describe('monetization pillar modules', () => {
       const source = fs.readFileSync(filePath, 'utf8');
       expect(source).not.toMatch(/\bPAID_PRO\b|\bSpark\b|premium_monthly|oracle_credits_/);
     });
+  });
+
+  test('repo migrations acknowledge the internal chronos plan without creating checkout metadata', () => {
+    const paymentSchemaSource = fs.readFileSync(
+      path.join(REPO_ROOT, 'supabase', 'migrations', '11_payment_schema.sql'),
+      'utf8'
+    );
+
+    expect(paymentSchemaSource).toContain("'chronos'");
+    expect(getPricingByProductId('chronos')).toBeNull();
+    expect(buildCheckoutSessionRequest('chronos')).toBeNull();
+  });
+
+  test('chronos runtime gates against the dedicated chronos key instead of artifact', () => {
+    const runtimeSource = fs.readFileSync(
+      path.join(REPO_ROOT, 'shared', 'application', 'frontend_os', 'chronos_runtime.js'),
+      'utf8'
+    );
+
+    expect(runtimeSource).toContain("resolveCommercialGate('chronos'");
+    expect(runtimeSource).not.toContain("resolveCommercialGate('artifact'");
   });
 
   test('stripe checkout and webhook functions carry canonical product and plan metadata', () => {
