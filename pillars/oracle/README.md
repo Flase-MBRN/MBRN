@@ -1,8 +1,10 @@
 # /pillars/oracle/
 
-**Status:** ACTIVE FULL DATA MACHINE
+**Status:** IMPLEMENTED / OPERATIVE ENGINE
 
 Dieses Pillar ist die fachliche JS-Runtime-, Consumption- und Verarbeitungs-Wahrheit fuer Oracle-Daten in Browser-, Application- und operativer Pipeline-Steuerung.
+
+Der Reifegrad bleibt bewusst vorsichtig formuliert: operative Engine, aber keine fertig standardisierte Endstufe.
 
 ## Aktive Runtime-Capabilities
 

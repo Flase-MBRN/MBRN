@@ -56,11 +56,9 @@ Produktiv aktiv:
 
 - `commerce/*` (intern vorbereitete Infrastruktur; nicht Teil der öffentlichen Repo-Oberfläche)
 
-Experimentell / intern aktiv:
+Bewusst reserviert / nicht implementiert:
 
 - `bridges/local_llm/`
-
-Bewusst reserviert:
 
 - `bridges/external_apis/`
 

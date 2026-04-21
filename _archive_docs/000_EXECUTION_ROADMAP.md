@@ -1,3 +1,5 @@
+> **DEPRECATED:** Historisches Dokument. Nicht als aktuelle Wahrheitsquelle für Agenten nutzen.
+
 # 000_EXECUTION_ROADMAP.md
 
 ## Status

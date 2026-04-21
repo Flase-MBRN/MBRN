@@ -130,11 +130,11 @@ describe('meta generator active modules', () => {
     }));
 
     expect(buildAgentAdapterRequest({
-      adapter: 'local_llm',
+      adapter: 'manual_work_order',
       task: 'generate_blueprint',
       payload: { pillarId: 'oracle' }
     })).toEqual(expect.objectContaining({
-      adapter: 'local_llm',
+      adapter: 'manual_work_order',
       task: 'generate_blueprint',
       payload: { pillarId: 'oracle' }
     }));
@@ -145,17 +145,17 @@ describe('meta generator active modules', () => {
       })
     );
     expect(buildBlueprintGenerationRequest({ appId: 'synergy' })).toEqual(expect.objectContaining({
-      adapter: 'local_llm',
+      adapter: 'manual_work_order',
       task: 'generate_blueprint',
       payload: { blueprint: { appId: 'synergy' } }
     }));
     expect(buildAssetGenerationRequest({ id: 'numerology_share_card' })).toEqual(expect.objectContaining({
-      adapter: 'local_llm',
+      adapter: 'manual_work_order',
       task: 'generate_asset',
       payload: { assetPreset: { id: 'numerology_share_card' } }
     }));
     expect(buildContentExpansionRequest({ surfaceId: 'dashboard' })).toEqual(expect.objectContaining({
-      adapter: 'local_llm',
+      adapter: 'manual_work_order',
       task: 'expand_content_bundle',
       payload: { contentBundle: { surfaceId: 'dashboard' } }
     }));
@@ -177,7 +177,7 @@ describe('meta generator active modules', () => {
       outputFormat: 'png'
     }));
     expect(parsed.adapterRequest).toEqual(expect.objectContaining({
-      adapter: 'local_llm',
+      adapter: 'manual_work_order',
       task: 'preview_seed_bundle'
     }));
   });

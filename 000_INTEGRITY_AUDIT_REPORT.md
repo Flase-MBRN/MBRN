@@ -1,3 +1,5 @@
+> **HISTORISCHES AUDIT:** Befunde teils durch spätere Fixes überholt. Keine aktive Wahrheit.
+
 # 🔍 MBRN Integrity Audit Report
 **Datum:** 2026-04-19 UTC  
 **Auditor:** Agent 2 (Data-MAKER)  

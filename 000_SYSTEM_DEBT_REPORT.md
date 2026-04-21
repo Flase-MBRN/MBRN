@@ -1,3 +1,5 @@
+> **WARNUNG:** VERALTET. Metriken (z.B. 18 aktive Markdown-Dateien) stimmen nicht mehr mit dem Ist-Zustand überein. Nicht für Statusbehauptungen nutzen.
+
 ---
 metadata:
   project: MBRN-HUB-V1

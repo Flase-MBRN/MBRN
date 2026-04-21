@@ -1,5 +1,7 @@
+const PLACEHOLDER_ADAPTER = 'manual_work_order';
+
 export function buildAgentAdapterRequest({
-  adapter = 'local',
+  adapter = PLACEHOLDER_ADAPTER,
   task = 'generate',
   payload = {}
 } = {}) {
@@ -21,7 +23,7 @@ export function buildAgentWorkOrder(kind = 'generate', payload = {}) {
 
 export function buildBlueprintGenerationRequest(blueprint) {
   return buildAgentAdapterRequest({
-    adapter: 'local_llm',
+    adapter: PLACEHOLDER_ADAPTER,
     task: 'generate_blueprint',
     payload: { blueprint }
   });
@@ -29,7 +31,7 @@ export function buildBlueprintGenerationRequest(blueprint) {
 
 export function buildAssetGenerationRequest(assetPreset) {
   return buildAgentAdapterRequest({
-    adapter: 'local_llm',
+    adapter: PLACEHOLDER_ADAPTER,
     task: 'generate_asset',
     payload: { assetPreset }
   });
@@ -37,7 +39,7 @@ export function buildAssetGenerationRequest(assetPreset) {
 
 export function buildContentExpansionRequest(contentBundle) {
   return buildAgentAdapterRequest({
-    adapter: 'local_llm',
+    adapter: PLACEHOLDER_ADAPTER,
     task: 'expand_content_bundle',
     payload: { contentBundle }
   });

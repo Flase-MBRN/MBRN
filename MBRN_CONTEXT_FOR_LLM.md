@@ -36,6 +36,7 @@ Alles ausserhalb dieses Repos ist kein paralleler Architekturbaum.
 - `dimensionRegistry` ist die primaere Runtime-Wahrheit.
 - `dimensions/*/metadata.json` sind Spiegel.
 - `synergy` bleibt `pattern` + `provisional`.
+- `bridges/local_llm/` bleibt reserviert und nicht implementiert.
 - `000_MBRN_V3_100_PERCENT_CHECKLIST.md` ist die operative v3-Abnahme.
 - `001_POST_V3_ROADMAP.md` ist reine Folgeplanung.
 - Oracle-Heavy-Processing lebt operativ weiter unter `scripts/oracle/`.

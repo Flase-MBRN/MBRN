@@ -19,7 +19,7 @@ const previewBundle = {
     kind: 'preview_card'
   }),
   adapterRequest: buildAgentAdapterRequest({
-    adapter: 'local_llm',
+    adapter: 'manual_work_order',
     task: 'preview_seed_bundle',
     payload: { stage: 'A', consumer: 'scripts/devlab/preview_meta_generator_seed_bundle.mjs' }
   })
