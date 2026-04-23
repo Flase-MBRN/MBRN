@@ -114,3 +114,13 @@ Die Backend-Wahrheit fuer Dimensions wird ueber Referenztabellen vorbereitet:
 - `topic_areas`
 
 Supabase soll kanonische Dimensions- und Topic-Area-IDs spiegeln, statt freie Legacy-Werte weiterzutragen.
+
+## Roadmap-Ort
+
+Zukuenftige Ausbaupfade leben nicht als Ersatz-Wahrheit im Root, sondern unter `docs/roadmaps/`.
+
+Aktiver Ausbaureferenzpunkt:
+
+- `docs/roadmaps/2026-04_mbrn_autonomy_machine.md`
+
+Wenn dieser Ausbaupfad verbindlich voranschreitet, muessen die betroffenen Bridges, Systeme, Migrationen und Surfaces einzeln in `000_CANONICAL_STATE.json` nachgezogen werden. Sonst ist jede Behauptung ueber erreichte Umsetzung Drift.

@@ -22,6 +22,7 @@
       "stable"
     ],
     "existence_rule": "Anything not declared here does not officially exist.",
+    "roadmap_rule": "Roadmap tracks may be declared here as approved direction, but they do not count as implemented state unless their concrete bridges, systems, migrations, and surfaces are separately marked active or implemented.",
     "topic_area_rule": "topic_areas are optional. Apps may reference a topic_area or live directly under a dimension.",
     "app_assignment_rule": "Every app must declare a dimension. topic_area is optional, surface_kind is required."
   },
@@ -207,6 +208,13 @@
       "owner_domain": "oracle",
       "note": "Implemented local pipeline with enrichment and data processing. Not yet declared as fully supported canonical runtime surface."
     },
+    "raw_ingest_foundation": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/raw_market_news_collector.py",
+      "owner_domain": "oracle",
+      "note": "Implemented generic Week-1 raw ingestion foundation for markets and news. Persists generic raw batches via the raw-ingest Supabase edge function and raw_ingest_* tables."
+    },
     "sentinel_daemon": {
       "state": "internal",
       "maturity": "implemented",
@@ -229,6 +237,72 @@
       "note": "Blueprint asset exists on disk and is part of the active meta_generator surface."
     }
   },
+  "execution_tracks": {
+    "autonomy_machine": {
+      "state": "active",
+      "maturity": "partial",
+      "document": "docs/roadmaps/2026-04_mbrn_autonomy_machine.md",
+      "note": "Approved execution roadmap for autonomous ingestion, local enrichment, secure frontend rendering, and autopilot monetization. This track defines direction and sequencing, not blanket implemented state.",
+      "phases": {
+        "week_1_data_pipeline": {
+          "state": "active",
+          "maturity": "implemented",
+          "owner_domains": [
+            "oracle",
+            "frontend_os"
+          ],
+          "primary_locations": [
+            "supabase/migrations/",
+            "scripts/pipelines/"
+          ],
+          "note": "Generic raw-data foundation now exists via raw_ingest_foundation, raw-ingest edge ingestion, and raw_ingest_* Supabase tables. Scheduler orchestration remains outside Week 1 scope."
+        },
+        "week_2_local_enrichment": {
+          "state": "provisional",
+          "maturity": "none",
+          "owner_domains": [
+            "oracle"
+          ],
+          "primary_locations": [
+            "bridges/local_llm/",
+            "scripts/pipelines/"
+          ],
+          "note": "Direction approved. No canonical active local_llm bridge runtime yet."
+        },
+        "week_3_secure_frontend": {
+          "state": "active",
+          "maturity": "partial",
+          "owner_domains": [
+            "frontend_os",
+            "monetization"
+          ],
+          "primary_locations": [
+            "bridges/supabase/",
+            "shared/application/auth/",
+            "shared/application/frontend_os/",
+            "dashboard/",
+            "pillars/frontend_os/",
+            "supabase/migrations/"
+          ],
+          "note": "Auth and runtime surfaces already exist. RLS and dashboard consumption remain an ongoing hardening track."
+        },
+        "week_4_day_zero": {
+          "state": "active",
+          "maturity": "partial",
+          "owner_domains": [
+            "monetization",
+            "oracle"
+          ],
+          "primary_locations": [
+            "commerce/",
+            "supabase/functions/",
+            "scripts/pipelines/"
+          ],
+          "note": "Stripe and entitlement primitives exist. Premium gating, scheduler hardening, and full autopilot remain incomplete."
+        }
+      }
+    }
+  },
   "paths": {
     "pillar_root": "pillars/",
     "bridge_root": "bridges/",
@@ -245,7 +319,8 @@
     "scratch_root": "scratch/",
     "archive_docs_root": "_archive_docs/",
     "templates_root": "templates/",
-    "docs_root": "docs/"
+    "docs_root": "docs/",
+    "roadmap_root": "docs/roadmaps/"
   },
   "documentation_scope": {
     "readme_role": "human-readable mirror",

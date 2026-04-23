@@ -106,6 +106,13 @@ Der aktuelle Stand ist:
 - bestehende Surfaces neu zugeordnet
 - Supabase-Referenzstruktur fuer Dimensions-Sync vorbereitet
 
+## Roadmaps
+
+Roadmaps leben bewusst getrennt von der Ist-Wahrheit.
+
+- operative Ausbau-Roadmap: `docs/roadmaps/2026-04_mbrn_autonomy_machine.md`
+- uebergeordnete Ausbaurichtung: `001_POST_V3_ROADMAP.md`
+
 Nicht behauptet wird:
 
 - dass jede Dimension bereits eine eigene fertige Surface hat

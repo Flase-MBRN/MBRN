@@ -21,6 +21,7 @@ shared/core/env.js
 # Only backend .env files with real secrets are ignored
 scripts/**/.env
 scripts/**/.env.*
+!scripts/**/.env.example
 **/*.local
 config.local.js
 
@@ -64,7 +65,8 @@ __pycache__/
 
 # MBRN Private Boundary (Internal Operator & Engine)
 000_DRIFT_REPORT.json
-scripts/pipelines/
 scripts/oracle/
-supabase/migrations/
 commerce/
+
+# Keep pipeline and migration source tracked.
+# Secrets, logs and Python caches remain ignored by the narrower rules above.
