@@ -23,12 +23,29 @@ const FRONTEND_OS_EXPORT_ENTRYPOINTS = Object.freeze([
   { id: 'share_export', label: 'Share Export', type: 'export' }
 ]);
 
+export function getDimensionRoute(dimensionId) {
+  return `dimensions/${dimensionId}/index.html`;
+}
+
 export function getFrontendOsSystemSurfaces() {
   return [...FRONTEND_OS_SYSTEM_SURFACES];
 }
 
 export function getFrontendOsExportEntrypoints() {
   return [...FRONTEND_OS_EXPORT_ENTRYPOINTS];
+}
+
+function buildDimensionSurfaceEntry(dimension) {
+  return {
+    id: dimension.id,
+    label: dimension.publicLabel,
+    route: getDimensionRoute(dimension.id),
+    type: 'dimension',
+    defaultApp: dimension.defaultApp,
+    description: dimension.description,
+    content: buildDimensionContentBundle(dimension.id),
+    blueprint: buildDimensionBlueprint(dimension.id)
+  };
 }
 
 function buildAppSurfaceEntry(app) {
@@ -46,12 +63,12 @@ function buildAppSurfaceEntry(app) {
   };
 }
 
-function getDashboardOrderedAppSurfaces() {
-  return APP_MANIFEST
-    .filter((app) => app.surfaceFlags?.includeInDashboard)
-    .map((app) => ({
-      ...buildAppSurfaceEntry(app),
-      navigationOrder: getDimensionById(app.dimensionId)?.surfaceFlags?.navigationOrder ?? 999
+function getDashboardOrderedDimensionSurfaces() {
+  return DIMENSION_REGISTRY
+    .filter((dimension) => dimension.surfaceFlags?.includeInDashboard)
+    .map((dimension) => ({
+      ...buildDimensionSurfaceEntry(dimension),
+      navigationOrder: dimension.surfaceFlags?.navigationOrder ?? 999
     }))
     .sort((left, right) => left.navigationOrder - right.navigationOrder);
 }
@@ -63,6 +80,11 @@ function getSystemSurfaceById(surfaceId) {
 function getAppSurfaceById(surfaceId) {
   const app = APP_MANIFEST.find((item) => item.id === surfaceId);
   return app ? buildAppSurfaceEntry(app) : null;
+}
+
+function getDimensionSurfaceById(surfaceId) {
+  const dimension = getDimensionById(surfaceId);
+  return dimension ? buildDimensionSurfaceEntry(dimension) : null;
 }
 
 function getCoreEntrySurface() {
@@ -103,6 +125,7 @@ export function getDimensionSurfaceModel(dimensionId) {
   return {
     id: dimension.id,
     publicLabel: dimension.publicLabel,
+    route: getDimensionRoute(dimension.id),
     description: dimension.description,
     content: dimensionContent,
     blueprint: dimensionBlueprint,
@@ -121,21 +144,43 @@ export function getAllDimensionSurfaceModels() {
 export function getFrontendProductJourney() {
   const entrySurface = getCoreEntrySurface();
   const hubSurface = getSystemSurfaceById('dashboard');
-  const dashboardApps = getDashboardOrderedAppSurfaces();
+  const dashboardDimensions = getDashboardOrderedDimensionSurfaces();
   const dashboardNextSurface =
-    dashboardApps.find((surface) => surface.id !== entrySurface?.id) || dashboardApps[0] || null;
+    dashboardDimensions.find((surface) => surface.id !== FRONTEND_OS_ENTRY_DIMENSION_ID) || dashboardDimensions[0] || null;
 
   return {
     entrySurface,
     hubSurface,
     dashboardNextSurface,
-    dashboardAppSurfaces: dashboardApps
+    dashboardDimensionSurfaces: dashboardDimensions
   };
+}
+
+function getDimensionPrimaryTarget(dimensionId) {
+  const model = getDimensionSurfaceModel(dimensionId);
+  if (!model) return null;
+
+  const topicAreaTarget = model.topicAreas
+    .map((topicArea) => getAppSurfaceById(topicArea.defaultSurfaceId))
+    .find(Boolean);
+
+  if (topicAreaTarget) {
+    return topicAreaTarget;
+  }
+
+  if (model.standaloneApps.length) {
+    return getAppSurfaceById(model.standaloneApps[0].id);
+  }
+
+  return getAppSurfaceById(model.defaultApp);
 }
 
 export function getSurfaceJourney(surfaceId = 'home') {
   const journey = getFrontendProductJourney();
-  const currentSurface = getSystemSurfaceById(surfaceId) || getAppSurfaceById(surfaceId);
+  const currentSurface =
+    getSystemSurfaceById(surfaceId) ||
+    getDimensionSurfaceById(surfaceId) ||
+    getAppSurfaceById(surfaceId);
 
   if (!currentSurface) return null;
 
@@ -153,16 +198,39 @@ export function getSurfaceJourney(surfaceId = 'home') {
       currentSurface,
       primaryTarget: journey.dashboardNextSurface,
       secondaryTarget: journey.entrySurface,
-      summary: `${journey.hubSurface?.label || 'Dashboard'} ist der Hub. Als naechste relevante Flaeche fuehrt der Strom in ${journey.dashboardNextSurface?.label || 'die naechste App'}.`
+      summary: `${journey.hubSurface?.label || 'Dashboard'} ist das operative Cockpit. Von hier geht der naechste Schritt in ${journey.dashboardNextSurface?.label || 'die naechste Dimension'}.`
     };
   }
 
   if (surfaceId === journey.entrySurface?.id) {
+    const dimensionSurface = getDimensionSurfaceById(journey.entrySurface.dimensionId);
     return {
       currentSurface,
-      primaryTarget: journey.hubSurface,
-      secondaryTarget: journey.dashboardNextSurface,
-      summary: `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt ins Dashboard und von dort weiter in ${journey.dashboardNextSurface?.label || 'die naechste Flaeche'}.`
+      primaryTarget: dimensionSurface || journey.hubSurface,
+      secondaryTarget: journey.hubSurface,
+      summary: `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt zuerst in ${dimensionSurface?.label || 'die zugehoerige Dimension'} und danach ins Dashboard.`
+    };
+  }
+
+  if (currentSurface.type === 'dimension') {
+    const primaryTarget = getDimensionPrimaryTarget(surfaceId);
+    return {
+      currentSurface,
+      primaryTarget: primaryTarget || journey.hubSurface,
+      secondaryTarget: primaryTarget ? journey.hubSurface : journey.entrySurface,
+      summary: primaryTarget
+        ? `${currentSurface.label} ist dein Arbeitsraum. Von hier geht es direkt weiter in ${primaryTarget.label}.`
+        : `${currentSurface.label} ist als Dimensions-Hub angelegt. Inhalte folgen spaeter, der Rueckweg bleibt ueber das Dashboard stabil.`
+    };
+  }
+
+  if (currentSurface.type === 'app') {
+    const owningDimension = getDimensionSurfaceById(currentSurface.dimensionId);
+    return {
+      currentSurface,
+      primaryTarget: owningDimension || journey.hubSurface,
+      secondaryTarget: journey.hubSurface,
+      summary: `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der saubere Rueckweg fuehrt zuerst in die Dimension und danach ins Dashboard.`
     };
   }
 
@@ -185,14 +253,7 @@ export function getFrontendSurfaceCatalog() {
       dimensionId: topicArea.dimensionId,
       defaultSurfaceId: topicArea.defaultSurfaceId
     })),
-    dimensionViews: DIMENSION_REGISTRY.map((dimension) => ({
-      id: dimension.id,
-      label: dimension.publicLabel,
-      type: 'dimension',
-      defaultApp: dimension.defaultApp,
-      content: buildDimensionContentBundle(dimension.id),
-      blueprint: buildDimensionBlueprint(dimension.id)
-    })),
+    dimensionViews: DIMENSION_REGISTRY.map((dimension) => buildDimensionSurfaceEntry(dimension)),
     exportEntrypoints: getFrontendOsExportEntrypoints(),
     journey: getFrontendProductJourney()
   };

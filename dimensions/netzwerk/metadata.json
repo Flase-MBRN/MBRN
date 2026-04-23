@@ -11,8 +11,8 @@
   ],
   "defaultApp": "synergy",
   "surfaceFlags": {
-    "includeInNavigation": false,
-    "includeInDashboard": false,
+    "includeInNavigation": true,
+    "includeInDashboard": true,
     "navigationOrder": 60
   }
 }

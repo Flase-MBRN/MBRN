@@ -2812,3 +2812,119 @@ button[class*="btn"] {
     justify-items: stretch;
   }
 }
+
+.nav-section-label {
+  margin: 14px 16px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dimension-card-link,
+.dashboard-card-link {
+  display: grid;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.dimension-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dimension-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dimension-card-copy,
+.dimension-card-meta {
+  margin: 0;
+}
+
+.dimension-card-meta {
+  font-size: 0.85rem;
+}
+
+.dimension-view-card {
+  display: grid;
+  gap: 18px;
+}
+
+.dimension-view-meta {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.dimension-surface-section {
+  display: grid;
+  gap: 14px;
+}
+
+.dimension-surface-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.dimension-surface-card {
+  display: grid;
+  gap: 10px;
+  min-height: 180px;
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.25s ease;
+}
+
+.dimension-surface-card.is-link:hover {
+  border-color: rgba(123, 92, 245, 0.32);
+  background: rgba(123, 92, 245, 0.06);
+  transform: translateY(-2px);
+}
+
+.dimension-surface-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.dimension-surface-card-copy {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.dimension-surface-card-meta {
+  margin-top: auto;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+}
+
+.dimension-surface-placeholder {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+}

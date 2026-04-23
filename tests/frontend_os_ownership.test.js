@@ -9,6 +9,7 @@ import { getFrontendProductJourney, getSurfaceJourney } from '../shared/applicat
 const repoRoot = process.cwd();
 const JS_EXTENSIONS = new Set(['.js', '.mjs']);
 const ALLOWED_NAV_IMPORTERS = new Set([
+  'pillars/frontend_os/dimension_views/dimension_surface.js',
   'pillars/frontend_os/ui_states/auth_controller.js',
   'pillars/frontend_os/app_surfaces/chronos_surface.js',
   'pillars/frontend_os/app_surfaces/dashboard_surface.js',
@@ -20,6 +21,7 @@ const ALLOWED_NAV_IMPORTERS = new Set([
   'pillars/frontend_os/shell/render_legal_page.js'
 ]);
 const ALLOWED_AUTH_IMPORTERS = new Set([
+  'pillars/frontend_os/dimension_views/dimension_surface.js',
   'pillars/frontend_os/app_surfaces/chronos_surface.js',
   'pillars/frontend_os/app_surfaces/dashboard_surface.js',
   'pillars/frontend_os/app_surfaces/finance_surface.js',
@@ -30,6 +32,7 @@ const ALLOWED_AUTH_IMPORTERS = new Set([
 ]);
 const ALLOWED_LEGAL_IMPORTERS = new Set([
   'pillars/frontend_os/navigation/index.js',
+  'pillars/frontend_os/dimension_views/dimension_surface.js',
   'pillars/frontend_os/app_surfaces/chronos_surface.js',
   'pillars/frontend_os/app_surfaces/dashboard_surface.js',
   'pillars/frontend_os/app_surfaces/finance_surface.js',
@@ -78,6 +81,7 @@ describe('frontend_os ownership', () => {
       'pillars/frontend_os/app_surfaces/finance_surface.js',
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/app_surfaces/synergy_surface.js',
+      'pillars/frontend_os/dimension_views/dimension_surface.js',
       'pillars/frontend_os/navigation/index.js',
       'pillars/frontend_os/shell/render_landing.js',
       'pillars/frontend_os/shell/render_legal_page.js'
@@ -89,6 +93,7 @@ describe('frontend_os ownership', () => {
       'pillars/frontend_os/app_surfaces/finance_surface.js',
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/app_surfaces/synergy_surface.js',
+      'pillars/frontend_os/dimension_views/dimension_surface.js',
       'pillars/frontend_os/shell/render_landing.js',
       'pillars/frontend_os/shell/render_legal_page.js',
       'pillars/frontend_os/ui_states/auth_controller.js'
@@ -100,6 +105,7 @@ describe('frontend_os ownership', () => {
       'pillars/frontend_os/app_surfaces/finance_surface.js',
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/app_surfaces/synergy_surface.js',
+      'pillars/frontend_os/dimension_views/dimension_surface.js',
       'pillars/frontend_os/shell/legal_blocks.js',
       'pillars/frontend_os/shell/render_landing.js'
     ]);
@@ -123,7 +129,8 @@ describe('frontend_os ownership', () => {
       'apps/finance/render.js',
       'apps/numerology/render.js',
       'apps/synergy/render.js',
-      'dashboard/render_dashboard.js'
+      'dashboard/render_dashboard.js',
+      'dimensions/render_dimension.js'
     ].forEach((relativePath) => {
       const filePath = path.join(repoRoot, relativePath);
       const source = fs.readFileSync(filePath, 'utf8').trim();
@@ -188,7 +195,7 @@ describe('frontend_os ownership', () => {
     expect(catalog.journey).toEqual(expect.objectContaining({
       entrySurface: expect.objectContaining({ id: 'numerology', type: 'app' }),
       hubSurface: expect.objectContaining({ id: 'dashboard', type: 'system' }),
-      dashboardNextSurface: expect.objectContaining({ id: 'chronos', type: 'app' })
+      dashboardNextSurface: expect.objectContaining({ id: 'zeit', type: 'dimension', route: 'dimensions/zeit/index.html' })
     }));
 
     expect(resolveSurfaceTarget('finance')).toEqual(expect.objectContaining({ id: 'finance', type: 'app' }));
@@ -200,7 +207,7 @@ describe('frontend_os ownership', () => {
     expect(getFrontendProductJourney()).toEqual(expect.objectContaining({
       entrySurface: expect.objectContaining({ id: 'numerology', route: 'apps/numerology/index.html' }),
       hubSurface: expect.objectContaining({ id: 'dashboard', route: 'dashboard/index.html' }),
-      dashboardNextSurface: expect.objectContaining({ id: 'chronos', route: 'apps/chronos/index.html' })
+      dashboardNextSurface: expect.objectContaining({ id: 'zeit', route: 'dimensions/zeit/index.html' })
     }));
 
     expect(getSurfaceJourney('home')).toEqual(expect.objectContaining({
@@ -208,12 +215,16 @@ describe('frontend_os ownership', () => {
       secondaryTarget: expect.objectContaining({ id: 'dashboard' })
     }));
     expect(getSurfaceJourney('numerology')).toEqual(expect.objectContaining({
-      primaryTarget: expect.objectContaining({ id: 'dashboard' }),
-      secondaryTarget: expect.objectContaining({ id: 'chronos' })
+      primaryTarget: expect.objectContaining({ id: 'muster', route: 'dimensions/muster/index.html' }),
+      secondaryTarget: expect.objectContaining({ id: 'dashboard' })
     }));
     expect(getSurfaceJourney('dashboard')).toEqual(expect.objectContaining({
-      primaryTarget: expect.objectContaining({ id: 'chronos' }),
+      primaryTarget: expect.objectContaining({ id: 'zeit' }),
       secondaryTarget: expect.objectContaining({ id: 'numerology' })
+    }));
+    expect(getSurfaceJourney('geld')).toEqual(expect.objectContaining({
+      primaryTarget: expect.objectContaining({ id: 'finance', route: 'apps/finance/index.html' }),
+      secondaryTarget: expect.objectContaining({ id: 'dashboard' })
     }));
   });
 });

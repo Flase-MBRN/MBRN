@@ -127,6 +127,12 @@ describe('frontend_os navigation', () => {
     expect(mockLocation.href).toContain('dashboard');
   });
 
+  test('navigateTo resolves dimension routes as first-class targets', async () => {
+    const { nav, mockLocation } = await loadNavigation();
+    nav.navigateTo('geld');
+    expect(mockLocation.href).toContain('dimensions/geld/index.html');
+  });
+
   test('navigateTo falls back to home for unknown routes', async () => {
     const { nav, mockLocation } = await loadNavigation();
     nav.navigateTo('does-not-exist');
@@ -180,20 +186,29 @@ describe('frontend_os navigation', () => {
     expect(nav._navigationBound).toBe(false);
   });
 
-  test('navigation entries follow manifest membership and dimension navigation order', async () => {
+  test('navigation entries follow system-first and all-dimensions ordering', async () => {
     const { getNavigationEntries } = await loadNavigation();
     expect(getNavigationEntries()).toEqual([
-      expect.objectContaining({ id: 'home', label: 'Start' }),
-      expect.objectContaining({ id: 'dashboard', label: 'Dashboard' }),
-      expect.objectContaining({ id: 'chronos', dimensionId: 'zeit', label: 'Zeit' }),
-      expect.objectContaining({ id: 'finance', dimensionId: 'geld', label: 'Geld' }),
-      expect.objectContaining({ id: 'numerology', dimensionId: 'muster', label: 'Muster' })
+      expect.objectContaining({ id: 'home', label: 'Start', group: 'system' }),
+      expect.objectContaining({ id: 'dashboard', label: 'Dashboard', group: 'system' }),
+      expect.objectContaining({ id: 'zeit', dimensionId: 'zeit', label: 'Zeit', group: 'dimension' }),
+      expect.objectContaining({ id: 'geld', dimensionId: 'geld', label: 'Geld', group: 'dimension' }),
+      expect.objectContaining({ id: 'physis', dimensionId: 'physis', label: 'Physis', group: 'dimension' }),
+      expect.objectContaining({ id: 'geist', dimensionId: 'geist', label: 'Geist', group: 'dimension' }),
+      expect.objectContaining({ id: 'ausdruck', dimensionId: 'ausdruck', label: 'Ausdruck', group: 'dimension' }),
+      expect.objectContaining({ id: 'netzwerk', dimensionId: 'netzwerk', label: 'Netzwerk', group: 'dimension' }),
+      expect.objectContaining({ id: 'energie', dimensionId: 'energie', label: 'Energie', group: 'dimension' }),
+      expect.objectContaining({ id: 'systeme', dimensionId: 'systeme', label: 'Systeme', group: 'dimension' }),
+      expect.objectContaining({ id: 'raum', dimensionId: 'raum', label: 'Raum', group: 'dimension' }),
+      expect.objectContaining({ id: 'muster', dimensionId: 'muster', label: 'Muster', group: 'dimension' }),
+      expect.objectContaining({ id: 'wachstum', dimensionId: 'wachstum', label: 'Wachstum', group: 'dimension' })
     ]);
   });
 
-  test('getCurrentRoute resolves system surfaces and manifest-backed app routes deterministically', async () => {
+  test('getCurrentRoute resolves system, dimension and app routes deterministically', async () => {
     const { getCurrentRoute } = await loadNavigation();
     expect(getCurrentRoute('/dashboard/index.html')).toBe('dashboard');
+    expect(getCurrentRoute('/dimensions/zeit/index.html')).toBe('zeit');
     expect(getCurrentRoute('/apps/finance/index.html')).toBe('finance');
     expect(getCurrentRoute('/unknown')).toBe('home');
   });

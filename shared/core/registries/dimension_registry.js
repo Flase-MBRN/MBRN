@@ -37,8 +37,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os'],
     defaultApp: null,
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 30
     }
   },
@@ -50,8 +50,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os'],
     defaultApp: null,
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 40
     }
   },
@@ -63,8 +63,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os', 'meta_generator'],
     defaultApp: null,
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 50
     }
   },
@@ -76,8 +76,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os', 'oracle'],
     defaultApp: 'synergy',
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 60
     }
   },
@@ -89,8 +89,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os'],
     defaultApp: null,
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 70
     }
   },
@@ -102,8 +102,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os', 'meta_generator', 'oracle'],
     defaultApp: null,
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 80
     }
   },
@@ -115,8 +115,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os'],
     defaultApp: null,
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 90
     }
   },
@@ -141,8 +141,8 @@ export const DIMENSION_REGISTRY = Object.freeze([
     pillarDependencies: ['frontend_os', 'meta_generator'],
     defaultApp: null,
     surfaceFlags: {
-      includeInNavigation: false,
-      includeInDashboard: false,
+      includeInNavigation: true,
+      includeInDashboard: true,
       navigationOrder: 110
     }
   }

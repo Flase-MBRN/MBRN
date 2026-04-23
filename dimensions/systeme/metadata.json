@@ -12,8 +12,8 @@
   ],
   "defaultApp": null,
   "surfaceFlags": {
-    "includeInNavigation": false,
-    "includeInDashboard": false,
+    "includeInNavigation": true,
+    "includeInDashboard": true,
     "navigationOrder": 80
   }
 }

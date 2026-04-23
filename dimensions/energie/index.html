@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Energie - MBRN Hub</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;">
+
+  <link rel="stylesheet" href="../../shared/ui/theme.css">
+  <link rel="stylesheet" href="../../shared/ui/components.css">
+</head>
+<body class="void-bg bg-grid">
+  <aside class="nav-sidebar">
+    <div class="nav-brand">
+      <span class="logo-text">MBRN</span>
+    </div>
+
+    <nav class="nav-menu" id="nav-menu"></nav>
+
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
+    </div>
+  </aside>
+
+  <div class="bg-glow"></div>
+
+  <main class="main-content">
+    <section class="tool-hero reveal">
+      <div id="dimension-eyebrow" class="hero-eyebrow">Dimension</div>
+      <h1 id="dimension-title" class="hero-title">ENERGIE</h1>
+      <p id="dimension-subtitle" class="hero-subtitle"></p>
+    </section>
+
+    <section class="tool-section reveal">
+      <div id="dimension-surface-root"></div>
+    </section>
+
+    <section class="tool-section reveal">
+      <div id="dimension-flow-rail"></div>
+    </section>
+
+    <section class="tool-section reveal">
+      <div id="dimension-legal-mount"></div>
+    </section>
+
+    <section id="auth-section" class="tool-section reveal">
+      <div id="auth-surface-root"></div>
+    </section>
+  </main>
+
+  <script type="module" src="../render_dimension.js"></script>
+</body>
+</html>

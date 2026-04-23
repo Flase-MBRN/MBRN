@@ -17,7 +17,7 @@ import { injectLegalBlock } from '../shell/legal_blocks.js';
 import { renderSurfaceFlowRail } from '../shell/flow_rail.js';
 import { readOracleDashboardSnapshot } from '../../../shared/application/read_models/oracle_dashboard.js';
 import { readSystemHeartbeat } from '../../../shared/application/read_models/system_status.js';
-import { renderDashboardAppCards } from '../dashboard/app_cards.js';
+import { renderDashboardDimensionCards } from '../dashboard/dimension_cards.js';
 
 const HEARTBEAT_STALE_MS = 65 * 60 * 1000;
 const HEARTBEAT_POLL_MS = 60 * 1000;
@@ -183,8 +183,8 @@ export const dashboardRender = {
       this.initOracleCard();
       this.buildSynergyWidget();
       renderSurfaceFlowRail('dashboard-flow-rail', 'dashboard');
-      renderDashboardAppCards();
-      this.bindDashboardAppCards();
+      renderDashboardDimensionCards();
+      this.bindDashboardSurfaceCards();
       this.renderLegalSurface();
       this.startHeartbeatMonitor();
     } catch (err) {
@@ -203,8 +203,8 @@ export const dashboardRender = {
     });
   },
 
-  bindDashboardAppCards() {
-    document.querySelectorAll('.app-card-link').forEach((link) => {
+  bindDashboardSurfaceCards() {
+    document.querySelectorAll('.dashboard-card-link').forEach((link) => {
       const clickHandler = (e) => {
         e.preventDefault();
         const route = link.getAttribute('data-route');

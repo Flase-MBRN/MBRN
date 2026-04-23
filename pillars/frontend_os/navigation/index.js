@@ -1,5 +1,6 @@
 import { APP_MANIFEST } from '../../../shared/core/registries/app_manifest.js';
-import { getDimensionById } from '../../../shared/core/registries/dimension_registry.js';
+import { DIMENSION_REGISTRY, getDimensionById } from '../../../shared/core/registries/dimension_registry.js';
+import { getDimensionRoute } from '../../../shared/application/frontend_os/discoverability_runtime.js';
 import { emitFrontendOsEvent } from '../../../shared/application/frontend_os/navigation_events.js';
 import { touchManager } from './touch_manager.js';
 import { dom } from '../../../shared/ui/dom_utils.js';
@@ -13,6 +14,7 @@ const SYSTEM_SURFACES = Object.freeze([
 function getKnownRouteSegments() {
   return [
     ...SYSTEM_SURFACES.map((surface) => `/${surface.route.replace(/index\.html$/, '')}`),
+    ...DIMENSION_REGISTRY.map((dimension) => `/${getDimensionRoute(dimension.id).replace(/index\.html$/, '')}`),
     ...APP_MANIFEST.map((app) => `/${app.route.replace(/index\.html$/, '')}`)
   ];
 }
@@ -63,18 +65,34 @@ function resolveAppSurface(routeKey) {
   return APP_MANIFEST.find((app) => app.id === routeKey) || null;
 }
 
+function resolveDimensionSurface(routeKey) {
+  const dimension = getDimensionById(routeKey);
+  if (!dimension) {
+    return null;
+  }
+
+  return {
+    id: dimension.id,
+    label: dimension.publicLabel,
+    route: getDimensionRoute(dimension.id)
+  };
+}
+
 function buildNavigationEntries() {
-  const systemEntries = SYSTEM_SURFACES.filter((surface) => surface.includeInNavigation);
-  const appEntries = APP_MANIFEST
-    .filter((app) => app.surfaceFlags?.includeInNavigation)
-    .map((app) => {
-      const dimension = getDimensionById(app.dimensionId);
+  const systemEntries = SYSTEM_SURFACES
+    .filter((surface) => surface.includeInNavigation)
+    .map((surface) => ({ ...surface, group: 'system' }));
+
+  const dimensionEntries = DIMENSION_REGISTRY
+    .filter((dimension) => dimension.surfaceFlags?.includeInNavigation)
+    .map((dimension) => {
       return {
-        id: app.id,
-        dimensionId: app.dimensionId,
-        label: dimension?.publicLabel || app.label,
-        route: app.route,
-        icon: app.icon
+        id: dimension.id,
+        dimensionId: dimension.id,
+        label: dimension.publicLabel,
+        route: getDimensionRoute(dimension.id),
+        icon: dimension.publicLabel.charAt(0).toUpperCase(),
+        group: 'dimension'
       };
     })
     .sort((left, right) => {
@@ -83,7 +101,7 @@ function buildNavigationEntries() {
       return leftOrder - rightOrder;
     });
 
-  return [...systemEntries, ...appEntries];
+  return [...systemEntries, ...dimensionEntries];
 }
 
 export function getNavigationEntries() {
@@ -117,10 +135,35 @@ export function getCurrentRoute(pathname = window.location.pathname) {
     }
   }
 
+  for (const dimension of DIMENSION_REGISTRY) {
+    if (routeMatchesPath(pathname, getDimensionRoute(dimension.id))) {
+      return dimension.id;
+    }
+  }
+
   for (const app of APP_MANIFEST) {
     if (routeMatchesPath(pathname, app.route)) {
       return app.id;
     }
+  }
+
+  return 'home';
+}
+
+function getActiveNavigationId(pathname = window.location.pathname) {
+  const currentRoute = getCurrentRoute(pathname);
+  if (resolveSystemSurface(currentRoute)) {
+    return currentRoute;
+  }
+
+  const dimensionSurface = resolveDimensionSurface(currentRoute);
+  if (dimensionSurface) {
+    return dimensionSurface.id;
+  }
+
+  const appSurface = resolveAppSurface(currentRoute);
+  if (appSurface) {
+    return appSurface.dimensionId;
   }
 
   return 'home';
@@ -133,11 +176,21 @@ export function renderNavigation(containerId = 'nav-menu') {
     return;
   }
 
-  const currentRoute = getCurrentRoute();
+  const activeNavigationId = getActiveNavigationId();
   dom.clear(containerId);
 
+  let currentGroup = null;
   buildNavigationEntries().forEach((entry) => {
-    const isActive = currentRoute === entry.id;
+    if (entry.group !== currentGroup) {
+      currentGroup = entry.group;
+      dom.createEl('div', {
+        className: 'nav-section-label',
+        text: currentGroup === 'system' ? 'System' : 'Dimensionen',
+        parent: container
+      });
+    }
+
+    const isActive = activeNavigationId === entry.id;
     const hrefFallback = getRepoRoot() + entry.route;
 
     const link = dom.createEl('a', {
@@ -253,8 +306,9 @@ export const nav = {
     }
 
     const systemSurface = resolveSystemSurface(route);
+    const dimensionSurface = resolveDimensionSurface(route);
     const appSurface = resolveAppSurface(route);
-    const targetRoute = systemSurface?.route || appSurface?.route || 'index.html';
+    const targetRoute = systemSurface?.route || dimensionSurface?.route || appSurface?.route || 'index.html';
     window.location.href = getRepoRoot() + targetRoute;
   },
 
