@@ -7,7 +7,7 @@ const blueprint = buildAppBlueprint({
   appId: 'synergy',
   displayName: 'Vibe Check',
   route: 'apps/synergy/index.html',
-  dimensionId: 'pattern',
+  dimensionId: 'netzwerk',
   status: 'provisional'
 });
 

@@ -56,13 +56,13 @@ describe('meta generator active modules', () => {
     }));
 
     const roadmap = buildPostV3RoadmapMarkdown();
-    expect(roadmap).toContain('# 001 Post-v3 Roadmap');
+    expect(roadmap).toContain('# 001 Post-v4 Roadmap');
     expect(roadmap).toContain('Stage A - Pillars Completion');
     expect(roadmap).toContain('frontend_os');
 
-    expect(buildDimensionBlueprint('pattern')).toEqual(expect.objectContaining({
-      id: 'pattern',
-      primarySurfaceIds: expect.arrayContaining(['numerology', 'synergy'])
+    expect(buildDimensionBlueprint('muster')).toEqual(expect.objectContaining({
+      id: 'muster',
+      primarySurfaceIds: expect.arrayContaining(['numerology'])
     }));
     expect(buildSurfaceBlueprint('numerology')).toEqual(expect.objectContaining({
       id: 'numerology',
@@ -74,7 +74,7 @@ describe('meta generator active modules', () => {
       requiredCapabilities: ['app_surfaces', 'dimension_views']
     })).toEqual(expect.objectContaining({
       appId: 'synergy',
-      dimensionId: 'pattern',
+      dimensionId: 'netzwerk',
       blueprintVersion: '2.0.0'
     }));
   });
@@ -100,9 +100,9 @@ describe('meta generator active modules', () => {
         preferShare: true
       })
     );
-    expect(buildDimensionContentBundle('growth')).toEqual(expect.objectContaining({
-      dimensionId: 'growth',
-      title: 'Wachstum lesen'
+    expect(buildDimensionContentBundle('geld')).toEqual(expect.objectContaining({
+      dimensionId: 'geld',
+      title: 'Geld steuern'
     }));
     expect(buildSurfaceCopyBundle('finance')).toEqual(expect.objectContaining({
       surfaceId: 'finance',
@@ -199,7 +199,7 @@ describe('meta generator active modules', () => {
 
     expect(blueprint).toEqual(expect.objectContaining({
       appId: 'synergy',
-      dimensionId: 'pattern',
+      dimensionId: 'netzwerk',
       blueprintVersion: '2.0.0'
     }));
     expect(scaffold.scaffoldBundle).toEqual(expect.objectContaining({
@@ -216,7 +216,7 @@ describe('meta generator active modules', () => {
       appId: 'synergy',
       displayName: 'Vibe Check',
       route: 'apps/synergy/index.html',
-      dimensionId: 'pattern',
+      dimensionId: 'netzwerk',
       status: 'provisional'
     });
     const scaffoldBundle = buildAppScaffoldBundle(blueprint);
@@ -244,7 +244,7 @@ describe('meta generator active modules', () => {
     );
 
     expect(output).toContain('Generated');
-    expect(buildPostV3RoadmapMarkdown()).toContain('# 001 Post-v3 Roadmap');
+    expect(buildPostV3RoadmapMarkdown()).toContain('# 001 Post-v4 Roadmap');
   });
 
   test('scope manifest keeps the active pillar inside allowed subsystems only', () => {
@@ -272,7 +272,7 @@ describe('meta generator active modules', () => {
   });
 
   test('frontend runtime consumers read meta-generator bundles in product-facing flows', async () => {
-    const patternModel = getDimensionSurfaceModel('pattern');
+    const patternModel = getDimensionSurfaceModel('muster');
     const surfaceCatalog = getFrontendSurfaceCatalog();
     const unifiedProfileResult = await getUnifiedProfile('Erik Example', '1990-01-01');
     const financeExport = prepareFinanceStoryExport({
@@ -285,17 +285,17 @@ describe('meta generator active modules', () => {
     expect(unifiedProfileResult.success).toBe(true);
 
     expect(patternModel).toEqual(expect.objectContaining({
-      id: 'pattern',
+      id: 'muster',
       content: expect.objectContaining({ title: 'Muster erkennen' }),
-      blueprint: expect.objectContaining({ id: 'pattern' })
+      blueprint: expect.objectContaining({ id: 'muster' })
     }));
     expect(patternModel.apps.find((app) => app.id === 'numerology')).toEqual(expect.objectContaining({
       copy: expect.objectContaining({ title: 'Muster' }),
       blueprint: expect.objectContaining({ id: 'numerology' })
     }));
-    expect(surfaceCatalog.dimensionViews.find((view) => view.id === 'growth')).toEqual(expect.objectContaining({
-      content: expect.objectContaining({ dimensionId: 'growth' }),
-      blueprint: expect.objectContaining({ id: 'growth' })
+    expect(surfaceCatalog.dimensionViews.find((view) => view.id === 'geld')).toEqual(expect.objectContaining({
+      content: expect.objectContaining({ dimensionId: 'geld' }),
+      blueprint: expect.objectContaining({ id: 'geld' })
     }));
     expect(financeExport).toEqual(expect.objectContaining({
       title: 'Surface Asset',

@@ -1,0 +1,19 @@
+{
+  "id": "systeme",
+  "publicLabel": "Systeme",
+  "description": "Digitale Werkzeuge, KI-Agenten, Automatisierungen und Workflows als operative Schicht ordnen.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "meta_generator",
+    "oracle"
+  ],
+  "defaultApp": null,
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 80
+  }
+}

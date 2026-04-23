@@ -1,0 +1,17 @@
+{
+  "id": "energie",
+  "publicLabel": "Energie",
+  "description": "Schlaf, Regeneration, Burnout-Vermeidung und Batteriemanagement kanonisch abbilden.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os"
+  ],
+  "defaultApp": null,
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 70
+  }
+}

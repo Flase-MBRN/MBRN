@@ -41,10 +41,17 @@ describe('registries and contracts', () => {
 
   test('dimensionRegistry keeps stable ids decoupled from public labels', () => {
     expect(DIMENSION_REGISTRY.map((dimension) => dimension.id)).toEqual([
-      'growth',
-      'pattern',
-      'time',
-      'signal'
+      'zeit',
+      'geld',
+      'physis',
+      'geist',
+      'ausdruck',
+      'netzwerk',
+      'energie',
+      'systeme',
+      'raum',
+      'muster',
+      'wachstum'
     ]);
     DIMENSION_REGISTRY.forEach((dimension) => {
       expect(dimension).toEqual(expect.objectContaining({
@@ -67,7 +74,7 @@ describe('registries and contracts', () => {
       'synergy'
     ]);
     expect(APP_MANIFEST.find((app) => app.id === 'synergy')).toEqual(expect.objectContaining({
-      dimensionId: 'pattern',
+      dimensionId: 'netzwerk',
       status: 'provisional'
     }));
   });

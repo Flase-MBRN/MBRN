@@ -1,10 +1,10 @@
-# 001 Post-v3 Roadmap
+# 001 Post-v4 Roadmap
 
 ## Zweck
 
-Diese Datei plant die Schritte **nach** dem Abschluss der v3-Plattformhaertung.
+Diese Datei plant die Schritte **nach** dem Setzen der v4.0 Foundation.
 
-Sie ersetzt nicht die aktive `000_MBRN_V3_100_PERCENT_CHECKLIST.md`, sondern dokumentiert nur die naechsten Ausbaustufen auf der gehaerteten Plattformbasis.
+Sie ersetzt nicht die historische `000_MBRN_V3_100_PERCENT_CHECKLIST.md`, sondern dokumentiert die naechsten Ausbaustufen auf der gehaerteten Foundation-Basis.
 
 Die einzige technische Wahrheit bleibt:
 
@@ -12,17 +12,16 @@ Die einzige technische Wahrheit bleibt:
 
 ## Nicht Teil dieser Datei
 
-- keine offenen v3-Abschlussarbeiten
-- keine offenen Architekturfragen
-- kein Ersatz fuer die 100%-Checkliste
-- keine Vorwegnahme einer 11-Dimensions-Runtime
+- keine Rueckkehr zur 4-Dimensions-Wahrheit
+- kein Ersatz fuer den aktiven Kanon
+- keine Parallel-Realitaet neben `000_CANONICAL_STATE.json`
 
 ## Jetzt
 
-- Architecture Close-out Gate vollstaendig schliessen
-- letzte aktive Legacy-Fassaden aus Runtime und Tests entfernen
-- operative v3-Abnahme in `000_MBRN_V3_100_PERCENT_CHECKLIST.md` halten
-- dann erst die 4 Pillars fachlich auf echten Reifegrad ziehen
+- Kanon, Runtime, Metadaten und Supabase auf dieselbe 11-Dimensions-Wahrheit halten
+- direkte und topic-area-basierte App-Zuordnungen ohne Routing-Bruch fuehren
+- aktive Surfaces sauber den neuen Dimensionen zuordnen
+- dann die 4 Pillars fachlich auf echten Reifegrad ziehen
 
 ## Danach: Stage A - Pillars Completion
 
@@ -47,11 +46,11 @@ Erwartung:
 - klare Contracts
 - keine verteilte Schattenlogik ausserhalb der Pillar-Zone
 
-## Spaeter: Stage B - Dimensions Expansion
+## Spaeter: Stage B - Dimension Maturation
 
-- aktuelle 4 Dimensions bleiben bis dahin Runtime-Wahrheit
-- 11-Dimensions-Welt erst nach stabilen Pillars
-- interne IDs und oeffentliche Labels bleiben strikt getrennt
+- 11 Dimensions bleiben Kanon und Runtime-Wahrheit
+- topic_areas koennen pro Dimension wachsen, muessen aber nicht existieren
+- Apps duerfen direkt unter der Dimension oder innerhalb einer topic_area haengen
 
 ## Spaeter: Stage C - App Review
 

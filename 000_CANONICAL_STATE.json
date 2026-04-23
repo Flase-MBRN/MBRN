@@ -1,6 +1,7 @@
 {
-  "version": "v3.1",
-  "last_updated": "2026-04-21T00:00:00Z",
+  "version": "v4.0",
+  "release": "FOUNDATION",
+  "last_updated": "2026-04-23T00:00:00Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -20,7 +21,9 @@
       "implemented",
       "stable"
     ],
-    "existence_rule": "Anything not declared here does not officially exist."
+    "existence_rule": "Anything not declared here does not officially exist.",
+    "topic_area_rule": "topic_areas are optional. Apps may reference a topic_area or live directly under a dimension.",
+    "app_assignment_rule": "Every app must declare a dimension. topic_area is optional, surface_kind is required."
   },
   "pillars": {
     "frontend_os": {
@@ -68,56 +71,131 @@
     }
   },
   "dimensions": {
-    "growth": {
+    "zeit": {
+      "state": "active",
+      "maturity": "stable",
+      "primary_app": "chronos"
+    },
+    "geld": {
       "state": "active",
       "maturity": "stable",
       "primary_app": "finance"
     },
-    "pattern": {
+    "physis": {
+      "state": "provisional",
+      "maturity": "none",
+      "primary_app": null
+    },
+    "geist": {
+      "state": "provisional",
+      "maturity": "none",
+      "primary_app": null
+    },
+    "ausdruck": {
+      "state": "provisional",
+      "maturity": "none",
+      "primary_app": null
+    },
+    "netzwerk": {
+      "state": "provisional",
+      "maturity": "partial",
+      "primary_app": "synergy"
+    },
+    "energie": {
+      "state": "provisional",
+      "maturity": "none",
+      "primary_app": null
+    },
+    "systeme": {
+      "state": "provisional",
+      "maturity": "none",
+      "primary_app": null
+    },
+    "raum": {
+      "state": "provisional",
+      "maturity": "none",
+      "primary_app": null
+    },
+    "muster": {
       "state": "active",
       "maturity": "stable",
       "primary_app": "numerology"
     },
-    "time": {
-      "state": "active",
-      "maturity": "partial",
-      "primary_app": "chronos"
-    },
-    "signal": {
-      "state": "active",
-      "maturity": "partial",
+    "wachstum": {
+      "state": "provisional",
+      "maturity": "none",
       "primary_app": null
+    }
+  },
+  "topic_areas": {
+    "oracle_signal": {
+      "state": "provisional",
+      "maturity": "partial",
+      "dimension": "geld",
+      "primary_app": null,
+      "surface_kind": "site"
+    },
+    "numerologie": {
+      "state": "active",
+      "maturity": "stable",
+      "dimension": "muster",
+      "primary_app": "numerology",
+      "surface_kind": "app"
+    },
+    "astrologie": {
+      "state": "provisional",
+      "maturity": "none",
+      "dimension": "muster",
+      "primary_app": null,
+      "surface_kind": "site"
+    },
+    "persoenlichkeiten": {
+      "state": "provisional",
+      "maturity": "none",
+      "dimension": "muster",
+      "primary_app": null,
+      "surface_kind": "site"
     }
   },
   "apps": {
     "finance": {
       "state": "active",
       "maturity": "stable",
-      "dimension": "growth",
+      "dimension": "geld",
+      "topic_area": null,
+      "surface_kind": "app",
       "ui": "complete"
     },
     "numerology": {
       "state": "active",
       "maturity": "stable",
-      "dimension": "pattern",
+      "dimension": "muster",
+      "topic_area": "numerologie",
+      "surface_kind": "app",
       "ui": "complete"
     },
     "chronos": {
       "state": "active",
       "maturity": "stable",
-      "dimension": "time",
+      "dimension": "zeit",
+      "topic_area": null,
+      "surface_kind": "app",
       "ui": "complete"
     },
     "synergy": {
       "state": "provisional",
       "maturity": "partial",
-      "dimension": "pattern",
+      "dimension": "netzwerk",
+      "topic_area": null,
+      "surface_kind": "app",
       "ui": "minimal"
     },
     "tuning": {
       "state": "reserved",
       "maturity": "none",
       "dimension": null,
+      "topic_area": null,
+      "surface_kind": "app",
       "ui": "none"
     }
   },
@@ -155,6 +233,7 @@
     "pillar_root": "pillars/",
     "bridge_root": "bridges/",
     "dimension_root": "dimensions/",
+    "topic_area_root": "dimensions/*/topic_areas/",
     "app_root": "apps/",
     "pipeline_root": "scripts/pipelines/",
     "shared_root": "shared/",

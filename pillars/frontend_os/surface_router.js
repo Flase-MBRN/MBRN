@@ -6,6 +6,7 @@ export function resolveSurfaceTarget(targetId) {
   return (
     catalog.systemSurfaces.find((surface) => surface.id === targetId) ||
     catalog.appSurfaces.find((surface) => surface.id === targetId) ||
+    catalog.topicAreas?.find((surface) => surface.id === targetId) ||
     catalog.dimensionViews.find((surface) => surface.id === targetId) ||
     catalog.exportEntrypoints.find((surface) => surface.id === targetId) ||
     null

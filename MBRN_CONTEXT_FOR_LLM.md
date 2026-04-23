@@ -6,8 +6,6 @@ Die einzige technische Wahrheit liegt in:
 
 - `C:\DevLab\MBRN-HUB-V1`
 
-Alles ausserhalb dieses Repos ist kein paralleler Architekturbaum.
-
 ## Architektur in Kurzform
 
 - `shared/core/` = IO-freie Mitte
@@ -22,30 +20,37 @@ Alles ausserhalb dieses Repos ist kein paralleler Architekturbaum.
 - `frontend_os` = aktiv
 - `oracle` = aktiv mit Pipeline-Adaptern
 - `monetization` = aktiv entlang einer Fachkette
-- `meta_generator` = active generator pillar
+- `meta_generator` = aktive Generator-Pillar
 
 ## Aktive Dimensions
 
-- `growth`
-- `pattern`
-- `time`
-- `signal`
+- `zeit`
+- `geld`
+- `physis`
+- `geist`
+- `ausdruck`
+- `netzwerk`
+- `energie`
+- `systeme`
+- `raum`
+- `muster`
+- `wachstum`
 
 ## Wichtige Wahrheiten
 
 - `dimensionRegistry` ist die primaere Runtime-Wahrheit.
+- `topic_area_registry` fuehrt optionale Themenbereiche.
 - `dimensions/*/metadata.json` sind Spiegel.
-- `synergy` bleibt `pattern` + `provisional`.
+- `numerology` lebt unter `muster`.
+- `chronos` lebt unter `zeit`.
+- `synergy` lebt unter `netzwerk` und bleibt `provisional`.
 - `bridges/local_llm/` bleibt reserviert und nicht implementiert.
-- `000_MBRN_V3_100_PERCENT_CHECKLIST.md` ist die operative v3-Abnahme.
-- `001_POST_V3_ROADMAP.md` ist reine Folgeplanung.
-- Oracle-Heavy-Processing lebt operativ weiter unter `scripts/oracle/`.
 - `shared/ui/theme.css` ist der finale Aggregate-Entry fuer no-build Surfaces.
 - Reservierte Zielzonen werden markiert, nicht mit Fake-Code gefuellt.
 
 ## Nicht behaupten
 
-- nicht sagen, dass 11 Dimensions bereits aktiv sind
-- nicht sagen, dass `meta_generator` eine freie Prompt-Ablage oder ungegrenzte KI-Autonomie ist
-- nicht sagen, dass alle 4 Pillars voll ausgebaut sind
-- nicht sagen, dass historische Audit-Dokumente die aktuelle Runtime-Wahrheit sind
+- nicht sagen, dass jede der 11 Dimensions schon eine fertige eigene Surface hat
+- nicht sagen, dass jede `topic_area` bereits gebaut ist
+- nicht sagen, dass `signal` noch eine eigene Dimension ist
+- nicht sagen, dass historische v3-Dokumente die aktuelle Runtime-Wahrheit sind

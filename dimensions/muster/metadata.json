@@ -1,0 +1,19 @@
+{
+  "id": "muster",
+  "publicLabel": "Muster",
+  "description": "Taegliche Gewohnheiten, Routinen, Tracking und lesbare Profilsignaturen zusammenhalten.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "meta_generator",
+    "oracle"
+  ],
+  "defaultApp": "numerology",
+  "surfaceFlags": {
+    "includeInNavigation": true,
+    "includeInDashboard": true,
+    "navigationOrder": 100
+  }
+}

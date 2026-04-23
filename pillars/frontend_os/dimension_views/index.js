@@ -1,21 +1,20 @@
-import { renderGrowthView } from './growth_view.js';
-import { renderPatternView } from './pattern_view.js';
-import { renderTimeView } from './time_view.js';
-import { renderSignalView } from './signal_view.js';
+import { DIMENSION_REGISTRY } from '../../../shared/core/registries/dimension_registry.js';
+import { renderDimensionViewCard } from './shared.js';
 
-const DIMENSION_VIEW_RESOLVER = Object.freeze({
-  growth: renderGrowthView,
-  pattern: renderPatternView,
-  time: renderTimeView,
-  signal: renderSignalView
-});
+function createDimensionViewRenderer(dimensionId) {
+  return (container) => renderDimensionViewCard(container, dimensionId, {
+    eyebrow: 'Dimension View'
+  });
+}
 
 export function getDimensionViewIds() {
-  return Object.keys(DIMENSION_VIEW_RESOLVER);
+  return DIMENSION_REGISTRY.map((dimension) => dimension.id);
 }
 
 export function resolveDimensionView(dimensionId) {
-  return DIMENSION_VIEW_RESOLVER[dimensionId] || null;
+  return getDimensionViewIds().includes(dimensionId)
+    ? createDimensionViewRenderer(dimensionId)
+    : null;
 }
 
 export function renderDimensionView(dimensionId, container) {

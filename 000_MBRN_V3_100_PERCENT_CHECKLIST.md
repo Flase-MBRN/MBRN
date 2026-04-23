@@ -1,8 +1,8 @@
 # MBRN v3 100 Percent Checklist
 
-Diese Datei ist die operative Abschluss-Checkliste fuer den plattformsauberen v3-Zustand.
+Diese Datei ist die historische Abschluss-Checkliste fuer den plattformsauberen v3-Zustand.
 
-Sie wird **nicht** durch `001_POST_V3_ROADMAP.md` ersetzt. Die Roadmap plant nur die Schritte **nach** dem v3-Abschluss.
+Sie bleibt als Nachweis der v3-Plattformhaertung erhalten. Die aktive Folgeplanung lebt in `001_POST_V3_ROADMAP.md` auf Basis der v4.0 Foundation.
 
 ## Repo-Wahrheit
 
@@ -26,6 +26,6 @@ Sie wird **nicht** durch `001_POST_V3_ROADMAP.md` ersetzt. Die Roadmap plant nur
 
 ## Nicht Teil dieser Checkliste
 
-- keine 11-Dimensions-Erweiterung
+- die 11-Dimensions-Grundstruktur wurde mit v4.0 Foundation spaeter gesetzt
 - kein App-Review
 - keine OS-Consolidation vor Abschluss von Stage A

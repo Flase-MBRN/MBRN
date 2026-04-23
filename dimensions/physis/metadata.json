@@ -1,0 +1,17 @@
+{
+  "id": "physis",
+  "publicLabel": "Physis",
+  "description": "Koerperliche Leistungsfaehigkeit, Gesundheit, Ernaehrung und rohe Fitness als eigene Grundstruktur.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os"
+  ],
+  "defaultApp": null,
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 30
+  }
+}

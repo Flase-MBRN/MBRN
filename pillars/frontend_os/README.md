@@ -56,7 +56,7 @@ Verboten sind direkte Runtime-Imports aus:
 ## OS-Faehigkeiten
 
 - `app_surfaces/` ist die einzige physische Zone fuer App-Surface-Komposition.
-- `dimension_views/` stellt echte Dimensions-Einstiege fuer `growth`, `pattern`, `time` und `signal`.
+- `dimension_views/` stellt echte Dimensions-Einstiege fuer die 11 kanonischen Dimensions bereit.
 - `export_entrypoints/` buendelt die heute realen Share-, Asset- und PDF-Exporte.
 - `surface_catalog.js` und `surface_router.js` halten Discoverability und Surface-Aufloesung kompositorisch im Pillar.
 - der Produktstrom `Landing -> Kernflaeche -> Dashboard -> naechste relevante Flaeche` bleibt ueber Discoverability-Modelle und Surface-Flow-Hilfen explizit.

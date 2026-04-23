@@ -1,0 +1,18 @@
+{
+  "id": "netzwerk",
+  "publicLabel": "Netzwerk",
+  "description": "Beziehungen, Partner-Synergien, Umfeld und nuetzliche Kontakte als eigene Surface-Ebene fuehren.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "oracle"
+  ],
+  "defaultApp": "synergy",
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 60
+  }
+}

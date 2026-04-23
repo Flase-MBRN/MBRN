@@ -8,17 +8,15 @@ Es darf keinen zukuenftigen Zustand als bereits umgesetzt behaupten.
 
 ## Aktueller Zielzustand
 
-MBRN ist aktuell auf einen plattformsauberen v3-Zustand gebracht:
+MBRN ist aktuell auf eine v4.0-Foundation gestellt:
 
 - nur eine technische Wahrheit im Repo
 - IO-freier Core
 - Cross-Pillar-Orchestrierung im Application-Layer
 - Bridges und Commerce als technische Aussenhaut
 - Frontend OS als aktive Surface-Komposition
-- ehrliche, nicht ueberbehauptete Pillars
-- getrennte operative Dateien fuer v3-Abnahme und Post-v3-Folgeplanung
-
-Dieser Stand ist nicht die volle Vision mit 11 Dimensions oder 4 komplett ausgebauten Businesses.
+- 11 offizielle Dimensions als Hauptstruktur
+- optionale `topic_areas` zwischen Dimension und App
 
 ## Architekturgesetze
 
@@ -28,8 +26,9 @@ Dieser Stand ist nicht die volle Vision mit 11 Dimensions oder 4 komplett ausgeb
 4. `pillars/frontend_os/` enthaelt Surface-Komposition, nicht Primitive oder Providerlogik.
 5. `shared/ui/` bleibt business-blinde UI-Infrastruktur.
 6. `dimensionRegistry` ist die kanonische Runtime-Wahrheit fuer Dimensions.
-7. `dimensions/*/metadata.json` sind Spiegel, nicht Primaerquelle.
-8. Reservierte Zielzonen bleiben markiert statt kuenstlich mit Fake-Logik gefuellt.
+7. `topic_area_registry` fuehrt optionale Themenbereiche unterhalb einer Dimension.
+8. `dimensions/*/metadata.json` sind Spiegel, nicht Primaerquelle.
+9. Apps duerfen direkt unter einer Dimension oder innerhalb einer `topic_area` haengen.
 
 ## Aktive Struktur
 
@@ -39,7 +38,6 @@ Dieser Stand ist nicht die volle Vision mit 11 Dimensions oder 4 komplett ausgeb
     /core
     /application
     /ui
-    /loyalty
   /pillars
     /meta_generator
     /monetization
@@ -64,8 +62,6 @@ Aktiv als vollstaendige Oracle-Maschine:
 
 - `browser_read`, `signals`, `fusion`, `snapshots`, `backtesting` aktiv
 - `processing` als aktive Orchestrierungszone
-- Python-Heavy-Processing fachlich unter `pillars/oracle/processing/*`
-- `scripts/oracle/*` nur noch als duenne Runner fuer dieselbe Pillar-Logik
 - Browser-/Application-Consumption bleibt die Wahrheit unter `pillars/oracle/*`
 
 ### `monetization`
@@ -77,10 +73,6 @@ Aktiv entlang einer Fachkette:
 - `entitlements`
 - `billing`
 - `gates`
-- `free`, `pro`, `business` bilden die aktive Planwahrheit
-- `plan_id` ist die repo-weite Persistenzwahrheit
-- `artifact` ist das kaufbare Einzelprodukt fuer `pro`
-- `business` ist die kaufbare Bundle-Subscription
 
 ### `meta_generator`
 Aktiv als Generator-Pillar:
@@ -88,19 +80,37 @@ Aktiv als Generator-Pillar:
 - `blueprints`, `content`, `modules`, `assets`, `agent_adapters` aktiv
 - Runtime-Konsumenten in `shared/application/frontend_os/*`
 - Workflow-Konsumenten in `scripts/devlab/*`
-- deterministischer Kern plus strukturierte AI-Adapter
 
 ## Dimensions
 
-Aktuell formalisierte Dimensions:
+Offiziell formalisierte Dimensions:
 
-- `growth`
-- `pattern`
-- `time`
-- `signal`
+- `zeit`
+- `geld`
+- `physis`
+- `geist`
+- `ausdruck`
+- `netzwerk`
+- `energie`
+- `systeme`
+- `raum`
+- `muster`
+- `wachstum`
 
-Die 11-Dimensions-Welt gehoert nicht zum aktuellen Plattform-Abschluss.
+Aktive App-Zuordnungen:
 
-## Doku-Regel
+- `finance -> geld`
+- `numerology -> muster`
+- `chronos -> zeit`
+- `synergy -> netzwerk`
 
-Wenn ein Dokument aeltere Pfade oder Vor-Refactor-Zustaende beschreibt, ist es nur noch als historische Referenz zulaessig und darf nicht als aktive Runtime-Wahrheit gelten.
+Das bisherige `signal`-Thema ist keine eigene Dimension mehr und wird unter `geld` absorbiert.
+
+## Supabase-Sync
+
+Die Backend-Wahrheit fuer Dimensions wird ueber Referenztabellen vorbereitet:
+
+- `dimensions`
+- `topic_areas`
+
+Supabase soll kanonische Dimensions- und Topic-Area-IDs spiegeln, statt freie Legacy-Werte weiterzutragen.

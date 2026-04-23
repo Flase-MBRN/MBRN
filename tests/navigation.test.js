@@ -185,9 +185,9 @@ describe('frontend_os navigation', () => {
     expect(getNavigationEntries()).toEqual([
       expect.objectContaining({ id: 'home', label: 'Start' }),
       expect.objectContaining({ id: 'dashboard', label: 'Dashboard' }),
-      expect.objectContaining({ id: 'finance', dimensionId: 'growth', label: 'Wachstum' }),
-      expect.objectContaining({ id: 'numerology', dimensionId: 'pattern', label: 'Muster' }),
-      expect.objectContaining({ id: 'chronos', dimensionId: 'time', label: 'Zeit' })
+      expect.objectContaining({ id: 'chronos', dimensionId: 'zeit', label: 'Zeit' }),
+      expect.objectContaining({ id: 'finance', dimensionId: 'geld', label: 'Geld' }),
+      expect.objectContaining({ id: 'numerology', dimensionId: 'muster', label: 'Muster' })
     ]);
   });
 

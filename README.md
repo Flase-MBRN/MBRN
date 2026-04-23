@@ -1,12 +1,10 @@
-# MBRN Hub v3 Platform
+# MBRN Hub v4.0 FOUNDATION
 
 > Official current-state authority: [000_CANONICAL_STATE.json](file:///c:/DevLab/MBRN-HUB-V1/000_CANONICAL_STATE.json)  
 > This README is a human-readable mirror only.  
 > In any conflict between README text and the canonical state file, the canonical state file wins.
 
-MBRN Hub ist aktuell eine plattformsaubere v3-Basis rund um einen IO-freien Core, einen klaren Application-Layer und eine bewusst ehrliche Pillar-Struktur.
-
-Der aktuelle Stand ist nicht die volle Vision mit 11 Dimensions oder 4 voll ausgebauten Businesses. Der aktuelle Stand ist die bereinigte Plattform, auf der diese spaetere Vision sauber wachsen kann.
+MBRN Hub ist aktuell auf eine v4.0-Foundation umgestellt: 11 Dimensionen als offizielle Hauptstruktur, optionale `topic_areas` als Zwischenschicht und konkrete Apps oder Websites als operative Surfaces.
 
 ## Aktive Systemwahrheit
 
@@ -14,13 +12,12 @@ Der aktuelle Stand ist nicht die volle Vision mit 11 Dimensions oder 4 voll ausg
 - `shared/core/` bleibt die IO-freie Mitte
 - `shared/application/` traegt Cross-Pillar-Orchestrierung
 - `bridges/*` und `commerce/*` tragen technische Aussenwelt
-- `pillars/frontend_os/` ist die einzige aktive Surface-Komposition
+- `pillars/frontend_os/` bleibt die aktive Surface-Komposition
 - `dimensionRegistry` ist die primaere Runtime-Wahrheit fuer Dimensions
+- `topic_area_registry` fuehrt optionale Themenbereiche zwischen Dimension und App
 - `dimensions/*/metadata.json` sind Spiegel, nicht die kanonische Quelle
-- `000_MBRN_V3_100_PERCENT_CHECKLIST.md` ist die operative v3-Abnahme
-- `001_POST_V3_ROADMAP.md` ist reine Folgeplanung nach v3
 
-## Aktuelle Architektur
+## Architektur in Kurzform
 
 ### Headless Core
 
@@ -54,119 +51,63 @@ Produktiv aktiv:
 - `bridges/supabase/`
 - `bridges/python/`
 
-- `commerce/*` (intern vorbereitete Infrastruktur; nicht Teil der öffentlichen Repo-Oberfläche)
-
 Bewusst reserviert / nicht implementiert:
 
 - `bridges/local_llm/`
-
 - `bridges/external_apis/`
 
 ### Pillars
 
-#### `frontend_os`
-Aktiv fuer:
+- `frontend_os` = Shell, Navigation, Dashboard-Komposition, Cards, UI States, `app_surfaces/`, `dimension_views/`, `export_entrypoints/`
+- `oracle` = Daten-, Signal- und Verarbeitungsmaschine
+- `monetization` = Plans, Entitlements, Billing und Gates
+- `meta_generator` = Blueprints, Content, Modules, Assets, Agent Adapters
 
-- Shell
-- Navigation
-- Dashboard-Komposition
-- Cards
-- UI States
-- `app_surfaces/`
-- `dimension_views/`
-- `export_entrypoints/`
+## Dimensions, Topic Areas und Apps
 
-#### `oracle`
-Aktiv als Daten- und Verarbeitungsmaschine:
+Offizielle Dimensions:
 
-- `browser_read`, `signals`, `fusion`, `snapshots`, `backtesting` liefern Runtime-Substanz
-- `processing` ist der aktive Oracle-Steuerraum fuer Ingestion, Prediction, Snapshot-Produktion und Backfill
-- operative Python-Worker werden unter `pillars/oracle/processing/*` fachlich besessen
-- `scripts/oracle/*` bleibt nur noch duenne CLI-/Worker-Huelle
-- Browser-/Application-Consumption liest nur ueber `pillars/oracle/*`
+- `zeit`
+- `geld`
+- `physis`
+- `geist`
+- `ausdruck`
+- `netzwerk`
+- `energie`
+- `systeme`
+- `raum`
+- `muster`
+- `wachstum`
 
-#### `monetization`
-Aktiv entlang einer klaren Fachkette:
+Aktive Start-Zuordnungen:
 
-- `api_products`
-- `pricing`
-- `plans`
-- `entitlements`
-- `billing`
-- `gates`
-- `free`, `pro`, `business` sind die aktive Planwahrheit
-- `plan_id` ist die repo-weite Persistenzwahrheit
-- `artifact` ist das kaufbare Einzelprodukt fuer `pro`
-- `business` ist die kaufbare Bundle-Subscription
-- `pillars/monetization/*` bleibt die oeffentliche fachliche Wahrheit fuer Plans, Entitlements, Billing-Zustaende und Gates
-- `supabase/functions/stripe-checkout/index.ts` und `supabase/functions/stripe-webhook/index.ts` bleiben technische private Ausfuehrung, nicht die Fachquelle
+- `finance -> geld`
+- `numerology -> muster -> numerologie`
+- `chronos -> zeit`
+- `synergy -> netzwerk`
 
-#### `meta_generator`
-Aktiv als Generator-Pillar:
+`topic_areas` sind optional. Eine App darf entweder direkt unter ihrer Dimension haengen oder innerhalb einer `topic_area` gefuehrt werden.
 
-- `blueprints`, `content`, `modules`, `assets`, `agent_adapters` sind aktiv
-- Runtime-Konsumenten leben in `shared/application/frontend_os/discoverability_runtime.js` und `shared/application/frontend_os/export_runtime.js`
-- Workflow-Konsumenten leben in `scripts/devlab/*` fuer Roadmap-, Blueprint- und Scaffold-Bundles
-- der Kern bleibt deterministisch; AI-Nutzung laeuft ueber strukturierte Adapter-/Work-Orders
+## Supabase
 
-## Dimensions und Apps
+Supabase wird nicht nur als Infrastruktur, sondern auch als Spiegel der kanonischen Dimensions-Wahrheit behandelt.
 
-Aktive formalisierte Dimensions:
-
-- `growth`
-- `pattern`
-- `time`
-- `signal`
-
-Aktive App-Bindungen:
-
-- `finance -> growth`
-- `numerology -> pattern`
-- `chronos -> time`
-- `synergy -> pattern` mit `status = provisional`
-
-Es gibt aktuell 4 formalisierte Dimensions, nicht 11.
-
-## UI-Grenzen
-
-`shared/ui/` bleibt gemeinsame UI-Infrastruktur:
-
-- tokens
-- theme
-- dom
-- primitives
-- base components
-
-`shared/ui/theme.css` ist der finale oeffentliche Aggregate-Entry fuer no-build HTML-Surfaces.
-
-Surface-spezifische Dinge liegen in `pillars/frontend_os/`.
-
-## Data und Oracle
-
-Die Pipeline-Schicht bleibt operativ:
-
-- `scripts/pipelines/`
-- `scripts/oracle/`
-
-Runtime-Mirror-Artefakte bleiben Artefakte und keine Primaerquelle fuer Produktlogik:
-
-- `shared/data/market_sentiment.json`
-- `shared/data/oracle_prediction.json`
-- `shared/data/oracle_backtest.json`
+- `supabase/migrations/15_dimensions_foundation.sql` legt feste Referenztabellen fuer `dimensions` und `topic_areas` an
+- neue Persistenz soll Dimensionszuege ueber Referenzdaten statt freie Legacy-IDs fuehren
+- das fruehere `signal`-Thema bleibt keine eigene Dimension und geht semantisch in `geld` auf
 
 ## Status
 
 Der aktuelle Stand ist:
 
-- Plattformbasis bereinigt
-- Registry/Manifest aktiv
-- Root-Wahrheit auf dieses Repo reduziert
-- aktives Close-out Gate und Stage A sichtbar im Repo
-- 4 Pillars aktiv eingeordnet, ohne kuenstlich unendliche Produktbreite zu behaupten
+- v4.0-Foundation gesetzt
+- 11 Dimensionen kanonisch eingefuehrt
+- optionale `topic_areas` in Kanon und Runtime vorbereitet
+- bestehende Surfaces neu zugeordnet
+- Supabase-Referenzstruktur fuer Dimensions-Sync vorbereitet
 
 Nicht behauptet wird:
 
-- 11 Dimensions
-- unendliche Generator-Autonomie oder Live-LLM-Zwang in der Runtime
-- JS-Port des Oracle-Heavy-Processing
-- fertige Monetization-Produkte jenseits der aktuellen Fachkette
+- dass jede Dimension bereits eine eigene fertige Surface hat
+- dass jede `topic_area` bereits mit einer App gefuellt ist
+- dass historische v3-Dokumente die neue aktive Runtime-Wahrheit ueberschreiben

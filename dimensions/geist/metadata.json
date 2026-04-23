@@ -1,13 +1,12 @@
 {
-  "id": "signal",
-  "publicLabel": "Signal",
-  "description": "Markt- und Oracle-Signale als eigene Oberfläche.",
+  "id": "geist",
+  "publicLabel": "Geist",
+  "description": "Psychologie, mentalen Fokus, Stressresistenz und generelles Mindset als eigenes Terrain halten.",
   "accessRules": {
     "tier": 0
   },
   "pillarDependencies": [
-    "frontend_os",
-    "oracle"
+    "frontend_os"
   ],
   "defaultApp": null,
   "surfaceFlags": {

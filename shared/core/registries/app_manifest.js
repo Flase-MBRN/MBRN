@@ -4,7 +4,9 @@ export const APP_MANIFEST = Object.freeze([
     label: 'Geld',
     route: 'apps/finance/index.html',
     icon: 'G',
-    dimensionId: 'growth',
+    dimensionId: 'geld',
+    topicAreaId: null,
+    surfaceKind: 'app',
     requiredCapabilities: [],
     status: 'stable',
     surfaceFlags: {
@@ -14,10 +16,12 @@ export const APP_MANIFEST = Object.freeze([
   },
   {
     id: 'numerology',
-    label: 'Zahlen',
+    label: 'Numerologie',
     route: 'apps/numerology/index.html',
-    icon: 'Z',
-    dimensionId: 'pattern',
+    icon: 'N',
+    dimensionId: 'muster',
+    topicAreaId: 'numerologie',
+    surfaceKind: 'app',
     requiredCapabilities: [],
     status: 'stable',
     surfaceFlags: {
@@ -30,7 +34,9 @@ export const APP_MANIFEST = Object.freeze([
     label: 'Zeit',
     route: 'apps/chronos/index.html',
     icon: 'T',
-    dimensionId: 'time',
+    dimensionId: 'zeit',
+    topicAreaId: null,
+    surfaceKind: 'app',
     requiredCapabilities: [],
     status: 'stable',
     surfaceFlags: {
@@ -43,7 +49,9 @@ export const APP_MANIFEST = Object.freeze([
     label: 'Vibe Check',
     route: 'apps/synergy/index.html',
     icon: 'V',
-    dimensionId: 'pattern',
+    dimensionId: 'netzwerk',
+    topicAreaId: null,
+    surfaceKind: 'app',
     requiredCapabilities: [],
     status: 'provisional',
     surfaceFlags: {

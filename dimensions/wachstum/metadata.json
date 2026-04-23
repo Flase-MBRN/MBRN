@@ -1,0 +1,18 @@
+{
+  "id": "wachstum",
+  "publicLabel": "Wachstum",
+  "description": "Neue Skills, Research, Informationsbeschaffung und kontinuierliche Weiterentwicklung aufnehmen.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "meta_generator"
+  ],
+  "defaultApp": null,
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 110
+  }
+}

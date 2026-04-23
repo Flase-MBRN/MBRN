@@ -1,33 +1,82 @@
 import { buildPillarCompletionBlueprint, getPillarStageSequence } from '../blueprints/index.js';
 
 const DIMENSION_CONTENT_BUNDLES = Object.freeze({
-  growth: Object.freeze({
-    dimensionId: 'growth',
-    eyebrow: 'Dimension',
-    title: 'Wachstum lesen',
-    summary: 'Kapital, Fortschritt und Entwicklung in einer klaren Wachstumsflaeche.',
-    cta: 'Zur Wachstumsflaeche'
-  }),
-  pattern: Object.freeze({
-    dimensionId: 'pattern',
-    eyebrow: 'Dimension',
-    title: 'Muster erkennen',
-    summary: 'Numerologie, Signaturen und Profile in einer lesbaren Musterflaeche.',
-    cta: 'Zu den Mustern'
-  }),
-  time: Object.freeze({
-    dimensionId: 'time',
+  zeit: Object.freeze({
+    dimensionId: 'zeit',
     eyebrow: 'Dimension',
     title: 'Zeit ordnen',
-    summary: 'Phasen, Timing und Zyklen als fokussierte Zeitflaeche.',
+    summary: 'Kalender, Phasen und Timing in einer fokussierten Zeitflaeche.',
     cta: 'Zur Zeitflaeche'
   }),
-  signal: Object.freeze({
-    dimensionId: 'signal',
+  geld: Object.freeze({
+    dimensionId: 'geld',
     eyebrow: 'Dimension',
-    title: 'Signale verdichten',
-    summary: 'Oracle- und Marktsignale werden als eigene Signalebene lesbar.',
-    cta: 'Zu den Signalen'
+    title: 'Geld steuern',
+    summary: 'Vermoegen, Cashflow und Signal-Lagen in einer lesbaren Geldflaeche.',
+    cta: 'Zur Geldflaeche'
+  }),
+  physis: Object.freeze({
+    dimensionId: 'physis',
+    eyebrow: 'Dimension',
+    title: 'Physis staerken',
+    summary: 'Gesundheit, Leistung und rohe Fitness als spaetere Surface-Zone.',
+    cta: 'Zur Physis'
+  }),
+  geist: Object.freeze({
+    dimensionId: 'geist',
+    eyebrow: 'Dimension',
+    title: 'Geist schaerfen',
+    summary: 'Fokus, Stressresistenz und mentale Fuehrung als eigene Surface-Zone.',
+    cta: 'Zum Geist'
+  }),
+  ausdruck: Object.freeze({
+    dimensionId: 'ausdruck',
+    eyebrow: 'Dimension',
+    title: 'Ausdruck entfalten',
+    summary: 'Kreativer Output, Story und Content in einer eigenen Ausdrucks-Struktur.',
+    cta: 'Zum Ausdruck'
+  }),
+  netzwerk: Object.freeze({
+    dimensionId: 'netzwerk',
+    eyebrow: 'Dimension',
+    title: 'Netzwerk lesen',
+    summary: 'Beziehungen, Synergien und Resonanz in einer lesbaren Netzwerkflaeche.',
+    cta: 'Zum Netzwerk'
+  }),
+  energie: Object.freeze({
+    dimensionId: 'energie',
+    eyebrow: 'Dimension',
+    title: 'Energie schuetzen',
+    summary: 'Schlaf, Regeneration und Batteriemanagement als eigene Grundordnung.',
+    cta: 'Zur Energie'
+  }),
+  systeme: Object.freeze({
+    dimensionId: 'systeme',
+    eyebrow: 'Dimension',
+    title: 'Systeme fuehren',
+    summary: 'Werkzeuge, KI-Agenten und Automationen in einer System-Dimension.',
+    cta: 'Zu den Systemen'
+  }),
+  raum: Object.freeze({
+    dimensionId: 'raum',
+    eyebrow: 'Dimension',
+    title: 'Raum ordnen',
+    summary: 'Physisches und digitales Cockpit als sauber gefuehrte Surface-Zone.',
+    cta: 'Zum Raum'
+  }),
+  muster: Object.freeze({
+    dimensionId: 'muster',
+    eyebrow: 'Dimension',
+    title: 'Muster erkennen',
+    summary: 'Numerologie, Routinen und lesbare Signaturen in einer Musterflaeche.',
+    cta: 'Zu den Mustern'
+  }),
+  wachstum: Object.freeze({
+    dimensionId: 'wachstum',
+    eyebrow: 'Dimension',
+    title: 'Wachstum kultivieren',
+    summary: 'Skills, Research und kontinuierliche Weiterentwicklung als Dimension.',
+    cta: 'Zum Wachstum'
   })
 });
 
@@ -35,7 +84,7 @@ const SURFACE_COPY_BUNDLES = Object.freeze({
   home: Object.freeze({
     surfaceId: 'home',
     title: 'MBRN',
-    subtitle: 'Die Oberflaeche fuer Muster, Wachstum und Zeit.',
+    subtitle: 'Der Hub fuer 11 Dimensionen, Themenbereiche und operative Surfaces.',
     cta: 'Starten'
   }),
   dashboard: Object.freeze({
@@ -46,8 +95,8 @@ const SURFACE_COPY_BUNDLES = Object.freeze({
   }),
   finance: Object.freeze({
     surfaceId: 'finance',
-    title: 'Wachstum',
-    subtitle: 'So entwickelt sich dein Kapital ueber Zeit.',
+    title: 'Geld',
+    subtitle: 'So steuerst du Kapital, Cashflow und Vermoegen ueber Zeit.',
     cta: 'Szenario ansehen'
   }),
   numerology: Object.freeze({
@@ -65,7 +114,7 @@ const SURFACE_COPY_BUNDLES = Object.freeze({
   synergy: Object.freeze({
     surfaceId: 'synergy',
     title: 'Vibe Check',
-    subtitle: 'Beziehungen, Dynamik und Resonanz als eigene Flaeche.',
+    subtitle: 'Beziehungen, Dynamik und Resonanz als Netzwerk-Flaeche.',
     cta: 'Verbindung lesen'
   })
 });
@@ -103,13 +152,13 @@ export function buildPostV3RoadmapMarkdown() {
     })
     .join('\n');
 
-  return `# 001 Post-v3 Roadmap
+  return `# 001 Post-v4 Roadmap
 
 ## Zweck
 
-Diese Datei plant die Schritte **nach** dem Abschluss der v3-Plattformhaertung.
+Diese Datei plant die Schritte **nach** dem Setzen der v4.0 Foundation.
 
-Sie ersetzt nicht die aktive \`000_MBRN_V3_100_PERCENT_CHECKLIST.md\`, sondern dokumentiert nur die naechsten Ausbaustufen auf der gehaerteten Plattformbasis.
+Sie ersetzt nicht die historische \`000_MBRN_V3_100_PERCENT_CHECKLIST.md\`, sondern dokumentiert die naechsten Ausbaustufen auf der gehaerteten Foundation-Basis.
 
 Die einzige technische Wahrheit bleibt:
 
@@ -117,17 +166,16 @@ Die einzige technische Wahrheit bleibt:
 
 ## Nicht Teil dieser Datei
 
-- keine offenen v3-Abschlussarbeiten
-- keine offenen Architekturfragen
-- kein Ersatz fuer die 100%-Checkliste
-- keine Vorwegnahme einer 11-Dimensions-Runtime
+- keine Rueckkehr zur 4-Dimensions-Wahrheit
+- kein Ersatz fuer den aktiven Kanon
+- keine Parallel-Realitaet neben \`000_CANONICAL_STATE.json\`
 
 ## Jetzt
 
-- Architecture Close-out Gate vollstaendig schliessen
-- letzte aktive Legacy-Fassaden aus Runtime und Tests entfernen
-- operative v3-Abnahme in \`000_MBRN_V3_100_PERCENT_CHECKLIST.md\` halten
-- dann erst die 4 Pillars fachlich auf echten Reifegrad ziehen
+- Kanon, Runtime, Metadaten und Supabase auf dieselbe 11-Dimensions-Wahrheit halten
+- direkte und topic-area-basierte App-Zuordnungen ohne Routing-Bruch fuehren
+- aktive Surfaces sauber den neuen Dimensionen zuordnen
+- dann die 4 Pillars fachlich auf echten Reifegrad ziehen
 
 ## Danach: Stage A - Pillars Completion
 
@@ -146,11 +194,11 @@ Erwartung:
 - klare Contracts
 - keine verteilte Schattenlogik ausserhalb der Pillar-Zone
 
-## Spaeter: Stage B - Dimensions Expansion
+## Spaeter: Stage B - Dimension Maturation
 
-- aktuelle 4 Dimensions bleiben bis dahin Runtime-Wahrheit
-- 11-Dimensions-Welt erst nach stabilen Pillars
-- interne IDs und oeffentliche Labels bleiben strikt getrennt
+- 11 Dimensions bleiben Kanon und Runtime-Wahrheit
+- topic_areas koennen pro Dimension wachsen, muessen aber nicht existieren
+- Apps duerfen direkt unter der Dimension oder innerhalb einer topic_area haengen
 
 ## Spaeter: Stage C - App Review
 

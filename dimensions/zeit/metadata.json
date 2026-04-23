@@ -1,16 +1,15 @@
 {
-  "id": "growth",
-  "publicLabel": "Wachstum",
-  "description": "Kapital, Entwicklung und messbares Vorankommen.",
+  "id": "zeit",
+  "publicLabel": "Zeit",
+  "description": "Kalender, Tagesplanung, Lebenszeit-Management und den eigenen operativen Rhythmus ordnen.",
   "accessRules": {
     "tier": 0
   },
   "pillarDependencies": [
     "frontend_os",
-    "oracle",
-    "monetization"
+    "oracle"
   ],
-  "defaultApp": "finance",
+  "defaultApp": "chronos",
   "surfaceFlags": {
     "includeInNavigation": true,
     "includeInDashboard": true,

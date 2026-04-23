@@ -6,31 +6,80 @@ const PILLAR_STAGE_SEQUENCE = Object.freeze([
 ]);
 
 const DIMENSION_BLUEPRINTS = Object.freeze({
-  growth: Object.freeze({
-    id: 'growth',
-    headline: 'Wachstum systemisch lesen',
-    intent: 'Kapital, Fortschritt und messbare Entwicklung als klare Surface-Zone fuehrbar machen.',
-    exportEntrypoints: ['asset_export'],
-    primarySurfaceIds: ['finance']
-  }),
-  pattern: Object.freeze({
-    id: 'pattern',
-    headline: 'Muster sichtbar machen',
-    intent: 'Profile, Signaturen und numerologische Muster als lesbare Surface-Familie ausspielen.',
-    exportEntrypoints: ['share_export', 'pdf_export', 'asset_export'],
-    primarySurfaceIds: ['numerology', 'synergy']
-  }),
-  time: Object.freeze({
-    id: 'time',
-    headline: 'Zeit als Surface organisieren',
-    intent: 'Phasen, Timing und Zyklen in eine fokussierte Zeit-Surface ueberfuehren.',
+  zeit: Object.freeze({
+    id: 'zeit',
+    headline: 'Zeit sauber organisieren',
+    intent: 'Kalender, Lebenszeit, Phasen und Rhythmen als klare Zeit-Surface fuehrbar machen.',
     exportEntrypoints: [],
     primarySurfaceIds: ['chronos']
   }),
-  signal: Object.freeze({
-    id: 'signal',
-    headline: 'Signale verdichten',
-    intent: 'Oracle- und Markt-Signale als eigene Surface-Ebene beschreibbar machen.',
+  geld: Object.freeze({
+    id: 'geld',
+    headline: 'Geld steuerbar machen',
+    intent: 'Vermoegen, Cashflow und Oracle-nahe Signale als operative Geld-Zone fuehren.',
+    exportEntrypoints: ['asset_export'],
+    primarySurfaceIds: ['finance']
+  }),
+  physis: Object.freeze({
+    id: 'physis',
+    headline: 'Physis aufbauen',
+    intent: 'Koerperliche Leistung, Gesundheit und Fitness als spaetere Surface-Familie vorbereiten.',
+    exportEntrypoints: [],
+    primarySurfaceIds: []
+  }),
+  geist: Object.freeze({
+    id: 'geist',
+    headline: 'Geist schaerfen',
+    intent: 'Mindset, Fokus und Stressresistenz als eigene geistige Surface-Zone vorbereiten.',
+    exportEntrypoints: [],
+    primarySurfaceIds: []
+  }),
+  ausdruck: Object.freeze({
+    id: 'ausdruck',
+    headline: 'Ausdruck in Systeme bringen',
+    intent: 'Kreativen Output, Schreiben und sichtbare Produktion als spaetere Surface-Familie vorbereiten.',
+    exportEntrypoints: [],
+    primarySurfaceIds: []
+  }),
+  netzwerk: Object.freeze({
+    id: 'netzwerk',
+    headline: 'Netzwerk lesbar machen',
+    intent: 'Beziehungen, Resonanz und Synergien als eigene Netzwerk-Flaeche ausspielen.',
+    exportEntrypoints: [],
+    primarySurfaceIds: ['synergy']
+  }),
+  energie: Object.freeze({
+    id: 'energie',
+    headline: 'Energie schuetzen',
+    intent: 'Regeneration, Schlaf und Batteriemanagement als spaetere Energie-Zone vorbereiten.',
+    exportEntrypoints: [],
+    primarySurfaceIds: []
+  }),
+  systeme: Object.freeze({
+    id: 'systeme',
+    headline: 'Systeme orchestrieren',
+    intent: 'Werkzeuge, KI-Agenten und Automationen als System-Dimension ordnen.',
+    exportEntrypoints: [],
+    primarySurfaceIds: []
+  }),
+  raum: Object.freeze({
+    id: 'raum',
+    headline: 'Raum bewusst fuehren',
+    intent: 'Physisches und digitales Cockpit als Surface-Zone vorbereiten.',
+    exportEntrypoints: [],
+    primarySurfaceIds: []
+  }),
+  muster: Object.freeze({
+    id: 'muster',
+    headline: 'Muster sichtbar machen',
+    intent: 'Profile, Routinen und lesbare Muster mit optionalen Themenbereichen fuehren.',
+    exportEntrypoints: ['share_export', 'pdf_export', 'asset_export'],
+    primarySurfaceIds: ['numerology']
+  }),
+  wachstum: Object.freeze({
+    id: 'wachstum',
+    headline: 'Wachstum laufend erweitern',
+    intent: 'Skills, Research und Weiterentwicklung als neue Growth-Dimension vorbereiten.',
     exportEntrypoints: [],
     primarySurfaceIds: []
   })
@@ -52,28 +101,32 @@ const SURFACE_BLUEPRINTS = Object.freeze({
   finance: Object.freeze({
     id: 'finance',
     kind: 'app',
-    dimensionId: 'growth',
+    dimensionId: 'geld',
+    topicAreaId: null,
     exportEntrypoints: ['asset_export'],
-    narrativeTone: 'growth_story'
+    narrativeTone: 'money_story'
   }),
   numerology: Object.freeze({
     id: 'numerology',
     kind: 'app',
-    dimensionId: 'pattern',
+    dimensionId: 'muster',
+    topicAreaId: 'numerologie',
     exportEntrypoints: ['share_export', 'asset_export', 'pdf_export'],
     narrativeTone: 'pattern_story'
   }),
   chronos: Object.freeze({
     id: 'chronos',
     kind: 'app',
-    dimensionId: 'time',
+    dimensionId: 'zeit',
+    topicAreaId: null,
     exportEntrypoints: [],
     narrativeTone: 'timeline_story'
   }),
   synergy: Object.freeze({
     id: 'synergy',
     kind: 'app',
-    dimensionId: 'pattern',
+    dimensionId: 'netzwerk',
+    topicAreaId: null,
     exportEntrypoints: [],
     narrativeTone: 'connection_story'
   })
@@ -131,7 +184,9 @@ export function buildAppBlueprint({
   displayName = appId,
   route = `apps/${appId}/index.html`,
   dimensionId,
+  topicAreaId = null,
   status = 'stable',
+  surfaceKind = 'app',
   requiredCapabilities = []
 } = {}) {
   const surfaceBlueprint = buildSurfaceBlueprint(appId);
@@ -141,7 +196,9 @@ export function buildAppBlueprint({
     displayName,
     route,
     dimensionId: dimensionId || surfaceBlueprint?.dimensionId || null,
+    topicAreaId: topicAreaId || surfaceBlueprint?.topicAreaId || null,
     status,
+    surfaceKind,
     requiredCapabilities: [...requiredCapabilities],
     exports: [...(surfaceBlueprint?.exportEntrypoints || [])],
     blueprintVersion: '2.0.0'

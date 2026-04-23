@@ -1,156 +1,156 @@
 {
-  "timestamp_utc": "2026-04-21T21:05:07.888855+00:00",
-  "target_date": "22.04.2026",
+  "timestamp_utc": "2026-04-23T19:38:08.573964+00:00",
+  "target_date": "24.04.2026",
   "oracle_version": "1.1.0",
   "day_numerology": {
-    "day_number": 22,
+    "day_number": 11,
     "is_master": true,
-    "description": "Meisterzahl: Baumeister der Zukunft"
+    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
   },
   "market_context": {
-    "previous_sentiment": 62,
-    "previous_vix": 18.87,
+    "previous_sentiment": 50,
+    "previous_vix": 19.74,
     "sentiment_trend": "rising",
-    "sentiment_trend_value": 19.0,
+    "sentiment_trend_value": 10.67,
     "crypto_snapshot": {
       "BTC-USD": {
-        "price": 75826.69,
-        "change_percent": 2.67,
-        "volume": 39286566912.0
+        "price": 77737.91,
+        "change_percent": -0.59,
+        "volume": 43515150336.0
       },
       "ETH-USD": {
-        "price": 2314.7,
-        "change_percent": 2.2,
-        "volume": 18836101120.0
+        "price": 2319.66,
+        "change_percent": -2.37,
+        "volume": 20846405632.0
       }
     },
-    "crypto_sentiment": 59.74,
+    "crypto_sentiment": 44.08,
     "news_signal": "neutral",
-    "news_impact": 0,
+    "news_impact": 54,
     "headline_count": 10,
     "news_items": [
       {
         "source": "Google News Business",
-        "title": "Grand Forks School Board Finance Committee hears update on scoreboard funding - Grand Forks Herald",
-        "summary": "Grand Forks School Board Finance Committee hears update on scoreboard funding Grand Forks Herald",
-        "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE03eWZnX1BaSzBMUnoxbWV6SjVVYzg1WFZvR3VPMWxMa2t3YXZqWkllcmRzdnlJQmp3clJHaGZYdG5RdEZBcUhWUUFPcHVzMEM2N1M2V3dieVFmeVhKZnhiSGpkRXdQVzdvSDU4S2VCTUlrMjRTOHc?oc=5",
-        "published_at": "2026-04-21T00:01:48+00:00"
+        "title": "Asia's Open Finance Ambitions Demand Interoperability, Smarter Regulation, and Human-Centred Design - Nation Thailand",
+        "summary": "Asia's Open Finance Ambitions Demand Interoperability, Smarter Regulation, and Human-Centred Design Nation Thailand",
+        "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFA1MXdnMWlJNE9aZm15OEdlLTctT1lNaGJib21RYW5aRTJ4VlhWaGpiX0dsYmhIRFV3QWtHXzk4XzhHeUtPQkxnTWJRR3c0NFFhVmlmZ05YZllMUW5CWk1GOGVsa1dsdjI3VkZYNG0wUkxQQQ?oc=5",
+        "published_at": "2026-04-23T09:45:00+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Creative Technology (SGX:C76) Is In A Strong Position To Grow Its Business - Yahoo Finance",
-        "summary": "Creative Technology (SGX:C76) Is In A Strong Position To Grow Its Business Yahoo Finance",
-        "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNWDNTSU1xUEhsbDFoVml4VGpCU3dTbDkxTlFKdmVaNHUyVUs1WkxYR05MQmlCa1NGWEJGUnJYSngycXB0MV9qc0l2UFJqbkxMcjZVallmNkxwbXppT250MXloVlltQi1xSTIwZ3o1QVFDLWZOcnpwdXdmcTg5cXdRVjZTaUpyZU8wRVI4OWxhdmJhd29hYW9vNlRGc1BqaW0w?oc=5",
-        "published_at": "2026-04-20T23:40:14+00:00"
+        "title": "Syed Imtiaz Ahmed Elevated to Chief Business Officer at Piramal Finance - CXO Digitalpulse",
+        "summary": "Syed Imtiaz Ahmed Elevated to Chief Business Officer at Piramal Finance CXO Digitalpulse",
+        "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNUlpBYlRkNlRMMUVsQmRXZXFBRlRRRXBZSFgyWUVwZV94VDViNXZmdkJfUDcyVDZ1SmVaZ1dPRGptbWd4Z0NmeHlnRmh2UjVtc2V2a0E2aWtyNDVvYlV2ZGNzRDhwYWFaaDVLYjdsU0tGczdZMS1IRzlMYXA4Ym9aU1BlVmZmWUluU3c2ZTFKNmFuVVVBdEdzMXBoX2k4STQwWFUyM0NuRQ?oc=5",
+        "published_at": "2026-04-23T09:28:31+00:00"
+      },
+      {
+        "source": "Google News Markets",
+        "title": "Boston has one of the best public markets in the country, says USA TODAY - The Patriot Ledger",
+        "summary": "Boston has one of the best public markets in the country, says USA TODAY The Patriot Ledger",
+        "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPV2tBR04xLVowc1ZoMDFqWnNSX3NjRVZWcUNoYmh5Vzc5VUg0d1diOVB6U2ZiUjFxWDAzSV9Jb1NfTFY5RnhQWmVMb3haNWpENENRR3hBT01MUzZHSHUxa2JWUmNLVWdJMkduRWtEeEt6aUx3ZFFlb0p6RUllTkFORExGR2oySDNoVEdhcHJHaVkwWXhQVzJIV0lFS2pMR0lLTWZiWHI4WTdKZGFidjFfRzRpeGtoSUdVT1dUYWkweGxnX0JXYVZveDBR?oc=5",
+        "published_at": "2026-04-23T09:10:00+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Visa and TikTok launch ‘creator card’ to support entrepreneurs - Yahoo Finance UK",
-        "summary": "Visa and TikTok launch ‘creator card’ to support entrepreneurs Yahoo Finance UK",
-        "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNMlkwWmpxVXJ3TzFNdmh4NHpjaUItSGJ4ZHdBcGhoTkhCTjVQeFMxRk5fV1EtaV9tZUQ5T3JwZVU4VUVFLWU5X1BwcjNIMlJfZnRTWlZvcVNMLVh1V3hDQWpkUVh3TDNfcE1naWd5aUVoRHJkb2d3SXk0QVlkVE5ZOEFmb3haN0E?oc=5",
-        "published_at": "2026-04-20T23:01:00+00:00"
+        "title": "Eurozone business activity falls on Mideast war - Yahoo Finance UK",
+        "summary": "Eurozone business activity falls on Mideast war Yahoo Finance UK",
+        "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOWnE4cEtmekx1ZWU2cWVQcHl6azBCRjVJNFRNQUY2N0h4aFFTYXZDRnhnZTM5QWlaWDdBMEpTbm1ENzdmZjFsaEZxajBHaXJBT0tLc1h5ejFIdmd6aHZ0OVlDQjR6QzdwX0lwdVAtT25zbTJiTDlPY1BVUHp0Vjd2NHZLSWotTGR6eUZnNkVtcElBZlU?oc=5",
+        "published_at": "2026-04-23T09:05:21+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "TikTok content creators to benefit from new feature to help grow their businesses - Yahoo Finance UK",
-        "summary": "TikTok content creators to benefit from new feature to help grow their businesses Yahoo Finance UK",
-        "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQdmIwNkhOQURFbUM5QXB1b3BWQ1M1NVVyS3Nic1RlcE0yMkNZM01WUUVZaERVbG56ZHZESVM2Y0lScUhMOVdSWlNvNUx6X280elpJUmNpRTB2MUhudmdjTFh2STE5aXdjMkJ0UlFERXBRNm1IaUxRLWt4c2lnZHNobEttRGx4eWpGWVFFRl9PZkVHQQ?oc=5",
-        "published_at": "2026-04-20T23:01:00+00:00"
+        "title": "Digital Trade Finance Platforms: Revolutionizing Cross Border Transactions for SMEs - Global Trade Magazine",
+        "summary": "Digital Trade Finance Platforms: Revolutionizing Cross Border Transactions for SMEs Global Trade Magazine",
+        "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQRm5Va2hFenduSkNlS1N2WnpuRFVBMkFKYWk5dDdsTm5JcGoybHZOR0NYYzZFcjBSZ2hjaWRTM2x4RHlxRmtybFlUeE1kT1BWcXJDendCdjlHRTE1NlhSVDlEcGcwM3JQTXktNHVhalotbW0zVzRDMi1STEV0S3I1Tms3SWZqYjl1RkNEdGNKdlV3UVl5WF9lYVhzN1B0ampWOXhPbnRqUGVsSWZ3cER0dU5RUGQ?oc=5",
+        "published_at": "2026-04-23T09:03:28+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Fidelity spotlights the IRA quietly working for small firms - thestreet.com",
-        "summary": "Fidelity spotlights the IRA quietly working for small firms thestreet.com",
-        "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNVy1yS3VLUDhBNWNabk95dmZvdkFXXzlsTU4yZjZwYUgwUjBBRHVHRUpPNGNkSUJIX1FDZk1ybTNpeDZOM2ZlY0loejk3Q3VsYVRpSGwzR01hcXN1N3BkWjNKajVpNVppSVp0QWdWbmRQNm1Fcl9Ob0J2SFpkNkc0Y1gtZmxmWWFKZ191b2dJWnZLQ0xvS2FySElUUi1LTGc1NlppZg?oc=5",
-        "published_at": "2026-04-20T22:37:00+00:00"
+        "title": "RTA: The Fleet Success Company Launches AI-Enabled Sublet Invoice Capture, Reducing Invoice Entry Time by Up to 75% - Yahoo Finance",
+        "summary": "RTA: The Fleet Success Company Launches AI-Enabled Sublet Invoice Capture, Reducing Invoice Entry Time by Up to 75% Yahoo Finance",
+        "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOcXVNQkdBeUxKdm5uU2tRTTk5MndnSDBhRzlmR1VoZEtTcFBhaE5jMmlGZmRXMlFpeW13UURjWHV1U2QxT3dmR29YWjktd204RkFsZVhmVlBiTlRsd1RzWnlVMWtsMDViRnZrVkRVQkppa2lSb29LekRVSWhCa2JZcVF1MzVfNEtnZ051UjJkVVJ3SGUyUV9KZlh5R3VJc2xURUNXR0VB?oc=5",
+        "published_at": "2026-04-23T09:00:00+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Rio Tinto releases first quarter 2026 production results - Yahoo Finance UK",
-        "summary": "Rio Tinto releases first quarter 2026 production results Yahoo Finance UK",
-        "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPbVNETmZhME0xaVVNQkVRZk8tZWl1TEVXN05peGtIM2paUXVtaGx2YU1QemdYaWladmswcl9NVVZZVHRBSmlqc2J6c0YtQ0hkaGdTVnNYUEtkTEhBbGRVaUk4UFNoS0R3WlNXUzFOcGxNS0RsdmthSF96VDlKOUJibkctWkFBS2xG?oc=5",
-        "published_at": "2026-04-20T22:24:00+00:00"
+        "title": "JB Financial posts 3.2% rise in Q1 net profit with $116M, short of projections - Korea JoongAng Daily",
+        "summary": "JB Financial posts 3.2% rise in Q1 net profit with $116M, short of projections Korea JoongAng Daily",
+        "link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxQb0JmdWlTOHRWWjlRdUpVRUpXc01fbl8yR3lyMV91UkVTUi1pME5YNG5IbEZMQTFVaW5ReVlBOHI3QXdfMGkxWXJYUWJsX05ld3hYVmdZSnJqY1VCczNOZTdvUDhiN3ZES2QweWNFWFpYV3gyeWNEZ0FSRW1jelh5cl9wanFJWUJNeE13T0RtT21CdkRnUUVWOWl5UnIzWDdQbXVsMi1oMVl0TGpLakY1UWpadHRKUU04bVZfcVFuQUNPckk0aG9NUmpodVlsTmtzT1RVanQ4MExyVHd2am1ScTI0M3pHR2l5?oc=5",
+        "published_at": "2026-04-23T08:47:05+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Rich Products Launches First Responsible Business Report, Reflecting a Long-standing, Values-Driven Approach to Responsible Growth - Yahoo Finance",
-        "summary": "Rich Products Launches First Responsible Business Report, Reflecting a Long-standing, Values-Driven Approach to Responsible Growth Yahoo Finance",
-        "link": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOdHRWcy12QjBHTG5Nb3FtVjZZalc4ZzcxQm5nY2tiT282cndaLUJMR0F0VHJFZ3ZTVTRCN0E1WnZPYV84ZW5OTWRfTFFvYXlmYXlnTk9aTWptRGo4RGk5UnBPSHhSZk95T3g1YWV4M1N5ODhQci1uMGtLTU1MUkU4UEF5WWM2R3hicW1kYS1fME9lOWtqd0J1RmNhQ19EQzhzV01GeHVjY0tuLUdSM0E?oc=5",
-        "published_at": "2026-04-20T22:04:00+00:00"
+        "title": "Jefferies Sees International Business Machines Corporation (IBM) Upside, Trims Price Target on Valuation Ahead of Earnings - Yahoo Finance",
+        "summary": "Jefferies Sees International Business Machines Corporation (IBM) Upside, Trims Price Target on Valuation Ahead of Earnings Yahoo Finance",
+        "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOLWZNeTJGa3lYRW5iM0ZtTWRUVF9zN0ZCUmJpd1ZGVlVYSkZON1BneWhmWTNCeTJfUkhNdjdEZkZIbXFGQmhqcFQtcEkyTmlRMklOTnFoNks0ZG84cl9ONF9RcTFRUTlXcUoyRllJdzVoQTNWNFFzOFNQRW1qWEVBdFNVc19mejVvYTgyYjE0VTF5YTY1TUt6dVpza1IxN0E2cFkyWkR0SFpKeEFsRmZoNQ?oc=5",
+        "published_at": "2026-04-23T08:40:32+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Alpha Cognition Strengthens Its Board of Directors with Appointment of Bethany Sensenig - Yahoo Finance",
-        "summary": "Alpha Cognition Strengthens Its Board of Directors with Appointment of Bethany Sensenig Yahoo Finance",
-        "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNV05kMDVLNWNsbi1Wa1E0SUVQQ3BTVG5mc0o4TTRwcW92T1pBODZKdGtadDRCVWY4NHpBaFJRNU1CMVNOZGJ0WWstUDJWVlpfOW82R203MURWQ0l6S2VqVVA1SU4tNE1vSGs2SzdacEdPQ3BtSmZhT0NyM0VaYmZrQmY5Z0dMWnFfck5zdHgwOWs0ZmJEbXFiWTB6WmVJYjJNV0VNMkxqd0ZPQ0h1ZTZRRlJ3?oc=5",
-        "published_at": "2026-04-20T21:00:00+00:00"
+        "title": "From service to global markets: UKEF partners with Finance for Forces to support veteran-led exporters - GOV.UK",
+        "summary": "From service to global markets: UKEF partners with Finance for Forces to support veteran-led exporters GOV.UK",
+        "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQX3QxNjM2LUVnWFJuWnlfOGtyQktySWdJQ2ZTNHQtUzNndTJfa2V2SmhfbndVTGxYR0E2QVNITDhZWGlYbkdqdWpwSXhITFJESE1MclBtVTdOVE52OFNFX0RPOHFWcF8tUHpENjhkcVRVZFhIbi0wTXpjMFNzMEQ5UXJjNjBpNlpWRElhVEY2Zmh5ZUVKczFVTXllYjdFNFFSZFdGMXg4VGVOOG5Dak15azZXQ2VSZzBDNlRERTR4WC04MGIxZ3N3OXNiOUE1SURJTEE?oc=5",
+        "published_at": "2026-04-23T08:33:06+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Tariff refunds are coming for US businesses: 3 things to know - Yahoo Finance",
-        "summary": "Tariff refunds are coming for US businesses: 3 things to know Yahoo Finance",
-        "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOT2RSMldGNWdjWTVPREIzb0ExbG1yeGdzODBQUTZDbmcxQ1lDbE0wSHB2U3FFam53eElxUkh2QTNNdXRnZndpNHctNjN1NWtOZzVELURzcWh2MGRYREZ1Y0ktX2U1c05NQkQtamQ4eFZwSUtmODZIal9neF9Yc3pYd19EVVR2cXhRelpfT1lvLThYYXQ2R25rUDd0Qld3LWk0Qzd0Q0U5SHdPVjA?oc=5",
-        "published_at": "2026-04-20T20:09:34+00:00"
-      },
-      {
-        "source": "CNBC Finance",
-        "title": "AST SpaceMobile shares drop after its satellite is placed in wrong orbit by Bezos' Blue Origin",
-        "summary": "Blue Origin acknowledged the satellite was placed in the wrong orbit, but has not commented since it was deemed lost.",
-        "link": "https://www.cnbc.com/2026/04/20/ast-falls-after-bezos-blue-origin-places-satellite-in-wrong-orbit.html",
-        "published_at": "2026-04-20T20:01:02+00:00"
+        "title": "Yes, retail investment needs a boost – but ‘Savvy Squirrel’ looks too tame - The Guardian",
+        "summary": "Yes, retail investment needs a boost – but ‘Savvy Squirrel’ looks too tame The Guardian",
+        "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNMmFWS0MyY3JhNll5RHB2U2hfUEdrTWUtMFplQXhhaTYtX3dsRHBXLWI2VjBvcHRnekZ6cWJLWkdtYlhpMFM1Ym1LZFFkR0lRU1hxUEx1OG5VRlEtZUVqblk5U1IyVVQ4NXZQUmxKSUwtMlhucV9lLWpBbDlDNXNndlNYbVBKdkVQQUFqRXpyNmVMa3NKeWZGaHZGVHVIc2QxRlFKZ0hzeVhPTVBwU2lzcE04bGJURXduV3FJallxR2YySVh1MVRvVUxfQndFb1NVR3liTHFHZ0Z6Zw?oc=5",
+        "published_at": "2026-04-23T08:28:00+00:00"
       }
     ]
   },
   "prediction": {
-    "alignment_score": 89.76,
-    "confidence": 0.9,
-    "sentiment_prediction": 50.0,
+    "alignment_score": 57.6,
+    "confidence": 0.46,
+    "sentiment_prediction": 61.76,
     "trading_recommendation": "Hold",
-    "reasoning": "Tag 22 (Meisterzahl: Baumeister der Zukunft). historisch korreliert Tag 11 am stärksten mit einem Sentiment von 50.0. Krypto und News verstärken das Setup um 4.8 Punkte. der aktuelle Markt-Trend ist positiv. BTC und ETH liefern zusätzlichen Takt für das Setup.",
+    "reasoning": "Tag 11 (Meisterzahl: Spirituelle Erleuchtung, Vision). historisch korreliert Tag 11 am stärksten mit einem Sentiment von 50.0. Krypto und News dämpfen das Setup um 3.4 Punkte. der aktuelle Markt-Trend ist positiv. BTC und ETH liefern zusätzlichen Takt für das Setup.",
     "alignment_breakdown": {
-      "base_alignment_score": 85.0,
-      "crypto_modifier": 3.65,
-      "news_modifier": 0.49,
+      "base_alignment_score": 61.02,
+      "crypto_modifier": -2.22,
+      "news_modifier": -0.76,
       "day_multiplier": 1.15,
-      "total_modifier": 4.76,
-      "final_alignment_score": 89.76
+      "total_modifier": -3.42,
+      "final_alignment_score": 57.6
     },
-    "oracle_accuracy": 95.95
+    "oracle_accuracy": 94.67
   },
   "correlation_summary": {
     "analysis_period_days": 90,
     "strongest_correlation": {
       "day_number": 11,
-      "alignment_score": 63.89,
+      "alignment_score": 61.02,
       "avg_sentiment": 50.0
     },
     "weakest_correlation": {
       "day_number": 5,
-      "alignment_score": 54.12,
+      "alignment_score": 51.91,
       "avg_sentiment": 50.0
     },
     "overall_trend": "weak_or_no_correlation",
-    "statistical_significance": "high"
+    "statistical_significance": "medium"
   },
   "backtesting": {
-    "accuracy_pct": 95.95,
-    "total_predictions": 75,
-    "evaluated_predictions": 74,
+    "accuracy_pct": 94.67,
+    "total_predictions": 77,
+    "evaluated_predictions": 75,
     "correct_predictions": 71,
-    "pending_predictions": 1,
+    "pending_predictions": 2,
     "latest_result": {
-      "generated_at": "2026-04-20T23:01:05.618034+00:00",
-      "target_date": "21.04.2026",
+      "generated_at": "2026-04-22T19:55:51.644829+00:00",
+      "target_date": "23.04.2026",
       "recommendation": "Hold",
-      "alignment_score": 61.96,
-      "confidence": 0.62,
-      "sentiment_prediction": 63.2,
+      "alignment_score": 59.11,
+      "confidence": 0.59,
+      "sentiment_prediction": 59.04,
       "oracle_version": "1.1.0",
-      "evaluated_at": "2026-04-21T01:01:07.576899+00:00",
+      "evaluated_at": "2026-04-23T11:03:21.326242+00:00",
       "was_correct": false,
-      "actual_sentiment": 62.0,
-      "previous_sentiment": 85.0,
-      "sentiment_delta": -23.0,
+      "actual_sentiment": 50.0,
+      "previous_sentiment": 62.0,
+      "sentiment_delta": -12.0,
       "actual_trend": "falling"
     }
   }

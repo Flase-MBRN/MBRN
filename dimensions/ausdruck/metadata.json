@@ -1,0 +1,18 @@
+{
+  "id": "ausdruck",
+  "publicLabel": "Ausdruck",
+  "description": "Kreativen Output, Schreiben, Content-Erstellung und das Erschaffen von Dingen fokussieren.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os",
+    "meta_generator"
+  ],
+  "defaultApp": null,
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 50
+  }
+}

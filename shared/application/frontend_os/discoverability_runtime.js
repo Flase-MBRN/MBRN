@@ -1,5 +1,6 @@
 import { APP_MANIFEST } from '../../core/registries/app_manifest.js';
 import { DIMENSION_REGISTRY, getDimensionById } from '../../core/registries/dimension_registry.js';
+import { TOPIC_AREA_REGISTRY, getTopicAreasByDimensionId } from '../../core/registries/topic_area_registry.js';
 import {
   buildDimensionBlueprint,
   buildSurfaceBlueprint
@@ -9,7 +10,7 @@ import {
   buildSurfaceCopyBundle
 } from '../../../pillars/meta_generator/content/index.js';
 
-const FRONTEND_OS_ENTRY_DIMENSION_ID = 'pattern';
+const FRONTEND_OS_ENTRY_DIMENSION_ID = 'muster';
 
 const FRONTEND_OS_SYSTEM_SURFACES = Object.freeze([
   { id: 'home', label: 'Start', route: 'index.html', type: 'system' },
@@ -39,6 +40,8 @@ function buildAppSurfaceEntry(app) {
     route: app.route,
     type: 'app',
     dimensionId: app.dimensionId,
+    topicAreaId: app.topicAreaId || null,
+    surfaceKind: app.surfaceKind || 'app',
     status: app.status
   };
 }
@@ -70,6 +73,7 @@ function getCoreEntrySurface() {
 export function getDimensionSurfaceModel(dimensionId) {
   const dimension = getDimensionById(dimensionId);
   if (!dimension) return null;
+
   const dimensionBlueprint = buildDimensionBlueprint(dimensionId);
   const dimensionContent = buildDimensionContentBundle(dimensionId);
 
@@ -81,11 +85,20 @@ export function getDimensionSurfaceModel(dimensionId) {
       route: app.route,
       icon: app.icon,
       status: app.status,
+      topicAreaId: app.topicAreaId || null,
+      surfaceKind: app.surfaceKind || 'app',
       copy: buildSurfaceCopyBundle(app.id),
       blueprint: buildSurfaceBlueprint(app.id),
       includeInNavigation: Boolean(app.surfaceFlags?.includeInNavigation),
       includeInDashboard: Boolean(app.surfaceFlags?.includeInDashboard)
     }));
+
+  const topicAreas = getTopicAreasByDimensionId(dimensionId).map((topicArea) => ({
+    ...topicArea,
+    apps: apps.filter((app) => app.topicAreaId === topicArea.id)
+  }));
+
+  const standaloneApps = apps.filter((app) => !app.topicAreaId);
 
   return {
     id: dimension.id,
@@ -94,6 +107,8 @@ export function getDimensionSurfaceModel(dimensionId) {
     content: dimensionContent,
     blueprint: dimensionBlueprint,
     defaultApp: dimension.defaultApp,
+    topicAreas,
+    standaloneApps,
     apps,
     visibleApps: apps.filter((app) => app.includeInNavigation || app.includeInDashboard)
   };
@@ -163,6 +178,13 @@ export function getFrontendSurfaceCatalog() {
   return {
     systemSurfaces: getFrontendOsSystemSurfaces(),
     appSurfaces: APP_MANIFEST.map((app) => buildAppSurfaceEntry(app)),
+    topicAreas: TOPIC_AREA_REGISTRY.map((topicArea) => ({
+      id: topicArea.id,
+      label: topicArea.publicLabel,
+      type: 'topic_area',
+      dimensionId: topicArea.dimensionId,
+      defaultSurfaceId: topicArea.defaultSurfaceId
+    })),
     dimensionViews: DIMENSION_REGISTRY.map((dimension) => ({
       id: dimension.id,
       label: dimension.publicLabel,

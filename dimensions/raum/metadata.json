@@ -1,0 +1,17 @@
+{
+  "id": "raum",
+  "publicLabel": "Raum",
+  "description": "Physisches und digitales Cockpit von Schreibtisch bis Server-Umgebung als Dimension fuehren.",
+  "accessRules": {
+    "tier": 0
+  },
+  "pillarDependencies": [
+    "frontend_os"
+  ],
+  "defaultApp": null,
+  "surfaceFlags": {
+    "includeInNavigation": false,
+    "includeInDashboard": false,
+    "navigationOrder": 90
+  }
+}

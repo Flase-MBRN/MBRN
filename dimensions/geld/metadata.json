@@ -1,16 +1,16 @@
 {
-  "id": "pattern",
-  "publicLabel": "Muster",
-  "description": "Numerologie, Profile und wiederkehrende Signaturen.",
+  "id": "geld",
+  "publicLabel": "Geld",
+  "description": "Einnahmen, Cashflow, Investments und strategischen Vermoegensaufbau fuehrbar machen.",
   "accessRules": {
     "tier": 0
   },
   "pillarDependencies": [
     "frontend_os",
-    "meta_generator",
-    "oracle"
+    "oracle",
+    "monetization"
   ],
-  "defaultApp": "numerology",
+  "defaultApp": "finance",
   "surfaceFlags": {
     "includeInNavigation": true,
     "includeInDashboard": true,
