@@ -60,6 +60,33 @@ export const supabaseBridge = {
       : createBridgeSuccess('supabase.system_status', data);
   },
 
+  async getGoldEnrichmentItems({ limit = 12, sourceFamily = null } = {}) {
+    const client = getSupabaseClient();
+    if (!client || !this.isOnline) {
+      return createBridgeFailure('supabase.gold_enrichment.list', 'Offline', { offline: true });
+    }
+
+    const sessionResult = await this.getSession();
+    if (!sessionResult.success || !sessionResult.data?.user) {
+      return createBridgeFailure('supabase.gold_enrichment.list', 'Auth required', { code: 'auth_required' });
+    }
+
+    let query = client
+      .from('gold_dashboard_items')
+      .select('id,source_family,source_name,model_name,analysis_version,summary,score,confidence,tags,recommended_action,created_at')
+      .order('created_at', { ascending: false })
+      .limit(Math.max(1, Math.min(Number(limit) || 12, 50)));
+
+    if (sourceFamily) {
+      query = query.eq('source_family', sourceFamily);
+    }
+
+    const { data, error } = await query;
+    return error
+      ? createBridgeFailure('supabase.gold_enrichment.list', error.message)
+      : createBridgeSuccess('supabase.gold_enrichment.list', Array.isArray(data) ? data : []);
+  },
+
   async getLatestReactorHeartbeat() {
     return this.getSystemStatusPing();
   },

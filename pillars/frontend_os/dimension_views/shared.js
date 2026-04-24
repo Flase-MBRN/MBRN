@@ -121,14 +121,16 @@ export function renderDimensionViewCard(container, dimensionId, options = {}) {
 
     model.topicAreas.forEach((topicArea) => {
       const targetApp = topicArea.apps.find((app) => app.id === topicArea.defaultSurfaceId) || topicArea.apps[0] || null;
+      const topicSurfaceId = targetApp?.id || topicArea.defaultSurfaceId || topicArea.id;
+      const topicRoute = targetApp?.route || topicArea.route || null;
 
       createSurfaceCard(topicAreaGrid, {
         title: topicArea.publicLabel,
         body: topicArea.description,
-        meta: targetApp ? `Oeffnet: ${targetApp.label}` : 'In Vorbereitung',
-        surfaceId: targetApp?.id || null,
-        route: targetApp?.route || null,
-        interactive: Boolean(targetApp),
+        meta: targetApp ? `Oeffnet: ${targetApp.label}` : (topicRoute ? 'Oeffnet Topic-Surface' : 'In Vorbereitung'),
+        surfaceId: topicSurfaceId,
+        route: topicRoute,
+        interactive: Boolean(topicRoute),
         basePath,
         onNavigate
       });

@@ -1,7 +1,7 @@
 {
   "version": "v4.0",
   "release": "FOUNDATION",
-  "last_updated": "2026-04-23T00:00:00Z",
+  "last_updated": "2026-04-24T00:00:00Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -60,10 +60,10 @@
       "since": "v3.0"
     },
     "local_llm": {
-      "state": "reserved",
-      "maturity": "none",
+      "state": "active",
+      "maturity": "partial",
       "since": "v3.1",
-      "note": "Reserved integration target only. No active local LLM bridge runtime is implemented."
+      "note": "Active local LLM bridge for Week-2 enrichment. Uses local Ollama-backed structured JSON analysis and a separate gold persistence layer."
     },
     "external_apis": {
       "state": "reserved",
@@ -130,8 +130,8 @@
   },
   "topic_areas": {
     "oracle_signal": {
-      "state": "provisional",
-      "maturity": "partial",
+      "state": "active",
+      "maturity": "implemented",
       "dimension": "geld",
       "primary_app": null,
       "surface_kind": "site"
@@ -215,6 +215,27 @@
       "owner_domain": "oracle",
       "note": "Implemented generic Week-1 raw ingestion foundation for markets and news. Persists generic raw batches via the raw-ingest Supabase edge function and raw_ingest_* tables."
     },
+    "local_llm_enrichment_worker": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/local_llm_enrichment_worker.py",
+      "owner_domain": "oracle",
+      "note": "Implemented Week-2 local enrichment loop. Claims pending raw items, validates structured local LLM output, and persists gold-layer analysis records."
+    },
+    "day_zero_autopilot": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/day_zero_autopilot.ps1",
+      "owner_domain": "oracle",
+      "note": "Implemented Week-4 local Windows autopilot. Runs raw collection first, then local LLM enrichment, with Startup-folder shortcut setup and per-run logging. Executes once per Windows login. No Stripe, paywall, premium gating, or frontend commerce changes are part of this system."
+    },
+    "gold_oracle_signal_surface": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "dimensions/geld/oracle_signal/index.html",
+      "owner_domain": "frontend_os",
+      "note": "Implemented Week-3 secure frontend surface for authenticated reads from the gold_dashboard_items view. Lives under geld -> oracle_signal, not as a full dashboard widget."
+    },
     "sentinel_daemon": {
       "state": "internal",
       "maturity": "implemented",
@@ -242,7 +263,7 @@
       "state": "active",
       "maturity": "partial",
       "document": "docs/roadmaps/2026-04_mbrn_autonomy_machine.md",
-      "note": "Approved execution roadmap for autonomous ingestion, local enrichment, secure frontend rendering, and autopilot monetization. This track defines direction and sequencing, not blanket implemented state.",
+      "note": "Approved execution roadmap for autonomous ingestion, local enrichment, secure frontend rendering, and local autopilot automation. This track defines direction and sequencing, not blanket implemented state.",
       "phases": {
         "week_1_data_pipeline": {
           "state": "active",
@@ -258,8 +279,8 @@
           "note": "Generic raw-data foundation now exists via raw_ingest_foundation, raw-ingest edge ingestion, and raw_ingest_* Supabase tables. Scheduler orchestration remains outside Week 1 scope."
         },
         "week_2_local_enrichment": {
-          "state": "provisional",
-          "maturity": "none",
+          "state": "active",
+          "maturity": "implemented",
           "owner_domains": [
             "oracle"
           ],
@@ -267,11 +288,11 @@
             "bridges/local_llm/",
             "scripts/pipelines/"
           ],
-          "note": "Direction approved. No canonical active local_llm bridge runtime yet."
+          "note": "Canonical local enrichment layer exists via the active local_llm bridge, raw-item processing states, and a separate gold enrichment table."
         },
         "week_3_secure_frontend": {
           "state": "active",
-          "maturity": "partial",
+          "maturity": "implemented",
           "owner_domains": [
             "frontend_os",
             "monetization"
@@ -284,21 +305,18 @@
             "pillars/frontend_os/",
             "supabase/migrations/"
           ],
-          "note": "Auth and runtime surfaces already exist. RLS and dashboard consumption remain an ongoing hardening track."
+          "note": "Gold data is exposed through the authenticated gold_dashboard_items view and rendered under geld -> oracle_signal. Dashboard remains a compact cockpit entrypoint only."
         },
         "week_4_day_zero": {
           "state": "active",
-          "maturity": "partial",
+          "maturity": "implemented",
           "owner_domains": [
-            "monetization",
             "oracle"
           ],
           "primary_locations": [
-            "commerce/",
-            "supabase/functions/",
             "scripts/pipelines/"
           ],
-          "note": "Stripe and entitlement primitives exist. Premium gating, scheduler hardening, and full autopilot remain incomplete."
+          "note": "Day Zero is implemented as pure local automation. The Windows autopilot runs the Week-1 collector and then the Week-2 local LLM worker once per Windows login through a Startup-folder shortcut. Stripe, premium gating, paywalls, and frontend commerce remain intentionally untouched."
         }
       }
     }

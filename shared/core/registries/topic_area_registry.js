@@ -4,7 +4,8 @@ export const TOPIC_AREA_REGISTRY = Object.freeze([
     dimensionId: 'geld',
     publicLabel: 'Oracle & Signal',
     description: 'Markt-, Sentiment- und Oracle-Signale als Geld-Unterthema fuehren.',
-    defaultSurfaceId: null
+    defaultSurfaceId: 'oracle_signal',
+    route: 'dimensions/geld/oracle_signal/index.html'
   },
   {
     id: 'numerologie',

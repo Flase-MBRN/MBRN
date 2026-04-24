@@ -1,26 +1,18 @@
 > **Privater interner Maschinenraum:** Nicht als globale Produktwahrheit lesen.
 
-# MBRN Data Arbitrage — Pillar 3 Pipelines
+# MBRN Data Arbitrage - Pillar 3 Pipelines
 
 > **Location:** `scripts/pipelines/`
-> **Purpose:** lokale Datensammlung und Anreicherung für Dashboard, Oracle und Supabase
+> **Purpose:** lokale Datensammlung und Veredelung fuer Dashboard, Oracle und Supabase
 > **Compliance:** keine personenbezogenen Daten, nur strukturelle Markt- und News-Signale
-
----
 
 ## Quick Start
 
 ```bash
 pip install -r requirements.txt
-python market_sentiment_fetcher.py
+python raw_market_news_collector.py
+python local_llm_enrichment_worker.py
 ```
-
-Optional für Secrets:
-
-- Windows Credential Manager via `pywin32`
-- `keyring` als plattformübergreifender Fallback
-
----
 
 ## Aktive Pipelines
 
@@ -28,95 +20,64 @@ Optional für Secrets:
 
 Generische Woche-1-Rohdaten-Foundation fuer `Markets + News`.
 
-**Ziel**
+- sammelt Markt- und Feed-Rohdaten
+- normalisiert Batch-Items fuer `raw-ingest`
+- schreibt nach `raw_ingest_runs` und `raw_ingest_items`
+- bleibt ein one-shot Lauf ohne Dauerprozess
 
-- freie Markt- und News-Quellen einsammeln
-- Rohdaten in generische Batch-Items normalisieren
-- an die Edge-Function `raw-ingest` senden
-- ohne lokalen Dauerprozess als one-shot Lauf funktionieren
+### `local_llm_enrichment_worker.py`
 
-**Supabase-Ziel**
+Generische Woche-2-Veredelung fuer die Raw-Gold-Trennung.
 
-- `raw_ingest_runs`
-- `raw_ingest_items`
-
-**Betriebsform**
-
-- ein Durchlauf pro Start
-- Exit Code `0` bei Erfolg
-- Exit Code `2` bei Teilfehlern
-- Exit Code `1` bei komplettem Fehlschlag
-
-**Wichtig**
-
-- keine Llama-/Ollama-Veredelung in dieser Pipeline
-- keine oeffentliche Frontend-Nutzung der Rohdaten
-- Dedupe laeuft ueber `source_name + source_item_id` oder `payload_hash`
+- liest `raw_ingest_items` mit `analysis_status = pending`
+- claimt Raw-Items einzeln fuer robuste Retries
+- nutzt die formale Bridge unter `bridges/local_llm/`
+- schreibt validierte Gold-Datensaetze nach `gold_enrichment_items`
+- markiert Raw-Status auf `completed` oder `failed`
 
 ### `market_sentiment_fetcher.py`
 
-Die Markt-Pipeline ist der operative Vertical Slice für Säule 3.
+Bestehender operativer Vertical Slice fuer Saeule 3.
 
-**Ticker**
+- bleibt parallel zur generischen Woche-1-/Woche-2-Foundation bestehen
+- ist kein Ersatz fuer die generische Bronze/Gold-Architektur
 
-- `SPY`
-- `QQQ`
-- `DIA`
-- `IWM`
-- `^VIX`
-- `BTC-USD`
-- `ETH-USD`
+### `day_zero_autopilot.ps1`
 
-**News-Quellen**
+Reiner Woche-4-Autopilot fuer lokalen Windows-Betrieb.
 
-- Reuters Business
-- Reuters World
-- CNBC Markets
-- CNBC Finance
-- Google News Markets
-- Google News Business
+- setzt das Working Directory auf `scripts/pipelines/`
+- nutzt `venv\Scripts\python.exe`, falls vorhanden, sonst globales `python`
+- prueft `.env`
+- startet zuerst `raw_market_news_collector.py`
+- startet danach `local_llm_enrichment_worker.py --limit <N>`, wenn der Collector mit `0` oder `2` endet
+- schreibt pro Lauf ein Log nach `scripts/pipelines/logs/`
 
-**Härtung**
+Manueller Lauf:
 
-- `fetch_url_with_retry()` mit rotierenden Headern und Retry-Logik
-- tolerantes Feed-Parsing über `parse_feed_items()`
-- `dirty_xml`-Fallback mit `BeautifulSoup` und `lxml`
-- `parse_strict_json_response()` für direkte und verrauschte Ollama-Ausgaben
-- `repair_json_with_ollama()` für einen einmaligen JSON-Reparaturversuch
-- neutrales Fallback-Payload, wenn Ollama oder Parsing scheitert
-
-**Output**
-
-- Verlauf nach `AI/models/data/market_sentiment_YYYYMMDD_HHMMSS.json`
-- Shared Mirror nach `shared/data/market_sentiment.json`
-- Supabase Payload mit stabiler Vertragsform
-
-**Top-Level-Felder im Shared Mirror**
-
-```json
-{
-  "timestamp_utc": "2026-04-19T18:36:03.380917+00:00",
-  "source": "market_sentiment_pipeline",
-  "sentiment_score": 85,
-  "sentiment_label": "Extreme Greed",
-  "confidence": 0.8,
-  "analysis": "Kurzbeschreibung der Lage",
-  "recommendation": "buy",
-  "crypto_bias": "neutral",
-  "news_bias": "bullish",
-  "news_impact": 0,
-  "key_theme": "growth",
-  "market_data": [],
-  "news_feed": [],
-  "mbrn_enriched": {}
-}
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/pipelines/day_zero_autopilot.ps1
 ```
+
+Windows-Startup-Verknuepfung installieren:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/pipelines/create_startup_shortcut.ps1
+```
+
+Das Setup legt `MBRN_Autopilot.lnk` direkt im Windows-Startup-Ordner an:
+
+```text
+C:\Users\Erik\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+```
+
+Der Autopilot laeuft genau einmal beim Windows-Login. Es gibt keinen 20-Minuten-Loop.
 
 ### `pipeline_utils.py`
 
-Gemeinsame Utilities für:
+Gemeinsame Utilities fuer:
 
-- `save_json_atomic()` für thread-sichere und prozesssichere JSON-Writes
+- `save_json_atomic()`
 - `SupabaseUplink`
 - `RetryHandler`
 - `CircuitBreaker`
@@ -124,73 +85,48 @@ Gemeinsame Utilities für:
 - `OllamaEnricher`
 - JSON-Hardening und Feed-Parsing
 
-`save_json_atomic()` ist der kanonische Schreibpfad für Runtime-Artefakte.
+## Supabase-Ziel
 
----
+Week 1 + Week 2 laufen jetzt ueber getrennte Schichten:
 
-## Abhängigkeiten
+- Bronze/Raw:
+  - `raw_ingest_runs`
+  - `raw_ingest_items`
+- Gold:
+  - `gold_enrichment_items`
 
-Aktiver Stand von `requirements.txt`:
-
-```txt
-requests>=2.31.0
-python-dotenv>=1.0.0
-pywin32>=306
-keyring>=24.0.0
-yfinance>=0.2.28
-beautifulsoup4>=4.12.3
-lxml>=5.3.0
-```
-
----
-
-## Datenfluss
-
-```text
-yfinance + RSS + Ollama
-        ↓
-market_sentiment_fetcher.py
-        ↓
-AI/models/data/market_sentiment_*.json
-        ↓
-shared/data/market_sentiment.json
-        ↓
-Supabase Edge Function / Oracle / Dashboard
-```
-
----
+Rohdaten bleiben intern. Woche 3 soll spaeter nur aus der Gold-Schicht lesen.
 
 ## Betriebsnotizen
 
-- Die Pipeline nutzt lokale Ollama-Verarbeitung auf der RX 7700 XT.
-- Reuters kann extern instabil sein; CNBC und Google News dienen als resiliente Gegenpfade.
-- Feed-Ausfälle sind isoliert. Ein defekter Feed darf den gesamten News-Zyklus nicht blockieren.
-- Die Persistenzform des Shared Mirrors bleibt bewusst rückwärtskompatibel.
+- `raw_market_news_collector.py`:
+  - Exit Code `0` bei Erfolg
+  - Exit Code `2` bei Teilfehlern
+  - Exit Code `1` bei komplettem Fehlschlag
+- `local_llm_enrichment_worker.py`:
+  - Exit Code `0` bei Erfolg
+  - Exit Code `2` bei Teilfehlern
+  - Exit Code `1` bei komplettem Fehlschlag
+- `day_zero_autopilot.ps1`:
+  - Exit Code `0` wenn Collector und LLM-Worker erfolgreich laufen
+  - Exit Code `2` wenn mindestens ein verwertbarer Teilschritt Teilfehler meldet
+  - Exit Code `1` bei hartem Setup-, Collector- oder LLM-Fehler
+- lokale Ollama-Verarbeitung bleibt GPU-geschuetzt ueber die vorhandenen Guards in `pipeline_utils.py`
+- Ollama muss vor oder kurz nach dem Windows-Login verfuegbar sein, wenn der LLM-Worker direkt Daten veredeln soll
 
----
+## Week-4-Grenze
 
-## Oracle-Kopplung
+Der Day-Zero-Autopilot veraendert keine Website- oder Commerce-Funktion.
 
-Das Oracle liest die von dieser Pipeline erzeugten Artefakte über `scripts/oracle/data_bridge.py`.
-
-Genutzte Signale:
-
-- `sentiment_score`
-- `recommendation`
-- `news_bias` / `news_signal`
-- `news_impact`
-- `headline_count`
-- BTC-/ETH-Snapshots und abgeleitete `crypto_sentiment`-Werte
-
-Die geplante Stunden-Orchestrierung läuft über den bestehenden Sentinel-Pfad:
-
-- `worker_registry.py` registriert den Oracle-Worker
-- `sentinel_daemon.py` kann Oracle und Pipeline-Worker im selben Scheduler-Takt dispatchen
-
----
+- kein Stripe-Checkout
+- keine Webhook-Aenderung
+- keine Paywall
+- kein Premium-Gating
+- keine Blur-Effekte
+- keine Aenderung an `gold_dashboard_items`
 
 ## Status
 
-**Pipeline-Version:** `1.1.x`
-**Status:** `operativ`
-**Nächste offene Ebene:** Scheduler-/Worker-Orchestrierung für einen belastbaren Stundenrhythmus außerhalb des Frontends
+**Pipeline-Version:** `1.2.x`
+**Status:** `operativ mit generischer Bronze/Gold-Foundation und lokalem Day-Zero-Autopilot`
+**Naechste offene Ebene:** Produktivhaertung ausserhalb der 4-Wochen-Foundation

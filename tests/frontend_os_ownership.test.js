@@ -22,6 +22,7 @@ const ALLOWED_NAV_IMPORTERS = new Set([
 ]);
 const ALLOWED_AUTH_IMPORTERS = new Set([
   'pillars/frontend_os/dimension_views/dimension_surface.js',
+  'pillars/frontend_os/dimension_views/oracle_signal_surface.js',
   'pillars/frontend_os/app_surfaces/chronos_surface.js',
   'pillars/frontend_os/app_surfaces/dashboard_surface.js',
   'pillars/frontend_os/app_surfaces/finance_surface.js',
@@ -94,6 +95,7 @@ describe('frontend_os ownership', () => {
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/app_surfaces/synergy_surface.js',
       'pillars/frontend_os/dimension_views/dimension_surface.js',
+      'pillars/frontend_os/dimension_views/oracle_signal_surface.js',
       'pillars/frontend_os/shell/render_landing.js',
       'pillars/frontend_os/shell/render_legal_page.js',
       'pillars/frontend_os/ui_states/auth_controller.js'

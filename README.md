@@ -50,10 +50,10 @@ Produktiv aktiv:
 
 - `bridges/supabase/`
 - `bridges/python/`
+- `bridges/local_llm/` als aktive Week-2-Struktur fuer lokale JSON-Veredelung
 
 Bewusst reserviert / nicht implementiert:
 
-- `bridges/local_llm/`
 - `bridges/external_apis/`
 
 ### Pillars
@@ -105,6 +105,10 @@ Der aktuelle Stand ist:
 - optionale `topic_areas` in Kanon und Runtime vorbereitet
 - bestehende Surfaces neu zugeordnet
 - Supabase-Referenzstruktur fuer Dimensions-Sync vorbereitet
+- generische Week-1-Rohdatenbasis implementiert
+- generische Week-2-Gold-Veredelung mit lokaler LLM-Bridge implementiert
+- Week-3-Gold-Anzeige unter `geld -> oracle_signal` implementiert; Dashboard bleibt nur Cockpit mit kompaktem Sprungpunkt
+- Week-4-Day-Zero-Autopilot implementiert; reine lokale Windows-Automatisierung ohne Stripe-, Paywall- oder Premium-Gating-Aenderungen
 
 ## Roadmaps
 

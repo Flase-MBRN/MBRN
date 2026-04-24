@@ -10,9 +10,11 @@ Diese Roadmap beschreibt den naechsten operativen Ausbaupfad fuer MBRN:
 - autonome Datensammlung
 - lokale Veredelung
 - abgesicherte Frontend-Ausgabe
-- Bezahlschranke und Scheduler
+- lokale Day-Zero-Automatisierung
 
 Sie gehoert bewusst **nicht** in den Root als neue Parallel-Wahrheit, sondern unter `docs/roadmaps/`, weil sie Richtung und Reihenfolge beschreibt, nicht den bereits erreichten Ist-Zustand.
+
+Kommerzielle Frontend-Elemente sind fuer diese Roadmap pausiert: keine Stripe-Checkouts, keine Paywalls, keine Blur-Effekte und kein Premium-Gating.
 
 ## Repo-Zuordnung
 
@@ -89,8 +91,8 @@ Ziel: Lokale Modell-Veredelung zieht Rohdaten aus Supabase, verarbeitet sie stru
 
 ### Kanon-Abgleich
 
-Aktuell ist `bridges.local_llm` noch `reserved` mit `maturity: none`.  
-Wenn diese Woche verbindlich gestartet wird, muss der Kanon mindestens auf `experimental` oder `active` nachgezogen werden. Solange das nicht geschieht, ist jede behauptete lokale LLM-Runtime Drift.
+`bridges.local_llm` und die Week-2-Veredelung sind jetzt kanonisch nachgezogen.
+Die weitere Aufgabe ist nicht mehr die Aktivierung, sondern die Härtung der Gold-Schicht fuer Woche 3.
 
 ## Woche 3: Das Schaufenster
 
@@ -101,7 +103,7 @@ Ziel: Veredelte Daten werden im Frontend angezeigt, abgesichert ueber Auth und R
 - `bridges/supabase/`
 - `shared/application/auth/`
 - `shared/application/frontend_os/`
-- `dashboard/`
+- `dimensions/geld/oracle_signal/`
 - `pillars/frontend_os/`
 - `supabase/migrations/`
 
@@ -113,51 +115,50 @@ Ziel: Veredelte Daten werden im Frontend angezeigt, abgesichert ueber Auth und R
    Policies in `supabase/migrations/`
 3. Daten-Abruf
    Runtime-Fassaden ueber `bridges/supabase/` und `shared/application/`
-4. Dashboard-Rendering
-   Vanilla-JS-Surfaces in `dashboard/` und `pillars/frontend_os/`
+4. Oracle-Signal-Rendering
+   Vanilla-JS-Surface unter `geld -> oracle_signal`; das Dashboard bleibt ein Cockpit mit kompaktem Sprungpunkt
 
 ### Kanon-Abgleich
 
-Teile hiervon sind bereits real:
+Week 3 ist jetzt kanonisch nachgezogen:
 
 - `shared/application/auth/` existiert
 - `bridges/supabase/api.js` enthaelt bereits Auth- und RLS-bezogene Laufwege
+- `supabase/migrations/18_gold_frontend_access.sql` definiert `gold_dashboard_items` als frontend-sichere View
+- `dimensions/geld/oracle_signal/index.html` ist der Arbeitsort fuer Gold-Signale
+- `dashboard/` bleibt Cockpit und rendert keine volle Gold-Datenflaeche
 
-Die Roadmap ist hier also kein Blank Slate, sondern ein Ausbau vorhandener Betriebszonen.
+Weitere Arbeit in Woche 3 ist Haertung, nicht grundsaetzliche Aktivierung.
 
-## Woche 4: Day-Zero-Vorbereitung
+## Woche 4: Day-Zero-Autopilot
 
-Ziel: Monetization, Gating und Scheduler werden produktionsnah vorbereitet.
+Ziel: Die Woche-1- und Woche-2-Pipeline laeuft lokal automatisiert und nachvollziehbar.
 
 ### Zielpfade
 
-- `commerce/`
-- `supabase/functions/stripe-checkout/`
-- `supabase/functions/stripe-webhook/`
 - `scripts/pipelines/`
-- optional Betrieb ueber Windows Task Scheduler oder spater externe Scheduler
+- Windows Startup-Ordner
 
 ### Konkrete Arbeit
 
-1. Stripe Testmodus
-   Checkout-Integration in `commerce/` und Frontend-Surfaces
-2. Webhook
-   Zahlungsbestaetigung und Statuswechsel in `supabase/functions/stripe-webhook/`
-3. Content-Gating
-   Premium-Grenzen im Frontend und in Read-Models
-4. Autopilot
-   taegliche Scheduler-Anbindung fuer Pipeline-Laeufe
+1. Day-Zero-Startskript
+   PowerShell-Laufweg fuer Collector und LLM-Worker
+2. Exit-Code-Orchestrierung
+   Collector-Exit `0` und `2` fuehren zum LLM-Worker, Exit `1` stoppt den Lauf
+3. Logging
+   pro Lauf ein Log unter `scripts/pipelines/logs/`
+4. Startup-Setup
+   Windows-Verknuepfung `MBRN_Autopilot.lnk` im Startup-Ordner, genau ein Lauf pro Windows-Login
 
 ### Kanon-Abgleich
 
-Auch hier ist bereits Substanz vorhanden:
+Week 4 ist jetzt als reine Automatisierung kanonisch nachgezogen:
 
-- `commerce/stripe/`
-- `supabase/functions/stripe-checkout/`
-- `supabase/functions/stripe-webhook/`
-- `scripts/pipelines/autostart_vibe.bat`
+- `scripts/pipelines/day_zero_autopilot.ps1`
+- `scripts/pipelines/create_startup_shortcut.ps1`
+- `execution_tracks.autonomy_machine.phases.week_4_day_zero` ist `implemented`
 
-Die Roadmap ist also in Woche 4 ebenfalls ein Ausbau- und Haertungspfad, nicht nullbasiger Start.
+Nicht Teil von Week 4: Stripe, Webhooks, Paywalls, Premium-Gating, Blur-Effekte oder Aenderungen an `gold_dashboard_items`.
 
 ## Kanon-Regel fuer diese Roadmap
 

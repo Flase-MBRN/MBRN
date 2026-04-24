@@ -115,6 +115,34 @@ Die Backend-Wahrheit fuer Dimensions wird ueber Referenztabellen vorbereitet:
 
 Supabase soll kanonische Dimensions- und Topic-Area-IDs spiegeln, statt freie Legacy-Werte weiterzutragen.
 
+## Lokale Veredelung
+
+Week 2 ist jetzt als eigene Bronze/Gold-Kette formalisiert:
+
+- `raw_ingest_items` bleibt die interne Rohdatenbasis
+- `gold_enrichment_items` ist die getrennte Gold-Schicht fuer veredelte LLM-Ergebnisse
+- `bridges/local_llm/` enthaelt den formalen lokalen Ollama-Bridge
+- `scripts/pipelines/local_llm_enrichment_worker.py` verarbeitet Raw-Items einzeln und robust
+
+## Gold-Frontend
+
+Week 3 rendert veredelte Gold-Daten nicht als neue Dashboard-Vollflaeche.
+
+- `gold_dashboard_items` ist die frontend-sichere Supabase-View fuer authentifizierte Reads
+- `raw_ingest_items` und `raw_ingest_runs` bleiben interne Rohdaten-Tabellen
+- `geld -> oracle_signal` ist der kanonische Arbeitsort fuer Markt-/News-Gold-Signale
+- das Dashboard darf nur einen kompakten Cockpit-Sprungpunkt zu `geld/oracle_signal` zeigen
+
+## Day-Zero-Autopilot
+
+Week 4 ist als reine lokale Automatisierung umgesetzt.
+
+- `scripts/pipelines/day_zero_autopilot.ps1` startet zuerst den Week-1-Collector
+- bei Collector-Exit `0` oder `2` startet danach der Week-2-LLM-Worker
+- `scripts/pipelines/create_startup_shortcut.ps1` legt `MBRN_Autopilot.lnk` im Windows-Startup-Ordner an
+- der Autopilot laeuft genau einmal beim Windows-Login, ohne 20-Minuten-Loop
+- Stripe, Webhooks, Paywalls, Premium-Gating und Frontend-Commerce bleiben fuer diese Woche unveraendert
+
 ## Roadmap-Ort
 
 Zukuenftige Ausbaupfade leben nicht als Ersatz-Wahrheit im Root, sondern unter `docs/roadmaps/`.

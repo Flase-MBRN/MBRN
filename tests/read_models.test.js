@@ -4,6 +4,9 @@ import {
 import {
   normalizeOracleDashboardSnapshot
 } from '../shared/application/read_models/oracle_dashboard.js';
+import {
+  normalizeGoldEnrichmentItem
+} from '../shared/application/read_models/gold_enrichment.js';
 
 describe('application read models', () => {
   test('normalizeMarketSentiment returns a stable UI-safe shape', () => {
@@ -75,5 +78,34 @@ describe('application read models', () => {
       headlineCount: 10
     }));
   });
-});
 
+  test('normalizeGoldEnrichmentItem returns a frontend-safe gold signal shape', () => {
+    const normalized = normalizeGoldEnrichmentItem({
+      id: 'gold-1',
+      source_family: 'markets_news',
+      source_name: 'raw_market_news_collector',
+      model_name: 'llama3.1:8b',
+      analysis_version: 'week2_v1',
+      summary: 'Risk-on tone across market headlines',
+      score: 72.4,
+      confidence: '0.81',
+      tags: ['Markets', 'Risk-On', ''],
+      recommended_action: 'Monitor',
+      created_at: '2026-04-24T10:00:00Z'
+    });
+
+    expect(normalized).toEqual({
+      id: 'gold-1',
+      sourceFamily: 'markets_news',
+      sourceName: 'raw_market_news_collector',
+      modelName: 'llama3.1:8b',
+      analysisVersion: 'week2_v1',
+      summary: 'Risk-on tone across market headlines',
+      score: 72,
+      confidence: 0.81,
+      tags: ['Markets', 'Risk-On'],
+      recommendedAction: 'monitor',
+      createdAt: '2026-04-24T10:00:00Z'
+    });
+  });
+});

@@ -1,14 +1,21 @@
 # /bridges/local_llm/
 
-**Status:** RESERVED / NOT IMPLEMENTED
+**Status:** ACTIVE / PARTIAL
 
-Dieser Ordner ist bewusst als technischer Integrationspunkt für spätere lokale LLM-Aufrufe reserviert.
+Diese Zone ist jetzt der formale Week-2-Bridge fuer lokale Ollama-/Llama-Veredelung.
 
-Aktuell gibt es hier keine aktive Runtime-Implementierung.  
-Die Markierung ist absichtlich und kein versehentlich leerer Ordner.
+Aktive Runtime-Inhalte:
 
-Aktive Wahrheit heute:
+- `bridge.py`
+  - stabiler Prompt fuer strukturierte JSON-Analyse
+  - Ollama-Request ueber lokalen Host/Port
+  - Strict-JSON-Parse plus Reparatur-Fallback
+  - normalisierte Ausgabe fuer die Gold-Schicht
+- `__init__.py`
+  - kanonischer Exportpunkt fuer Worker und spaetere Runtime-Konsumenten
 
-- keine lokale LLM-Bridge in Runtime
-- kein Fake-Adapter
-- spätere Implementierung erst bei echtem Integrationsbedarf
+Nicht behauptet wird:
+
+- dass bereits eine Frontend-Surface auf dieser Bridge liegt
+- dass Week 3 RLS-/Fetch-Pfade schon auf Gold-Daten umgestellt sind
+- dass jede spaetere Modellvariante schon formalisiert ist

@@ -3,19 +3,29 @@ import { renderAuth } from '../ui_states/auth_controller.js';
 import { injectLegalBlock } from '../shell/legal_blocks.js';
 import { renderSurfaceFlowRail } from '../shell/flow_rail.js';
 import { renderDimensionViewCard } from './shared.js';
+import { renderOracleSignalSurface } from './oracle_signal_surface.js';
 import { getDimensionSurfaceModel } from '../../../shared/application/frontend_os/discoverability_runtime.js';
 
-function resolveDimensionIdFromPath(pathname = window.location.pathname) {
+function resolveDimensionRouteFromPath(pathname = window.location.pathname) {
   const normalizedPath = String(pathname || '').replace(/^\/MBRN/, '');
-  const match = normalizedPath.match(/\/dimensions\/([^/]+)(?:\/index\.html)?$/);
-  return match?.[1] || null;
+  const topicMatch = normalizedPath.match(/\/dimensions\/([^/]+)\/([^/]+)(?:\/index\.html)?$/);
+  if (topicMatch) {
+    return { dimensionId: topicMatch[1], topicAreaId: topicMatch[2] };
+  }
+
+  const dimensionMatch = normalizedPath.match(/\/dimensions\/([^/]+)(?:\/index\.html)?$/);
+  return { dimensionId: dimensionMatch?.[1] || null, topicAreaId: null };
 }
 
-function renderDimensionSurfaceBody(dimensionId) {
+async function renderDimensionSurfaceBody(dimensionId, topicAreaId = null) {
   const model = getDimensionSurfaceModel(dimensionId);
   if (!model) {
     throw new Error(`Unknown dimension route: ${dimensionId}`);
   }
+
+  const topicArea = topicAreaId
+    ? model.topicAreas.find((item) => item.id === topicAreaId)
+    : null;
 
   const eyebrow = document.getElementById('dimension-eyebrow');
   const title = document.getElementById('dimension-title');
@@ -27,16 +37,28 @@ function renderDimensionSurfaceBody(dimensionId) {
   }
 
   if (eyebrow) {
-    eyebrow.textContent = model.content?.title || 'Dimension';
+    eyebrow.textContent = topicArea ? model.publicLabel : (model.content?.title || 'Dimension');
   }
   if (title) {
-    title.textContent = model.publicLabel.toUpperCase();
+    title.textContent = (topicArea?.publicLabel || model.publicLabel).toUpperCase();
   }
   if (subtitle) {
-    subtitle.textContent = model.description;
+    subtitle.textContent = topicArea?.description || model.description;
   }
 
-  document.title = `${model.publicLabel} - MBRN Hub`;
+  document.title = `${topicArea?.publicLabel || model.publicLabel} - MBRN Hub`;
+
+  if (topicAreaId === 'oracle_signal') {
+    await renderOracleSignalSurface(mount);
+    renderSurfaceFlowRail('dimension-flow-rail', topicAreaId);
+    injectLegalBlock('dimension-legal-mount', {
+      variant: 'sync',
+      basePath: getRepoRoot(),
+      includePolicyLinks: true,
+      compactLinks: true
+    });
+    return;
+  }
 
   renderDimensionViewCard(mount, dimensionId, {
     eyebrow: 'Dimensions-Hub',
@@ -54,13 +76,13 @@ function renderDimensionSurfaceBody(dimensionId) {
 
 export const dimensionSurface = {
   async init() {
-    const dimensionId = resolveDimensionIdFromPath();
+    const { dimensionId, topicAreaId } = resolveDimensionRouteFromPath();
 
     renderNavigation('nav-menu');
     nav.bindNavigation();
     nav.registerCurrentApp(this);
     await renderAuth.init();
-    renderDimensionSurfaceBody(dimensionId);
+    await renderDimensionSurfaceBody(dimensionId, topicAreaId);
   },
 
   destroy() {}
