@@ -84,6 +84,16 @@ SCOUT_CONFIG = {
             "llm-code-execution-loop",
             "autonomous-devops",
             "ai-orchestrator-core",
+            "crewai-tools",
+            "langgraph-agent",
+            "smolagents",
+            "pydantic-ai",
+            "mcp-client-implementation",
+            "local-llm-orchestration",
+            "ai-coding-assistant-local",
+            "self-improving-prompt",
+            "automated-trading-agent",
+            "resume-parser-llm",
         ],
         "created_within_days": 7,
         "per_page": 30,
@@ -414,8 +424,10 @@ def scan_github_trending() -> List[Dict[str, Any]]:
                 if isinstance(repo_id, int):
                     repos_by_id[repo_id] = repo
             log("OK", f"GitHub query complete: query='{query}' items={len(data.get('items', []))}")
+            time.sleep(10.0)  # Rate limit prevention (max 10 req/min for unauthenticated search)
         except Exception as exc:
             log("WARN", f"GitHub scan failed query='{query}': {exc}")
+            time.sleep(10.0)  # Rate limit prevention
     return sorted(repos_by_id.values(), key=lambda r: str(r.get("updated_at") or ""), reverse=True)
 
 

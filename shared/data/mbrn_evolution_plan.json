@@ -293,5 +293,43 @@
       "uniqueness_score": 90,
       "roi_rationale": "Moderate: Viable but not exceptional"
     }
+  },
+  {
+    "id": "evo_20260424_214058_1218420735",
+    "tool_name": "joshuasaunders/agent-team",
+    "category": "autonomy",
+    "roi_score": 80.0,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It significantly reduces human dependency in strategic research and analysis tasks by providing automated tools that can perform complex tasks previously handled by humans.",
+    "discovered_at": "2026-04-24T21:40:58.204278+00:00",
+    "repo_metadata": {
+      "id": 1218420735,
+      "url": "https://github.com/joshuasaunders/agent-team"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 70,
+      "uniqueness_score": 95,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_214127_1218945693",
+    "tool_name": "Excaliber9/a1-fx-zerosync-trader",
+    "category": "core_logic",
+    "roi_score": 81.5,
+    "synergy_point": "oracle",
+    "concrete_benefit": "It enhances the system's ability to dynamically adjust trading strategies based on market sentiment and structural changes.",
+    "discovered_at": "2026-04-24T21:41:27.080121+00:00",
+    "repo_metadata": {
+      "id": 1218945693,
+      "url": "https://github.com/Excaliber9/a1-fx-zerosync-trader"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 95,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
   }
 ]

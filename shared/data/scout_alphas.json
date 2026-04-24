@@ -476,6 +476,14 @@
       "roi": 80.5,
       "nexus_processed": true,
       "nexus_processed_at": "2026-04-24T21:18:06.006085+00:00"
+    },
+    {
+      "repo": "joshuasaunders/agent-team",
+      "roi": 80.0
+    },
+    {
+      "repo": "Excaliber9/a1-fx-zerosync-trader",
+      "roi": 81.5
     }
   ],
   "seen_repo_ids": [
@@ -517,6 +525,8 @@
     1213968527,
     1219132052,
     1215680149,
+    1220400794,
+    1218945693,
     1216306334,
     1215115938,
     1220205219,
