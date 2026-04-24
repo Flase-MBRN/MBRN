@@ -80,7 +80,7 @@ log = logging.getLogger("mbrn_nexus_bridge")
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-ROI_THRESHOLD = 90.0          # Only alphas above this enter the factory
+ROI_THRESHOLD = 80.0          # Only alphas above this enter the factory
 MAX_AGENT_RETRIES = 5         # Self-heal retries per alpha
 GITHUB_README_TIMEOUT = 20    # seconds
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -559,7 +559,7 @@ def run_nexus_sweep() -> List[FactoryResult]:
 # Infinite Nexus Loop (for overnight operation)
 # ---------------------------------------------------------------------------
 
-NEXUS_COOLDOWN_MINUTES = 15
+NEXUS_COOLDOWN_MINUTES = 5
 
 
 def run_infinite_nexus_loop() -> None:

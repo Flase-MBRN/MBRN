@@ -94,7 +94,7 @@ SCOUT_CONFIG = {
         "timeout_seconds": 15,
     },
     "infinite_loop": {
-        "cooldown_minutes": 15,
+        "cooldown_minutes": 5,
         "kill_switch_file": "STOP_SCOUT",
     },
     "roi_weights": {
@@ -103,7 +103,7 @@ SCOUT_CONFIG = {
         "uniqueness": 0.20,     # Prio 3: Market gap
     },
     "thresholds": {
-        "roi_score_min": 85,    # Hard filter: only > 85 passes
+        "roi_score_min": 80,    # Hard filter: only > 80 passes
         "alpha_vault_score_min": 87,
     },
     "persistence": {
