@@ -37,6 +37,8 @@ describe('day zero autopilot', () => {
     expect(source).toContain('$collectorExit -ne 0 -and $collectorExit -ne 2');
     expect(source).toContain('DAY_ZERO_LLM_LIMIT');
     expect(source).toContain('day_zero_autopilot_$RunStamp.log');
+    expect(source).toContain('"--infinite"');
+    expect(source).not.toContain('"--loop"');
     expect(source).toContain('exit 2');
     expect(source).toContain('exit 1');
   });

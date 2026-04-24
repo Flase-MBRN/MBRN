@@ -72,10 +72,11 @@
     }
   },
   "dimensions": {
-    "zeit": {
+    "time": {
       "state": "active",
       "maturity": "stable",
-      "primary_app": "chronos"
+      "primary_app": "chronos",
+      "note": "Renamed from 'zeit' to enforce English naming convention"
     },
     "geld": {
       "state": "active",
@@ -243,6 +244,20 @@
       "owner_domain": "oracle",
       "note": "Internal monitoring and automation daemon. Real and operative, but not part of the public product promise."
     },
+    "mbrn_horizon_scout": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_horizon_scout.py",
+      "owner_domain": "oracle",
+      "note": "Experimental R&D discovery scout. Searches GitHub, evaluates local LLM synergy, persists evolution-plan candidates, and writes high-ROI integration guides into the Alpha Vault."
+    },
+    "alpha_vault": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "shared/alphas/",
+      "owner_domain": "meta_generator",
+      "note": "Experimental one-click integration vault for Scout-discovered high-ROI alphas. Uses frontend, core_logic, and passive_income categories."
+    },
     "admin_entitlement_cli": {
       "state": "internal",
       "maturity": "implemented",
@@ -329,6 +344,7 @@
     "app_root": "apps/",
     "pipeline_root": "scripts/pipelines/",
     "shared_root": "shared/",
+    "alpha_vault_root": "shared/alphas/",
     "supabase_root": "supabase/",
     "dashboard_root": "dashboard/",
     "tests_root": "tests/",
@@ -345,5 +361,19 @@
     "architecture_role": "human-readable architecture explanation",
     "vision_role": "future-state direction only",
     "agent_rule_role": "behavioral enforcement for analysis and reporting"
+  },
+  "archived": {
+    "note": "Files moved to _archive/legacy_python/ during Ghost Cleanup v4.0",
+    "paths": [
+      "_archive/legacy_python/schema_validator.py",
+      "_archive/legacy_python/secure_key_manager.py",
+      "_archive/legacy_python/synergy_core_data.py",
+      "_archive/legacy_python/backfill_pipeline.py",
+      "_archive/legacy_python/correlation_analysis.py",
+      "_archive/legacy_python/ingestion_adapter.py",
+      "_archive/legacy_python/numerology_engine.py",
+      "_archive/legacy_python/prediction_pipeline.py"
+    ],
+    "reason": "Replaced by centralized pipeline_utils.py and LocalLLMBridge architecture"
   }
 }

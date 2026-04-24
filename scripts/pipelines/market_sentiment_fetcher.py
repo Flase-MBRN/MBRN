@@ -7,7 +7,7 @@ Responsibilities:
 1. Fetch market data from Yahoo Finance (yfinance)
 2. Extend coverage with crypto tickers
 3. Ingest free finance news via RSS
-4. Enrich with local Ollama LLM sentiment analysis
+4. Enrich with local Ollama LLM sentiment analysis via LocalLLMBridge
 5. Output structured JSON for dashboard and Supabase ingestion
 
 Hardware Optimized For: RX 7700 XT (local LLM inference via Ollama/Llama 3.1)
@@ -18,36 +18,53 @@ from __future__ import annotations
 import json
 import os
 import sys
-import urllib.error
-import urllib.request
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# =============================================================================
+# PATH HANDLING for Bridge Import (Phase 3 Migration)
+# =============================================================================
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
+from bridges.local_llm.bridge import LocalLLMBridge
+
+# =============================================================================
+# Local Pipeline Utils
+# =============================================================================
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PIPELINES_DIR = Path(__file__).resolve().parent
 if str(PIPELINES_DIR) not in sys.path:
     sys.path.append(str(PIPELINES_DIR))
 
 from pipeline_utils import (
+    MARKET_CONFIG,
+    RSS_CONFIG,
     classify_fetch_error,
+    classify_news_bias,
+    fetch_market_snapshot,
+    fetch_news_batch,
     fetch_url_with_retry,
+    get_news_impact_seed,
+    is_crypto_ticker,
     load_pipeline_env,
     log,
     parse_feed_items,
     parse_strict_json_response,
     repair_json_with_ollama,
+    safe_round,
     save_json_atomic,
 )
-from secure_key_manager import SecureKeyManager
 
 
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
 
-CONFIG = {
+PIPELINE_CONFIG = {
     "ollama": {
         "host": "localhost",
         "port": 11434,
@@ -55,57 +72,11 @@ CONFIG = {
         "temperature": 0.3,
         "timeout_seconds": 120,
     },
-    "data": {
+    "output": {
         "output_dir": PROJECT_ROOT / "AI" / "models" / "data",
         "dashboard_path": PROJECT_ROOT / "shared" / "data" / "market_sentiment.json",
         "filename_template": "market_sentiment_{timestamp}.json",
-        "tickers": ["SPY", "QQQ", "DIA", "IWM", "^VIX", "BTC-USD", "ETH-USD"],
-        "lookback_days": 5,
         "news_limit": 10,
-        "news_feeds": [
-            {
-                "source": "Reuters Business",
-                "url": "https://feeds.reuters.com/reuters/businessNews",
-                "parser_hint": "xml",
-                "timeout_seconds": 10,
-                "retries": 3,
-            },
-            {
-                "source": "Reuters World",
-                "url": "https://feeds.reuters.com/Reuters/worldNews",
-                "parser_hint": "xml",
-                "timeout_seconds": 10,
-                "retries": 3,
-            },
-            {
-                "source": "CNBC Markets",
-                "url": "https://www.cnbc.com/?format=rss",
-                "parser_hint": "dirty_xml",
-                "timeout_seconds": 8,
-                "retries": 2,
-            },
-            {
-                "source": "CNBC Finance",
-                "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
-                "parser_hint": "dirty_xml",
-                "timeout_seconds": 8,
-                "retries": 2,
-            },
-            {
-                "source": "Google News Markets",
-                "url": "https://news.google.com/rss/search?q=markets%20when:7d&hl=en-US&gl=US&ceid=US:en",
-                "parser_hint": "dirty_xml",
-                "timeout_seconds": 8,
-                "retries": 2,
-            },
-            {
-                "source": "Google News Business",
-                "url": "https://news.google.com/rss/search?q=finance%20business%20when:7d&hl=en-US&gl=US&ceid=US:en",
-                "parser_hint": "dirty_xml",
-                "timeout_seconds": 8,
-                "retries": 2,
-            },
-        ],
     },
     "mbrn": {
         "sentiment_scale": 100,
@@ -116,25 +87,7 @@ CONFIG = {
     },
 }
 
-RSS_USER_AGENT = "MBRN-MarketSentiment/1.0 (+local-rss-ingestion)"
-RSS_HEADER_POOL = [
-    {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0 Safari/537.36",
-        "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-    },
-    {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0 Safari/537.36",
-        "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-    },
-    {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
-        "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-    },
-    {
-        "User-Agent": RSS_USER_AGENT,
-        "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
-    },
-]
+# Use centralized RSS_CONFIG from pipeline_utils
 ENRICHMENT_REQUIRED_KEYS = [
     "sentiment_score",
     "confidence",
@@ -155,192 +108,47 @@ ENRICHMENT_SCHEMA_HINT = """{
   "news_impact": 0,
   "key_theme": "short theme"
 }"""
-POSITIVE_NEWS_KEYWORDS = {
-    "surge", "rally", "beat", "growth", "expand", "record", "gain", "approve", "bull", "optimism",
-}
-NEGATIVE_NEWS_KEYWORDS = {
-    "drop", "fall", "miss", "cut", "downgrade", "lawsuit", "probe", "investigation", "crash", "bear",
-}
+# Use centralized SENTIMENT_KEYWORDS from pipeline_utils (via classify_news_bias, get_news_impact_seed)
 
 
 # =============================================================================
-# HELPERS
+# DATA FETCHING (Uses centralized utilities from pipeline_utils)
 # =============================================================================
 
-def safe_round(value: Any, digits: int = 2) -> Optional[float]:
-    """Round values from pandas/yfinance safely."""
-    try:
-        if value is None:
-            return None
-        return round(float(value), digits)
-    except (TypeError, ValueError):
-        return None
-
-
-def is_crypto_ticker(ticker: str) -> bool:
-    """Identify crypto pairs inside the mixed market ticker list."""
-    return ticker.endswith("-USD")
-
-
-def classify_news_bias(news_items: List[Dict[str, Any]]) -> str:
-    """Derive a lightweight deterministic news bias from headline keywords."""
-    balance = 0
-    for item in news_items:
-        text = f"{item.get('title', '')} {item.get('summary', '')}".lower()
-        balance += sum(1 for keyword in POSITIVE_NEWS_KEYWORDS if keyword in text)
-        balance -= sum(1 for keyword in NEGATIVE_NEWS_KEYWORDS if keyword in text)
-
-    if balance > 1:
-        return "bullish"
-    if balance < -1:
-        return "bearish"
-    return "neutral"
-
-
-def get_news_impact_seed(news_items: List[Dict[str, Any]]) -> int:
-    """Estimate the raw impact seed before LLM enrichment."""
-    if not news_items:
-        return 0
-    headline_weight = min(50, len(news_items) * 6)
-    keyword_weight = 0
-    for item in news_items[:5]:
-        text = f"{item.get('title', '')} {item.get('summary', '')}".lower()
-        keyword_weight += 4 * sum(1 for keyword in POSITIVE_NEWS_KEYWORDS | NEGATIVE_NEWS_KEYWORDS if keyword in text)
-    return min(100, headline_weight + keyword_weight)
-
-
-# =============================================================================
-# DATA FETCHING (Yahoo Finance via yfinance or fallback)
-# =============================================================================
-
-def fetch_market_data(ticker: str) -> Optional[Dict[str, Any]]:
-    """
-    Fetch market data for a given ticker symbol.
-
-    Primary: yfinance
-    Fallback: development-safe mock payload
-    """
-    try:
-        import yfinance as yf
-
-        stock = yf.Ticker(ticker)
-        hist = stock.history(period=f"{CONFIG['data']['lookback_days']}d")
-        info = getattr(stock, "info", {}) or {}
-
-        if hist.empty:
-            return None
-
-        latest = hist.iloc[-1]
-        prev = hist.iloc[-2] if len(hist) > 1 else latest
-
-        latest_close = float(latest["Close"])
-        prev_close = float(prev["Close"])
-        change = latest_close - prev_close
-        change_pct = (change / prev_close) * 100 if prev_close else 0.0
-
-        return {
-            "ticker": ticker,
-            "asset_class": "crypto" if is_crypto_ticker(ticker) else "equity",
-            "price": safe_round(latest_close, 2) or 0.0,
-            "change": safe_round(change, 2) or 0.0,
-            "change_percent": safe_round(change_pct, 2) or 0.0,
-            "volume": int(latest.get("Volume", 0) or 0),
-            "high": safe_round(latest.get("High"), 2) or 0.0,
-            "low": safe_round(latest.get("Low"), 2) or 0.0,
-            "market_cap": info.get("marketCap"),
-            "pe_ratio": info.get("trailingPE"),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "source": "yfinance",
-        }
-
-    except ImportError:
-        print(f"[WARN] yfinance not installed. Using fallback for {ticker}")
-        return fetch_market_data_fallback(ticker)
-    except Exception as exc:
-        print(f"[ERROR] Failed to fetch {ticker}: {exc}")
-        return None
-
-
-def fetch_market_data_fallback(ticker: str) -> Optional[Dict[str, Any]]:
-    """Fallback data fetcher for development and offline situations."""
-    return {
-        "ticker": ticker,
-        "asset_class": "crypto" if is_crypto_ticker(ticker) else "equity",
-        "price": 0.0,
-        "change": 0.0,
-        "change_percent": 0.0,
-        "volume": 0,
-        "high": 0.0,
-        "low": 0.0,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "source": "fallback_mock",
-        "note": "Install yfinance: pip install yfinance",
-    }
-
-
-def fetch_batch_data(tickers: List[str]) -> List[Dict[str, Any]]:
-    """Fetch data for multiple tickers."""
+def fetch_batch_data(tickers: List[str], lookback_days: int = 5) -> List[Dict[str, Any]]:
+    """Fetch data for multiple tickers using centralized fetch_market_snapshot."""
     results: List[Dict[str, Any]] = []
     for ticker in tickers:
-        data = fetch_market_data(ticker)
+        data = fetch_market_snapshot(ticker, lookback_days=lookback_days)
         if data:
+            # Enrich with market_cap and pe_ratio for sentiment analysis
+            try:
+                import yfinance as yf
+                stock = yf.Ticker(ticker)
+                info = getattr(stock, "info", {}) or {}
+                data["market_cap"] = info.get("marketCap")
+                data["pe_ratio"] = info.get("trailingPE")
+            except Exception:
+                pass  # Non-critical enrichment
             results.append(data)
     return results
 
 
-# =============================================================================
-def fetch_news_items() -> List[Dict[str, Any]]:
-    """Fetch, merge and rank RSS headlines across free finance feeds."""
-    collected: List[Dict[str, Any]] = []
-    seen_keys: set[str] = set()
-
-    for feed in CONFIG["data"]["news_feeds"]:
-        try:
-            payload = fetch_url_with_retry(
-                url=feed["url"],
-                headers_pool=RSS_HEADER_POOL,
-                timeout_seconds=int(feed.get("timeout_seconds", 8)),
-                retries=int(feed.get("retries", 2)),
-            )
-            parsed_items = parse_feed_items(
-                payload,
-                feed["source"],
-                str(feed.get("parser_hint", "xml")),
-            )
-            if not parsed_items:
-                log("WARN", f"RSS feed unhealthy source={feed['source']} reason=empty_feed")
-                continue
-            log("OK", f"RSS loaded source={feed['source']} items={len(parsed_items)}")
-        except Exception as exc:
-            reason = classify_fetch_error(exc)
-            log("WARN", f"RSS feed unhealthy source={feed['source']} reason={reason} detail={exc}")
-            continue
-
-        for item in parsed_items:
-            dedupe_key = (item.get("link") or item.get("title") or "").strip().lower()
-            if not dedupe_key or dedupe_key in seen_keys:
-                continue
-            seen_keys.add(dedupe_key)
-            collected.append(item)
-
-    collected.sort(key=lambda item: item.get("published_at", ""), reverse=True)
-    return collected[: CONFIG["data"]["news_limit"]]
+def fetch_news_items(limit: int = 10) -> List[Dict[str, Any]]:
+    """Fetch, merge and rank RSS headlines using centralized utility."""
+    news_items, _ = fetch_news_batch(
+        feeds=RSS_CONFIG["feeds"],
+        headers_pool=RSS_CONFIG["header_pool"],
+        limit_per_feed=limit,
+    )
+    # Sort by published date and apply limit
+    news_items.sort(key=lambda item: item.get("published_at", ""), reverse=True)
+    return news_items[:limit]
 
 
 # =============================================================================
-# OLLAMA LOCAL LLM ENRICHMENT
+# OLLAMA LOCAL LLM ENRICHMENT (Now via LocalLLMBridge - Phase 3)
 # =============================================================================
-
-def check_ollama_health() -> bool:
-    """Check if Ollama is running locally."""
-    try:
-        url = f"http://{CONFIG['ollama']['host']}:{CONFIG['ollama']['port']}/api/tags"
-        req = urllib.request.Request(url, method="GET")
-        with urllib.request.urlopen(req, timeout=5) as response:
-            return response.status == 200
-    except Exception:
-        return False
-
 
 def build_market_summary(market_data: List[Dict[str, Any]]) -> str:
     """Summarize tickers for the local LLM prompt."""
@@ -384,7 +192,7 @@ def build_neutral_enrichment(
         "news_bias": fallback_news_bias,
         "news_impact": fallback_news_impact,
         "key_theme": key_theme,
-        "model": CONFIG["ollama"]["model"] if key_theme != "fallback_neutral" else "none",
+        "model": PIPELINE_CONFIG["ollama"]["model"] if key_theme != "fallback_neutral" else "none",
         "processed_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -418,15 +226,19 @@ def enrich_with_ollama(
     news_items: Optional[List[Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
-    Enrich market data with local LLM sentiment analysis.
+    Enrich market data with local LLM sentiment analysis via LocalLLMBridge.
 
     Includes equity, crypto and RSS headline context.
+    Phase 3 Migration: Uses centralized LocalLLMBridge instead of inline urllib calls.
     """
     news_items = news_items or []
     fallback_news_bias = classify_news_bias(news_items)
     fallback_news_impact = get_news_impact_seed(news_items)
 
-    if not check_ollama_health():
+    # Initialize Bridge
+    bridge = LocalLLMBridge()
+
+    if not bridge.is_available():
         print("[WARN] Ollama not available. Skipping LLM enrichment.")
         return build_neutral_enrichment(
             analysis="Ollama unavailable - default neutral score",
@@ -454,47 +266,28 @@ Respond in this exact JSON format:
 {ENRICHMENT_SCHEMA_HINT}"""
 
     try:
-        url = f"http://{CONFIG['ollama']['host']}:{CONFIG['ollama']['port']}/api/generate"
-        payload = {
-            "model": CONFIG["ollama"]["model"],
-            "prompt": prompt,
-            "stream": False,
-            "options": {
-                "temperature": CONFIG["ollama"]["temperature"],
-            },
-        }
+        # Use LocalLLMBridge for execution
+        success, result = bridge.execute_custom_prompt(
+            prompt=prompt,
+            required_keys=ENRICHMENT_REQUIRED_KEYS,
+            schema_hint=ENRICHMENT_SCHEMA_HINT,
+            worker_name="market_sentiment_enrichment"
+        )
 
-        data = json.dumps(payload).encode("utf-8")
-        headers = {"Content-Type": "application/json"}
-        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-
-        with urllib.request.urlopen(req, timeout=CONFIG["ollama"]["timeout_seconds"]) as response:
-            result = json.loads(response.read().decode("utf-8"))
-
-        llm_output = result.get("response", "{}")
-        try:
-            sentiment_data = parse_strict_json_response(
-                llm_output,
-                required_keys=ENRICHMENT_REQUIRED_KEYS,
+        if not success:
+            log("WARN", f"Bridge execution failed: {result}")
+            return build_neutral_enrichment(
+                analysis=f"Bridge failed: {result}",
+                fallback_news_bias=fallback_news_bias,
+                fallback_news_impact=fallback_news_impact,
+                key_theme="bridge_error",
+                confidence=0.3,
             )
-        except ValueError as parse_error:
-            log("WARN", f"Primary Ollama JSON parse failed: {parse_error}")
-            sentiment_data = repair_json_with_ollama(
-                raw_output=llm_output,
-                schema_hint=ENRICHMENT_SCHEMA_HINT,
-                model=CONFIG["ollama"]["model"],
-                timeout=CONFIG["ollama"]["timeout_seconds"],
-                host=CONFIG["ollama"]["host"],
-                port=CONFIG["ollama"]["port"],
-            )
-            if not sentiment_data:
-                return build_neutral_enrichment(
-                    analysis=f"Failed to parse LLM output: {llm_output[:100]}...",
-                    fallback_news_bias=fallback_news_bias,
-                    fallback_news_impact=fallback_news_impact,
-                    key_theme="parse_error",
-                    confidence=0.3,
-                )
+
+        # result is the parsed dict on success
+        sentiment_data = result
+
+        # Return with exact same 8 keys as before (Frontend Schema Stability)
         return {
             "sentiment_score": max(0, min(100, int(sentiment_data.get("sentiment_score", 50)))),
             "confidence": max(0.0, min(1.0, float(sentiment_data.get("confidence", 0.5)))),
@@ -504,7 +297,7 @@ Respond in this exact JSON format:
             "news_bias": normalize_bias(sentiment_data.get("news_bias", fallback_news_bias)),
             "news_impact": max(0, min(100, int(sentiment_data.get("news_impact", fallback_news_impact)))),
             "key_theme": str(sentiment_data.get("key_theme", "mixed_signals"))[:80],
-            "model": CONFIG["ollama"]["model"],
+            "model": PIPELINE_CONFIG["ollama"]["model"],
             "processed_at": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -525,11 +318,11 @@ Respond in this exact JSON format:
 
 def save_to_json(data: Dict[str, Any], output_dir: Optional[str | Path] = None) -> str:
     """Save enriched data to a timestamped JSON artifact."""
-    output_path = Path(output_dir) if output_dir else Path(CONFIG["data"]["output_dir"])
+    output_path = Path(output_dir) if output_dir else Path(PIPELINE_CONFIG["output"]["output_dir"])
     output_path.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    filename = CONFIG["data"]["filename_template"].format(timestamp=timestamp)
+    filename = PIPELINE_CONFIG["output"]["filename_template"].format(timestamp=timestamp)
     filepath = output_path / filename
     save_json_atomic(filepath, data)
 
@@ -539,7 +332,7 @@ def save_to_json(data: Dict[str, Any], output_dir: Optional[str | Path] = None) 
 
 def save_for_dashboard(data: Dict[str, Any]) -> str:
     """Persist the dashboard-facing snapshot."""
-    dashboard_path = Path(CONFIG["data"]["dashboard_path"])
+    dashboard_path = Path(PIPELINE_CONFIG["output"]["dashboard_path"])
     dashboard_data = {
         "timestamp_utc": data["fetched_at"],
         "source": "market_sentiment_pipeline",
@@ -605,7 +398,7 @@ def push_to_supabase(payload: Dict[str, Any]) -> bool:
     """Push data to Supabase Edge Function via secure credential lookup."""
     load_pipeline_env()
 
-    url = os.getenv("SUPABASE_EDGE_FUNCTION_URL", CONFIG["supabase"]["default_url"])
+    url = os.getenv("SUPABASE_EDGE_FUNCTION_URL", PIPELINE_CONFIG["supabase"]["default_url"])
     api_key = None
 
     try:
@@ -663,19 +456,19 @@ def main():
     print("=" * 60)
 
     print("\n[1/5] Fetching market and crypto data...")
-    tickers = CONFIG["data"]["tickers"]
-    market_data = fetch_batch_data(tickers)
+    tickers = MARKET_CONFIG["tickers"]
+    market_data = fetch_batch_data(tickers, lookback_days=MARKET_CONFIG["lookback_days"])
     if not market_data:
         print("[FATAL] No market data fetched. Exiting.")
         sys.exit(1)
     print(f"[OK] Fetched data for {len(market_data)} tickers")
 
     print("\n[2/5] Fetching RSS finance headlines...")
-    news_items = fetch_news_items()
+    news_items = fetch_news_items(limit=PIPELINE_CONFIG["output"]["news_limit"])
     print(f"[OK] Fetched {len(news_items)} RSS headlines")
 
     print("\n[3/5] Enriching with Ollama LLM...")
-    print(f"       Model: {CONFIG['ollama']['model']}")
+    print(f"       Model: {PIPELINE_CONFIG['ollama']['model']}")
     enrichment = enrich_with_ollama(market_data, news_items=news_items)
     print(f"[OK] Sentiment Score: {enrichment['sentiment_score']}/100")
     print(f"     Confidence: {enrichment['confidence']:.1%}")

@@ -1405,3 +1405,236 @@ if __name__ == "__main__":
     print("=" * 60)
     print("Module test complete")
     print("=" * 60)
+
+
+# =============================================================================
+# CENTRALIZED DATA CONFIGURATION (Phase 1: Operation Zentralisierung)
+# =============================================================================
+
+# RSS Feed Configuration - Single Source of Truth
+RSS_CONFIG = {
+    "header_pool": [
+        {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0 Safari/537.36",
+            "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
+        },
+        {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0 Safari/537.36",
+            "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
+        },
+        {
+            "User-Agent": "MBRN-RawIngest/1.0 (+markets-news-collector)",
+            "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
+        },
+    ],
+    "feeds": [
+        {
+            "source": "Reuters Business",
+            "url": "https://feeds.reuters.com/reuters/businessNews",
+            "parser_hint": "xml",
+            "timeout_seconds": 10,
+            "retries": 3,
+        },
+        {
+            "source": "Reuters World",
+            "url": "https://feeds.reuters.com/Reuters/worldNews",
+            "parser_hint": "xml",
+            "timeout_seconds": 10,
+            "retries": 3,
+        },
+        {
+            "source": "CNBC Markets",
+            "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+            "parser_hint": "dirty_xml",
+            "timeout_seconds": 8,
+            "retries": 2,
+        },
+        {
+            "source": "CNBC Finance",
+            "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
+            "parser_hint": "dirty_xml",
+            "timeout_seconds": 8,
+            "retries": 2,
+        },
+        {
+            "source": "Google News Markets",
+            "url": "https://news.google.com/rss/search?q=markets%20when:7d&hl=en-US&gl=US&ceid=US:en",
+            "parser_hint": "dirty_xml",
+            "timeout_seconds": 8,
+            "retries": 2,
+        },
+        {
+            "source": "Google News Business",
+            "url": "https://news.google.com/rss/search?q=finance%20business%20when:7d&hl=en-US&gl=US&ceid=US:en",
+            "parser_hint": "dirty_xml",
+            "timeout_seconds": 8,
+            "retries": 2,
+        },
+    ],
+    "default_news_limit": 25,
+}
+
+# Market Data Configuration
+MARKET_CONFIG = {
+    "tickers": ["SPY", "QQQ", "DIA", "IWM", "^VIX", "BTC-USD", "ETH-USD"],
+    "lookback_days": 5,
+    "default_limit_per_feed": 25,
+}
+
+# Sentiment Analysis Keywords (for deterministic pre-classification)
+SENTIMENT_KEYWORDS = {
+    "positive": {
+        "surge", "rally", "beat", "growth", "expand", "record", "gain", "approve", "bull", "optimism",
+    },
+    "negative": {
+        "drop", "fall", "miss", "cut", "downgrade", "lawsuit", "probe", "investigation", "crash", "bear",
+    },
+}
+
+
+def is_crypto_ticker(ticker: str) -> bool:
+    """Identify crypto pairs inside the mixed market ticker list."""
+    return ticker.endswith("-USD")
+
+
+def safe_round(value: Any, digits: int = 2) -> Optional[float]:
+    """Round values from pandas/yfinance safely."""
+    try:
+        if value is None:
+            return None
+        return round(float(value), digits)
+    except (TypeError, ValueError):
+        return None
+
+
+def fetch_market_snapshot(ticker: str, lookback_days: int = 5) -> Optional[Dict[str, Any]]:
+    """
+    Fetch market data for a given ticker symbol using yfinance.
+    Centralized function used by all pipelines.
+    """
+    try:
+        import yfinance as yf
+
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period=f"{lookback_days}d")
+        info = getattr(stock, "info", {}) or {}
+
+        if hist.empty:
+            return None
+
+        latest = hist.iloc[-1]
+        prev = hist.iloc[-2] if len(hist) > 1 else latest
+
+        latest_close = float(latest["Close"])
+        prev_close = float(prev["Close"])
+        change = latest_close - prev_close
+        change_pct = (change / prev_close) * 100 if prev_close else 0.0
+
+        # Extract source timestamp if available
+        source_timestamp = getattr(latest, "name", None)
+        observed_at = datetime.now(timezone.utc).isoformat()
+        if source_timestamp is not None and hasattr(source_timestamp, "to_pydatetime"):
+            observed_at = source_timestamp.to_pydatetime().astimezone(timezone.utc).isoformat()
+
+        return {
+            "ticker": ticker,
+            "asset_class": "crypto" if is_crypto_ticker(ticker) else "equity",
+            "price": safe_round(latest_close, 2) or 0.0,
+            "change": safe_round(change, 2) or 0.0,
+            "change_percent": safe_round(change_pct, 2) or 0.0,
+            "volume": int(float(latest.get("Volume", 0) or 0)),
+            "high": safe_round(latest.get("High"), 2) or 0.0,
+            "low": safe_round(latest.get("Low"), 2) or 0.0,
+            "currency": info.get("currency") or "USD",
+            "short_name": info.get("shortName") or ticker,
+            "exchange": info.get("exchange") or None,
+            "observed_at": observed_at,
+            "source": "yfinance",
+            "source_url": f"https://finance.yahoo.com/quote/{ticker}",
+        }
+
+    except ImportError:
+        log("WARN", f"yfinance not installed; market snapshot skipped for {ticker}")
+        return None
+    except Exception as exc:
+        log("WARN", f"Market fetch failed ticker={ticker} reason={exc}")
+        return None
+
+
+def fetch_news_batch(
+    feeds: Optional[List[Dict[str, Any]]] = None,
+    headers_pool: Optional[List[Dict[str, str]]] = None,
+    limit_per_feed: int = 25,
+) -> tuple[List[Dict[str, Any]], List[str]]:
+    """
+    Fetch and normalize news from multiple RSS feeds.
+    Centralized function used by all pipelines.
+
+    Returns:
+        Tuple of (collected_items, failure_messages)
+    """
+    feeds = feeds or RSS_CONFIG["feeds"]
+    headers_pool = headers_pool or RSS_CONFIG["header_pool"]
+
+    collected: List[Dict[str, Any]] = []
+    failures: List[str] = []
+    seen_hashes: set[str] = set()
+
+    for feed in feeds:
+        try:
+            payload = fetch_url_with_retry(
+                url=feed["url"],
+                headers_pool=headers_pool,
+                timeout_seconds=int(feed.get("timeout_seconds", 8)),
+                retries=int(feed.get("retries", 2)),
+            )
+            parsed = parse_feed_items(payload, feed["source"], str(feed.get("parser_hint", "xml")))
+            if not parsed:
+                failures.append(f"{feed['source']}:empty_feed")
+                log("WARN", f"News feed empty source={feed['source']}")
+                continue
+
+            for item in parsed[:limit_per_feed]:
+                # Build dedupe key from link or title
+                dedupe_key = (item.get("link") or item.get("title") or "").strip().lower()
+                if dedupe_key:
+                    if dedupe_key in seen_hashes:
+                        continue
+                    seen_hashes.add(dedupe_key)
+                collected.append(item)
+
+            log("OK", f"News loaded source={feed['source']} items={len(parsed)}")
+        except Exception as exc:
+            reason = classify_fetch_error(exc)
+            failures.append(f"{feed['source']}:{reason}")
+            log("WARN", f"News feed failed source={feed['source']} reason={reason} detail={exc}")
+
+    return collected, failures
+
+
+def classify_news_bias(news_items: List[Dict[str, Any]]) -> str:
+    """Derive a lightweight deterministic news bias from headline keywords."""
+    balance = 0
+    for item in news_items:
+        text = f"{item.get('title', '')} {item.get('summary', '')}".lower()
+        balance += sum(1 for keyword in SENTIMENT_KEYWORDS["positive"] if keyword in text)
+        balance -= sum(1 for keyword in SENTIMENT_KEYWORDS["negative"] if keyword in text)
+
+    if balance > 1:
+        return "bullish"
+    if balance < -1:
+        return "bearish"
+    return "neutral"
+
+
+def get_news_impact_seed(news_items: List[Dict[str, Any]]) -> int:
+    """Estimate the raw impact seed before LLM enrichment."""
+    if not news_items:
+        return 0
+    headline_weight = min(50, len(news_items) * 6)
+    keyword_weight = 0
+    all_keywords = SENTIMENT_KEYWORDS["positive"] | SENTIMENT_KEYWORDS["negative"]
+    for item in news_items[:5]:
+        text = f"{item.get('title', '')} {item.get('summary', '')}".lower()
+        keyword_weight += 4 * sum(1 for keyword in all_keywords if keyword in text)
+    return min(100, headline_weight + keyword_weight)

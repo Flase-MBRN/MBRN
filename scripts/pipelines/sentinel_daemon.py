@@ -13,7 +13,6 @@ from typing import Callable, Dict, Optional
 import requests
 from worker_registry import WORKER_REGISTRY, WorkerDefinition
 from pipeline_utils import CircuitBreaker, RetryHandler
-from secure_key_manager import SecureKeyManager
 
 # Make sibling script modules importable for worker dispatching.
 SCRIPT_ROOT = Path(__file__).resolve().parents[1]
@@ -90,20 +89,19 @@ def load_env():
             except Exception as e:
                 print(f"Fehler beim Laden der .env: {e}")
 
+# CRITICAL: Load .env immediately so env vars are available for heartbeat
+load_env_file()
+
 # Global Circuit Breaker für Heartbeat
 heartbeat_circuit_breaker = CircuitBreaker(
     failure_threshold=CONFIG["circuit_breaker_threshold"],
     cooldown_seconds=CONFIG["circuit_breaker_cooldown"]
 )
 
-# Global Secure Key Manager für Level 2 Security
-secure_key_manager = SecureKeyManager()
-
 def perform_heartbeat():
-    """Heartbeat-Schnittstelle zu Supabase mit Resilienz-Logik und Level 2 Security."""
+    """Heartbeat-Schnittstelle zu Supabase mit Resilienz-Logik."""
     url = os.getenv("SUPABASE_URL")
-    # Level 2 Security: Zuerst aus Credential Manager, dann .env Fallback
-    key = secure_key_manager.get_key("SUPABASE_SERVICE_ROLE_KEY")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
     if not url or not key:
         log_event("HB_ERROR: SUPABASE_URL oder SERVICE_ROLE_KEY nicht gesetzt", "ERROR")
         return False

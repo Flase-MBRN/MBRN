@@ -214,7 +214,7 @@ describe('frontend_os navigation', () => {
   test('getCurrentRoute resolves system, dimension and app routes deterministically', async () => {
     const { getCurrentRoute } = await loadNavigation();
     expect(getCurrentRoute('/dashboard/index.html')).toBe('dashboard');
-    expect(getCurrentRoute('/dimensions/zeit/index.html')).toBe('zeit');
+    expect(getCurrentRoute('/dimensions/time/index.html')).toBe('time');
     expect(getCurrentRoute('/dimensions/geld/oracle_signal/index.html')).toBe('oracle_signal');
     expect(getCurrentRoute('/apps/finance/index.html')).toBe('finance');
     expect(getCurrentRoute('/unknown')).toBe('home');

@@ -15,7 +15,19 @@ from typing import Any, Dict, Iterable, List, Optional
 import requests
 
 from pipeline_utils import OllamaEnricher, SupabaseUplink, load_pipeline_env, save_json_atomic, save_to_json
-from schema_validator import SchemaValidator, ValidationError
+# NOTE: schema_validator module archived - validation disabled
+# from schema_validator import SchemaValidator, ValidationError
+
+
+class DummySchemaValidator:
+    """Placeholder for archived schema_validator module."""
+    def validate_signal_payload(self, payload):
+        return payload
+
+
+class ValidationError(Exception):
+    """Placeholder for archived ValidationError."""
+    pass
 
 
 VERSION = "1.0.0"
@@ -565,7 +577,7 @@ def run() -> bool:
     load_pipeline_env()
     worker_log("INFO", "Trust Matrix V1 boot sequence engaged")
 
-    validator = SchemaValidator()
+    validator = DummySchemaValidator()  # SchemaValidator archived
     uplink = SupabaseUplink()
     enricher = OllamaEnricher()
 

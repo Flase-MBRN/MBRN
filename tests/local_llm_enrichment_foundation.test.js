@@ -48,6 +48,8 @@ describe('local llm enrichment foundation', () => {
     expect(workerSource).toContain('gold_enrichment_items');
     expect(workerSource).toContain('analysis_status');
     expect(workerSource).toContain('LocalLLMBridge');
+    expect(workerSource).toContain('except WorkerError as exc');
+    expect(workerSource).toContain('Week-2 enrichment worker configuration failed');
   });
 
   test('week-2 docs expose the active bridge and worker configuration', () => {

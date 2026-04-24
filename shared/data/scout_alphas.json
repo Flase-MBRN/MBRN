@@ -1,0 +1,447 @@
+{
+  "metadata": {
+    "scout_id": "horizon_scout_v1",
+    "created_at": "2026-04-24T12:22:15.465708+00:00",
+    "version": "1.0"
+  },
+  "discoveries": [
+    {
+      "id": "alpha_1219491339",
+      "discovered_at": "2026-04-24T12:22:54.792540+00:00",
+      "repo": {
+        "id": 1219491339,
+        "name": "codediba/taskloop-ai-agent",
+        "url": "https://github.com/codediba/taskloop-ai-agent",
+        "description": "Autonomous AI agent with tool use and execution-evaluation loop built using LangGraph",
+        "stars": 0,
+        "language": "Python",
+        "created_at": "2026-04-23T23:46:54Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Taskloop AI Agent has potential for automation and integration with existing business processes.",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:22:54.792548+00:00"
+      }
+    },
+    {
+      "id": "alpha_1219964285",
+      "discovered_at": "2026-04-24T12:24:06.776531+00:00",
+      "repo": {
+        "id": 1219964285,
+        "name": "orqestly/orqestly",
+        "url": "https://github.com/orqestly/orqestly",
+        "description": "Orqestly is an AI-powered testing orchestration platform that transforms software requirements into executable tests and validates real running systems using autonomous agents.  We focus on bridging the gap between specifications and production through intelligent QA automation.",
+        "stars": 0,
+        "language": null,
+        "created_at": "2026-04-24T12:02:45Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "AI-powered testing orchestration platform with potential for automation and integration.",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:24:06.776539+00:00"
+      }
+    },
+    {
+      "id": "alpha_1219967364",
+      "discovered_at": "2026-04-24T12:24:24.034721+00:00",
+      "repo": {
+        "id": 1219967364,
+        "name": "zxqer/FinAgent-Quant",
+        "url": "https://github.com/zxqer/FinAgent-Quant",
+        "description": null,
+        "stars": 0,
+        "language": "Python",
+        "created_at": "2026-04-24T12:06:47Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "FinAgent-Quant offers a robust AI quantitative trading architecture with multi-agent debate and dynamic routing capabilities.",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:24:24.034729+00:00"
+      }
+    },
+    {
+      "id": "alpha_1216645484",
+      "discovered_at": "2026-04-24T12:25:37.347213+00:00",
+      "repo": {
+        "id": 1216645484,
+        "name": "Tejascodez/ai-task-manager",
+        "url": "https://github.com/Tejascodez/ai-task-manager",
+        "description": "Think of it as Jira + AI Assistant — very relatable to real company tools.",
+        "stars": 0,
+        "language": "JavaScript",
+        "created_at": "2026-04-21T05:24:25Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "AI-powered task management with potential for automation and integration",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:25:37.347220+00:00"
+      }
+    },
+    {
+      "id": "alpha_1219978967",
+      "discovered_at": "2026-04-24T12:25:53.795502+00:00",
+      "repo": {
+        "id": 1219978967,
+        "name": "Krtvy/LabeLLM",
+        "url": "https://github.com/Krtvy/LabeLLM",
+        "description": "LLM-powered job description classifier: seniority × work-mode × industry, with a hand-labeled eval harness. Project 1 of a 12-month applied-AI learning plan.",
+        "stars": 0,
+        "language": "Python",
+        "created_at": "2026-04-24T12:21:41Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "This project has potential for automation and integration, but requires further development to reach maturity.",
+        "category": "integration",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:25:53.795510+00:00"
+      }
+    },
+    {
+      "id": "alpha_1219977668",
+      "discovered_at": "2026-04-24T12:26:11.449090+00:00",
+      "repo": {
+        "id": 1219977668,
+        "name": "ChenjianFan2000/paper-visualizer",
+        "url": "https://github.com/ChenjianFan2000/paper-visualizer",
+        "description": "Self-contained web app for browsing and teaching 11 MATHPROVER computational-finance research papers. Bilingual (zh/en) teaching Markdown, bundled source .tex + .pdf, AI Q&A via any OpenAI-compatible endpoint.",
+        "stars": 0,
+        "language": "TeX",
+        "created_at": "2026-04-24T12:20:01Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Self-contained web app for browsing and teaching computational-finance research papers with AI Q&A via OpenAI-compatible endpoint",
+        "category": "integration",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:26:11.449095+00:00"
+      }
+    },
+    {
+      "id": "alpha_1218974414",
+      "discovered_at": "2026-04-24T12:27:08.743065+00:00",
+      "repo": {
+        "id": 1218974414,
+        "name": "shani-singh1/propab-oss",
+        "url": "https://github.com/shani-singh1/propab-oss",
+        "description": "Multi-agent autonomous STEM research: literature → hypothesis → experiment → paper. RAG + sandboxed compute, zero human-in-the-loop.",
+        "stars": 0,
+        "language": "Python",
+        "created_at": "2026-04-23T12:02:08Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Propab has high automation potential and integration capability with a well-documented API.",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:27:08.743069+00:00"
+      }
+    },
+    {
+      "id": "alpha_1216904107",
+      "discovered_at": "2026-04-24T12:27:33.531612+00:00",
+      "repo": {
+        "id": 1216904107,
+        "name": "huxiaoman7/skills-eval",
+        "url": "https://github.com/huxiaoman7/skills-eval",
+        "description": "AI skill evaluation repository: standardized test & automated validation for AI professional skills.",
+        "stars": 0,
+        "language": "Python",
+        "created_at": "2026-04-21T10:52:04Z"
+      },
+      "analysis": {
+        "score": 92,
+        "rationale": "Excellent automation potential, well-documented API, and high maturity level.",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:27:33.531618+00:00"
+      }
+    },
+    {
+      "id": "alpha_1218890582",
+      "discovered_at": "2026-04-24T12:27:54.186861+00:00",
+      "repo": {
+        "id": 1218890582,
+        "name": "Mozart-Orchestra/aha-client",
+        "url": "https://github.com/Mozart-Orchestra/aha-client",
+        "description": "Mobile and web client for Aha, Claude Code, Codex, and multi-agent teams",
+        "stars": 0,
+        "language": "TypeScript",
+        "created_at": "2026-04-23T10:11:55Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Integrates Aha with multiple platforms through API-first design",
+        "category": "integration",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:27:54.186868+00:00"
+      }
+    },
+    {
+      "id": "alpha_1219967213",
+      "discovered_at": "2026-04-24T12:28:11.104392+00:00",
+      "repo": {
+        "id": 1219967213,
+        "name": "aBeardedGuru/holden-capital-agentic-workflows",
+        "url": "https://github.com/aBeardedGuru/holden-capital-agentic-workflows",
+        "description": null,
+        "stars": 0,
+        "language": "Shell",
+        "created_at": "2026-04-24T12:06:36Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Repository showcases various GitHub features and tools for automation, integration, and security.",
+        "category": "integration",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:28:11.104399+00:00"
+      }
+    },
+    {
+      "id": "alpha_1214625028",
+      "discovered_at": "2026-04-24T12:28:48.533154+00:00",
+      "repo": {
+        "id": 1214625028,
+        "name": "SomanAbbasi/OptiCode",
+        "url": "https://github.com/SomanAbbasi/OptiCode",
+        "description": "OptiCode is a code analysis tool that finds inefficient code patterns, estimates time complexity, and suggests better data structures and algorithms. It also uses AI to explain problems and recommend optimized solutions in simple terms.",
+        "stars": 0,
+        "language": "TypeScript",
+        "created_at": "2026-04-18T20:37:11Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "OptiCode has high automation potential and integration capability, making it a strong candidate for a Micro-SaaS.",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:28:48.533161+00:00"
+      }
+    },
+    {
+      "id": "alpha_1218339005",
+      "discovered_at": "2026-04-24T12:29:26.214966+00:00",
+      "repo": {
+        "id": 1218339005,
+        "name": "denizhosgor/pagespeedinsight-mcp",
+        "url": "https://github.com/denizhosgor/pagespeedinsight-mcp",
+        "description": "This package exposes Google PageSpeed Insights as MCP tools so agents in OpenClaw and other ",
+        "stars": 0,
+        "language": "JavaScript",
+        "created_at": "2026-04-22T19:21:20Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Exposes Google PageSpeed Insights as MCP tools for automation and optimization",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:29:26.214974+00:00"
+      }
+    },
+    {
+      "id": "alpha_1218247987",
+      "discovered_at": "2026-04-24T12:30:20.065329+00:00",
+      "repo": {
+        "id": 1218247987,
+        "name": "KybernesisAI/arp",
+        "url": "https://github.com/KybernesisAI/arp",
+        "description": "Agent Relationship Protocol (ARP)",
+        "stars": 0,
+        "language": "TypeScript",
+        "created_at": "2026-04-22T17:24:22Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Agent Relationship Protocol (ARP) has potential for automation and integration capabilities.",
+        "category": "integration",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:30:20.065335+00:00"
+      }
+    },
+    {
+      "id": "alpha_1217922333",
+      "discovered_at": "2026-04-24T12:30:53.946611+00:00",
+      "repo": {
+        "id": 1217922333,
+        "name": "vaimr/mcporter-proxy",
+        "url": "https://github.com/vaimr/mcporter-proxy",
+        "description": "Proxy for MCPorter to allow MCP in agent sandboxes",
+        "stars": 0,
+        "language": "JavaScript",
+        "created_at": "2026-04-22T11:00:09Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Automates proxy setup for MCPorter in agent sandboxes with potential for further integration.",
+        "category": "integration",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:30:53.946618+00:00"
+      }
+    },
+    {
+      "id": "alpha_1219132052",
+      "discovered_at": "2026-04-24T12:31:10.469362+00:00",
+      "repo": {
+        "id": 1219132052,
+        "name": "CaptainIND7/Yatrik",
+        "url": "https://github.com/CaptainIND7/Yatrik",
+        "description": "Yatrik is an AI-powered travel planning app that recommends destinations and generates personalized itineraries based on user-selected location, trip preferences, and trip duration using a machine learning backend.",
+        "stars": 0,
+        "language": "Python",
+        "created_at": "2026-04-23T15:02:50Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "AI-powered travel planning app with machine learning backend and API potential",
+        "category": "integration",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:31:10.469368+00:00"
+      }
+    },
+    {
+      "id": "alpha_1214830974",
+      "discovered_at": "2026-04-24T12:31:32.454089+00:00",
+      "repo": {
+        "id": 1214830974,
+        "name": "dwaynehelena/agent-state",
+        "url": "https://github.com/dwaynehelena/agent-state",
+        "description": "Multi-agent state persistence system",
+        "stars": 0,
+        "language": "Shell",
+        "created_at": "2026-04-19T05:24:24Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Multi-agent state persistence system with potential for automation and integration",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:31:32.454095+00:00"
+      }
+    },
+    {
+      "id": "alpha_1219977800",
+      "discovered_at": "2026-04-24T12:31:49.134370+00:00",
+      "repo": {
+        "id": 1219977800,
+        "name": "adrian-af/cursorThreads",
+        "url": "https://github.com/adrian-af/cursorThreads",
+        "description": "Android application created with Cursor AI to keep track of embroidery threads collections from the available DMC catalogue",
+        "stars": 0,
+        "language": "Kotlin",
+        "created_at": "2026-04-24T12:20:12Z"
+      },
+      "analysis": {
+        "score": 85,
+        "rationale": "Cursor AI-powered Android app for embroidery thread collection management has automation potential and integration capability",
+        "category": "automation",
+        "recommended_action": "investigate"
+      },
+      "mbrn_enriched": {
+        "scout_version": "1.0",
+        "source": "github_discovery",
+        "processed_at": "2026-04-24T12:31:49.134377+00:00"
+      }
+    }
+  ],
+  "seen_repo_ids": [
+    1219504899,
+    1219967364,
+    1214625028,
+    1219491339,
+    1219132052,
+    1217922333,
+    1216904107,
+    1218923053,
+    1215335475,
+    1219899700,
+    1218247987,
+    1216935611,
+    1218339005,
+    1219977668,
+    1219979334,
+    1219977800,
+    1217035896,
+    1218974414,
+    1218890582,
+    1219978967,
+    1217832929,
+    1219978855,
+    1216645484,
+    1219967213,
+    1219750776,
+    1219964285,
+    1214830974,
+    1218903167
+  ]
+}

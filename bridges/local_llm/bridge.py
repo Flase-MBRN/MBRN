@@ -185,3 +185,56 @@ class LocalLLMBridge:
             "processed_at": normalized["processed_at"],
         }
         return normalized
+
+    def execute_custom_prompt(
+        self,
+        prompt: str,
+        required_keys: list[str] | None = None,
+        schema_hint: str = "",
+        worker_name: str = "custom_prompt"
+    ) -> tuple[bool, dict[str, Any] | str]:
+        """
+        Execute a custom prompt against Ollama without schema normalization.
+        
+        Args:
+            prompt: The prompt string to send to Ollama
+            required_keys: Optional list of keys to validate in JSON response
+            schema_hint: Optional schema hint for JSON repair on failure
+            worker_name: Identifier for the GPU execution guard
+            
+        Returns:
+            Tuple (success, result) where result is dict on success, error string on failure
+        """
+        # Check Ollama availability
+        if not self.is_available():
+            return False, "Ollama not available"
+        
+        try:
+            # Send prompt via internal method
+            raw_output = self._request_model(prompt, worker_name=worker_name)
+            
+            # Try to parse as JSON
+            try:
+                if required_keys:
+                    parsed = parse_strict_json_response(raw_output, required_keys=required_keys)
+                else:
+                    parsed = json.loads(raw_output)
+                return True, parsed
+            except (ValueError, json.JSONDecodeError) as e:
+                # Attempt repair if schema_hint provided
+                if schema_hint:
+                    repaired = repair_json_with_ollama(
+                        raw_output=raw_output,
+                        schema_hint=schema_hint,
+                        model=self.config.model,
+                        timeout=self.config.timeout_seconds,
+                        host=self.config.host,
+                        port=self.config.port,
+                    )
+                    if repaired:
+                        return True, repaired
+                
+                return False, f"JSON parse error: {e}"
+                
+        except Exception as e:
+            return False, f"Request failed: {e}"

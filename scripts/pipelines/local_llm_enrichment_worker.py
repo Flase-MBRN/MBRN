@@ -26,7 +26,6 @@ if str(PIPELINES_DIR) not in sys.path:
 
 from bridges.local_llm import LocalLLMBridge
 from pipeline_utils import load_pipeline_env, log
-from secure_key_manager import SecureKeyManager
 
 
 EXIT_SUCCESS = 0
@@ -54,12 +53,11 @@ def load_local_env(env_path: Path = PIPELINES_DIR / ".env") -> None:
     load_pipeline_env(env_path)
 
 
-def resolve_runtime_context(key_manager: SecureKeyManager | None = None) -> RuntimeContext:
+def resolve_runtime_context() -> RuntimeContext:
     load_local_env()
-    manager = key_manager or SecureKeyManager()
 
     supabase_url = os.getenv("SUPABASE_URL", "").strip().rstrip("/")
-    service_role_key = (manager.get_key("SUPABASE_SERVICE_ROLE_KEY") or "").strip()
+    service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
     if not supabase_url or not service_role_key:
         raise WorkerError("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.")
 
@@ -250,27 +248,34 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: List[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
-    runtime = resolve_runtime_context()
-    bridge = LocalLLMBridge()
+    try:
+        args = build_parser().parse_args(argv)
+        runtime = resolve_runtime_context()
+        bridge = LocalLLMBridge()
 
-    if not bridge.is_available():
-        log("ERROR", "Local LLM bridge unavailable. Start Ollama before running Week-2 enrichment.")
+        if not bridge.is_available():
+            log("ERROR", "Local LLM bridge unavailable. Start Ollama before running Week-2 enrichment.")
+            return EXIT_FAILURE
+
+        pending_items = fetch_pending_items(runtime, max(1, args.limit))
+        if not pending_items:
+            log("INFO", "No pending raw items found for Week-2 enrichment.")
+            return EXIT_SUCCESS
+
+        log("INFO", f"Week-2 enrichment started pending_items={len(pending_items)} model={bridge.config.model}")
+        results = [process_item(runtime, bridge, item) for item in pending_items]
+
+        if all(results):
+            return EXIT_SUCCESS
+        if any(results):
+            return EXIT_PARTIAL_FAILURE
         return EXIT_FAILURE
-
-    pending_items = fetch_pending_items(runtime, max(1, args.limit))
-    if not pending_items:
-        log("INFO", "No pending raw items found for Week-2 enrichment.")
-        return EXIT_SUCCESS
-
-    log("INFO", f"Week-2 enrichment started pending_items={len(pending_items)} model={bridge.config.model}")
-    results = [process_item(runtime, bridge, item) for item in pending_items]
-
-    if all(results):
-        return EXIT_SUCCESS
-    if any(results):
-        return EXIT_PARTIAL_FAILURE
-    return EXIT_FAILURE
+    except WorkerError as exc:
+        log("ERROR", f"Week-2 enrichment worker configuration failed: {exc}")
+        return EXIT_FAILURE
+    except Exception as exc:
+        log("ERROR", f"Week-2 enrichment worker failed: {exc}")
+        return EXIT_FAILURE
 
 
 if __name__ == "__main__":

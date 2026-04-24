@@ -14,8 +14,6 @@ from typing import Any, Callable
 
 import requests
 
-from secure_key_manager import SecureKeyManager
-
 SCRIPT_ROOT = Path(__file__).resolve().parent
 ENV_PATH = SCRIPT_ROOT / ".env"
 
@@ -97,17 +95,16 @@ def validate_args(args: argparse.Namespace) -> None:
         )
 
 
-def resolve_runtime_context(key_manager: SecureKeyManager | None = None) -> RuntimeContext:
+def resolve_runtime_context() -> RuntimeContext:
     load_local_env()
-    manager = key_manager or SecureKeyManager()
 
     supabase_url = os.getenv("SUPABASE_URL", "").strip()
-    service_role_key = (manager.get_key("SUPABASE_SERVICE_ROLE_KEY") or "").strip()
+    service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
 
     if not supabase_url or not service_role_key:
         raise MissingCredentialsError(
             "SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing. "
-            "Load .env and Credential Manager first."
+            "Load .env file first."
         )
 
     return RuntimeContext(supabase_url=supabase_url.rstrip("/"), service_role_key=service_role_key)
@@ -296,9 +293,8 @@ def execute(
     args: argparse.Namespace,
     *,
     request_fn: Callable[..., requests.Response] = requests.request,
-    key_manager: SecureKeyManager | None = None,
 ) -> dict[str, Any]:
-    runtime = resolve_runtime_context(key_manager=key_manager)
+    runtime = resolve_runtime_context()
     target_plan = PLAN_DEFINITIONS[args.plan_id]
     target_user, current_profile = resolve_target_user(runtime, args, request_fn=request_fn)
 
