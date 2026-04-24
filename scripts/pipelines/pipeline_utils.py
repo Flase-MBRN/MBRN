@@ -52,7 +52,7 @@ class PipelineConfig:
     ollama_port: int = 11434
     ollama_model: str = "deepseek-coder-v2"
     ollama_temperature: float = 0.3
-    ollama_timeout: int = 120
+    ollama_timeout: int = 600
     
     # Cache settings
     cache_ttl_seconds: int = 300  # 5 minutes
