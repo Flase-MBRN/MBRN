@@ -625,6 +625,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--single", action="store_true")
+    parser.add_argument("--infinite", action="store_true", help="Run in infinite loop (default)")
     args = parser.parse_args()
     load_pipeline_env(PIPELINES_DIR / ".env")
     if args.single:
