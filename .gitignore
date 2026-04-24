@@ -76,3 +76,5 @@ logs/
 
 # MBRN Toolkit (Auto-Generated)
 scripts/pipelines/mbrn_toolkit/
+
+**/*.bak_*
