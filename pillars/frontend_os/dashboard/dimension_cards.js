@@ -58,11 +58,11 @@ export function renderDashboardDimensionCards(containerId = 'dashboard-dimension
 
   getDashboardDimensionEntries().forEach((entry, index) => {
     const card = dom.createEl('a', {
-      className: 'glass-card stagger-fade dimension-card-link dashboard-card-link',
+      className: 'dashboard-dimension-card stagger-fade',
       attrs: {
         href: `../dimensions/${entry.id}/index.html`,
         'data-delay': String(index + 1),
-        'data-route': entry.id
+        'aria-label': `${entry.label} oeffnen`
       },
       parent: container
     });
@@ -85,7 +85,7 @@ export function renderDashboardDimensionCards(containerId = 'dashboard-dimension
     });
 
     dom.createEl('h4', {
-      className: 'card-title',
+      className: 'dashboard-dimension-title',
       text: entry.label,
       parent: card
     });

@@ -103,7 +103,6 @@ describe('frontend_os ownership', () => {
 
     expect(findImporters('injectLegalBlock')).toEqual([
       'pillars/frontend_os/app_surfaces/chronos_surface.js',
-      'pillars/frontend_os/app_surfaces/dashboard_surface.js',
       'pillars/frontend_os/app_surfaces/finance_surface.js',
       'pillars/frontend_os/app_surfaces/numerology_surface.js',
       'pillars/frontend_os/app_surfaces/synergy_surface.js',
