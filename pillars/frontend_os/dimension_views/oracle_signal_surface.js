@@ -28,7 +28,7 @@ function renderAuthRequired(root) {
   });
   dom.createEl('p', {
     className: 'text-secondary',
-    text: 'Gold-Signale sind geschuetzt. Melde dich an, um die veredelten Markt- und News-Signale zu sehen.',
+    text: 'Gold-Signale sind geschützt. Melde dich an, um die veredelten Markt- und News-Signale zu sehen.',
     parent: panel
   });
   const button = dom.createEl('button', {
@@ -164,7 +164,7 @@ export async function renderOracleSignalSurface(container) {
     });
     dom.createEl('div', {
       className: 'section-eyebrow-left',
-      text: 'Signal nicht verfuegbar',
+      text: 'Signal nicht verfügbar',
       parent: errorPanel
     });
     dom.createEl('p', {

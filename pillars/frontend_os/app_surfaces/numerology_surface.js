@@ -269,7 +269,7 @@ export const numerologyRender = {
         ? 'Dynamisches Muster. Ein starker Mix aus klarem Fokus und Vielseitigkeit.'
         : score <= 80
           ? 'Ausgeglichene Struktur. Deine Zahlen greifen nahtlos ineinander.'
-          : 'Hohe Balance. Maximale Harmonie ueber alle Bereiche.';
+          : 'Hohe Balance. Maximale Harmonie über alle Bereiche.';
     dom.setText('num-balance-label', label);
 
     const parentCard = container.closest('.glass-card');
@@ -289,7 +289,7 @@ export const numerologyRender = {
     }
 
     infoEl.textContent =
-      "Dieser Wert zeigt, wie sich deine Eigenschaften im Modell verteilen. Wichtig: Es gibt kein 'Besser' oder 'Schlechter'. Ein hoher Wert steht fuer eine breite Balance, ein niedriger Wert eher fuer staerkere Spezialisierung.";
+      "Dieser Wert zeigt, wie sich deine Eigenschaften im Modell verteilen. Wichtig: Es gibt kein 'Besser' oder 'Schlechter'. Ein hoher Wert steht für eine breite Balance, ein niedriger Wert eher für stärkere Spezialisierung.";
   },
 
   async handleTeaserShare() {
@@ -437,7 +437,7 @@ export const numerologyRender = {
     cyclesGrid.className = 'data-grid compact';
     createDataCard(cyclesGrid, 'Frueher Zyklus', data.cycles.c1, getPhaseDescription(data.cycles.c1), 1);
     createDataCard(cyclesGrid, 'Mittlerer Zyklus', data.cycles.c2, getPhaseDescription(data.cycles.c2), 2);
-    createDataCard(cyclesGrid, 'Spaeter Zyklus', data.cycles.c3, getPhaseDescription(data.cycles.c3), 3);
+    createDataCard(cyclesGrid, 'Später Zyklus', data.cycles.c3, getPhaseDescription(data.cycles.c3), 3);
     phasesList.appendChild(cyclesGrid);
 
     createSectionHeader(phasesList, 'Meilensteine');

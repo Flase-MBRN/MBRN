@@ -10,18 +10,18 @@ import {
 } from '../../core/logic/orchestrator.js';
 
 const NUMBER_MEANINGS = Object.freeze({
-  1: 'Im Modell steht diese Zahl oft fuer Antrieb, Initiative und den ersten klaren Schritt.',
-  2: 'Im Modell betont diese Zahl haeufig Balance, Verbindung und feines Gespuer fuer das Umfeld.',
-  3: 'Im Modell verweist diese Zahl oft auf Praesenz, Ausdruck und klare Kommunikation.',
-  4: 'Im Modell rueckt diese Zahl Struktur, Ausdauer und belastbare Systeme in den Vordergrund.',
-  5: 'Im Modell steht diese Zahl haeufig fuer Bewegung, Veraenderung und flexible Entwicklung.',
-  6: 'Im Modell verbindet diese Zahl Verantwortung, Stabilitaet und verlaessliche Fuersorge.',
+  1: 'Im Modell steht diese Zahl oft für Antrieb, Initiative und den ersten klaren Schritt.',
+  2: 'Im Modell betont diese Zahl häufig Balance, Verbindung und feines Gespür für das Umfeld.',
+  3: 'Im Modell verweist diese Zahl oft auf Präsenz, Ausdruck und klare Kommunikation.',
+  4: 'Im Modell rückt diese Zahl Struktur, Ausdauer und belastbare Systeme in den Vordergrund.',
+  5: 'Im Modell steht diese Zahl häufig für Bewegung, Veränderung und flexible Entwicklung.',
+  6: 'Im Modell verbindet diese Zahl Verantwortung, Stabilität und verlässliche Fürsorge.',
   7: 'Im Modell betont diese Zahl Analyse, Mustererkennung und strategisches Denken.',
-  8: 'Im Modell weist diese Zahl oft auf Fuehrung, Umsetzung und sichtbare Resultate hin.',
-  9: 'Im Modell steht diese Zahl oft fuer Perspektive und systemisches Denken.',
-  11: 'Im Modell wird diese Zahl haeufig mit klarer Wahrnehmung und feinen Impulsen verbunden.',
-  22: 'Im Modell steht diese Zahl oft fuer grosse Vorhaben und tragfaehige Realisierung.',
-  33: 'Im Modell verweist diese Zahl haeufig auf Orientierung, Reife und ruhige Fuehrung.'
+  8: 'Im Modell weist diese Zahl oft auf Führung, Umsetzung und sichtbare Resultate hin.',
+  9: 'Im Modell steht diese Zahl oft für Perspektive und systemisches Denken.',
+  11: 'Im Modell wird diese Zahl häufig mit klarer Wahrnehmung und feinen Impulsen verbunden.',
+  22: 'Im Modell steht diese Zahl oft für große Vorhaben und tragfähige Realisierung.',
+  33: 'Im Modell verweist diese Zahl häufig auf Orientierung, Reife und ruhige Führung.'
 });
 
 function getPrimaryNumber(value) {
@@ -86,7 +86,7 @@ export function getLifeTheme(value) {
 export function getChallengeMeaning(value) {
   const primary = getPrimaryNumber(value);
   if (primary === 0) {
-    return 'Im Modell zeigt sich hier wenig innere Reibung. Achte trotzdem darauf, nicht im Komfort haengen zu bleiben.';
+    return 'Im Modell zeigt sich hier wenig innere Reibung. Achte trotzdem darauf, nicht im Komfort hängen zu bleiben.';
   }
   return getNumberMeaning(value);
 }
@@ -94,15 +94,15 @@ export function getChallengeMeaning(value) {
 export function getBridgeMeaning(value) {
   const primary = getPrimaryNumber(value);
   if (primary === null) return 'Verbindung zwischen zwei Seiten deines Modells.';
-  if (primary <= 2) return 'Im Modell wirkt diese Verbindung sehr stimmig und leicht anschlussfaehig.';
+  if (primary <= 2) return 'Im Modell wirkt diese Verbindung sehr stimmig und leicht anschlussfähig.';
   if (primary <= 5) return 'Im Modell zeigt sich eine stabile Verbindung mit punktuellem Feintuning.';
-  return 'Im Modell entsteht hier spuerbare Spannung, die bewussten Fokus und Entwicklung anstossen kann.';
+  return 'Im Modell entsteht hier spürbare Spannung, die bewussten Fokus und Entwicklung anstoßen kann.';
 }
 
 export function getPhaseDescription(value) {
   const primary = getPrimaryNumber(value);
   if (primary === 9) {
-    return 'Zeit fuer Transformation. Alte Strukturen aufloesen, um Platz fuer Neues zu schaffen.';
+    return 'Zeit für Transformation. Alte Strukturen auflösen, um Platz für Neues zu schaffen.';
   }
 
   const base = getLifeTheme(value) || getNumberMeaning(value);
@@ -112,7 +112,7 @@ export function getPhaseDescription(value) {
     .replace(/^Fokus der\s*/i, '')
     .replace(/\.$/, '');
   const normalized = cleaned.length > 0 ? `${cleaned.charAt(0).toLowerCase()}${cleaned.slice(1)}` : 'dein Thema klar ausrichten';
-  return `Im Modell rueckt in dieser Phase besonders in den Vordergrund, ${normalized}.`;
+  return `Im Modell rückt in dieser Phase besonders in den Vordergrund, ${normalized}.`;
 }
 
 export function describeNumerologyField(label, value) {
@@ -123,7 +123,7 @@ export function describeNumerologyField(label, value) {
     case 'Persönlichkeit': return { prefix: 'Deine Wirkung', body: getNumberMeaning(value) };
     case 'Ausdruck': return { prefix: 'Dein Potenzial', body: getNumberMeaning(value) };
     case 'Reife': return { prefix: 'Dein Fundament', body: getNumberMeaning(value) };
-    case 'Geburtstag': return { prefix: 'Dein fruehes Talent', body: getNumberMeaning(value) };
+    case 'Geburtstag': return { prefix: 'Dein frühes Talent', body: getNumberMeaning(value) };
     default: return { prefix: 'Dein Profil', body: getNumberMeaning(value) };
   }
 }

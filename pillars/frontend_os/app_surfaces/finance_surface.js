@@ -146,7 +146,7 @@ export const financeRender = {
       'res-interest',
       data.totalInterest,
       'Reiner Gewinn',
-      'Das hat dein Geld ganz von alleine fuer dich verdient.',
+      'Das hat dein Geld ganz von alleine für dich verdient.',
       'value-massive accent text-size-lg'
     );
 

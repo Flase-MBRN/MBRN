@@ -17,7 +17,7 @@ export function buildFinanceStoryCardRows(data) {
     {
       label: 'Reiner Gewinn',
       value: data.totalInterest,
-      note: 'Das hat dein Geld ganz von alleine fuer dich verdient.'
+      note: 'Das hat dein Geld ganz von alleine für dich verdient.'
     },
     {
       label: 'Eingezahlt',

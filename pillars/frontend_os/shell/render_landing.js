@@ -12,17 +12,17 @@ import { getFrontendProductJourney } from '../../../shared/application/frontend_
 
 const ARCHETYPES = {
   1: { title: 'Der Initiator', desc: 'Das Modell betont hier Eigeninitiative und klare Entscheidungen.' },
-  2: { title: 'Der Verbinder', desc: 'Das Modell rueckt Kooperation, Timing und Balance in den Vordergrund.' },
-  3: { title: 'Der Kreative', desc: 'Das Modell verbindet diese Zahl oft mit Ausdruck, Praesenz und klarer Kommunikation.' },
-  4: { title: 'Der Architekt', desc: 'Das Modell zeigt einen starken Fokus auf Struktur, Stabilitaet und verlaessliche Umsetzung.' },
-  5: { title: 'Der Freigeist', desc: 'Das Modell markiert hier haeufig Anpassung, Bewegung und flexible Kurswechsel.' },
-  6: { title: 'Der Traeger', desc: 'Das Modell ordnet diese Zahl oft Verantwortung, Halt und Verlaesslichkeit zu.' },
+  2: { title: 'Der Verbinder', desc: 'Das Modell rückt Kooperation, Timing und Balance in den Vordergrund.' },
+  3: { title: 'Der Kreative', desc: 'Das Modell verbindet diese Zahl oft mit Ausdruck, Präsenz und klarer Kommunikation.' },
+  4: { title: 'Der Architekt', desc: 'Das Modell zeigt einen starken Fokus auf Struktur, Stabilität und verlässliche Umsetzung.' },
+  5: { title: 'Der Freigeist', desc: 'Das Modell markiert hier häufig Anpassung, Bewegung und flexible Kurswechsel.' },
+  6: { title: 'Der Träger', desc: 'Das Modell ordnet diese Zahl oft Verantwortung, Halt und Verlässlichkeit zu.' },
   7: { title: 'Der Analytiker', desc: 'Das Modell hebt Analyse, Mustererkennung und klares Denken hervor.' },
   8: { title: 'Der Macher', desc: 'Das Modell betont Umsetzung, Entscheidungskraft und sichtbare Wirkung.' },
-  9: { title: 'Der Weitblicker', desc: 'Das Modell verbindet diese Zahl oft mit Perspektive und Sinn fuer Zusammenhaenge.' },
-  11: { title: 'Der Wegweiser', desc: 'Das Modell liest hier haeufig feine Wahrnehmung und praezise Impulse heraus.' },
-  22: { title: 'Der Baumeister', desc: 'Das Modell ordnet diese Zahl oft belastbaren Strukturen und grossen Vorhaben zu.' },
-  33: { title: 'Der Mentor', desc: 'Das Modell betont Orientierung, Ruhe und tragende Praesenz.' }
+  9: { title: 'Der Weitblicker', desc: 'Das Modell verbindet diese Zahl oft mit Perspektive und Sinn für Zusammenhänge.' },
+  11: { title: 'Der Wegweiser', desc: 'Das Modell liest hier häufig feine Wahrnehmung und präzise Impulse heraus.' },
+  22: { title: 'Der Baumeister', desc: 'Das Modell ordnet diese Zahl oft belastbaren Strukturen und großen Vorhaben zu.' },
+  33: { title: 'Der Mentor', desc: 'Das Modell betont Orientierung, Ruhe und tragende Präsenz.' }
 };
 
 export const landingRender = {
@@ -87,7 +87,7 @@ export const landingRender = {
   bindButtons() {
     const btnDashboard = document.getElementById('btn-dashboard');
     if (btnDashboard) {
-      btnDashboard.textContent = `Zu ${this.productJourney.entrySurface?.label || 'deiner Kernflaeche'}`;
+      btnDashboard.textContent = `Zu ${this.productJourney.entrySurface?.label || 'deiner Kernfläche'}`;
       btnDashboard.addEventListener('click', () => nav.navigateTo(this.productJourney.entrySurface?.id || 'dashboard'));
     }
 
@@ -198,7 +198,7 @@ export const landingRender = {
     if (isReturningUser && this.userData?.firstName) {
       const welcomeMsg = document.createElement('p');
       welcomeMsg.className = 'welcome-back';
-      welcomeMsg.textContent = `Willkommen zurueck, ${this.userData.firstName}.`;
+      welcomeMsg.textContent = `Willkommen zurück, ${this.userData.firstName}.`;
       revealText.insertBefore(welcomeMsg, revealText.firstChild);
     }
 
@@ -208,7 +208,7 @@ export const landingRender = {
 
     const revealHint = revealText.querySelector('.text-muted');
     if (revealHint) {
-      revealHint.textContent = `${this.productJourney.entrySurface?.label || 'Die Kernflaeche'} ist dein erster kontrollierter Einstieg. Das Dashboard bleibt danach dein Hub fuer den naechsten Schritt.`;
+      revealHint.textContent = `${this.productJourney.entrySurface?.label || 'Die Kernfläche'} ist dein erster kontrollierter Einstieg. Das Dashboard bleibt danach dein Hub für den nächsten Schritt.`;
     }
 
     if (ringProgress) {

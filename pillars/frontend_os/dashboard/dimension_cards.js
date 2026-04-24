@@ -22,7 +22,7 @@ function getDimensionMeta(model) {
   }
   if (model.defaultApp) {
     const primaryApp = model.apps.find((app) => app.id === model.defaultApp);
-    details.push(`Primaer: ${primaryApp?.label || model.defaultApp}`);
+    details.push(`Primär: ${primaryApp?.label || model.defaultApp}`);
   }
 
   return details.join(' · ') || 'Noch keine direkte Surface';
@@ -58,11 +58,11 @@ export function renderDashboardDimensionCards(containerId = 'dashboard-dimension
 
   getDashboardDimensionEntries().forEach((entry, index) => {
     const card = dom.createEl('a', {
-      className: 'dashboard-dimension-card stagger-fade',
+      className: 'dashboard-dimension-card',
       attrs: {
         href: `../dimensions/${entry.id}/index.html`,
-        'data-delay': String(index + 1),
-        'aria-label': `${entry.label} oeffnen`
+        'data-card-index': String(index + 1),
+        'aria-label': `${entry.label} öffnen`
       },
       parent: container
     });

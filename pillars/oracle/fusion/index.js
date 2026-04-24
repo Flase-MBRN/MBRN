@@ -2,7 +2,7 @@ export function buildOracleFusion(snapshot = {}, signals = {}, backtestingSummar
   const dayNumerology = snapshot.day_numerology || {};
 
   return {
-    targetDate: snapshot.target_date || 'Naechster Handelstag',
+    targetDate: snapshot.target_date || 'Nächster Handelstag',
     dayNumber: dayNumerology.day_number ?? null,
     dayDescription: dayNumerology.description || '',
     recommendation: signals.recommendation || 'Hold',

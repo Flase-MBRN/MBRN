@@ -3,7 +3,7 @@ export const TOPIC_AREA_REGISTRY = Object.freeze([
     id: 'oracle_signal',
     dimensionId: 'geld',
     publicLabel: 'Oracle & Signal',
-    description: 'Markt-, Sentiment- und Oracle-Signale als Geld-Unterthema fuehren.',
+    description: 'Markt-, Sentiment- und Oracle-Signale als Geld-Unterthema führen.',
     defaultSurfaceId: 'oracle_signal',
     route: 'dimensions/geld/oracle_signal/index.html'
   },
@@ -18,14 +18,14 @@ export const TOPIC_AREA_REGISTRY = Object.freeze([
     id: 'astrologie',
     dimensionId: 'muster',
     publicLabel: 'Astrologie',
-    description: 'Spaeterer Muster-Bereich fuer astrologische Deutung und Surface-Zuschnitt.',
+    description: 'Späterer Muster-Bereich für astrologische Deutung und Surface-Zuschnitt.',
     defaultSurfaceId: null
   },
   {
     id: 'persoenlichkeiten',
     dimensionId: 'muster',
-    publicLabel: 'Persoenlichkeiten',
-    description: 'Spaeterer Muster-Bereich fuer Typologien und persoenlichkeitsnahe Modelle.',
+    publicLabel: 'Persönlichkeiten',
+    description: 'Späterer Muster-Bereich für Typologien und persönlichkeitsnahe Modelle.',
     defaultSurfaceId: null
   }
 ]);

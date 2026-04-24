@@ -16,7 +16,7 @@ function renderSynergySurfaceBody() {
       <p class="text-secondary mb-20">${copy?.subtitle || 'Diese Surface wurde generatorgetrieben vorbereitet.'}</p>
       <div class="share-action-group__buttons">
         <a href="${basePath}dashboard/index.html" class="btn-primary share-action-group__primary" data-route="dashboard" style="display:inline-flex; text-decoration:none;">Zum Dashboard</a>
-        <a href="${basePath}apps/numerology/index.html" class="btn-secondary share-action-group__secondary" data-route="numerology" style="display:inline-flex; text-decoration:none;">Zur Kernflaeche</a>
+        <a href="${basePath}apps/numerology/index.html" class="btn-secondary share-action-group__secondary" data-route="numerology" style="display:inline-flex; text-decoration:none;">Zur Kernfläche</a>
       </div>
       <div id="synergy-surface-legal" class="mt-24"></div>
     </div>

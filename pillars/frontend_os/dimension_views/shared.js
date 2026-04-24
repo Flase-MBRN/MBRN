@@ -89,7 +89,7 @@ export function renderDimensionViewCard(container, dimensionId, options = {}) {
   });
   dom.createEl('div', {
     className: 'card-grid-item-sm',
-    text: `Primaer: ${model.defaultApp || 'Keine direkte App'}`,
+    text: `Primär: ${model.defaultApp || 'Keine direkte App'}`,
     parent: meta
   });
   dom.createEl('div', {
@@ -127,7 +127,7 @@ export function renderDimensionViewCard(container, dimensionId, options = {}) {
       createSurfaceCard(topicAreaGrid, {
         title: topicArea.publicLabel,
         body: topicArea.description,
-        meta: targetApp ? `Oeffnet: ${targetApp.label}` : (topicRoute ? 'Oeffnet Topic-Surface' : 'In Vorbereitung'),
+        meta: targetApp ? `Öffnet: ${targetApp.label}` : (topicRoute ? 'Öffnet Topic-Surface' : 'In Vorbereitung'),
         surfaceId: topicSurfaceId,
         route: topicRoute,
         interactive: Boolean(topicRoute),

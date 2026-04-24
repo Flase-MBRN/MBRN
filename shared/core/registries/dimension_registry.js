@@ -19,7 +19,7 @@ export const DIMENSION_REGISTRY = Object.freeze([
   {
     id: 'geld',
     publicLabel: 'Geld',
-    description: 'Einnahmen, Cashflow, Investments und strategischen Vermoegensaufbau fuehrbar machen.',
+    description: 'Einnahmen, Cashflow, Investments und strategischen Vermögensaufbau führbar machen.',
     accessRules: { tier: 0 },
     pillarDependencies: ['frontend_os', 'oracle', 'monetization'],
     defaultApp: 'finance',
@@ -32,7 +32,7 @@ export const DIMENSION_REGISTRY = Object.freeze([
   {
     id: 'physis',
     publicLabel: 'Physis',
-    description: 'Koerperliche Leistungsfaehigkeit, Gesundheit, Ernaehrung und rohe Fitness als eigene Grundstruktur.',
+    description: 'Körperliche Leistungsfähigkeit, Gesundheit, Ernährung und rohe Fitness als eigene Grundstruktur.',
     accessRules: { tier: 0 },
     pillarDependencies: ['frontend_os'],
     defaultApp: null,
@@ -71,7 +71,7 @@ export const DIMENSION_REGISTRY = Object.freeze([
   {
     id: 'netzwerk',
     publicLabel: 'Netzwerk',
-    description: 'Beziehungen, Partner-Synergien, Umfeld und nuetzliche Kontakte als eigene Surface-Ebene fuehren.',
+    description: 'Beziehungen, Partner-Synergien, Umfeld und nützliche Kontakte als eigene Surface-Ebene führen.',
     accessRules: { tier: 0 },
     pillarDependencies: ['frontend_os', 'oracle'],
     defaultApp: 'synergy',
@@ -110,7 +110,7 @@ export const DIMENSION_REGISTRY = Object.freeze([
   {
     id: 'raum',
     publicLabel: 'Raum',
-    description: 'Physisches und digitales Cockpit von Schreibtisch bis Server-Umgebung als Dimension fuehren.',
+    description: 'Physisches und digitales Cockpit von Schreibtisch bis Server-Umgebung als Dimension führen.',
     accessRules: { tier: 0 },
     pillarDependencies: ['frontend_os'],
     defaultApp: null,
@@ -123,7 +123,7 @@ export const DIMENSION_REGISTRY = Object.freeze([
   {
     id: 'muster',
     publicLabel: 'Muster',
-    description: 'Taegliche Gewohnheiten, Routinen, Tracking und lesbare Profilsignaturen zusammenhalten.',
+    description: 'Tägliche Gewohnheiten, Routinen, Tracking und lesbare Profilsignaturen zusammenhalten.',
     accessRules: { tier: 0 },
     pillarDependencies: ['frontend_os', 'meta_generator', 'oracle'],
     defaultApp: 'numerology',

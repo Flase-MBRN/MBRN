@@ -5,28 +5,28 @@ const DIMENSION_CONTENT_BUNDLES = Object.freeze({
     dimensionId: 'zeit',
     eyebrow: 'Dimension',
     title: 'Zeit ordnen',
-    summary: 'Kalender, Phasen und Timing in einer fokussierten Zeitflaeche.',
-    cta: 'Zur Zeitflaeche'
+    summary: 'Kalender, Phasen und Timing in einer fokussierten Zeitfläche.',
+    cta: 'Zur Zeitfläche'
   }),
   geld: Object.freeze({
     dimensionId: 'geld',
     eyebrow: 'Dimension',
     title: 'Geld steuern',
-    summary: 'Vermoegen, Cashflow und Signal-Lagen in einer lesbaren Geldflaeche.',
-    cta: 'Zur Geldflaeche'
+    summary: 'Vermögen, Cashflow und Signal-Lagen in einer lesbaren Geldfläche.',
+    cta: 'Zur Geldfläche'
   }),
   physis: Object.freeze({
     dimensionId: 'physis',
     eyebrow: 'Dimension',
-    title: 'Physis staerken',
-    summary: 'Gesundheit, Leistung und rohe Fitness als spaetere Surface-Zone.',
+    title: 'Physis stärken',
+    summary: 'Gesundheit, Leistung und rohe Fitness als spätere Surface-Zone.',
     cta: 'Zur Physis'
   }),
   geist: Object.freeze({
     dimensionId: 'geist',
     eyebrow: 'Dimension',
-    title: 'Geist schaerfen',
-    summary: 'Fokus, Stressresistenz und mentale Fuehrung als eigene Surface-Zone.',
+    title: 'Geist schärfen',
+    summary: 'Fokus, Stressresistenz und mentale Führung als eigene Surface-Zone.',
     cta: 'Zum Geist'
   }),
   ausdruck: Object.freeze({
@@ -40,20 +40,20 @@ const DIMENSION_CONTENT_BUNDLES = Object.freeze({
     dimensionId: 'netzwerk',
     eyebrow: 'Dimension',
     title: 'Netzwerk lesen',
-    summary: 'Beziehungen, Synergien und Resonanz in einer lesbaren Netzwerkflaeche.',
+    summary: 'Beziehungen, Synergien und Resonanz in einer lesbaren Netzwerkfläche.',
     cta: 'Zum Netzwerk'
   }),
   energie: Object.freeze({
     dimensionId: 'energie',
     eyebrow: 'Dimension',
-    title: 'Energie schuetzen',
+    title: 'Energie schützen',
     summary: 'Schlaf, Regeneration und Batteriemanagement als eigene Grundordnung.',
     cta: 'Zur Energie'
   }),
   systeme: Object.freeze({
     dimensionId: 'systeme',
     eyebrow: 'Dimension',
-    title: 'Systeme fuehren',
+    title: 'Systeme führen',
     summary: 'Werkzeuge, KI-Agenten und Automationen in einer System-Dimension.',
     cta: 'Zu den Systemen'
   }),
@@ -61,14 +61,14 @@ const DIMENSION_CONTENT_BUNDLES = Object.freeze({
     dimensionId: 'raum',
     eyebrow: 'Dimension',
     title: 'Raum ordnen',
-    summary: 'Physisches und digitales Cockpit als sauber gefuehrte Surface-Zone.',
+    summary: 'Physisches und digitales Cockpit als sauber geführte Surface-Zone.',
     cta: 'Zum Raum'
   }),
   muster: Object.freeze({
     dimensionId: 'muster',
     eyebrow: 'Dimension',
     title: 'Muster erkennen',
-    summary: 'Numerologie, Routinen und lesbare Signaturen in einer Musterflaeche.',
+    summary: 'Numerologie, Routinen und lesbare Signaturen in einer Musterfläche.',
     cta: 'Zu den Mustern'
   }),
   wachstum: Object.freeze({
@@ -84,19 +84,19 @@ const SURFACE_COPY_BUNDLES = Object.freeze({
   home: Object.freeze({
     surfaceId: 'home',
     title: 'MBRN',
-    subtitle: 'Der Hub fuer 11 Dimensionen, Themenbereiche und operative Surfaces.',
+    subtitle: 'Der Hub für 11 Dimensionen, Themenbereiche und operative Surfaces.',
     cta: 'Starten'
   }),
   dashboard: Object.freeze({
     surfaceId: 'dashboard',
     title: 'Dashboard',
-    subtitle: 'Alle aktiven Flaechen auf einen Blick.',
-    cta: 'Uebersicht laden'
+    subtitle: 'Alle aktiven Flächen auf einen Blick.',
+    cta: 'Übersicht laden'
   }),
   finance: Object.freeze({
     surfaceId: 'finance',
     title: 'Geld',
-    subtitle: 'So steuerst du Kapital, Cashflow und Vermoegen ueber Zeit.',
+    subtitle: 'So steuerst du Kapital, Cashflow und Vermögen über Zeit.',
     cta: 'Szenario ansehen'
   }),
   numerology: Object.freeze({
@@ -114,7 +114,7 @@ const SURFACE_COPY_BUNDLES = Object.freeze({
   synergy: Object.freeze({
     surfaceId: 'synergy',
     title: 'Vibe Check',
-    subtitle: 'Beziehungen, Dynamik und Resonanz als Netzwerk-Flaeche.',
+    subtitle: 'Beziehungen, Dynamik und Resonanz als Netzwerk-Fläche.',
     cta: 'Verbindung lesen'
   })
 });
@@ -123,19 +123,19 @@ const EXPORT_COPY_BUNDLES = Object.freeze({
   asset_export: Object.freeze({
     exportId: 'asset_export',
     title: 'Surface Asset',
-    subtitle: 'Ein visuelles Artefakt fuer deine aktive Surface.',
+    subtitle: 'Ein visuelles Artefakt für deine aktive Surface.',
     cta: 'Asset exportieren'
   }),
   pdf_export: Object.freeze({
     exportId: 'pdf_export',
     title: 'PDF Report',
-    subtitle: 'Ein lesbarer Report fuer spaetere Referenz.',
+    subtitle: 'Ein lesbarer Report für spätere Referenz.',
     cta: 'PDF exportieren'
   }),
   share_export: Object.freeze({
     exportId: 'share_export',
     title: 'Share Card',
-    subtitle: 'Ein kompaktes Bild fuer Teilen oder Download.',
+    subtitle: 'Ein kompaktes Bild für Teilen oder Download.',
     cta: 'Share Card erzeugen'
   })
 });
@@ -158,7 +158,7 @@ export function buildPostV3RoadmapMarkdown() {
 
 Diese Datei plant die Schritte **nach** dem Setzen der v4.0 Foundation.
 
-Sie ersetzt nicht die historische \`000_MBRN_V3_100_PERCENT_CHECKLIST.md\`, sondern dokumentiert die naechsten Ausbaustufen auf der gehaerteten Foundation-Basis.
+Sie ersetzt nicht die historische \`000_MBRN_V3_100_PERCENT_CHECKLIST.md\`, sondern dokumentiert die nächsten Ausbaustufen auf der gehärteten Foundation-Basis.
 
 Die einzige technische Wahrheit bleibt:
 
@@ -166,14 +166,14 @@ Die einzige technische Wahrheit bleibt:
 
 ## Nicht Teil dieser Datei
 
-- keine Rueckkehr zur 4-Dimensions-Wahrheit
-- kein Ersatz fuer den aktiven Kanon
-- keine Parallel-Realitaet neben \`000_CANONICAL_STATE.json\`
+- keine Rückkehr zur 4-Dimensions-Wahrheit
+- kein Ersatz für den aktiven Kanon
+- keine Parallel-Realität neben \`000_CANONICAL_STATE.json\`
 
 ## Jetzt
 
 - Kanon, Runtime, Metadaten und Supabase auf dieselbe 11-Dimensions-Wahrheit halten
-- direkte und topic-area-basierte App-Zuordnungen ohne Routing-Bruch fuehren
+- direkte und topic-area-basierte App-Zuordnungen ohne Routing-Bruch führen
 - aktive Surfaces sauber den neuen Dimensionen zuordnen
 - dann die 4 Pillars fachlich auf echten Reifegrad ziehen
 
@@ -189,16 +189,16 @@ ${blueprintRows}
 
 Erwartung:
 
-- klare Zustaendigkeit
+- klare Zuständigkeit
 - aktive Module
 - klare Contracts
-- keine verteilte Schattenlogik ausserhalb der Pillar-Zone
+- keine verteilte Schattenlogik außerhalb der Pillar-Zone
 
 ## Spaeter: Stage B - Dimension Maturation
 
 - 11 Dimensions bleiben Kanon und Runtime-Wahrheit
-- topic_areas koennen pro Dimension wachsen, muessen aber nicht existieren
-- Apps duerfen direkt unter der Dimension oder innerhalb einer topic_area haengen
+- topic_areas können pro Dimension wachsen, müssen aber nicht existieren
+- Apps dürfen direkt unter der Dimension oder innerhalb einer topic_area hängen
 
 ## Spaeter: Stage C - App Review
 

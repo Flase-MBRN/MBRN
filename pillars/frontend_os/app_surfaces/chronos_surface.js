@@ -1,6 +1,6 @@
 /**
  * /apps/chronos/render.js
- * Zeit-Seite fuer Phasen und 7-Jahres-Zyklen.
+ * Zeit-Seite für Phasen und 7-Jahres-Zyklen.
  */
 
 import { actions } from '../../../shared/application/actions.js';
@@ -19,15 +19,15 @@ import { renderAuth } from '../ui_states/auth_controller.js';
 import { injectLegalBlock } from '../shell/legal_blocks.js';
 
 const FOCUS_EXPLANATIONS = {
-  1: 'Das Modell liest diese Phase oft als Startpunkt. Initiative, Richtung und mutige Entscheidungen ruecken staerker nach vorn.',
+  1: 'Das Modell liest diese Phase oft als Startpunkt. Initiative, Richtung und mutige Entscheidungen rücken stärker nach vorn.',
   2: 'Das Modell betont in dieser Phase Feingefuehl, Verbindungen und ruhiges Timing.',
-  3: 'Das Modell ordnet diese Phase haeufig Expansion und Sichtbarkeit zu. Strukturen, die jetzt entstehen, koennen spaeter tragen.',
-  4: 'Das Modell rueckt hier Fundament, Routinen und sauberen Aufbau in den Vordergrund.',
+  3: 'Das Modell ordnet diese Phase häufig Expansion und Sichtbarkeit zu. Strukturen, die jetzt entstehen, können später tragen.',
+  4: 'Das Modell rückt hier Fundament, Routinen und sauberen Aufbau in den Vordergrund.',
   5: 'Das Modell verbindet diese Phase oft mit Bewegung, Flexibilitaet und schnellen Anpassungen.',
-  6: 'Das Modell markiert in dieser Phase Verantwortung, Stabilitaet und klare Prioritaeten.',
+  6: 'Das Modell markiert in dieser Phase Verantwortung, Stabilität und klare Prioritäten.',
   7: 'Das Modell betont jetzt Analyse, Tiefgang und bewusstes Sortieren.',
-  8: 'Das Modell ordnet diese Phase haeufig Umsetzung, Entscheidungskraft und sichtbare Wirkung zu.',
-  9: 'Das Modell verbindet diese Phase oft mit Abschluss, Reset und dem Schaffen von Raum fuer Neues.'
+  8: 'Das Modell ordnet diese Phase häufig Umsetzung, Entscheidungskraft und sichtbare Wirkung zu.',
+  9: 'Das Modell verbindet diese Phase oft mit Abschluss, Reset und dem Schaffen von Raum für Neues.'
 };
 
 function getFocusNumber(data) {
@@ -43,7 +43,7 @@ function getFocusNarrative(focusNumber, topic) {
     return FOCUS_EXPLANATIONS[focusNumber];
   }
   const safeTopic = topic || 'dein aktuelles Thema';
-  return `Das Modell verbindet diese Phase mit ${safeTopic}. Nutze den Zeitraum bewusst, um deinen naechsten Schritt klar einzuordnen.`;
+  return `Das Modell verbindet diese Phase mit ${safeTopic}. Nutze den Zeitraum bewusst, um deinen nächsten Schritt klar einzuordnen.`;
 }
 
 function calculateDaysInCurrentPhase(data) {
@@ -127,7 +127,7 @@ export const chronosRender = {
       className: 'text-secondary mb-16',
       text: !user
         ? 'Chronos ist intern abgesichert. Bitte melde dich mit einem internen Konto an.'
-        : 'Chronos ist fuer dieses Konto noch nicht freigeschaltet. Die Freischaltung erfolgt intern ueber Profilstatus und plan_id.',
+        : 'Chronos ist für dieses Konto noch nicht freigeschaltet. Die Freischaltung erfolgt intern über Profilstatus und plan_id.',
       parent: card
     });
 
@@ -293,7 +293,7 @@ export const chronosRender = {
 
     dom.createEl('p', {
       className: 'text-secondary mb-24',
-      text: 'Jede Phase hat ihren eigenen Rhythmus. Hier siehst du, wie lange dein aktuelles Thema im Modell noch praesent ist und wann der naechste Wechsel ansteht.',
+      text: 'Jede Phase hat ihren eigenen Rhythmus. Hier siehst du, wie lange dein aktuelles Thema im Modell noch präsent ist und wann der nächste Wechsel ansteht.',
       parent: cyclesCard
     });
 
@@ -351,7 +351,7 @@ export const chronosRender = {
     });
     dom.createEl('span', {
       className: 'value-label',
-      text: 'Naechster Wechsel',
+      text: 'Nächster Wechsel',
       parent: nextItem
     });
 

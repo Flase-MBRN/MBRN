@@ -9,27 +9,27 @@ const DIMENSION_BLUEPRINTS = Object.freeze({
   zeit: Object.freeze({
     id: 'zeit',
     headline: 'Zeit sauber organisieren',
-    intent: 'Kalender, Lebenszeit, Phasen und Rhythmen als klare Zeit-Surface fuehrbar machen.',
+    intent: 'Kalender, Lebenszeit, Phasen und Rhythmen als klare Zeit-Surface führbar machen.',
     exportEntrypoints: [],
     primarySurfaceIds: ['chronos']
   }),
   geld: Object.freeze({
     id: 'geld',
     headline: 'Geld steuerbar machen',
-    intent: 'Vermoegen, Cashflow und Oracle-nahe Signale als operative Geld-Zone fuehren.',
+    intent: 'Vermögen, Cashflow und Oracle-nahe Signale als operative Geld-Zone führen.',
     exportEntrypoints: ['asset_export'],
     primarySurfaceIds: ['finance']
   }),
   physis: Object.freeze({
     id: 'physis',
     headline: 'Physis aufbauen',
-    intent: 'Koerperliche Leistung, Gesundheit und Fitness als spaetere Surface-Familie vorbereiten.',
+    intent: 'Körperliche Leistung, Gesundheit und Fitness als spätere Surface-Familie vorbereiten.',
     exportEntrypoints: [],
     primarySurfaceIds: []
   }),
   geist: Object.freeze({
     id: 'geist',
-    headline: 'Geist schaerfen',
+    headline: 'Geist schärfen',
     intent: 'Mindset, Fokus und Stressresistenz als eigene geistige Surface-Zone vorbereiten.',
     exportEntrypoints: [],
     primarySurfaceIds: []
@@ -37,21 +37,21 @@ const DIMENSION_BLUEPRINTS = Object.freeze({
   ausdruck: Object.freeze({
     id: 'ausdruck',
     headline: 'Ausdruck in Systeme bringen',
-    intent: 'Kreativen Output, Schreiben und sichtbare Produktion als spaetere Surface-Familie vorbereiten.',
+    intent: 'Kreativen Output, Schreiben und sichtbare Produktion als spätere Surface-Familie vorbereiten.',
     exportEntrypoints: [],
     primarySurfaceIds: []
   }),
   netzwerk: Object.freeze({
     id: 'netzwerk',
     headline: 'Netzwerk lesbar machen',
-    intent: 'Beziehungen, Resonanz und Synergien als eigene Netzwerk-Flaeche ausspielen.',
+    intent: 'Beziehungen, Resonanz und Synergien als eigene Netzwerk-Fläche ausspielen.',
     exportEntrypoints: [],
     primarySurfaceIds: ['synergy']
   }),
   energie: Object.freeze({
     id: 'energie',
-    headline: 'Energie schuetzen',
-    intent: 'Regeneration, Schlaf und Batteriemanagement als spaetere Energie-Zone vorbereiten.',
+    headline: 'Energie schützen',
+    intent: 'Regeneration, Schlaf und Batteriemanagement als spätere Energie-Zone vorbereiten.',
     exportEntrypoints: [],
     primarySurfaceIds: []
   }),
@@ -64,7 +64,7 @@ const DIMENSION_BLUEPRINTS = Object.freeze({
   }),
   raum: Object.freeze({
     id: 'raum',
-    headline: 'Raum bewusst fuehren',
+    headline: 'Raum bewusst führen',
     intent: 'Physisches und digitales Cockpit als Surface-Zone vorbereiten.',
     exportEntrypoints: [],
     primarySurfaceIds: []
@@ -72,7 +72,7 @@ const DIMENSION_BLUEPRINTS = Object.freeze({
   muster: Object.freeze({
     id: 'muster',
     headline: 'Muster sichtbar machen',
-    intent: 'Profile, Routinen und lesbare Muster mit optionalen Themenbereichen fuehren.',
+    intent: 'Profile, Routinen und lesbare Muster mit optionalen Themenbereichen führen.',
     exportEntrypoints: ['share_export', 'pdf_export', 'asset_export'],
     primarySurfaceIds: ['numerology']
   }),

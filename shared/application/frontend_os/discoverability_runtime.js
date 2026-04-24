@@ -212,7 +212,7 @@ export function getSurfaceJourney(surfaceId = 'home') {
       currentSurface,
       primaryTarget: journey.entrySurface,
       secondaryTarget: journey.hubSurface,
-      summary: `${journey.entrySurface?.label || 'Die Kernflaeche'} ist der kontrollierte Einstieg. Das Dashboard bleibt dein Hub fuer den naechsten Schritt.`
+      summary: `${journey.entrySurface?.label || 'Die Kernfläche'} ist der kontrollierte Einstieg. Das Dashboard bleibt dein Hub für den nächsten Schritt.`
     };
   }
 
@@ -221,7 +221,7 @@ export function getSurfaceJourney(surfaceId = 'home') {
       currentSurface,
       primaryTarget: journey.dashboardNextSurface,
       secondaryTarget: journey.entrySurface,
-      summary: `${journey.hubSurface?.label || 'Dashboard'} ist das operative Cockpit. Von hier geht der naechste Schritt in ${journey.dashboardNextSurface?.label || 'die naechste Dimension'}.`
+      summary: `${journey.hubSurface?.label || 'Dashboard'} ist das operative Cockpit. Von hier geht der nächste Schritt in ${journey.dashboardNextSurface?.label || 'die nächste Dimension'}.`
     };
   }
 
@@ -233,8 +233,8 @@ export function getSurfaceJourney(surfaceId = 'home') {
       primaryTarget: prefersSelfAsDimensionLanding ? journey.hubSurface : (dimensionSurface || journey.hubSurface),
       secondaryTarget: prefersSelfAsDimensionLanding ? journey.dashboardNextSurface : journey.hubSurface,
       summary: prefersSelfAsDimensionLanding
-        ? `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt ins Dashboard und danach in die naechste relevante Dimension.`
-        : `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt zuerst in ${dimensionSurface?.label || 'die zugehoerige Dimension'} und danach ins Dashboard.`
+        ? `${journey.entrySurface.label} bleibt die Kernfläche. Der saubere Rückweg führt ins Dashboard und danach in die nächste relevante Dimension.`
+        : `${journey.entrySurface.label} bleibt die Kernfläche. Der saubere Rückweg führt zuerst in ${dimensionSurface?.label || 'die zugehörige Dimension'} und danach ins Dashboard.`
     };
   }
 
@@ -246,7 +246,7 @@ export function getSurfaceJourney(surfaceId = 'home') {
       secondaryTarget: primaryTarget ? journey.hubSurface : journey.entrySurface,
       summary: primaryTarget
         ? `${currentSurface.label} ist dein Arbeitsraum. Von hier geht es direkt weiter in ${primaryTarget.label}.`
-        : `${currentSurface.label} ist als Dimensions-Hub angelegt. Inhalte folgen spaeter, der Rueckweg bleibt ueber das Dashboard stabil.`
+        : `${currentSurface.label} ist als Dimensions-Hub angelegt. Inhalte folgen später, der Rückweg bleibt über das Dashboard stabil.`
     };
   }
 
@@ -256,7 +256,7 @@ export function getSurfaceJourney(surfaceId = 'home') {
       currentSurface,
       primaryTarget: owningDimension || journey.hubSurface,
       secondaryTarget: journey.hubSurface,
-      summary: `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der Rueckweg fuehrt ueber die Dimension und das Dashboard.`
+      summary: `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der Rückweg führt über die Dimension und das Dashboard.`
     };
   }
 
@@ -268,8 +268,8 @@ export function getSurfaceJourney(surfaceId = 'home') {
       primaryTarget: prefersSelfAsDimensionLanding ? journey.hubSurface : (owningDimension || journey.hubSurface),
       secondaryTarget: prefersSelfAsDimensionLanding ? journey.entrySurface : journey.hubSurface,
       summary: prefersSelfAsDimensionLanding
-        ? `${currentSurface.label} ist gleichzeitig die aktive Surface seiner Dimension. Der saubere Rueckweg fuehrt ins Dashboard.`
-        : `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der saubere Rueckweg fuehrt zuerst in die Dimension und danach ins Dashboard.`
+        ? `${currentSurface.label} ist gleichzeitig die aktive Surface seiner Dimension. Der saubere Rückweg führt ins Dashboard.`
+        : `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der saubere Rückweg führt zuerst in die Dimension und danach ins Dashboard.`
     };
   }
 
@@ -277,7 +277,7 @@ export function getSurfaceJourney(surfaceId = 'home') {
     currentSurface,
     primaryTarget: journey.hubSurface,
     secondaryTarget: journey.entrySurface,
-    summary: `Von ${currentSurface.label} geht der kontrollierte Rueckweg ins Dashboard. Die Kernflaeche bleibt ${journey.entrySurface?.label || 'die Einstiegssurface'}.`
+    summary: `Von ${currentSurface.label} geht der kontrollierte Rückweg ins Dashboard. Die Kernfläche bleibt ${journey.entrySurface?.label || 'die Einstiegssurface'}.`
   };
 }
 

@@ -4,7 +4,7 @@
 
 Diese Datei plant die Schritte **nach** dem Setzen der v4.0 Foundation.
 
-Sie ersetzt nicht die historische `000_MBRN_V3_100_PERCENT_CHECKLIST.md`, sondern dokumentiert die naechsten Ausbaustufen auf der gehaerteten Foundation-Basis.
+Sie ersetzt nicht die historische `000_MBRN_V3_100_PERCENT_CHECKLIST.md`, sondern dokumentiert die nächsten Ausbaustufen auf der gehärteten Foundation-Basis.
 
 Die einzige technische Wahrheit bleibt:
 
@@ -12,14 +12,14 @@ Die einzige technische Wahrheit bleibt:
 
 ## Nicht Teil dieser Datei
 
-- keine Rueckkehr zur 4-Dimensions-Wahrheit
-- kein Ersatz fuer den aktiven Kanon
-- keine Parallel-Realitaet neben `000_CANONICAL_STATE.json`
+- keine Rückkehr zur 4-Dimensions-Wahrheit
+- kein Ersatz für den aktiven Kanon
+- keine Parallel-Realität neben `000_CANONICAL_STATE.json`
 
 ## Jetzt
 
 - Kanon, Runtime, Metadaten und Supabase auf dieselbe 11-Dimensions-Wahrheit halten
-- direkte und topic-area-basierte App-Zuordnungen ohne Routing-Bruch fuehren
+- direkte und topic-area-basierte App-Zuordnungen ohne Routing-Bruch führen
 - aktive Surfaces sauber den neuen Dimensionen zuordnen
 - dann die 4 Pillars fachlich auf echten Reifegrad ziehen
 
@@ -41,16 +41,16 @@ Pillar-Regeln:
 
 Erwartung:
 
-- klare Zustaendigkeit
+- klare Zuständigkeit
 - aktive Module
 - klare Contracts
-- keine verteilte Schattenlogik ausserhalb der Pillar-Zone
+- keine verteilte Schattenlogik außerhalb der Pillar-Zone
 
 ## Spaeter: Stage B - Dimension Maturation
 
 - 11 Dimensions bleiben Kanon und Runtime-Wahrheit
-- topic_areas koennen pro Dimension wachsen, muessen aber nicht existieren
-- Apps duerfen direkt unter der Dimension oder innerhalb einer topic_area haengen
+- topic_areas können pro Dimension wachsen, müssen aber nicht existieren
+- Apps dürfen direkt unter der Dimension oder innerhalb einer topic_area hängen
 
 ## Spaeter: Stage C - App Review
 

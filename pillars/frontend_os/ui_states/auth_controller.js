@@ -134,8 +134,8 @@ export const renderAuth = {
     dom.createEl('p', {
       className: 'text-secondary mb-24',
       text: user
-        ? 'Dieses Konto ist fuer interne Nutzung verbunden.'
-        : 'Login und Kontoanlage sind nur fuer interne Team-Nutzung gedacht.',
+        ? 'Dieses Konto ist für interne Nutzung verbunden.'
+        : 'Login und Kontoanlage sind nur für interne Team-Nutzung gedacht.',
       parent: card
     });
 
@@ -236,7 +236,7 @@ export const renderAuth = {
 
     dom.createEl('p', {
       className: 'text-sm opacity-70 mt-16',
-      text: 'Freischaltungen fuer geschuetzte Bereiche erfolgen intern ueber Profilstatus und plan_id.',
+      text: 'Freischaltungen für geschützte Bereiche erfolgen intern über Profilstatus und plan_id.',
       parent: card
     });
 
