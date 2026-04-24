@@ -559,5 +559,24 @@
       "uniqueness_score": 90,
       "roi_rationale": "Moderate: Viable but not exceptional"
     }
+  },
+  {
+    "id": "evo_20260424_220228_1218872083",
+    "tool_name": "bely-lab/smolagents-AI_job-assistant",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It automates the process of skill matching and gap analysis in CVs, significantly reducing the time and effort required for HR departments to evaluate candidates.",
+    "discovered_at": "2026-04-24T22:02:28.482920+00:00",
+    "repo_metadata": {
+      "id": 1218872083,
+      "url": "https://github.com/bely-lab/smolagents-AI_job-assistant"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
   }
 ]
