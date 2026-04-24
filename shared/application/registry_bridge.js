@@ -6,7 +6,9 @@
 export class RegistryBridge {
   constructor() {
     this.state = null;
-    this.canonicalPath = '/000_CANONICAL_STATE.json';
+    // Resolve relative to this module to support GitHub Pages subpath (/MBRN/)
+    const baseUrl = new URL('../../', import.meta.url).href;
+    this.canonicalPath = new URL('000_CANONICAL_STATE.json', baseUrl).href;
   }
 
   async load() {

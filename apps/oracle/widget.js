@@ -3,7 +3,8 @@ import { BaseWidget } from '../../shared/ui/widget_api.js';
 export class Widget extends BaseWidget {
   constructor(appId, dimensionId) {
     super(appId, dimensionId);
-    this.reportPath = '/AI/models/reports/latest_causal_report.md';
+    const baseUrl = new URL('../../', import.meta.url).href;
+    this.reportPath = new URL('AI/models/reports/latest_causal_report.md', baseUrl).href;
     this.refreshInterval = 60000; // 60 seconds
     this.timer = null;
   }
