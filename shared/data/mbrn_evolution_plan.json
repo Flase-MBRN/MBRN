@@ -331,5 +331,233 @@
       "uniqueness_score": 95,
       "roi_rationale": "Moderate: Viable but not exceptional"
     }
+  },
+  {
+    "id": "evo_20260424_215046_1219793969",
+    "tool_name": "shrutinaredi/research-paper-intelligent-assistant",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It significantly reduces the workload of human architects by automating various stages of research paper analysis and answering tasks.",
+    "discovered_at": "2026-04-24T21:50:46.563687+00:00",
+    "repo_metadata": {
+      "id": 1219793969,
+      "url": "https://github.com/shrutinaredi/research-paper-intelligent-assistant"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215112_1217942578",
+    "tool_name": "QuoteSystemX/go-agent-llm-orchestrator",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "meta_generator",
+    "concrete_benefit": "It significantly reduces the workload of human architects by automating many tasks and providing intelligent routing for local and cloud LLM models, enhancing task efficiency.",
+    "discovered_at": "2026-04-24T21:51:12.877283+00:00",
+    "repo_metadata": {
+      "id": 1217942578,
+      "url": "https://github.com/QuoteSystemX/go-agent-llm-orchestrator"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215143_1219011012",
+    "tool_name": "naman777/HirePrism",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It significantly reduces the workload of analyzing and interpreting complex placement data by automating many aspects of the process, including parsing, cleaning, and generating insights.",
+    "discovered_at": "2026-04-24T21:51:43.268948+00:00",
+    "repo_metadata": {
+      "id": 1219011012,
+      "url": "https://github.com/naman777/HirePrism"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215241_1220382356",
+    "tool_name": "ileena/job_search_agent",
+    "category": "core_logic",
+    "roi_score": 80.5,
+    "synergy_point": "oracle",
+    "concrete_benefit": "It significantly reduces the need for manual job searching and filtering by AI-powered web scraping and structured output generation.",
+    "discovered_at": "2026-04-24T21:52:41.074284+00:00",
+    "repo_metadata": {
+      "id": 1220382356,
+      "url": "https://github.com/ileena/job_search_agent"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215300_1220378419",
+    "tool_name": "lcarrenoy/ai-financial-decision-system",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It automates complex financial forecasting and anomaly detection tasks that would typically require human expertise.",
+    "discovered_at": "2026-04-24T21:53:00.094853+00:00",
+    "repo_metadata": {
+      "id": 1220378419,
+      "url": "https://github.com/lcarrenoy/ai-financial-decision-system"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215329_1220336312",
+    "tool_name": "djememahamat/bookly_assistant",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It significantly reduces the workload of human architects by handling routine tasks such as intent classification and argument gathering, allowing them to focus on more complex issues.",
+    "discovered_at": "2026-04-24T21:53:29.565624+00:00",
+    "repo_metadata": {
+      "id": 1220336312,
+      "url": "https://github.com/djememahamat/bookly_assistant"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215823_1220322810",
+    "tool_name": "FCG-Builds/aifree",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "meta_generator",
+    "concrete_benefit": "It provides a local AI coding assistant that can be customized and integrated into various development environments without relying on cloud services or external APIs, thus potentially reducing the need for human intervention in certain aspects of software development.",
+    "discovered_at": "2026-04-24T21:58:23.148256+00:00",
+    "repo_metadata": {
+      "id": 1220322810,
+      "url": "https://github.com/FCG-Builds/aifree"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215846_1220412003",
+    "tool_name": "websentry-ai/oacb",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "autonomy",
+    "concrete_benefit": "Enhances autonomous code execution and security by providing a robust baseline tailored for AI agents.",
+    "discovered_at": "2026-04-24T21:58:46.870885+00:00",
+    "repo_metadata": {
+      "id": 1220412003,
+      "url": "https://github.com/websentry-ai/oacb"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215922_1220266593",
+    "tool_name": "amirtechai/xmail",
+    "category": "autonomy",
+    "roi_score": 80.0,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It significantly reduces human effort in email outreach by automating various stages of the process including discovery, validation, enrichment, and deduplication.",
+    "discovered_at": "2026-04-24T21:59:22.963314+00:00",
+    "repo_metadata": {
+      "id": 1220266593,
+      "url": "https://github.com/amirtechai/xmail"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 70,
+      "uniqueness_score": 95,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_215948_1220404071",
+    "tool_name": "Ann-Maria-Jaison/AutoStream-AI-Agent",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It significantly reduces the need for human intervention in lead generation by automating the process of classifying user intent, retrieving relevant information, and extracting lead details.",
+    "discovered_at": "2026-04-24T21:59:48.575906+00:00",
+    "repo_metadata": {
+      "id": 1220404071,
+      "url": "https://github.com/Ann-Maria-Jaison/AutoStream-AI-Agent"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_220032_1220311355",
+    "tool_name": "aissac/smallclawLM",
+    "category": "autonomy",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It significantly reduces the workload of human architects by automating complex research and report generation tasks through Google NotebookLM, enhancing productivity.",
+    "discovered_at": "2026-04-24T22:00:32.098308+00:00",
+    "repo_metadata": {
+      "id": 1220311355,
+      "url": "https://github.com/aissac/smallclawLM"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
+  },
+  {
+    "id": "evo_20260424_220049_1220311355",
+    "tool_name": "aissac/smallclawLM",
+    "category": "core_logic",
+    "roi_score": 80.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It provides a highly specialized AI agent for focused research and data analysis tasks without needing external LLM API keys.",
+    "discovered_at": "2026-04-24T22:00:49.222467+00:00",
+    "repo_metadata": {
+      "id": 1220311355,
+      "url": "https://github.com/aissac/smallclawLM"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 75,
+      "uniqueness_score": 90,
+      "roi_rationale": "Moderate: Viable but not exceptional"
+    }
   }
 ]
