@@ -16,6 +16,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent / ".env", override=False)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PIPELINES_DIR = Path(__file__).resolve().parent

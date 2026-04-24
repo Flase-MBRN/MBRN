@@ -34,6 +34,7 @@ from pipeline_utils import (
     load_pipeline_env,
     log,
     safe_round,
+    with_retry,
 )
 
 
@@ -108,6 +109,7 @@ def normalize_news_item(item: Dict[str, Any], run_started_at: str) -> Dict[str, 
     }
 
 
+@with_retry(max_retries=3, base_delay=2.0, operation_name="fetch_and_normalize_news")
 def fetch_and_normalize_news(run_started_at: str) -> tuple[List[Dict[str, Any]], List[str]]:
     """Fetch news via centralized utility and normalize for raw ingest."""
     news_items, failures = fetch_news_batch(
@@ -123,6 +125,7 @@ def fetch_and_normalize_news(run_started_at: str) -> tuple[List[Dict[str, Any]],
     return normalized, failures
 
 
+@with_retry(max_retries=3, base_delay=2.0, operation_name="fetch_and_normalize_market_data")
 def fetch_and_normalize_market_data(run_started_at: str) -> tuple[List[Dict[str, Any]], List[str]]:
     """Fetch market data via centralized utility and normalize for raw ingest."""
     items: List[Dict[str, Any]] = []

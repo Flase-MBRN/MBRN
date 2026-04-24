@@ -10,7 +10,7 @@ Responsibilities:
 4. Enrich with local Ollama LLM sentiment analysis via LocalLLMBridge
 5. Output structured JSON for dashboard and Supabase ingestion
 
-Hardware Optimized For: RX 7700 XT (local LLM inference via Ollama/Llama 3.1)
+Hardware Optimized For: RX 7700 XT (local LLM inference via Ollama/DeepSeek-Coder-V2)
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-from bridges.local_llm.bridge import LocalLLMBridge
+from bridges.local_llm.bridge import LocalLLMBridge, LocalLLMBridgeConfig
 
 # =============================================================================
 # Local Pipeline Utils
@@ -57,6 +57,8 @@ from pipeline_utils import (
     repair_json_with_ollama,
     safe_round,
     save_json_atomic,
+    SupabaseUplink,
+    with_retry,
 )
 
 
@@ -68,7 +70,7 @@ PIPELINE_CONFIG = {
     "ollama": {
         "host": "localhost",
         "port": 11434,
-        "model": "llama3.1:8b",
+        "model": "deepseek-coder-v2",
         "temperature": 0.3,
         "timeout_seconds": 120,
     },
@@ -115,6 +117,7 @@ ENRICHMENT_SCHEMA_HINT = """{
 # DATA FETCHING (Uses centralized utilities from pipeline_utils)
 # =============================================================================
 
+@with_retry(max_retries=3, base_delay=2.0, operation_name="fetch_batch_data")
 def fetch_batch_data(tickers: List[str], lookback_days: int = 5) -> List[Dict[str, Any]]:
     """Fetch data for multiple tickers using centralized fetch_market_snapshot."""
     results: List[Dict[str, Any]] = []
@@ -134,6 +137,7 @@ def fetch_batch_data(tickers: List[str], lookback_days: int = 5) -> List[Dict[st
     return results
 
 
+@with_retry(max_retries=3, base_delay=2.0, operation_name="fetch_news_items")
 def fetch_news_items(limit: int = 10) -> List[Dict[str, Any]]:
     """Fetch, merge and rank RSS headlines using centralized utility."""
     news_items, _ = fetch_news_batch(
@@ -236,7 +240,15 @@ def enrich_with_ollama(
     fallback_news_impact = get_news_impact_seed(news_items)
 
     # Initialize Bridge
-    bridge = LocalLLMBridge()
+    bridge = LocalLLMBridge(
+        LocalLLMBridgeConfig(
+            host=PIPELINE_CONFIG["ollama"]["host"],
+            port=PIPELINE_CONFIG["ollama"]["port"],
+            model=os.getenv("OLLAMA_MODEL", PIPELINE_CONFIG["ollama"]["model"]),
+            timeout_seconds=PIPELINE_CONFIG["ollama"]["timeout_seconds"],
+            temperature=PIPELINE_CONFIG["ollama"]["temperature"],
+        )
+    )
 
     if not bridge.is_available():
         print("[WARN] Ollama not available. Skipping LLM enrichment.")
@@ -252,6 +264,7 @@ def enrich_with_ollama(
     news_summary = build_news_summary(news_items)
 
     prompt = f"""Analyze the following market data and finance headlines.
+You are a professional JSON-only output engine. Never add conversational filler or markdown code blocks like ```json. Output raw JSON only.
 Return ONLY a valid JSON object. No preamble, no explanation, no markdown.
 Return a 0-100 market sentiment score where 0 is extremely bearish and 100 is extremely bullish.
 You must account for equities, VIX, crypto momentum and news pressure.
@@ -394,43 +407,11 @@ def prepare_for_supabase(data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+@with_retry(max_retries=3, base_delay=5.0, operation_name="push_to_supabase")
 def push_to_supabase(payload: Dict[str, Any]) -> bool:
-    """Push data to Supabase Edge Function via secure credential lookup."""
-    load_pipeline_env()
-
-    url = os.getenv("SUPABASE_EDGE_FUNCTION_URL", PIPELINE_CONFIG["supabase"]["default_url"])
-    api_key = None
-
-    try:
-        api_key = SecureKeyManager().get_key("DATA_ARB_API_KEY")
-    except Exception as exc:
-        print(f"[WARN] SecureKeyManager unavailable: {exc}")
-
-    api_key = api_key or os.getenv("DATA_ARB_API_KEY")
-    if not api_key:
-        print("[WARN] DATA_ARB_API_KEY not found in Credential Manager or .env. Skipping Supabase push.")
-        return False
-
-    try:
-        body = json.dumps(payload).encode("utf-8")
-        req = urllib.request.Request(url, data=body, method="POST")
-        req.add_header("Content-Type", "application/json")
-        req.add_header("Authorization", f"Bearer {api_key}")
-
-        with urllib.request.urlopen(req, timeout=10) as response:
-            if response.status in (200, 201):
-                print(f"[OK] Successfully pushed to Supabase: {response.read().decode()}")
-                return True
-
-            print(f"[ERROR] Supabase push failed with status {response.status}: {response.read().decode()}")
-            return False
-
-    except urllib.error.HTTPError as exc:
-        print(f"[ERROR] Supabase push failed with HTTP {exc.code}: {exc.read().decode()}")
-        return False
-    except Exception as exc:
-        print(f"[ERROR] Exception during Supabase push: {exc}")
-        return False
+    """Push data to Supabase Edge Function via centralized SupabaseUplink."""
+    uplink = SupabaseUplink()
+    return uplink.dispatch(payload)
 
 
 # =============================================================================

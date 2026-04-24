@@ -50,7 +50,7 @@ class PipelineConfig:
     # Ollama settings
     ollama_host: str = "localhost"
     ollama_port: int = 11434
-    ollama_model: str = "llama3.1:8b"
+    ollama_model: str = "deepseek-coder-v2"
     ollama_temperature: float = 0.3
     ollama_timeout: int = 120
     
@@ -129,6 +129,115 @@ def log(level: str, message: str) -> None:
     """
     timestamp = datetime.now(timezone.utc).isoformat()
     print(f"[{timestamp}] [{level}] {message}")
+
+
+# =============================================================================
+# ERROR PERSISTENCE (Track A – Robustness Foundation)
+# =============================================================================
+
+_PROJECT_ROOT_UTILS = Path(__file__).resolve().parents[2]
+ERROR_LOG_DIR = _PROJECT_ROOT_UTILS / "docs" / "S3_Data" / "errors"
+
+
+def log_error_to_disk(
+    operation_name: str,
+    error: Exception,
+    attempt: int,
+    input_data: Optional[Any] = None,
+) -> Path:
+    """
+    Persist a structured error report to /docs/S3_Data/errors/.
+
+    Written when all retries are exhausted so the error is never silently
+    swallowed.  Safe to call from any pipeline or decorator.
+
+    Returns:
+        Path to the written JSON report.
+    """
+    import traceback
+    ERROR_LOG_DIR.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now(timezone.utc)
+    safe_name = re.sub(r"[^A-Za-z0-9_-]+", "_", operation_name)[:60]
+    filename = f"{timestamp.strftime('%Y%m%dT%H%M%S')}_{safe_name}.json"
+    report = {
+        "operation": operation_name,
+        "failed_at": timestamp.isoformat(),
+        "total_attempts": attempt,
+        "error_type": type(error).__name__,
+        "error_message": str(error),
+        "stacktrace": traceback.format_exc(),
+        "input_data_repr": repr(input_data)[:2000] if input_data is not None else None,
+    }
+    report_path = ERROR_LOG_DIR / filename
+    try:
+        report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        log("ERROR", f"Error report written: {report_path.name}")
+    except Exception as write_exc:
+        log("ERROR", f"Failed to write error report: {write_exc}")
+    return report_path
+
+
+def with_retry(
+    max_retries: int = 3,
+    base_delay: float = 2.0,
+    backoff_factor: float = 2.0,
+    exceptions: tuple = (Exception,),
+    operation_name: Optional[str] = None,
+    log_input: bool = False,
+):
+    """
+    Decorator that retries the wrapped function up to *max_retries* times
+    with exponential back-off before giving up.
+
+    On final failure the full error + stacktrace is persisted to
+    /docs/S3_Data/errors/ via log_error_to_disk().  The function then
+    returns None instead of re-raising so callers can handle gracefully.
+
+    Usage::
+
+        @with_retry(max_retries=3, base_delay=2.0)
+        def fetch_some_api(*args, **kwargs):
+            ...
+
+        @with_retry(max_retries=2, exceptions=(requests.exceptions.RequestException,))
+        def push_to_supabase(payload):
+            ...
+    """
+    import functools
+
+    def decorator(func: Callable) -> Callable:
+        name = operation_name or func.__qualname__
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exc: Optional[Exception] = None
+            for attempt in range(1, max_retries + 1):
+                try:
+                    result = func(*args, **kwargs)
+                    if attempt > 1:
+                        log("OK", f"{name}: recovered on attempt {attempt}")
+                    return result
+                except exceptions as exc:
+                    last_exc = exc
+                    if attempt < max_retries:
+                        delay = base_delay * (backoff_factor ** (attempt - 1))
+                        log("RETRY", f"{name}: attempt {attempt}/{max_retries} failed ({type(exc).__name__}: {exc}). Retrying in {delay:.1f}s...")
+                        time.sleep(delay)
+                    else:
+                        log("ERROR", f"{name}: all {max_retries} attempts exhausted.")
+
+            # All retries failed — persist the error report, do NOT crash.
+            input_snapshot = args[0] if (log_input and args) else None
+            log_error_to_disk(
+                operation_name=name,
+                error=last_exc,
+                attempt=max_retries,
+                input_data=input_snapshot,
+            )
+            return None  # Graceful fallback — caller must handle None
+
+        return wrapper
+    return decorator
 
 
 def normalize_feed_text(value: str) -> str:
@@ -266,6 +375,13 @@ def parse_strict_json_response(
     if extracted and extracted not in candidates:
         candidates.append(extracted)
 
+    first_brace = raw_text.find("{")
+    last_brace = raw_text.rfind("}")
+    if first_brace != -1 and last_brace > first_brace:
+        outer_object = raw_text[first_brace : last_brace + 1].strip()
+        if outer_object and outer_object not in candidates:
+            candidates.append(outer_object)
+
     errors: List[str] = []
     for candidate in candidates:
         try:
@@ -300,6 +416,7 @@ def repair_json_with_ollama(
     """
     prompt = (
         "Convert the following malformed model output into ONE valid JSON object.\n"
+        "You are a professional JSON-only output engine. Never add conversational filler or markdown code blocks like ```json. Output raw JSON only.\n"
         "Return ONLY valid JSON. No preamble, no markdown, no explanation.\n\n"
         f"Schema hint:\n{schema_hint}\n\n"
         f"Malformed output:\n{raw_output}"
@@ -895,36 +1012,50 @@ def ollama_execution_guard(
 class RetryHandler:
     """
     Exponential backoff retry logic for resilient fetching.
+    Upgraded (Track A): final failure now persists a structured error report
+    to /docs/S3_Data/errors/ via log_error_to_disk().
     """
-    
+
     def __init__(self, config: PipelineConfig = CONFIG):
         self.config = config
-    
+
     def execute(self, operation: Callable, operation_name: str = "operation") -> tuple[bool, Any]:
         """
         Execute an operation with retry logic.
-        
+
         Args:
             operation: Callable that returns (success: bool, result: Any)
             operation_name: Name for logging
-            
+
         Returns:
             Tuple of (success, result)
         """
+        last_exc: Optional[Exception] = None
         for attempt in range(1, self.config.max_retries + 1):
             try:
                 success, result = operation()
                 if success:
                     return True, result
-                
+
                 if attempt < self.config.max_retries:
                     log("RETRY", f"{operation_name} failed (attempt {attempt}), waiting {self.config.retry_delay_seconds}s...")
                     time.sleep(self.config.retry_delay_seconds)
+                else:
+                    log("ERROR", f"{operation_name} failed after {self.config.max_retries} attempts (no exception).")
+                    return False, None
             except Exception as e:
+                last_exc = e
                 log("ERROR", f"{operation_name} exception (attempt {attempt}): {e}")
                 if attempt < self.config.max_retries:
-                    time.sleep(self.config.retry_delay_seconds)
-        
+                    delay = self.config.retry_delay_seconds * (2 ** (attempt - 1))
+                    time.sleep(delay)
+
+        if last_exc is not None:
+            log_error_to_disk(
+                operation_name=operation_name,
+                error=last_exc,
+                attempt=self.config.max_retries,
+            )
         log("ERROR", f"{operation_name} failed after {self.config.max_retries} attempts")
         return False, None
 
@@ -1428,20 +1559,6 @@ RSS_CONFIG = {
         },
     ],
     "feeds": [
-        {
-            "source": "Reuters Business",
-            "url": "https://feeds.reuters.com/reuters/businessNews",
-            "parser_hint": "xml",
-            "timeout_seconds": 10,
-            "retries": 3,
-        },
-        {
-            "source": "Reuters World",
-            "url": "https://feeds.reuters.com/Reuters/worldNews",
-            "parser_hint": "xml",
-            "timeout_seconds": 10,
-            "retries": 3,
-        },
         {
             "source": "CNBC Markets",
             "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",

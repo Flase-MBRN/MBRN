@@ -67,6 +67,9 @@ __pycache__/
 000_DRIFT_REPORT.json
 scripts/oracle/
 commerce/
+Sandbox
+AI/
+logs/
 
 # Keep pipeline and migration source tracked.
 # Secrets, logs and Python caches remain ignored by the narrower rules above.

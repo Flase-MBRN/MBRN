@@ -41,13 +41,24 @@ describe('local llm enrichment foundation', () => {
   test('local llm bridge and worker formalize the structured json enrichment path', () => {
     const bridgeSource = read('bridges/local_llm/bridge.py');
     const workerSource = read('scripts/pipelines/local_llm_enrichment_worker.py');
+    const pipelineUtilsSource = read('scripts/pipelines/pipeline_utils.py');
 
     expect(bridgeSource).toContain('class LocalLLMBridge');
+    expect(bridgeSource).toContain('model: str = "deepseek-coder-v2"');
+    expect(bridgeSource).toContain('model=os.getenv("OLLAMA_MODEL", "deepseek-coder-v2")');
+    expect(bridgeSource).toContain('professional JSON-only output engine');
     expect(bridgeSource).toContain('ANALYSIS_REQUIRED_KEYS');
     expect(bridgeSource).toContain('repair_json_with_ollama');
+    expect(pipelineUtilsSource).toContain('ollama_model: str = "deepseek-coder-v2"');
+    expect(pipelineUtilsSource).toContain('professional JSON-only output engine');
+    expect(pipelineUtilsSource).toContain('first_brace = raw_text.find("{")');
+    expect(pipelineUtilsSource).toContain('last_brace = raw_text.rfind("}")');
+    expect(pipelineUtilsSource).toContain('outer_object = raw_text[first_brace : last_brace + 1].strip()');
     expect(workerSource).toContain('gold_enrichment_items');
     expect(workerSource).toContain('analysis_status');
     expect(workerSource).toContain('LocalLLMBridge');
+    expect(workerSource).toContain('from dotenv import load_dotenv');
+    expect(workerSource).toContain('load_dotenv(Path(__file__).parent / ".env", override=False)');
     expect(workerSource).toContain('except WorkerError as exc');
     expect(workerSource).toContain('Week-2 enrichment worker configuration failed');
   });
@@ -59,8 +70,17 @@ describe('local llm enrichment foundation', () => {
 
     expect(bridgeReadme).toContain('ACTIVE / PARTIAL');
     expect(envExample).toContain('LOCAL_LLM_ANALYSIS_VERSION=');
-    expect(envExample).toContain('OLLAMA_MODEL=');
+    expect(envExample).toContain('OLLAMA_MODEL=deepseek-coder-v2');
     expect(pipelinesReadme).toContain('local_llm_enrichment_worker.py');
     expect(pipelinesReadme).toContain('gold_enrichment_items');
+  });
+
+  test('market sentiment enrichment uses DeepSeek and JSON-only prompting', () => {
+    const fetcherSource = read('scripts/pipelines/market_sentiment_fetcher.py');
+
+    expect(fetcherSource).toContain('"model": "deepseek-coder-v2"');
+    expect(fetcherSource).toContain('LocalLLMBridgeConfig');
+    expect(fetcherSource).toContain('professional JSON-only output engine');
+    expect(fetcherSource).toContain('schema_hint=ENRICHMENT_SCHEMA_HINT');
   });
 });

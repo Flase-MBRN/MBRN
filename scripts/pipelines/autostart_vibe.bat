@@ -37,14 +37,20 @@ if exist "sentinel_daemon.py" (
 )
 
 REM 2. Intelligente VENV-Erkennung (Der wichtigste Fix!)
-set "PYTHON_EXE=venv\Scripts\python.exe"
+set "PYTHON_EXE=..\..\venv\Scripts\python.exe"
 if exist "%PYTHON_EXE%" (
     echo [SYSTEM] Isolierte MBRN-VENV Umgebung gekoppelt... >> "%LOG_FILE%" 2>&1
     echo [SYSTEM] Isolierte MBRN-VENV Umgebung gekoppelt...
 ) else (
-    echo [WARNUNG] Kein lokales VENV gefunden. Nutze globales Python... >> "%LOG_FILE%" 2>&1
-    echo [WARNUNG] Kein lokales VENV gefunden. Nutze globales Python...
-    set "PYTHON_EXE=python"
+    set "PYTHON_EXE=venv\Scripts\python.exe"
+    if exist "!PYTHON_EXE!" (
+        echo [SYSTEM] Lokale VENV Umgebung gekoppelt... >> "%LOG_FILE%" 2>&1
+        echo [SYSTEM] Lokale VENV Umgebung gekoppelt...
+    ) else (
+        echo [WARNUNG] Kein lokales VENV gefunden. Nutze globales Python... >> "%LOG_FILE%" 2>&1
+        echo [WARNUNG] Kein lokales VENV gefunden. Nutze globales Python...
+        set "PYTHON_EXE=python"
+    )
 )
 echo -------------------------------------------------------- >> "%LOG_FILE%" 2>&1
 echo --------------------------------------------------------

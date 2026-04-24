@@ -1,7 +1,7 @@
 {
   "version": "v4.0",
   "release": "FOUNDATION",
-  "last_updated": "2026-04-24T00:00:00Z",
+  "last_updated": "2026-04-24T21:02:00Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -56,8 +56,9 @@
     },
     "python": {
       "state": "active",
-      "maturity": "implemented",
-      "since": "v3.0"
+      "maturity": "stable",
+      "since": "v4.0",
+      "note": "Canonical runtime bridge via root MBRN-VENV. Supports yfinance, Ollama integration, and Supabase uplink."
     },
     "local_llm": {
       "state": "active",
@@ -75,13 +76,13 @@
     "time": {
       "state": "active",
       "maturity": "stable",
-      "primary_app": "chronos",
-      "note": "Renamed from 'zeit' to enforce English naming convention"
+      "primary_app": null,
+      "note": "Standardized naming (English) for the temporal dimension."
     },
     "geld": {
       "state": "active",
       "maturity": "stable",
-      "primary_app": "finance"
+      "primary_app": "oracle"
     },
     "physis": {
       "state": "provisional",
@@ -168,6 +169,14 @@
       "surface_kind": "app",
       "ui": "complete"
     },
+    "oracle": {
+      "state": "active",
+      "maturity": "stable",
+      "dimension": "geld",
+      "topic_area": "oracle_signal",
+      "surface_kind": "app",
+      "ui": "minimal"
+    },
     "numerology": {
       "state": "active",
       "maturity": "stable",
@@ -203,11 +212,11 @@
   },
   "systems": {
     "market_sentiment_pipeline": {
-      "state": "experimental",
-      "maturity": "implemented",
+      "state": "active",
+      "maturity": "stable",
       "location": "scripts/pipelines/market_sentiment_fetcher.py",
       "owner_domain": "oracle",
-      "note": "Implemented local pipeline with enrichment and data processing. Not yet declared as fully supported canonical runtime surface."
+      "note": "Canonical Pillar 3 pipeline. Uses LocalLLMBridge and SupabaseUplink. SecureKeyManager dependencies removed v4.0."
     },
     "raw_ingest_foundation": {
       "state": "experimental",
@@ -271,6 +280,43 @@
       "location": "templates/app_blueprint.json",
       "owner_domain": "meta_generator",
       "note": "Blueprint asset exists on disk and is part of the active meta_generator surface."
+    },
+    "split_brain_sandbox": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/sandbox_controller.py",
+      "dockerfile": "scripts/pipelines/sandbox/Dockerfile",
+      "docker_image": "mbrn-sandbox",
+      "owner_domain": "meta_generator",
+      "note": "Split-Brain sandbox controller. Windows host orchestrates isolated CPU-only Linux containers for safe code execution. Ollama/GPU runs natively on host; untrusted code runs in --network none, --memory 512m, --cpus 0.5 Docker cage."
+    },
+    "autonomous_dev_agent": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/autonomous_dev_agent.py",
+      "owner_domain": "meta_generator",
+      "depends_on": ["split_brain_sandbox", "local_llm"],
+      "note": "Self-healing autonomous code generation agent. Uses Ollama/deepseek-coder-v2 to generate Python code, validates it in the mbrn-sandbox, and auto-heals on failure by feeding stderr back to the LLM. Max 5 retries per goal."
+    },
+    "mbrn_nexus_bridge": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_nexus_bridge.py",
+      "owner_domain": "meta_generator",
+      "depends_on": ["mbrn_horizon_scout", "autonomous_dev_agent", "split_brain_sandbox"],
+      "output_path": "docs/S3_Data/outputs/factory_ready/",
+      "notification_feed": "shared/data/nexus_notifications.json",
+      "note": "Scout-to-Factory closure loop. Reads scout_alphas.json for ROI > 90 entries, commissions MBRN modules via AutoDevAgent, validates in sandbox, persists factory-ready Python modules, and writes dashboard notifications. Runs alongside the Horizon Scout in infinite mode."
+    },
+    "factory_feed_ui": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "pillars/frontend_os/dashboard/factory_feed.js",
+      "css": "shared/ui/factory_feed.css",
+      "owner_domain": "frontend_os",
+      "depends_on": ["mbrn_nexus_bridge"],
+      "data_source": "shared/data/nexus_notifications.json",
+      "note": "Dashboard panel that reads nexus_notifications.json and renders the last 5 autonomously manufactured modules as a live feed. Auto-refreshes every 60s. Integrated into dashboard/index.html via factory-feed-root mount point."
     }
   },
   "execution_tracks": {

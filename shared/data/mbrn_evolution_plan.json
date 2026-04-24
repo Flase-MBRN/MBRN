@@ -1,0 +1,278 @@
+[
+  {
+    "id": "evo_20260424_162246_1220168784",
+    "tool_name": "kavibharathi1001/selinium-automation-testing-project",
+    "source": "github_discovery",
+    "synergy_point": "oracle",
+    "category": "core_logic",
+    "integration_strategy": "low: Oracle-Datenbank mit Plattform verbinden, KI-Architektur konfigurieren",
+    "recommended_evolution": "Oracle-Datenbank mit Plattform verbinden, KI-Architektur konfigurieren",
+    "estimated_integration_duration": "2-4 Stunden",
+    "roi_score": 87.0,
+    "concrete_benefit": "KI-Architektur schneller und autonomer machen",
+    "synergy_summary": "KI-Architektur automatisiert durchführen, Effizienz und Produktivität von MBRN steigern",
+    "discovered_at": "2026-04-24T16:22:46.319921+00:00",
+    "repo_metadata": {
+      "id": 1220168784,
+      "url": "https://github.com/kavibharathi1001/selinium-automation-testing-project",
+      "stars": 0,
+      "language": "HTML"
+    },
+    "mbrn_context_at_discovery": {
+      "active_pillars": [
+        "frontend_os",
+        "oracle",
+        "monetization",
+        "meta_generator"
+      ],
+      "available_bridges": [
+        "supabase",
+        "python",
+        "local_llm"
+      ],
+      "system_maturity": "stable"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 80,
+      "uniqueness_score": 90,
+      "roi_rationale": "Strong ROI: Good balance across all criteria"
+    }
+  },
+  {
+    "id": "evo_20260424_162516_1220180424",
+    "tool_name": "Enoswafula/AI-ML_Assignment_1",
+    "source": "github_discovery",
+    "synergy_point": "none",
+    "category": "core_logic",
+    "integration_strategy": "mittel: Konfigurieren Sie die GitHub-Copilot-Funktion, um automatisierte Codegenerierung und -optimierung zu ermöglichen.",
+    "recommended_evolution": "Konfigurieren Sie die Plattform korrekt an die spezifischen Anforderungen des MBRN-Systems an.",
+    "estimated_integration_duration": "2-4 Stunden",
+    "roi_score": 87.0,
+    "concrete_benefit": "Erleichtert die Entwicklung von KI-Architekturen durch automatisierte Codegenerierung und -optimierung.",
+    "synergy_summary": "Die Integration der Plattform in das bestehende System würde es ermöglichen, KI-Architekturen schneller und effizienter zu entwickeln, was einen wichtigen Schritt für den Erreichen des 500kEUR-Zielwerts darstellt.",
+    "discovered_at": "2026-04-24T16:25:16.725528+00:00",
+    "repo_metadata": {
+      "id": 1220180424,
+      "url": "https://github.com/Enoswafula/AI-ML_Assignment_1",
+      "stars": 0,
+      "language": null
+    },
+    "mbrn_context_at_discovery": {
+      "active_pillars": [
+        "frontend_os",
+        "oracle",
+        "monetization",
+        "meta_generator"
+      ],
+      "available_bridges": [
+        "supabase",
+        "python",
+        "local_llm"
+      ],
+      "system_maturity": "stable"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 80,
+      "uniqueness_score": 90,
+      "roi_rationale": "Strong ROI: Good balance across all criteria"
+    }
+  },
+  {
+    "id": "evo_20260424_163438_1219731207",
+    "tool_name": "Keule/Z.AI_WORK",
+    "source": "github_discovery",
+    "synergy_point": "meta_generator",
+    "category": "core_logic",
+    "integration_strategy": "medium: Einbindung der AI-basierten Tools und Frameworks in die bestehende KI-Architektur, Anpassung der Plattform an die spezifischen Bedürfnisse von MBRN",
+    "recommended_evolution": "Analyse der bestehenden KI-Architektur durchführen, AI-basierte Tools und Frameworks auswählen",
+    "estimated_integration_duration": "4-8 Stunden",
+    "roi_score": 88.0,
+    "concrete_benefit": "KI-Architektur schneller und autonomer machen",
+    "synergy_summary": "Hohe Synergie mit MBRN, verbesserte KI-Architektur und erhöhte Effizienz der Plattform",
+    "discovered_at": "2026-04-24T16:34:38.852158+00:00",
+    "repo_metadata": {
+      "id": 1219731207,
+      "url": "https://github.com/Keule/Z.AI_WORK",
+      "stars": 0,
+      "language": "Python"
+    },
+    "mbrn_context_at_discovery": {
+      "active_pillars": [
+        "frontend_os",
+        "oracle",
+        "monetization",
+        "meta_generator"
+      ],
+      "available_bridges": [
+        "supabase",
+        "python",
+        "local_llm"
+      ],
+      "system_maturity": "stable"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 80,
+      "uniqueness_score": 95,
+      "roi_rationale": "Strong ROI: Good balance across all criteria"
+    }
+  },
+  {
+    "id": "evo_20260424_163537_1217908198",
+    "tool_name": "Vegapunk-debug/autonomous-financial-advisor",
+    "source": "github_discovery",
+    "synergy_point": "core_logic",
+    "category": "core_logic",
+    "integration_strategy": "medium: Integration in die bestehende Architektur von MBRN.",
+    "recommended_evolution": "Integration des Projekts in die bestehende Architektur von MBRN vorantreiben und sicherstellen, dass das Projekt mit den bestehenden Systemen kompatibel ist.",
+    "estimated_integration_duration": "2-4 Stunden",
+    "roi_score": 87.0,
+    "concrete_benefit": "Automatische Analyse von Marktdaten und kausale Verbindungen zwischen Makro-Ereignissen und individuellen Asset-Performance.",
+    "synergy_summary": "Das Projekt bietet eine einzigartige Lösung für die Analyse von Marktdaten und kausalen Verbindungen, was es zu einem wichtigen Differenzierungspotential für MBRN macht.",
+    "discovered_at": "2026-04-24T16:35:37.775414+00:00",
+    "repo_metadata": {
+      "id": 1217908198,
+      "url": "https://github.com/Vegapunk-debug/autonomous-financial-advisor",
+      "stars": 0,
+      "language": "Python"
+    },
+    "mbrn_context_at_discovery": {
+      "active_pillars": [
+        "frontend_os",
+        "oracle",
+        "monetization",
+        "meta_generator"
+      ],
+      "available_bridges": [
+        "supabase",
+        "python",
+        "local_llm"
+      ],
+      "system_maturity": "stable"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 80,
+      "uniqueness_score": 90,
+      "roi_rationale": "Strong ROI: Good balance across all criteria"
+    }
+  },
+  {
+    "id": "evo_20260424_165525_1219761814",
+    "tool_name": "flo-meier/drift-radar",
+    "source": "github_discovery",
+    "synergy_point": "monetization",
+    "category": "passive_income",
+    "integration_strategy": "mittel: Die Plattform in das bestehende System integrieren, die KI-basierte Lösung mit den vorhandenen Datenquellen kombinieren",
+    "recommended_evolution": "Die Plattform in das bestehende System integrieren und die Ergebnisse der Analyse in das bestehende Dashboard einbinden",
+    "estimated_integration_duration": "4-8 Stunden",
+    "roi_score": 88.0,
+    "concrete_benefit": "Schnellere und genauere Analysen von Markttrends durchführen",
+    "synergy_summary": "Das Projekt ermöglicht es, schnellere und genauere Analysen von Markttrends durchzuführen, was zu besseren Entscheidungen führt.",
+    "discovered_at": "2026-04-24T16:55:25.959826+00:00",
+    "repo_metadata": {
+      "id": 1219761814,
+      "url": "https://github.com/flo-meier/drift-radar",
+      "stars": 0,
+      "language": "Astro"
+    },
+    "mbrn_context_at_discovery": {
+      "active_pillars": [
+        "frontend_os",
+        "oracle",
+        "monetization",
+        "meta_generator"
+      ],
+      "available_bridges": [
+        "supabase",
+        "python",
+        "local_llm"
+      ],
+      "system_maturity": "stable"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 80,
+      "uniqueness_score": 95,
+      "roi_rationale": "Strong ROI: Good balance across all criteria"
+    }
+  },
+  {
+    "id": "evo_20260424_175855_1217196772",
+    "tool_name": "fasqua/kausaos",
+    "category": "autonomy",
+    "roi_score": 86.0,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "It replaces the human architect by managing privacy operations around the clock without human intervention.",
+    "discovered_at": "2026-04-24T17:58:55.645670+00:00",
+    "repo_metadata": {
+      "id": 1217196772,
+      "url": "https://github.com/fasqua/kausaos"
+    },
+    "analysis_details": {
+      "scalability_score": 80,
+      "maintenance_score": 90,
+      "uniqueness_score": 95,
+      "roi_rationale": "Strong ROI: Good balance across all criteria"
+    }
+  },
+  {
+    "id": "evo_20260424_180052_1217470453",
+    "tool_name": "velvetmonkey/flywheel-ideas",
+    "category": "autonomy",
+    "roi_score": 89.5,
+    "synergy_point": "core_logic",
+    "concrete_benefit": "Replaces the role of a human architect by automating decision-making processes.",
+    "discovered_at": "2026-04-24T18:00:52.105999+00:00",
+    "repo_metadata": {
+      "id": 1217470453,
+      "url": "https://github.com/velvetmonkey/flywheel-ideas"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 85,
+      "uniqueness_score": 95,
+      "roi_rationale": "Strong ROI: Good balance across all criteria"
+    }
+  },
+  {
+    "id": "evo_20260424_180833_1218993963",
+    "tool_name": "NABILNET-ORG/Claude-Memory",
+    "category": "autonomy",
+    "roi_score": 90.5,
+    "synergy_point": "meta_generator",
+    "concrete_benefit": "Replaces human architects by providing a self-contained system for managing project memory and retrieval without context bloat.",
+    "discovered_at": "2026-04-24T18:08:33.348436+00:00",
+    "repo_metadata": {
+      "id": 1218993963,
+      "url": "https://github.com/NABILNET-ORG/Claude-Memory"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 85,
+      "uniqueness_score": 100,
+      "roi_rationale": "Exceptional: High leverage + low maintenance + market leader"
+    }
+  },
+  {
+    "id": "evo_20260424_180932_1219488984",
+    "tool_name": "inceptyon-labs/gargantua",
+    "category": "autonomy",
+    "roi_score": 95.0,
+    "synergy_point": "frontend_os",
+    "concrete_benefit": "Replaces human architects by automating complex system cleanups and risk assessments.",
+    "discovered_at": "2026-04-24T18:09:32.526913+00:00",
+    "repo_metadata": {
+      "id": 1219488984,
+      "url": "https://github.com/inceptyon-labs/gargantua"
+    },
+    "analysis_details": {
+      "scalability_score": 90,
+      "maintenance_score": 100,
+      "uniqueness_score": 100,
+      "roi_rationale": "Exceptional: High leverage + low maintenance + market leader"
+    }
+  }
+]

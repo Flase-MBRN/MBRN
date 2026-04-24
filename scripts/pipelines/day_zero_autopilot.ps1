@@ -27,7 +27,7 @@ function Write-DayZeroLog {
 function Wait-OllamaReady {
   param(
     [int]$TimeoutSeconds = 30,
-    [string]$OllamaUrl = "http://localhost:11434/api/tags"
+    [string]$OllamaUrl = "http://127.0.0.1:11434/api/tags"
   )
 
   Write-DayZeroLog "INFO" "Waiting for Ollama to be ready (timeout=${TimeoutSeconds}s)..."
@@ -35,7 +35,7 @@ function Wait-OllamaReady {
 
   while ($true) {
     try {
-      $response = Invoke-WebRequest -Uri $OllamaUrl -Method GET -TimeoutSec 2 -ErrorAction SilentlyContinue
+      $response = Invoke-WebRequest -Uri $OllamaUrl -Method GET -TimeoutSec 2 -UseBasicParsing -ErrorAction SilentlyContinue
       if ($response.StatusCode -eq 200) {
         Write-DayZeroLog "OK" "Ollama is ready and responding"
         return $true
@@ -84,11 +84,19 @@ function Get-DotEnvValue {
 }
 
 function Resolve-PythonExecutable {
-  $venvPython = Join-Path $PipelineDir "venv\Scripts\python.exe"
-  if (Test-Path -LiteralPath $venvPython) {
-    return $venvPython
+  # Priority 1: Central MBRN-VENV at RepoRoot
+  $centralVenvPython = Join-Path $RepoRoot "venv\Scripts\python.exe"
+  if (Test-Path -LiteralPath $centralVenvPython) {
+    return $centralVenvPython
   }
 
+  # Priority 2: Local VENV in PipelineDir
+  $localVenvPython = Join-Path $PipelineDir "venv\Scripts\python.exe"
+  if (Test-Path -LiteralPath $localVenvPython) {
+    return $localVenvPython
+  }
+
+  # Priority 3: Global Python
   $globalPython = Get-Command "python" -ErrorAction SilentlyContinue
   if ($globalPython) {
     return "python"
@@ -143,12 +151,17 @@ function Start-HorizonScout {
   }
 
   try {
-    # Start Scout in background with loop mode
+    $previousPythonIoEncoding = $env:PYTHONIOENCODING
+    $previousPythonUtf8 = $env:PYTHONUTF8
+    $env:PYTHONIOENCODING = "utf-8"
+    $env:PYTHONUTF8 = "1"
+    Set-Content -Path $scoutLogFile -Value ("[{0}] [INFO] Horizon Scout bootstrap starting unbuffered UTF-8 process" -f (Get-Date -Format "o")) -Encoding utf8
+
+    # Start Scout in background with infinite mode
     $scoutProcess = Start-Process -FilePath $PythonExecutable `
-      -ArgumentList @($scoutScript, "--infinite") `
+      -ArgumentList @("-u", $scoutScript, "--infinite") `
       -WorkingDirectory $PipelineDirectory `
       -RedirectStandardOutput $scoutLogFile `
-      -RedirectStandardError $scoutLogFile `
       -WindowStyle Hidden `
       -PassThru
 
@@ -157,6 +170,18 @@ function Start-HorizonScout {
   } catch {
     Write-DayZeroLog "WARN" "Failed to start Horizon Scout: $($_.Exception.Message)"
     return $null
+  } finally {
+    if ($null -eq $previousPythonIoEncoding) {
+      Remove-Item Env:\PYTHONIOENCODING -ErrorAction SilentlyContinue
+    } else {
+      $env:PYTHONIOENCODING = $previousPythonIoEncoding
+    }
+
+    if ($null -eq $previousPythonUtf8) {
+      Remove-Item Env:\PYTHONUTF8 -ErrorAction SilentlyContinue
+    } else {
+      $env:PYTHONUTF8 = $previousPythonUtf8
+    }
   }
 }
 
@@ -167,23 +192,31 @@ function Start-HorizonScout {
 function Launch-MissionControl {
   param(
     [string]$RepoRoot,
-    [string]$LogDir
+    [string]$LogDir,
+    [string]$PythonExe
   )
   
   Write-DayZeroLog "INFO" "Launching Mission Control Hub (Level 3)..."
   
-  # Tab 1: Lokales Dashboard (file://)
-  $dashboardPath = Join-Path $RepoRoot "dashboard\index.html"
-  if (Test-Path -LiteralPath $dashboardPath) {
-    $dashboardUrl = "file:///$($dashboardPath -replace '\\', '/')"
+  # Step 1: Start local HTTP server for Dashboard to fix CORS
+  $dashboardDir = Join-Path $RepoRoot "dashboard"
+  $port = "8080"
+  
+  if (Test-Path -LiteralPath $dashboardDir) {
     try {
+      Write-DayZeroLog "INFO" "Starting local MBRN-OS server on port $port..."
+      # Use Start-Process with Hidden window to keep it in background. Serve from RepoRoot.
+      Start-Process -FilePath $PythonExe -ArgumentList "-m", "http.server", $port, "--directory", $RepoRoot -WindowStyle Hidden
+      Start-Sleep -Seconds 2 # Give it a moment to bind
+      
+      $dashboardUrl = "http://localhost:$port/dashboard/index.html"
       Start-Process $dashboardUrl
-      Write-DayZeroLog "OK" "Dashboard opened: $dashboardUrl"
+      Write-DayZeroLog "OK" "Dashboard server started at root and browser opened: $dashboardUrl"
     } catch {
-      Write-DayZeroLog "WARN" "Failed to open dashboard: $($_.Exception.Message)"
+      Write-DayZeroLog "WARN" "Failed to start dashboard server or open browser: $($_.Exception.Message)"
     }
   } else {
-    Write-DayZeroLog "WARN" "Dashboard not found at $dashboardPath"
+    Write-DayZeroLog "WARN" "Dashboard directory not found at $dashboardDir"
   }
   
   # Tab 2: Supabase Console (User provided URL) - Dashboard URL (not API endpoint)
@@ -306,7 +339,7 @@ try {
   Write-DayZeroLog "INFO" "LLM worker limit resolved limit=$llmLimit"
 
   # Wait for Ollama to be ready before starting LLM-dependent pipelines
-  Wait-OllamaReady -TimeoutSeconds 30
+  $ollamaReady = Wait-OllamaReady -TimeoutSeconds 30
 
   # Phase 1: Collect raw market news
   $collectorExit = Invoke-PipelineStep -Name "raw_market_news_collector" -Arguments @("raw_market_news_collector.py")
@@ -342,26 +375,32 @@ try {
   }
 
   # Calculate final exit status
-  $anyPartialFailure = ($collectorExit -eq 2) -or ($sentimentExit -eq 2) -or ($llmExit -eq 2)
+  $anyPartialFailure = ($collectorExit -eq 2) -or ($sentimentExit -eq 2) -or ($llmExit -ne 0)
   $anyHardFailure = ($collectorExit -ne 0 -and $collectorExit -ne 2) -or
-                    ($sentimentExit -ne 0 -and $sentimentExit -ne 2) -or
-                    ($llmExit -ne 0 -and $llmExit -ne 2)
+                    ($sentimentExit -ne 0 -and $sentimentExit -ne 2)
 
   $scoutStatus = if ($scoutProcess) { "scout_running_pid=$($scoutProcess.Id)" } else { "scout_disabled" }
 
   # Phase 5: MISSION CONTROL HUB (Level 3) - Launch browser & log monitoring
   # Only activate on successful completion (no hard failures)
-  if (-not $anyHardFailure) {
+  if (-not $anyHardFailure -and -not $DryRun) {
     Write-DayZeroLog "INFO" "Activating Mission Control Hub (Level 3)..."
     
     # Launch browser tabs (Dashboard, Supabase, GitHub)
-    Launch-MissionControl -RepoRoot $RepoRoot -LogDir $LogDir
+    Launch-MissionControl -RepoRoot $RepoRoot -LogDir $LogDir -PythonExe $PythonExe
     
     # Start live log monitor window
     Start-LiveLogMonitor -LogDir $LogDir
     
     # Show MBRN ONLINE banner (ASCII Art)
     Show-MissionControlBanner
+  } elseif ($DryRun) {
+    Write-DayZeroLog "INFO" "Dry run enabled; Mission Control launch skipped"
+  }
+
+  if ($DryRun -and -not $anyHardFailure -and -not $anyPartialFailure) {
+    Write-DayZeroLog "OK" "Day Zero Autopilot dry run completed successfully ($scoutStatus) final_exit=0"
+    exit 0
   }
 
   if (-not $anyHardFailure -and -not $anyPartialFailure) {
