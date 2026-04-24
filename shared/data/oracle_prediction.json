@@ -1,128 +1,128 @@
 {
-  "timestamp_utc": "2026-04-23T19:38:08.573964+00:00",
-  "target_date": "24.04.2026",
+  "timestamp_utc": "2026-04-24T09:50:25.737484+00:00",
+  "target_date": "27.04.2026",
   "oracle_version": "1.1.0",
   "day_numerology": {
-    "day_number": 11,
-    "is_master": true,
-    "description": "Meisterzahl: Spirituelle Erleuchtung, Vision"
+    "day_number": 5,
+    "is_master": false,
+    "description": "Freiheit, Wandel, Abenteuer"
   },
   "market_context": {
-    "previous_sentiment": 50,
-    "previous_vix": 19.74,
-    "sentiment_trend": "rising",
-    "sentiment_trend_value": 10.67,
+    "previous_sentiment": 42,
+    "previous_vix": 19.14,
+    "sentiment_trend": "falling",
+    "sentiment_trend_value": -21.17,
     "crypto_snapshot": {
       "BTC-USD": {
-        "price": 77737.91,
-        "change_percent": -0.59,
-        "volume": 43515150336.0
+        "price": 77840.96,
+        "change_percent": -0.55,
+        "volume": 38032072704.0
       },
       "ETH-USD": {
-        "price": 2319.66,
-        "change_percent": -2.37,
-        "volume": 20846405632.0
+        "price": 2316.87,
+        "change_percent": -0.63,
+        "volume": 17183389696.0
       }
     },
-    "crypto_sentiment": 44.08,
+    "crypto_sentiment": 47.64,
     "news_signal": "neutral",
-    "news_impact": 54,
+    "news_impact": 0,
     "headline_count": 10,
     "news_items": [
       {
         "source": "Google News Business",
-        "title": "Asia's Open Finance Ambitions Demand Interoperability, Smarter Regulation, and Human-Centred Design - Nation Thailand",
-        "summary": "Asia's Open Finance Ambitions Demand Interoperability, Smarter Regulation, and Human-Centred Design Nation Thailand",
-        "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFA1MXdnMWlJNE9aZm15OEdlLTctT1lNaGJib21RYW5aRTJ4VlhWaGpiX0dsYmhIRFV3QWtHXzk4XzhHeUtPQkxnTWJRR3c0NFFhVmlmZ05YZllMUW5CWk1GOGVsa1dsdjI3VkZYNG0wUkxQQQ?oc=5",
-        "published_at": "2026-04-23T09:45:00+00:00"
-      },
-      {
-        "source": "Google News Business",
-        "title": "Syed Imtiaz Ahmed Elevated to Chief Business Officer at Piramal Finance - CXO Digitalpulse",
-        "summary": "Syed Imtiaz Ahmed Elevated to Chief Business Officer at Piramal Finance CXO Digitalpulse",
-        "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNUlpBYlRkNlRMMUVsQmRXZXFBRlRRRXBZSFgyWUVwZV94VDViNXZmdkJfUDcyVDZ1SmVaZ1dPRGptbWd4Z0NmeHlnRmh2UjVtc2V2a0E2aWtyNDVvYlV2ZGNzRDhwYWFaaDVLYjdsU0tGczdZMS1IRzlMYXA4Ym9aU1BlVmZmWUluU3c2ZTFKNmFuVVVBdEdzMXBoX2k4STQwWFUyM0NuRQ?oc=5",
-        "published_at": "2026-04-23T09:28:31+00:00"
+        "title": "IMCC Launches \"DEEP C\" Digital Transformation Program to Advance Operational Excellence - Yahoo Finance Singapore",
+        "summary": "IMCC Launches \"DEEP C\" Digital Transformation Program to Advance Operational Excellence Yahoo Finance Singapore",
+        "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNXzlsbjB3N0J4X1NVTVVlRk5zdUxPODF0RXJQcWgyMnRzdWdDdFc3RG5weTAzWkhUd0JaOHNLUjF1YzRZQXZnUTFJQ2dZMlE2c0hEWXZiVTA1MWRmdWJ5TEthMlRJV3BQM0h2S093S3ZsSEVNbVBzaGFTOFRvZTBXb2I3Zw?oc=5",
+        "published_at": "2026-04-24T08:39:00+00:00"
       },
       {
         "source": "Google News Markets",
-        "title": "Boston has one of the best public markets in the country, says USA TODAY - The Patriot Ledger",
-        "summary": "Boston has one of the best public markets in the country, says USA TODAY The Patriot Ledger",
-        "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPV2tBR04xLVowc1ZoMDFqWnNSX3NjRVZWcUNoYmh5Vzc5VUg0d1diOVB6U2ZiUjFxWDAzSV9Jb1NfTFY5RnhQWmVMb3haNWpENENRR3hBT01MUzZHSHUxa2JWUmNLVWdJMkduRWtEeEt6aUx3ZFFlb0p6RUllTkFORExGR2oySDNoVEdhcHJHaVkwWXhQVzJIV0lFS2pMR0lLTWZiWHI4WTdKZGFidjFfRzRpeGtoSUdVT1dUYWkweGxnX0JXYVZveDBR?oc=5",
-        "published_at": "2026-04-23T09:10:00+00:00"
+        "title": "Bond markets: shaken, not unanchored - DWS Asset Management",
+        "summary": "Bond markets: shaken, not unanchored DWS Asset Management",
+        "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQdm9faVluT05PS3h6TXdMZWNabEFIMlJyeUFUOWh2ZENWRGowWmZQeDRwZTNFaGo2ZnhUNEpGUk95ZzJ5em5VZXNaSnBqYVZnZi11MG1UTUlmMFlxamJzVVVBTFZBb3NxNWJIUjFsVXpqallWTC1lZjlJRmJVTDN0cmhybUg3SVFubkFRTnZ5S1VZVXlxNllidXFjWHJTcUdub2F6eTN3?oc=5",
+        "published_at": "2026-04-24T08:32:49+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Eurozone business activity falls on Mideast war - Yahoo Finance UK",
-        "summary": "Eurozone business activity falls on Mideast war Yahoo Finance UK",
-        "link": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOWnE4cEtmekx1ZWU2cWVQcHl6azBCRjVJNFRNQUY2N0h4aFFTYXZDRnhnZTM5QWlaWDdBMEpTbm1ENzdmZjFsaEZxajBHaXJBT0tLc1h5ejFIdmd6aHZ0OVlDQjR6QzdwX0lwdVAtT25zbTJiTDlPY1BVUHp0Vjd2NHZLSWotTGR6eUZnNkVtcElBZlU?oc=5",
-        "published_at": "2026-04-23T09:05:21+00:00"
+        "title": "German Business Sentiment Drops Sharply in April, Ifo Survey Reports - Global Banking & Finance Review®",
+        "summary": "German Business Sentiment Drops Sharply in April, Ifo Survey Reports Global Banking & Finance Review®",
+        "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPSTJUWG1ITGVsUGI4RmZkSnMtajhYNXJMQzNyUTJGZVl5cFlaME5GNkJPSWdZekVJWUhNeUhaQVBQQ29wMk01MlJKdWwwakMtRFlRWUhlN1QwOFlqWGg0SGFtV0R6cVh5MHdtcTNOOGRqa184eHZ3bUF5R21YVms2VG5pMTM4eEFIdTBUMWtwV2N6RmEzYXdtM05ibEtCdjA?oc=5",
+        "published_at": "2026-04-24T08:12:09+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Digital Trade Finance Platforms: Revolutionizing Cross Border Transactions for SMEs - Global Trade Magazine",
-        "summary": "Digital Trade Finance Platforms: Revolutionizing Cross Border Transactions for SMEs Global Trade Magazine",
-        "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQRm5Va2hFenduSkNlS1N2WnpuRFVBMkFKYWk5dDdsTm5JcGoybHZOR0NYYzZFcjBSZ2hjaWRTM2x4RHlxRmtybFlUeE1kT1BWcXJDendCdjlHRTE1NlhSVDlEcGcwM3JQTXktNHVhalotbW0zVzRDMi1STEV0S3I1Tms3SWZqYjl1RkNEdGNKdlV3UVl5WF9lYVhzN1B0ampWOXhPbnRqUGVsSWZ3cER0dU5RUGQ?oc=5",
-        "published_at": "2026-04-23T09:03:28+00:00"
+        "title": "Hana Financial Group reports highest Q1 net profit on record - Korea JoongAng Daily",
+        "summary": "Hana Financial Group reports highest Q1 net profit on record Korea JoongAng Daily",
+        "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxOS2Y3WUh2OXNSZURVTTJOR3NwUmZuSFpIX1d6WkZwUlAyWkFhX19vcVhJRmZRWEZLbkktWTE2WHR1ZTlhbW9VZlM2WFdKNmdPOGdRWE5jZnZBdmRHMHRFT3cyUW82M3JBbmVfZURJa2NBOG1OdGZ3M2FsTEtFQ1Jfb0VQdjRDVC1mbU5wSkpacVBGRWJMdDRnVzBzSUI1Qi1uSVZRYXBlV1pzMl9XTjBsOFNRN1JKOUgzemRONnNmYUJRNW5mWS1JeHJvVUswNWJRSGpRUw?oc=5",
+        "published_at": "2026-04-24T08:03:37+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "RTA: The Fleet Success Company Launches AI-Enabled Sublet Invoice Capture, Reducing Invoice Entry Time by Up to 75% - Yahoo Finance",
-        "summary": "RTA: The Fleet Success Company Launches AI-Enabled Sublet Invoice Capture, Reducing Invoice Entry Time by Up to 75% Yahoo Finance",
-        "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOcXVNQkdBeUxKdm5uU2tRTTk5MndnSDBhRzlmR1VoZEtTcFBhaE5jMmlGZmRXMlFpeW13UURjWHV1U2QxT3dmR29YWjktd204RkFsZVhmVlBiTlRsd1RzWnlVMWtsMDViRnZrVkRVQkppa2lSb29LekRVSWhCa2JZcVF1MzVfNEtnZ051UjJkVVJ3SGUyUV9KZlh5R3VJc2xURUNXR0VB?oc=5",
-        "published_at": "2026-04-23T09:00:00+00:00"
+        "title": "BDC Launches LIFT: Getting Canadian SMEs off the AI sidelines - Yahoo Finance Singapore",
+        "summary": "BDC Launches LIFT: Getting Canadian SMEs off the AI sidelines Yahoo Finance Singapore",
+        "link": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQYkVaQk0tT0RGeDhHRVpxOWZzNWlOQXB5WXdPanRmUHZSYl9iQ25VN2FTN0RvZWJLOXotVFhPdHUzdWlpQVJwWnVFVlg5WUtEOE1nX1ZxcmVMQWs2U1BTYk9rY2dUNjFwblc0QThMX09SbFJTeUJRYktad2ZtdWpMd2xhSXp5bWZacXc4?oc=5",
+        "published_at": "2026-04-24T08:00:00+00:00"
+      },
+      {
+        "source": "Google News Markets",
+        "title": "Global stock markets are too high and set to fall, says Bank of England deputy - BBC",
+        "summary": "Global stock markets are too high and set to fall, says Bank of England deputy BBC",
+        "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFAyTG5vbkV3dG9RUjJwM1VXTlFOQ0p6VFRPakpnWVR4WjdiY2M0OVUwSjV0aTdOZWJJWHh2bkdoN19CLUd4a2dBRjZXZG01MlBqSkwxMmRVODlVZw?oc=5",
+        "published_at": "2026-04-24T07:34:26+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "JB Financial posts 3.2% rise in Q1 net profit with $116M, short of projections - Korea JoongAng Daily",
-        "summary": "JB Financial posts 3.2% rise in Q1 net profit with $116M, short of projections Korea JoongAng Daily",
-        "link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxQb0JmdWlTOHRWWjlRdUpVRUpXc01fbl8yR3lyMV91UkVTUi1pME5YNG5IbEZMQTFVaW5ReVlBOHI3QXdfMGkxWXJYUWJsX05ld3hYVmdZSnJqY1VCczNOZTdvUDhiN3ZES2QweWNFWFpYV3gyeWNEZ0FSRW1jelh5cl9wanFJWUJNeE13T0RtT21CdkRnUUVWOWl5UnIzWDdQbXVsMi1oMVl0TGpLakY1UWpadHRKUU04bVZfcVFuQUNPckk0aG9NUmpodVlsTmtzT1RVanQ4MExyVHd2am1ScTI0M3pHR2l5?oc=5",
-        "published_at": "2026-04-23T08:47:05+00:00"
+        "title": "Despite Kospi bull run and value-up initiative, 'Korea discount' remains as six in 10 firms trade below book value - Korea JoongAng Daily",
+        "summary": "Despite Kospi bull run and value-up initiative, 'Korea discount' remains as six in 10 firms trade below book value Korea JoongAng Daily",
+        "link": "https://news.google.com/rss/articles/CBMilwJBVV95cUxPM3otX205OFpkTF9KcENXd0JMZ05IRWdyS0R2LXNCcE9JdlpadVliZzdRVFVmWlNyODl4ZTBLUlU0TzdJV2Q2NTNpbGt4ME44WVVCUTBmejlaNmZqOGdwSnlqd2NkaHpZUDFxajBzOGh4QnRfQVVucGwwRl92RjVwNHZTYTRqbEJoWEdzLTFXMU94djRDRGVqWGIxOFVQR09fNm5hbXU4bkFBSkdNWVVmR1F3S0l4WXJ3d1pNaC05RnFHUVNhaUdyRmFRZEMzNDJIWkc2M1lmY0pSczZpS19OaVZ0YnpzTXBJcDFsLVZhUFFrcE5qakxMb2FQcVhXSmNHUzM5anBxeU1yQWE2UDQ5UEhCUklyYnM?oc=5",
+        "published_at": "2026-04-24T07:20:43+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "Jefferies Sees International Business Machines Corporation (IBM) Upside, Trims Price Target on Valuation Ahead of Earnings - Yahoo Finance",
-        "summary": "Jefferies Sees International Business Machines Corporation (IBM) Upside, Trims Price Target on Valuation Ahead of Earnings Yahoo Finance",
-        "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOLWZNeTJGa3lYRW5iM0ZtTWRUVF9zN0ZCUmJpd1ZGVlVYSkZON1BneWhmWTNCeTJfUkhNdjdEZkZIbXFGQmhqcFQtcEkyTmlRMklOTnFoNks0ZG84cl9ONF9RcTFRUTlXcUoyRllJdzVoQTNWNFFzOFNQRW1qWEVBdFNVc19mejVvYTgyYjE0VTF5YTY1TUt6dVpza1IxN0E2cFkyWkR0SFpKeEFsRmZoNQ?oc=5",
-        "published_at": "2026-04-23T08:40:32+00:00"
+        "title": "Small-business issuer exploring equipment-finance expansion - Green Street News",
+        "summary": "Small-business issuer exploring equipment-finance expansion Green Street News",
+        "link": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQNGNxTExZYTFTY1JwOE1WR3M1UGd0YUgydGxPRUhaZm9JTU5LTFBmMTlMTVpLUTRYa29Tek8xbGMtTHNxc29veEplc1ZTd2ZWTUppSzZvVDV2MTZqTE9QeXhmVEpnaEV2RzdyUVloT21kemppUV94dGRtQ0JId0stQXhZa3ZLNFU1TkdvT3BRY19UaHF4ZVg4a1BpNDg?oc=5",
+        "published_at": "2026-04-24T07:06:21+00:00"
       },
       {
         "source": "Google News Business",
-        "title": "From service to global markets: UKEF partners with Finance for Forces to support veteran-led exporters - GOV.UK",
-        "summary": "From service to global markets: UKEF partners with Finance for Forces to support veteran-led exporters GOV.UK",
-        "link": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQX3QxNjM2LUVnWFJuWnlfOGtyQktySWdJQ2ZTNHQtUzNndTJfa2V2SmhfbndVTGxYR0E2QVNITDhZWGlYbkdqdWpwSXhITFJESE1MclBtVTdOVE52OFNFX0RPOHFWcF8tUHpENjhkcVRVZFhIbi0wTXpjMFNzMEQ5UXJjNjBpNlpWRElhVEY2Zmh5ZUVKczFVTXllYjdFNFFSZFdGMXg4VGVOOG5Dak15azZXQ2VSZzBDNlRERTR4WC04MGIxZ3N3OXNiOUE1SURJTEE?oc=5",
-        "published_at": "2026-04-23T08:33:06+00:00"
+        "title": "Robert Gordon Commended for Significant Expertise in the Finance Space - 24-7 Press Release Newswire",
+        "summary": "Robert Gordon Commended for Significant Expertise in the Finance Space 24-7 Press Release Newswire",
+        "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQd2JQQ0ZPWkV4WTNhd0R5UUR0QlZTV1J6bW5HWWpJakZHalFwbEJYdXpwcjY0eHZja08zd1VOeVN4ZE5ZZWNFQTBzTjJ6ejhfUDE2S0ZDbXNqWlNhTXBLVFZ6bTdCSFBVX05fbTdsRmpLYktRR2tGYVplUkxsaloxQlZ3bVNOQ0U4cmtFRjYxSXhKX29TZW5kZ3c4ZXhlc3p1aVpLYUlmQVNHZzVhS2hmS2RWYVBzMU9XUjZyN3U5OGp0UQ?oc=5",
+        "published_at": "2026-04-24T07:01:54+00:00"
       },
       {
-        "source": "Google News Business",
-        "title": "Yes, retail investment needs a boost – but ‘Savvy Squirrel’ looks too tame - The Guardian",
-        "summary": "Yes, retail investment needs a boost – but ‘Savvy Squirrel’ looks too tame The Guardian",
-        "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNMmFWS0MyY3JhNll5RHB2U2hfUEdrTWUtMFplQXhhaTYtX3dsRHBXLWI2VjBvcHRnekZ6cWJLWkdtYlhpMFM1Ym1LZFFkR0lRU1hxUEx1OG5VRlEtZUVqblk5U1IyVVQ4NXZQUmxKSUwtMlhucV9lLWpBbDlDNXNndlNYbVBKdkVQQUFqRXpyNmVMa3NKeWZGaHZGVHVIc2QxRlFKZ0hzeVhPTVBwU2lzcE04bGJURXduV3FJallxR2YySVh1MVRvVUxfQndFb1NVR3liTHFHZ0Z6Zw?oc=5",
-        "published_at": "2026-04-23T08:28:00+00:00"
+        "source": "Google News Markets",
+        "title": "Sector & Industry Performance - Bloomberg.com",
+        "summary": "Sector & Industry Performance Bloomberg.com",
+        "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5xWEtZUzJ1Y0JsejVfb1o5VkF5Z3BFdWVwYzdCcEJ6dWJ3N19uOFNoY2VaYnMtUVpLeTdSUE83a3pkTWtOQmpTUm01aEJteWVhNU5n?oc=5",
+        "published_at": "2026-04-24T06:11:09+00:00"
       }
     ]
   },
   "prediction": {
-    "alignment_score": 57.6,
-    "confidence": 0.46,
-    "sentiment_prediction": 61.76,
+    "alignment_score": 51.07,
+    "confidence": 0.41,
+    "sentiment_prediction": 45.96,
     "trading_recommendation": "Hold",
-    "reasoning": "Tag 11 (Meisterzahl: Spirituelle Erleuchtung, Vision). historisch korreliert Tag 11 am stärksten mit einem Sentiment von 50.0. Krypto und News dämpfen das Setup um 3.4 Punkte. der aktuelle Markt-Trend ist positiv. BTC und ETH liefern zusätzlichen Takt für das Setup.",
+    "reasoning": "Tag 5 (Freiheit, Wandel, Abenteuer). historisch korreliert Tag 11 am stärksten mit einem Sentiment von 48.7. Krypto und News dämpfen das Setup um 0.8 Punkte. der aktuelle Markt-Trend ist negativ. BTC und ETH liefern zusätzlichen Takt für das Setup.",
     "alignment_breakdown": {
-      "base_alignment_score": 61.02,
-      "crypto_modifier": -2.22,
-      "news_modifier": -0.76,
-      "day_multiplier": 1.15,
-      "total_modifier": -3.42,
-      "final_alignment_score": 57.6
+      "base_alignment_score": 51.91,
+      "crypto_modifier": -0.89,
+      "news_modifier": 0.0,
+      "day_multiplier": 0.95,
+      "total_modifier": -0.84,
+      "final_alignment_score": 51.07
     },
-    "oracle_accuracy": 94.67
+    "oracle_accuracy": 93.42
   },
   "correlation_summary": {
     "analysis_period_days": 90,
     "strongest_correlation": {
       "day_number": 11,
-      "alignment_score": 61.02,
-      "avg_sentiment": 50.0
+      "alignment_score": 60.79,
+      "avg_sentiment": 48.67
     },
     "weakest_correlation": {
       "day_number": 5,
@@ -133,24 +133,24 @@
     "statistical_significance": "medium"
   },
   "backtesting": {
-    "accuracy_pct": 94.67,
-    "total_predictions": 77,
-    "evaluated_predictions": 75,
+    "accuracy_pct": 93.42,
+    "total_predictions": 78,
+    "evaluated_predictions": 76,
     "correct_predictions": 71,
     "pending_predictions": 2,
     "latest_result": {
-      "generated_at": "2026-04-22T19:55:51.644829+00:00",
-      "target_date": "23.04.2026",
+      "generated_at": "2026-04-23T21:38:08.790626+00:00",
+      "target_date": "24.04.2026",
       "recommendation": "Hold",
-      "alignment_score": 59.11,
-      "confidence": 0.59,
-      "sentiment_prediction": 59.04,
+      "alignment_score": 57.6,
+      "confidence": 0.46,
+      "sentiment_prediction": 61.76,
       "oracle_version": "1.1.0",
-      "evaluated_at": "2026-04-23T11:03:21.326242+00:00",
+      "evaluated_at": "2026-04-24T09:50:25.930846+00:00",
       "was_correct": false,
-      "actual_sentiment": 50.0,
-      "previous_sentiment": 62.0,
-      "sentiment_delta": -12.0,
+      "actual_sentiment": 42.0,
+      "previous_sentiment": 50.0,
+      "sentiment_delta": -8.0,
       "actual_trend": "falling"
     }
   }

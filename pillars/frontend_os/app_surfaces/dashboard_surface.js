@@ -181,6 +181,7 @@ export const dashboardRender = {
 
       sentimentWidget.init('sentiment-widget');
       this.initOracleCard();
+      this.renderGoldSignalShortcut();
       this.buildSynergyWidget();
       renderSurfaceFlowRail('dashboard-flow-rail', 'dashboard');
       renderDashboardDimensionCards();
@@ -215,6 +216,43 @@ export const dashboardRender = {
       link.addEventListener('click', clickHandler);
       this._listeners.push({ element: link, type: 'click', handler: clickHandler });
     });
+  },
+
+  renderGoldSignalShortcut() {
+    const container = document.getElementById('gold-signal-shortcut');
+    if (!container) return;
+
+    container.replaceChildren();
+    const card = dom.createEl('div', {
+      className: 'glass-card gold-signal-shortcut-card',
+      parent: container
+    });
+
+    dom.createEl('div', {
+      className: 'section-eyebrow-left',
+      text: 'Gold-Signale',
+      parent: card
+    });
+    dom.createEl('p', {
+      className: 'text-secondary mb-16',
+      text: 'Die veredelten Markt- und News-Signale liegen in Geld / Oracle & Signal.',
+      parent: card
+    });
+    const link = dom.createEl('a', {
+      className: 'btn-secondary',
+      text: 'Oracle & Signal oeffnen',
+      attrs: {
+        href: `${getRepoRoot()}dimensions/geld/oracle_signal/index.html`,
+        'data-route': 'oracle_signal'
+      },
+      parent: card
+    });
+    const clickHandler = (event) => {
+      event.preventDefault();
+      nav.navigateTo('oracle_signal');
+    };
+    link.addEventListener('click', clickHandler);
+    this._listeners.push({ element: link, type: 'click', handler: clickHandler });
   },
 
   buildSynergyWidget() {

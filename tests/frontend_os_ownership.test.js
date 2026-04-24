@@ -197,7 +197,7 @@ describe('frontend_os ownership', () => {
     expect(catalog.journey).toEqual(expect.objectContaining({
       entrySurface: expect.objectContaining({ id: 'numerology', type: 'app' }),
       hubSurface: expect.objectContaining({ id: 'dashboard', type: 'system' }),
-      dashboardNextSurface: expect.objectContaining({ id: 'zeit', type: 'dimension', route: 'dimensions/zeit/index.html' })
+      dashboardNextSurface: expect.objectContaining({ id: 'zeit', type: 'dimension', route: 'apps/chronos/index.html' })
     }));
 
     expect(resolveSurfaceTarget('finance')).toEqual(expect.objectContaining({ id: 'finance', type: 'app' }));
@@ -209,7 +209,7 @@ describe('frontend_os ownership', () => {
     expect(getFrontendProductJourney()).toEqual(expect.objectContaining({
       entrySurface: expect.objectContaining({ id: 'numerology', route: 'apps/numerology/index.html' }),
       hubSurface: expect.objectContaining({ id: 'dashboard', route: 'dashboard/index.html' }),
-      dashboardNextSurface: expect.objectContaining({ id: 'zeit', route: 'dimensions/zeit/index.html' })
+      dashboardNextSurface: expect.objectContaining({ id: 'zeit', route: 'apps/chronos/index.html' })
     }));
 
     expect(getSurfaceJourney('home')).toEqual(expect.objectContaining({
@@ -217,8 +217,8 @@ describe('frontend_os ownership', () => {
       secondaryTarget: expect.objectContaining({ id: 'dashboard' })
     }));
     expect(getSurfaceJourney('numerology')).toEqual(expect.objectContaining({
-      primaryTarget: expect.objectContaining({ id: 'muster', route: 'dimensions/muster/index.html' }),
-      secondaryTarget: expect.objectContaining({ id: 'dashboard' })
+      primaryTarget: expect.objectContaining({ id: 'dashboard', route: 'dashboard/index.html' }),
+      secondaryTarget: expect.objectContaining({ id: 'zeit', route: 'apps/chronos/index.html' })
     }));
     expect(getSurfaceJourney('dashboard')).toEqual(expect.objectContaining({
       primaryTarget: expect.objectContaining({ id: 'zeit' }),

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-04-23T19:38:08.604355+00:00",
+  "updated_at": "2026-04-24T09:50:25.931291+00:00",
   "history": [
     {
       "generated_at": "2026-04-19T18:23:09.744083+00:00",
@@ -1142,12 +1142,27 @@
       "actual_trend": "falling"
     },
     {
-      "generated_at": "2026-04-23T19:38:08.573964+00:00",
+      "generated_at": "2026-04-23T21:38:08.790626+00:00",
       "target_date": "24.04.2026",
       "recommendation": "Hold",
       "alignment_score": 57.6,
       "confidence": 0.46,
       "sentiment_prediction": 61.76,
+      "oracle_version": "1.1.0",
+      "evaluated_at": "2026-04-24T09:50:25.930846+00:00",
+      "was_correct": false,
+      "actual_sentiment": 42.0,
+      "previous_sentiment": 50.0,
+      "sentiment_delta": -8.0,
+      "actual_trend": "falling"
+    },
+    {
+      "generated_at": "2026-04-24T09:50:25.737484+00:00",
+      "target_date": "27.04.2026",
+      "recommendation": "Hold",
+      "alignment_score": 51.07,
+      "confidence": 0.41,
+      "sentiment_prediction": 45.96,
       "oracle_version": "1.1.0",
       "evaluated_at": null,
       "was_correct": null,
@@ -1158,24 +1173,24 @@
     }
   ],
   "summary": {
-    "accuracy_pct": 94.67,
-    "total_predictions": 77,
-    "evaluated_predictions": 75,
+    "accuracy_pct": 93.42,
+    "total_predictions": 78,
+    "evaluated_predictions": 76,
     "correct_predictions": 71,
     "pending_predictions": 2,
     "latest_result": {
-      "generated_at": "2026-04-22T19:55:51.644829+00:00",
-      "target_date": "23.04.2026",
+      "generated_at": "2026-04-23T21:38:08.790626+00:00",
+      "target_date": "24.04.2026",
       "recommendation": "Hold",
-      "alignment_score": 59.11,
-      "confidence": 0.59,
-      "sentiment_prediction": 59.04,
+      "alignment_score": 57.6,
+      "confidence": 0.46,
+      "sentiment_prediction": 61.76,
       "oracle_version": "1.1.0",
-      "evaluated_at": "2026-04-23T11:03:21.326242+00:00",
+      "evaluated_at": "2026-04-24T09:50:25.930846+00:00",
       "was_correct": false,
-      "actual_sentiment": 50.0,
-      "previous_sentiment": 62.0,
-      "sentiment_delta": -12.0,
+      "actual_sentiment": 42.0,
+      "previous_sentiment": 50.0,
+      "sentiment_delta": -8.0,
       "actual_trend": "falling"
     }
   }

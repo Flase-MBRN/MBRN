@@ -130,7 +130,13 @@ describe('frontend_os navigation', () => {
   test('navigateTo resolves dimension routes as first-class targets', async () => {
     const { nav, mockLocation } = await loadNavigation();
     nav.navigateTo('geld');
-    expect(mockLocation.href).toContain('dimensions/geld/index.html');
+    expect(mockLocation.href).toContain('apps/finance/index.html');
+  });
+
+  test('navigateTo resolves topic-area routes as second-level targets', async () => {
+    const { nav, mockLocation } = await loadNavigation();
+    nav.navigateTo('oracle_signal');
+    expect(mockLocation.href).toContain('dimensions/geld/oracle_signal/index.html');
   });
 
   test('navigateTo falls back to home for unknown routes', async () => {
@@ -209,6 +215,7 @@ describe('frontend_os navigation', () => {
     const { getCurrentRoute } = await loadNavigation();
     expect(getCurrentRoute('/dashboard/index.html')).toBe('dashboard');
     expect(getCurrentRoute('/dimensions/zeit/index.html')).toBe('zeit');
+    expect(getCurrentRoute('/dimensions/geld/oracle_signal/index.html')).toBe('oracle_signal');
     expect(getCurrentRoute('/apps/finance/index.html')).toBe('finance');
     expect(getCurrentRoute('/unknown')).toBe('home');
   });

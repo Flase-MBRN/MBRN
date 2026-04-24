@@ -24,7 +24,13 @@ const FRONTEND_OS_EXPORT_ENTRYPOINTS = Object.freeze([
 ]);
 
 export function getDimensionRoute(dimensionId) {
-  return `dimensions/${dimensionId}/index.html`;
+  const defaultApp = APP_MANIFEST.find((app) => app.dimensionId === dimensionId && app.id === getDimensionById(dimensionId)?.defaultApp);
+  return defaultApp?.route || `dimensions/${dimensionId}/index.html`;
+}
+
+export function getTopicAreaRoute(topicAreaId) {
+  const topicArea = TOPIC_AREA_REGISTRY.find((item) => item.id === topicAreaId);
+  return topicArea?.route || (topicArea ? `dimensions/${topicArea.dimensionId}/${topicArea.id}/index.html` : null);
 }
 
 export function getFrontendOsSystemSurfaces() {
@@ -87,6 +93,21 @@ function getDimensionSurfaceById(surfaceId) {
   return dimension ? buildDimensionSurfaceEntry(dimension) : null;
 }
 
+function getTopicAreaSurfaceById(surfaceId) {
+  const topicArea = TOPIC_AREA_REGISTRY.find((item) => item.id === surfaceId);
+  if (!topicArea) return null;
+
+  return {
+    id: topicArea.id,
+    label: topicArea.publicLabel,
+    route: getTopicAreaRoute(topicArea.id),
+    type: 'topic_area',
+    dimensionId: topicArea.dimensionId,
+    defaultSurfaceId: topicArea.defaultSurfaceId,
+    description: topicArea.description
+  };
+}
+
 function getCoreEntrySurface() {
   const coreDimension = getDimensionById(FRONTEND_OS_ENTRY_DIMENSION_ID);
   return getAppSurfaceById(coreDimension?.defaultApp || 'numerology');
@@ -117,6 +138,7 @@ export function getDimensionSurfaceModel(dimensionId) {
 
   const topicAreas = getTopicAreasByDimensionId(dimensionId).map((topicArea) => ({
     ...topicArea,
+    route: getTopicAreaRoute(topicArea.id),
     apps: apps.filter((app) => app.topicAreaId === topicArea.id)
   }));
 
@@ -180,6 +202,7 @@ export function getSurfaceJourney(surfaceId = 'home') {
   const currentSurface =
     getSystemSurfaceById(surfaceId) ||
     getDimensionSurfaceById(surfaceId) ||
+    getTopicAreaSurfaceById(surfaceId) ||
     getAppSurfaceById(surfaceId);
 
   if (!currentSurface) return null;
@@ -204,11 +227,14 @@ export function getSurfaceJourney(surfaceId = 'home') {
 
   if (surfaceId === journey.entrySurface?.id) {
     const dimensionSurface = getDimensionSurfaceById(journey.entrySurface.dimensionId);
+    const prefersSelfAsDimensionLanding = dimensionSurface?.route === journey.entrySurface.route;
     return {
       currentSurface,
-      primaryTarget: dimensionSurface || journey.hubSurface,
-      secondaryTarget: journey.hubSurface,
-      summary: `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt zuerst in ${dimensionSurface?.label || 'die zugehoerige Dimension'} und danach ins Dashboard.`
+      primaryTarget: prefersSelfAsDimensionLanding ? journey.hubSurface : (dimensionSurface || journey.hubSurface),
+      secondaryTarget: prefersSelfAsDimensionLanding ? journey.dashboardNextSurface : journey.hubSurface,
+      summary: prefersSelfAsDimensionLanding
+        ? `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt ins Dashboard und danach in die naechste relevante Dimension.`
+        : `${journey.entrySurface.label} bleibt die Kernflaeche. Der saubere Rueckweg fuehrt zuerst in ${dimensionSurface?.label || 'die zugehoerige Dimension'} und danach ins Dashboard.`
     };
   }
 
@@ -224,13 +250,26 @@ export function getSurfaceJourney(surfaceId = 'home') {
     };
   }
 
-  if (currentSurface.type === 'app') {
+  if (currentSurface.type === 'topic_area') {
     const owningDimension = getDimensionSurfaceById(currentSurface.dimensionId);
     return {
       currentSurface,
       primaryTarget: owningDimension || journey.hubSurface,
       secondaryTarget: journey.hubSurface,
-      summary: `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der saubere Rueckweg fuehrt zuerst in die Dimension und danach ins Dashboard.`
+      summary: `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der Rueckweg fuehrt ueber die Dimension und das Dashboard.`
+    };
+  }
+
+  if (currentSurface.type === 'app') {
+    const owningDimension = getDimensionSurfaceById(currentSurface.dimensionId);
+    const prefersSelfAsDimensionLanding = owningDimension?.route === currentSurface.route;
+    return {
+      currentSurface,
+      primaryTarget: prefersSelfAsDimensionLanding ? journey.hubSurface : (owningDimension || journey.hubSurface),
+      secondaryTarget: prefersSelfAsDimensionLanding ? journey.entrySurface : journey.hubSurface,
+      summary: prefersSelfAsDimensionLanding
+        ? `${currentSurface.label} ist gleichzeitig die aktive Surface seiner Dimension. Der saubere Rueckweg fuehrt ins Dashboard.`
+        : `${currentSurface.label} liegt in ${owningDimension?.label || 'seiner Dimension'}. Der saubere Rueckweg fuehrt zuerst in die Dimension und danach ins Dashboard.`
     };
   }
 
@@ -251,7 +290,8 @@ export function getFrontendSurfaceCatalog() {
       label: topicArea.publicLabel,
       type: 'topic_area',
       dimensionId: topicArea.dimensionId,
-      defaultSurfaceId: topicArea.defaultSurfaceId
+      defaultSurfaceId: topicArea.defaultSurfaceId,
+      route: getTopicAreaRoute(topicArea.id)
     })),
     dimensionViews: DIMENSION_REGISTRY.map((dimension) => buildDimensionSurfaceEntry(dimension)),
     exportEntrypoints: getFrontendOsExportEntrypoints(),
