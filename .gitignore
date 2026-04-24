@@ -73,3 +73,6 @@ logs/
 
 # Keep pipeline and migration source tracked.
 # Secrets, logs and Python caches remain ignored by the narrower rules above.
+
+# MBRN Toolkit (Auto-Generated)
+scripts/pipelines/mbrn_toolkit/
