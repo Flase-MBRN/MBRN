@@ -63,17 +63,42 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
 OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))
 MIN_HTML_CHARS = 500
 
-BRIDGE_SYSTEM_PROMPT = """DU BIST EIN SENIOR FRONTEND ENGINEER. DEINE AUFGABE IST ES, EIN INTERAKTIVES WEB-TOOL ZU BAUEN.
+MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}} | MBRN Hub</title>
+    <style>
+        body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        h1 { font-size: 22px; font-weight: 800; color: #7B5CF5; margin-bottom: 24px; text-align: center; letter-spacing: -0.02em; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #999; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, textarea, select { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #7B5CF5; outline: none; background: #1F1F2E; }
+        button { background-color: #7B5CF5; color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+        button:hover { background-color: #8C72F7; transform: translateY(-1px); }
+        #result-area { margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(123, 92, 245, 0.2); font-family: monospace; font-size: 13px; color: #AFA; white-space: pre-wrap; word-break: break-all; }
+        .meta-footer { margin-top: 32px; text-align: center; font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="tool-card">
+        <h1>{{TITLE}}</h1>
+        {{CONTENT}}
+        <div class="meta-footer">MBRN Factory Autonomous Module</div>
+    </div>
+</body>
+</html>"""
+
+BRIDGE_SYSTEM_PROMPT = """DU BIST EIN SENIOR FRONTEND ENGINEER. DEINE AUFGABE IST ES, DAS INNERE EINES INTERAKTIVEN WEB-TOOLS ZU BAUEN.
 REGELN:
-- KEINE METADATEN RENDERN! Erwähne NIEMALS Datei-Infos, ROI-Scores oder Agenten-Namen auf der Webseite.
-- INTERAKTIVITÄT IST PFLICHT! Baue Input-Felder, Buttons und eine JavaScript-Logik, die das Python-Skript imitiert. Der User muss etwas eingeben können und ein Ergebnis erhalten.
-- ZWINGENDES DESIGN: Du MUSST folgenden CSS-Block unverändert nutzen:
-  body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-  .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 500px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-  button { background-color: #7B5CF5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: opacity 0.2s; }
-  button:hover { opacity: 0.9; }
-  input, textarea { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; }
-- NUR HTML AUSGEBEN. KEIN MARKDOWN.
+- GIB KEIN <html>, <head>, <body> ODER <style> AUS. Das Design ist bereits vorgegeben.
+- GIB NUR DAS INNERE HTML (Inputs, Labels, Buttons) UND DIE <script>-LOGIK AUS.
+- INTERAKTIVITÄT IST PFLICHT! Das Tool muss auf Benutzereingaben reagieren.
+- KEINE METADATEN RENDERN! Erwähne NIEMALS Datei-Infos, ROI-Scores oder Agenten-Namen.
+- Halte dich strikt an die ID-Vorgaben für das CSS (z.B. nutze <div id="result-area"> für Ausgaben).
+- NUR CODE AUSGEBEN. KEIN MARKDOWN.
 """
 
 
@@ -105,23 +130,18 @@ def extract_logic_description(py_file: Path) -> str:
     return "\n".join(filtered_lines)
 
 
-def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str) -> str:
-    prompt = f"""DIMENSION: {dimension}
-MODULE: {name}
-PYTHON LOGIC:
-{logic_desc}
-
-Create a complete index.html for this MBRN dimension. The user should get an immediate result without login."""
-    payload = json.dumps({
-        "model": OLLAMA_MODEL,
-        "prompt": f"[SYSTEM]{BRIDGE_SYSTEM_PROMPT}[/SYSTEM]\n{prompt}",
-        "stream": False,
-        "options": {"temperature": 0.2},
-    }).encode("utf-8")
-    req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT_SECONDS) as response:
-        result = json.loads(response.read().decode("utf-8"))
-    return str(result.get("response", "")).strip()
+def metadata_scrubber(content: str) -> str:
+    """Removes forbidden metadata keywords from the generated output."""
+    forbidden = [
+        "ROI Score", "Alpha ID", "Source Alpha", "Factory ID", "Quality Score", 
+        "Agent Name", "Created At", "Synergy Score", "Bridge Status"
+    ]
+    cleaned = content
+    for word in forbidden:
+        # Case insensitive replace
+        pattern = re.compile(re.escape(word), re.IGNORECASE)
+        cleaned = pattern.sub("[PROTECTED]", cleaned)
+    return cleaned
 
 
 def strip_markdown_fences(html: str) -> str:
@@ -137,6 +157,35 @@ def strip_markdown_fences(html: str) -> str:
     if html_start > 0:
         cleaned = cleaned[html_start:].strip()
     return cleaned
+
+
+def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str) -> str:
+    prompt = f"""DIMENSION: {dimension}
+MODULE: {name}
+PYTHON LOGIC:
+{logic_desc}
+
+Erstelle das interaktive Innenleben für dieses Tool. Nutze <div id="result-area"> für Ergebnisse.
+GIB NUR HTML UND JAVASCRIPT AUS. KEIN CSS. KEIN HEADER."""
+    
+    payload = json.dumps({
+        "model": OLLAMA_MODEL,
+        "prompt": f"[SYSTEM]{BRIDGE_SYSTEM_PROMPT}[/SYSTEM]\n{prompt}",
+        "stream": False,
+        "options": {"temperature": 0.2},
+    }).encode("utf-8")
+    
+    req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT_SECONDS) as response:
+        result = json.loads(response.read().decode("utf-8"))
+    
+    inner_content = str(result.get("response", "")).strip()
+    inner_content = strip_markdown_fences(inner_content)
+    inner_content = metadata_scrubber(inner_content)
+    
+    safe_name = name.replace("_", " ").title()
+    final_html = MBRN_HTML_TEMPLATE.replace("{{TITLE}}", safe_name).replace("{{CONTENT}}", inner_content)
+    return final_html
 
 
 def generate_dummy_frontend(dimension: str, name: str, logic_desc: str) -> str:

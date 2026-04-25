@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>20260424 185319 Huxiaoman7 Skills Eval Module | MBRN Hub</title>
+    <title>20260424 205231 Kybernesisai Arp Module | MBRN Hub</title>
     <style>
         body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
@@ -19,44 +19,27 @@
 </head>
 <body>
     <div class="tool-card">
-        <h1>20260424 185319 Huxiaoman7 Skills Eval Module</h1>
+        <h1>20260424 205231 Kybernesisai Arp Module</h1>
         <div id="input-area">
-  <label for="repo-url">Repository URL:</label>
-  <input type="text" id="repo-url" placeholder="https://github.com/user/repo" value="https://github.com/huxiaoman7/skills-eval">
-
-  <label for="layers">Layers (comma-separated):</label>
-  <input type="text" id="layers" placeholder="1,2,3" value="1,2,3">
-
-  <button id="verify-button">Verify Skills</button>
+  <label for="arp-data">ARP Data (JSON):</label>
+  <textarea id="arp-data" placeholder='{"did": "did:example:123456", "agentCard": {"name": "Example Agent", "description": "An example agent", "capabilities": ["connect", "sendMessage"]}, "connections": [{"did": "did:example:789012", "status": "pending"}, {"did": "did:example:345678", "status": "accepted"}]}'></textarea>
+  <button id="parse-button">Parse</button>
 </div>
 
 <div id="result-area">
-  <!-- Results will be displayed here -->
+  <h2>Parsed ARP Document:</h2>
+  <pre id="result-output"></pre>
 </div>
 
 <script>
-  document.getElementById('verify-button').addEventListener('click', () => {
-    const repoUrl = document.getElementById('repo-url').value;
-    const layersString = document.getElementById('layers').value;
-    const layers = layersString.split(',').map(Number);
-
-    document.getElementById('result-area').innerHTML = 'Verifying... <br><br>';
-
-    // Simulate the Python logic (replace with actual API call)
-    setTimeout(() => {
-      const mockResults = {
-        "skill_a": { "status": "verified", "content": "Content of skill_a" },
-        "skill_b": { "status": "verified", "content": "Content of skill_b" },
-        "skill_c": { "status": "verified", "content": "Content of skill_c" }
-      };
-
-      let resultHtml = '';
-      for (const skill in mockResults) {
-        resultHtml += `${skill}: ${mockResults[skill].status} <br>`;
-      }
-
-      document.getElementById('result-area').innerHTML = resultHtml;
-    }, 1500); // Simulate a 1.5 second delay
+  document.getElementById('parse-button').addEventListener('click', () => {
+    const arpData = document.getElementById('arp-data').value;
+    try {
+      const parsedData = JSON.parse(arpData);
+      document.getElementById('result-output').textContent = JSON.stringify(parsedData, null, 2);
+    } catch (error) {
+      document.getElementById('result-output').textContent = 'Error parsing JSON: ' + error.message;
+    }
   });
 </script>
         <div class="meta-footer">MBRN Factory Autonomous Module</div>
