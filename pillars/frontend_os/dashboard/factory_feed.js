@@ -110,12 +110,15 @@ function renderNotificationCard(n) {
     : `<span class="factory-badge factory-badge--standard">${n.curation_status}</span>`;
 
   const linkUrl = n.module_file ? `/${n.module_file}` : '#';
+  
+  // Truncate long titles
+  const displayTitle = repoName.length > 30 ? repoName.substring(0, 27) + '...' : repoName;
 
   return `
     <div class="factory-card ${n.is_elite ? 'factory-card--elite' : ''}" data-id="${n.id || ''}">
       <div class="factory-card__header">
         <span class="factory-card__icon">${n.is_elite ? '💎' : '⚙️'}</span>
-        <span class="factory-card__repo">${repoName}</span>
+        <span class="factory-card__repo" title="${repoName}">${displayTitle}</span>
         <span class="factory-card__time">${time}</span>
       </div>
       <div class="factory-card__meta">
@@ -225,6 +228,12 @@ function buildFactoryFeedHTML(notifications, controlState = null) {
           title="Feed aktualisieren"
         >
           Aktualisieren
+        </button>
+      </div>
+
+      <div class="factory-seo-toggle" style="text-align: center; margin-top: 10px; font-size: 11px; opacity: 0.6;">
+        <button onclick="window.__toggleEliteFilter(!${showOnlyElite})" style="background: none; border: 1px solid rgba(255,255,255,0.1); color: inherit; padding: 4px 10px; border-radius: 4px; cursor: pointer;">
+          ${showOnlyElite ? 'Alle Factory-Module anzeigen (SEO-Modus)' : 'Zurück zur Elite-Ansicht'}
         </button>
       </div>
 
