@@ -28,134 +28,97 @@
     <div class="tool-card">
         <h1>Autonomous Tool</h1>
         <div id="input-area">
-  <label for="location">Location:</label>
-  <input type="text" id="location" value="Japan"><br><br>
-
-  <label for="trip_duration">Trip Duration:</label>
-  <input type="number" id="trip_duration" value="7"><br><br>
-
-  <label for="interests">Interests (comma-separated):</label>
-  <input type="text" id="interests" value="culture,nature"><br><br>
-
-  <button onclick="recommend()">Recommend</button>
+  <p>Enter ideas data (JSON format):</p>
+  <textarea id="ideas-input" placeholder='[{"id": 1, "assumption": "Assumption A", "dependent_ideas": [2]}, {"id": 2, "assumption": "Assumption B", "dependent_ideas": [3]}, {"id": 3, "assumption": "Assumption C", "dependent_ideas": []}]'></textarea>
+  <button id="process-button">Process Ideas</button>
 </div>
 
 <div id="result-area"></div>
 
 <script>
-function recommend() {
-  const location = document.getElementById('location').value;
-  const tripDuration = parseInt(document.getElementById('trip_duration').value);
-  const interests = document.getElementById('interests').value.split(',').map(interest => interest.trim());
+function processIdeas(ideas) {
+  const dependencyGraph = {};
 
-  const sampleDestinations = [
-    {"name": "Kyoto", "country": "Japan", "type": "culture"},
-    {"name": "Hiroshima", "country": "Japan", "type": "history"},
-    {"name": "Mount Fuji", "country": "Japan", "type": "nature"}
-  ];
-
-  function recommendDestinations(userPreferences, destinations) {
-    let recommendedDestinations = [];
-    for (const dest of destinations) {
-      if (dest["country"] === userPreferences.location && recommendedDestinations.length < 2) {
-        recommendedDestinations.push(dest);
+  for (const idea of ideas) {
+    const assumption = idea.assumption;
+    if (idea.dependent_ideas && idea.dependent_ideas.length > 0) {
+      for (const dep of idea.dependent_ideas) {
+        if (!dependencyGraph[dep]) {
+          dependencyGraph[dep] = [];
+        }
+        dependencyGraph[dep].push(assumption);
       }
     }
-    return recommendedDestinations;
   }
 
-  const userPreferences = {
-    "location": location,
-    "trip_duration": tripDuration,
-    "interests": interests
-  };
-
-  const recommended = recommendDestinations(userPreferences, sampleDestinations);
-
-  const resultArea = document.getElementById('result-area');
-  resultArea.innerHTML = `<pre>${JSON.stringify(recommended, null, 2)}</pre>`;
+  return dependencyGraph;
 }
 
-// Additional functionality:  Dynamic filtering based on interests
-function filterDestinations(destinations, interests) {
-    return destinations.filter(dest => interests.some(interest => dest.type === interest));
-}
+document.getElementById('process-button').addEventListener('click', () => {
+  const ideasInput = document.getElementById('ideas-input').value;
+  try {
+    const ideas = JSON.parse(ideasInput);
 
-// Example usage of filterDestinations (not directly used in the core recommendation, but demonstrates advanced JS)
-function recommendWithInterestFilter() {
-    const location = document.getElementById('location').value;
-    const tripDuration = parseInt(document.getElementById('trip_duration').value);
-    const interests = document.getElementById('interests').value.split(',').map(interest => interest.trim());
+    const dependencyGraph = processIdeas(ideas);
 
-    const sampleDestinations = [
-        {"name": "Kyoto", "country": "Japan", "type": "culture"},
-        {"name": "Hiroshima", "country": "Japan", "type": "history"},
-        {"name": "Mount Fuji", "country": "Japan", "type": "nature"},
-        {"name": "Osaka", "country": "Japan", "type": "culture"}
-    ];
+    const resultArea = document.getElementById('result-area');
+    resultArea.innerHTML = `<pre>${JSON.stringify(dependencyGraph, null, 4)}</pre>`;
 
-    const filteredDestinations = filterDestinations(sampleDestinations, interests);
+    // Simulate MODULE_READY output
+    const moduleReadyArea = document.createElement('p');
+    moduleReadyArea.textContent = "MODULE_READY: velvetmonkey_flywheel_ideas";
+    resultArea.appendChild(moduleReadyArea);
 
-    function recommendDestinationsFiltered(userPreferences, destinations) {
-        let recommendedDestinations = [];
-        for (const dest of destinations) {
-            if (dest["country"] === userPreferences.location && recommendedDestinations.length < 2) {
-                recommendedDestinations.push(dest);
-            }
-        }
-        return recommendedDestinations;
+    // Example of using Math.random() for a time-related calculation
+    const randomTimeOffset = Math.random() * 1000; // Random offset in milliseconds
+    const now = new Date();
+    const futureTime = new Date(now.getTime() + randomTimeOffset);
+    const formattedTime = futureTime.toLocaleTimeString();
+
+    const timeArea = document.createElement('p');
+    timeArea.textContent = `Simulated Future Time: ${formattedTime}`;
+    resultArea.appendChild(timeArea);
+
+    // Example using RegExp to validate input
+    const isValidJson = /^\s*\[(?:\{[^"\}\\]*(?:\\.[^"\}\\]*)*\}.*?)*\s*\]\s*$/.test(ideasInput);
+    if (!isValidJson) {
+        const errorArea = document.createElement('p');
+        errorArea.textContent = "Error: Invalid JSON format. Please check your input.";
+        errorArea.style.color = "red";
+        resultArea.innerHTML = ""; // Clear previous results
+        resultArea.appendChild(errorArea);
+        return;
     }
 
-    const userPreferences = {
-        "location": location,
-        "trip_duration": tripDuration,
-        "interests": interests
-    };
+    //Example using Array.filter
+    const filteredIdeas = ideas.filter(idea => idea.id % 2 === 0);
+    const filteredResultArea = document.createElement('p');
+    filteredResultArea.textContent = `Filtered Ideas (even IDs): ${JSON.stringify(filteredIdeas)}`;
+    resultArea.appendChild(filteredResultArea);
 
-    const recommended = recommendDestinationsFiltered(userPreferences, filteredDestinations);
+    //Example using Array.map
+    const mappedIdeas = ideas.map(idea => ({...idea, processed: true}));
+    const mappedResultArea = document.createElement('p');
+    mappedResultArea.textContent = `Mapped Ideas (processed flag added): ${JSON.stringify(mappedIdeas)}`;
+    resultArea.appendChild(mappedResultArea);
 
+    //Example using Array.reduce
+    const totalIdSum = ideas.reduce((sum, idea) => sum + idea.id, 0);
+    const reduceResultArea = document.createElement('p');
+    reduceResultArea.textContent = `Total ID Sum: ${totalIdSum}`;
+    resultArea.appendChild(reduceResultArea);
+
+    //Example using Array.sort
+    const sortedIdeas = [...ideas].sort((a, b) => a.id - b.id);
+    const sortResultArea = document.createElement('p');
+    sortResultArea.textContent = `Sorted Ideas (by ID): ${JSON.stringify(sortedIdeas)}`;
+    resultArea.appendChild(sortResultArea);
+
+  } catch (error) {
     const resultArea = document.getElementById('result-area');
-    resultArea.innerHTML = `<pre>${JSON.stringify(recommended, null, 2)}</pre>`;
-}
-
-// Regular Expression Example (for validating input - not currently used, but demonstrates JS capabilities)
-function validateInput() {
-    const interests = document.getElementById('interests').value;
-    const regex = /^[a-zA-Z, ]+$/; // Allows letters, commas, and spaces
-    if (!regex.test(interests)) {
-        alert("Invalid characters in interests. Only letters, commas, and spaces are allowed.");
-    }
-}
-
-// Math.random() example (for generating random recommendations - not used in core logic, but demonstrates JS)
-function randomRecommendation() {
-    const sampleDestinations = [
-        {"name": "Kyoto", "country": "Japan", "type": "culture"},
-        {"name": "Hiroshima", "country": "Japan", "type": "history"},
-        {"name": "Mount Fuji", "country": "Japan", "type": "nature"}
-    ];
-
-    const randomIndex = Math.floor(Math.random() * sampleDestinations.length);
-    const randomDestination = sampleDestinations[randomIndex];
-
-    const resultArea = document.getElementById('result-area');
-    resultArea.innerHTML = `<pre>${JSON.stringify(randomDestination, null, 2)}</pre>`;
-}
-
-//Array.sort() example
-function sortDestinations(){
-    const sampleDestinations = [
-        {"name": "Kyoto", "country": "Japan", "type": "culture"},
-        {"name": "Hiroshima", "country": "Japan", "type": "history"},
-        {"name": "Mount Fuji", "country": "Japan", "type": "nature"}
-    ];
-
-    const sortedDestinations = sampleDestinations.sort((a, b) => a.name.localeCompare(b.name));
-
-    const resultArea = document.getElementById('result-area');
-    resultArea.innerHTML = `<pre>${JSON.stringify(sortedDestinations, null, 2)}</pre>`;
-}
-
+    resultArea.innerHTML = `<p style="color: red;">Error parsing JSON: ${error.message}</p>`;
+  }
+});
 </script>
 <!-- DIESES TOOL WURDE FÜR DIE DIMENSION 'ZEIT' OPTIMIERT. -->
         <div class="meta-footer">MBRN Factory Autonomous Module</div>

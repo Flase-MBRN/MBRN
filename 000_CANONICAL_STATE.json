@@ -1,7 +1,7 @@
 {
-  "version": "v5.5",
-  "release": "OMNI-AUTONOMY",
-  "last_updated": "2026-04-25T21:55:00Z",
+  "version": "v5.6",
+  "release": "AUTONOMOUS-HARVESTING",
+  "last_updated": "2026-04-26T00:00:00Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -429,6 +429,34 @@
         "local_llm"
       ],
       "note": "Factory-to-Frontend bridge. v5.5 includes Autonomous Equalizer mode for self-balancing dimension population and semantic routing."
+    },
+    "mbrn_logic_auditor": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_logic_auditor.py",
+      "owner_domain": "meta_generator",
+      "note": "Quality Assurance Auditor. Validates logic density and score thresholds for generated modules."
+    },
+    "mbrn_deduplicate": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_deduplicate.py",
+      "owner_domain": "meta_generator",
+      "note": "Registry Hygiene Tool. Removes duplicate entries from SQLite state tables."
+    },
+    "patch_elite_keys": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/patch_elite_keys.py",
+      "owner_domain": "meta_generator",
+      "note": "Retroactive Security Patcher. Injects window.MBRN_CONFIG into existing Elite modules."
+    },
+    "mbrn_janitor": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_janitor.py",
+      "owner_domain": "oracle",
+      "note": "Automated system hygiene agent. Purges old backup files from the pipeline directory."
     }
   },
   "execution_tracks": {

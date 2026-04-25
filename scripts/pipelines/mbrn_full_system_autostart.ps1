@@ -89,10 +89,14 @@ try {
         exit 0
     }
 
-    Write-Step "[1/7] Starting Sentinel Daemon"
+    Write-Step "[0/8] System Hygiene (Janitor)"
+    $Janitor = Join-Path $PipelineDir "mbrn_janitor.py"
+    & $Python $Janitor
+
+    Write-Step "[1/8] Starting Sentinel Daemon"
     Start-PythonComponent -Name "Sentinel" -ScriptPath $Sentinel
 
-    Write-Step "[2/7] Running Day Zero Autopilot"
+    Write-Step "[2/8] Running Day Zero Autopilot"
     if ($SkipDayZero) {
         Write-Host "[OK] Day Zero skipped by flag"
     } elseif (Test-Path -LiteralPath $DayZero) {
@@ -102,19 +106,19 @@ try {
         exit 1
     }
 
-    Write-Step "[3/7] Checking Docker Engine"
+    Write-Step "[3/8] Checking Docker Engine"
     Wait-Docker
 
-    Write-Step "[4/7] Starting Nexus"
+    Write-Step "[4/8] Starting Nexus"
     Start-PythonComponent -Name "Nexus" -ScriptPath $Nexus
 
-    Write-Step "[5/7] Starting Ouroboros"
+    Write-Step "[5/8] Starting Ouroboros"
     Start-PythonComponent -Name "Ouroboros" -ScriptPath $Ouroboros -Arguments @("--infinite")
 
-    Write-Step "[6/7] Starting Live Monitor"
+    Write-Step "[6/8] Starting Live Monitor"
     Start-PythonComponent -Name "Live Monitor" -ScriptPath $Monitor -Arguments @("--infinite")
 
-    Write-Step "[7/7] Starting Prime Director"
+    Write-Step "[7/8] Starting Prime Director"
     Start-PythonComponent -Name "Prime Director" -ScriptPath $Prime -Arguments @("--infinite", "--live-control")
 
     Write-Step "[8/8] Starting Bridge Agent (Equalizer v5.5)"

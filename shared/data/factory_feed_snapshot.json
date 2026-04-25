@@ -20,6 +20,36 @@
     "created_at": "2026-04-25 18:06:25"
   },
   {
+    "id": 16,
+    "name": "20260424_205320_adrian_af_cursorThreads_module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/raum/apps/autonomous_tool/index.html",
+    "quality_score": 0.8999999999999999,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 17,
+    "name": "20260424_205331_fasqua_kausaos_module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/autonomous_tool/index.html",
+    "quality_score": 0.8999999999999999,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 18,
+    "name": "20260424_205341_velvetmonkey_flywheel_ideas_module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/autonomous_tool/index.html",
+    "quality_score": 0.8999999999999999,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
     "id": 5,
     "name": "20260424_204803_zxqer_FinAgent_Quant_module",
     "dimension": "systeme",
