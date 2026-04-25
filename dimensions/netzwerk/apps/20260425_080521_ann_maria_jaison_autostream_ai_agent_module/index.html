@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20260425 080521 Ann Maria Jaison Autostream Ai Agent Module | MBRN Hub</title>
+    <style>
+        body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        h1 { font-size: 22px; font-weight: 800; color: #7B5CF5; margin-bottom: 24px; text-align: center; letter-spacing: -0.02em; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #999; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, textarea, select { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #7B5CF5; outline: none; background: #1F1F2E; }
+        button { background-color: #7B5CF5; color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+        button:hover { background-color: #8C72F7; transform: translateY(-1px); }
+        #result-area { margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(123, 92, 245, 0.2); font-family: monospace; font-size: 13px; color: #AFA; white-space: pre-wrap; word-break: break-all; }
+        .meta-footer { margin-top: 32px; text-align: center; font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="tool-card">
+        <h1>20260425 080521 Ann Maria Jaison Autostream Ai Agent Module</h1>
+        <div id="conversations-input">
+  <label for="conversations">Conversations (JSON):</label>
+  <textarea id="conversations" placeholder='[{"user": "Alice", "message": "Let\'s discuss the ROI of our latest project."}, {"user": "Bob", "message": "I think we should focus on lead generation."}, {"user": "Charlie", "message": "We need to improve the RAG model for better accuracy."}]'></textarea>
+  <button id="generate-leads-button">Generate Leads</button>
+</div>
+
+<div id="result-area"></div>
+
+<script>
+function generateLeads(conversations) {
+  const leads = [];
+  for (const conv of conversations) {
+    const userText = conv.user;
+    const messageText = conv.message;
+
+    if (messageText.toLowerCase().includes("lead")) {
+      const lead = {
+        name: userText,
+        email: `${userText}@example.com`
+      };
+      leads.push(lead);
+    }
+  }
+  return leads;
+}
+
+document.getElementById('generate-leads-button').addEventListener('click', () => {
+  const conversationsInput = document.getElementById('conversations').value;
+  try {
+    const conversations = JSON.parse(conversationsInput);
+    const generatedLeads = generateLeads(conversations);
+    document.getElementById('result-area').innerHTML = `<pre>${JSON.stringify(generatedLeads, null, 2)}</pre>`;
+  } catch (error) {
+    document.getElementById('result-area').innerHTML = `<p>Error parsing JSON: ${error.message}</p>`;
+  }
+});
+</script>
+        <div class="meta-footer">MBRN Factory Autonomous Module</div>
+    </div>
+</body>
+</html>

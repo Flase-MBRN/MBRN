@@ -227,40 +227,47 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
 
   // --- START: Dynamic Factory Apps Section ---
   const dynamicApps = await fetchDynamicFactoryApps();
+  // Aggressive filtering by dimension
   const dimensionApps = dynamicApps.filter((app) => app.dimension === dimensionId);
 
   if (dimensionApps.length > 0) {
-    const factorySection = dom.createEl('section', {
-      className: 'dimension-surface-section mt-32',
-      parent: root
-    });
+    const factorySectionId = `factory-section-${dimensionId}`;
+    let factorySection = root.querySelector(`#${factorySectionId}`);
+    
+    if (!factorySection) {
+      factorySection = dom.createEl('section', {
+        id: factorySectionId,
+        className: 'dimension-surface-section mt-32',
+        parent: root
+      });
 
-    dom.createEl('div', {
-      className: 'section-eyebrow-left text-accent',
-      text: 'Autonom gefertigte Apps (Factory)',
-      parent: factorySection
-    });
+      dom.createEl('div', {
+        className: 'section-eyebrow-left text-accent',
+        text: 'Autonom gefertigte Apps (v5.3 Logic Enforcement)',
+        parent: factorySection
+      });
+    }
 
     const factoryGrid = dom.createEl('div', {
-      className: 'dimension-surface-grid',
+      className: 'dimension-surface-grid mt-16',
       parent: factorySection
     });
 
     dimensionApps.forEach((app) => {
-      const appTitle = app.module_name || app.repo_name || 'Unbekanntes Modul';
-      const cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ');
-      const root = getLocalRepoRoot();
+      const appTitle = app.name || app.module_name || 'Unbekanntes Modul';
+      const cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ').toUpperCase();
+      const rootPath = getLocalRepoRoot();
 
       createSurfaceCard(factoryGrid, {
         title: cleanTitle,
-        body: app.message || 'Eigens für diese Dimension gefertigte Logik-Surface.',
-        meta: `Status: Factory-Ready | ID: ${app.id}`,
+        body: 'Eigens für diese Dimension gefertigte Logik-Surface mit v5.3 Härtung.',
+        meta: `Status: Deployed | Dimension: ${app.dimension}`,
         surfaceId: app.id,
-        route: app.frontend_file || app.module_file,
+        route: app.frontend_file,
         interactive: true,
-        basePath: root,
+        basePath: rootPath,
         onNavigate: (id) => {
-          const target = `${root}${app.frontend_file || app.module_file}`;
+          const target = `${rootPath}${app.frontend_file}`;
           window.location.href = target;
         }
       });

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20260424 204741 Codediba Taskloop Ai Agent Module | MBRN Hub</title>
+    <style>
+        body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        h1 { font-size: 22px; font-weight: 800; color: #7B5CF5; margin-bottom: 24px; text-align: center; letter-spacing: -0.02em; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #999; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, textarea, select { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #7B5CF5; outline: none; background: #1F1F2E; }
+        button { background-color: #7B5CF5; color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+        button:hover { background-color: #8C72F7; transform: translateY(-1px); }
+        #result-area { margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(123, 92, 245, 0.2); font-family: monospace; font-size: 13px; color: #AFA; white-space: pre-wrap; word-break: break-all; }
+        .meta-footer { margin-top: 32px; text-align: center; font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="tool-card">
+        <h1>20260424 204741 Codediba Taskloop Ai Agent Module</h1>
+        <div id="task-input-area">
+  <label for="task-input">Task:</label>
+  <input type="text" id="task-input" placeholder="Enter a task">
+  <button id="add-task-button">Add Task</button>
+</div>
+
+<div id="result-area"></div>
+
+<script>
+  class TaskLoopAgent {
+    constructor() {
+      this.tasks = [];
+      this.evaluations = [];
+      this.improvements = [];
+    }
+
+    addTask(task) {
+      this.tasks.push(task);
+      this.renderTasks();
+    }
+
+    executeTask(task) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          const output = `Output of task: ${task}`;
+          console.log(`Executing task: ${task}`);
+          resolve({ status: "completed", output: output });
+        }, 2000); // Simulate execution time
+      });
+    }
+
+    evaluateTask(result) {
+      console.log(`Evaluating result: ${result}`);
+      const evaluation = { status: "passed", feedback: "Task completed successfully" };
+      this.evaluations.push(evaluation);
+      return evaluation;
+    }
+
+    improveTask(feedback) {
+      console.log(`Improving task based on feedback: ${feedback}`);
+      const improvement = { status: "improved", suggestion: "Try a different approach" };
+      this.improvements.push(improvement);
+      return improvement;
+    }
+
+    async runLoop() {
+      while (this.tasks.length > 0) {
+        const task = this.tasks.shift();
+        try {
+          const result = await this.executeTask(task);
+          const evaluation = this.evaluateTask(result.output);
+
+          if (evaluation.status === "passed") {
+            const feedback = evaluation.feedback;
+            const improvement = this.improveTask(feedback);
+            this.renderResults();
+          }
+        } catch (error) {
+          console.error("Error during task execution:", error);
+          this.renderResults("Error during task execution: " + error.message);
+        }
+      }
+      this.renderResults("All tasks completed.");
+    }
+
+    renderTasks() {
+      const taskInputArea = document.getElementById("task-input-area");
+      let taskListHTML = "<ul>";
+      this.tasks.forEach(task => {
+        taskListHTML += `<li>${task}</li>`;
+      });
+      taskListHTML += "</ul>";
+      taskInputArea.innerHTML += taskListHTML;
+    }
+
+    renderResults(message = "") {
+      const resultArea = document.getElementById("result-area");
+      let resultsHTML = "";
+
+      if (message) {
+        resultsHTML = `<p>${message}</p>`;
+      } else {
+        resultsHTML = "<h3>Results:</h3>";
+        resultsHTML += "<h4>Evaluations:</h4><ul>";
+        this.evaluations.forEach(evaluation => {
+          resultsHTML += `<li>Status: ${evaluation.status}, Feedback: ${evaluation.feedback}</li>`;
+        });
+        resultsHTML += "</ul>";
+
+        resultsHTML += "<h4>Improvements:</h4><ul>";
+        this.improvements.forEach(improvement => {
+          resultsHTML += `<li>Status: ${improvement.status}, Suggestion: ${improvement.suggestion}</li>`;
+        });
+        resultsHTML += "</ul>";
+      }
+
+      resultArea.innerHTML = resultsHTML;
+    }
+  }
+
+  const agent = new TaskLoopAgent();
+
+  document.getElementById("add-task-button").addEventListener("click", () => {
+    const taskInput = document.getElementById("task-input").value;
+    if (taskInput) {
+      agent.addTask(taskInput);
+      document.getElementById("task-input").value = "";
+    }
+  });
+
+  // Initial setup (optional)
+  // agent.addTask("Initial Task");
+  // agent.runLoop();
+</script>
+        <div class="meta-footer">MBRN Factory Autonomous Module</div>
+    </div>
+</body>
+</html>

@@ -3078,8 +3078,9 @@ button[class*="btn"] {
 
 .dimension-surface-card {
   display: block;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(123, 92, 245, 0.3) !important;
   border-radius: 16px !important;
   padding: 24px !important;
   text-decoration: none !important;
@@ -3090,12 +3091,12 @@ button[class*="btn"] {
 }
 
 .dimension-surface-card.is-link:hover {
-  background: rgba(123, 92, 245, 0.15) !important;
+  background: rgba(123, 92, 245, 0.08) !important;
   border-color: #7B5CF5 !important;
   transform: translateY(-4px);
   box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.6),
-    0 0 30px rgba(123, 92, 245, 0.3) !important;
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(123, 92, 245, 0.25) !important;
 }
 
 .dimension-surface-card-title {
@@ -3111,7 +3112,7 @@ button[class*="btn"] {
 .dimension-surface-card-copy {
   font-size: 13px !important;
   line-height: 1.5 !important;
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
   margin-bottom: 20px !important;
   display: block;
 }
@@ -3123,10 +3124,10 @@ button[class*="btn"] {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #7B5CF5 !important;
-  background: rgba(123, 92, 245, 0.2) !important;
+  background: rgba(123, 92, 245, 0.1) !important;
   padding: 6px 12px !important;
   border-radius: 6px !important;
-  border: 1px solid rgba(123, 92, 245, 0.4) !important;
+  border: 1px solid rgba(123, 92, 245, 0.2) !important;
 }
 
 .dimension-surface-section {
