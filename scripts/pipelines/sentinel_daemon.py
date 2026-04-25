@@ -90,7 +90,7 @@ def load_env():
                 print(f"Fehler beim Laden der .env: {e}")
 
 # CRITICAL: Load .env immediately so env vars are available for heartbeat
-load_env_file()
+load_env()
 
 # Global Circuit Breaker für Heartbeat
 heartbeat_circuit_breaker = CircuitBreaker(
