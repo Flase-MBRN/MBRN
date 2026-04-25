@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20260425 170153 Dakshjain 1616 Smolagents Task Library Module | MBRN Hub</title>
+    <style>
+        body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        h1 { font-size: 22px; font-weight: 800; color: #7B5CF5; margin-bottom: 24px; text-align: center; letter-spacing: -0.02em; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #999; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, textarea, select { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #7B5CF5; outline: none; background: #1F1F2E; }
+        button { background-color: #7B5CF5; color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+        button:hover { background-color: #8C72F7; transform: translateY(-1px); }
+        #result-area { margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(123, 92, 245, 0.2); font-family: monospace; font-size: 13px; color: #AFA; white-space: pre-wrap; word-break: break-all; }
+        .meta-footer { margin-top: 32px; text-align: center; font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="tool-card">
+        <h1>20260425 170153 Dakshjain 1616 Smolagents Task Library Module</h1>
+        <div id="input-area">
+  <label for="taskDescription">Task Description:</label>
+  <input type="text" id="taskDescription" value="Stand up a Postgres DB for the embeddings pipeline and report its DSN."><br><br>
+
+  <label for="agentRole">Agent Role:</label>
+  <input type="text" id="agentRole" value="Infrastructure provisioner"><br><br>
+
+  <label for="agentGoal">Agent Goal:</label>
+  <input type="text" id="agentGoal" value="Give the team working database URLs with zero setup."><br><br>
+
+  <label for="agentBackstory">Agent Backstory:</label>
+  <input type="text" id="agentBackstory" value="Spins up Postgres/webhooks via instanode.dev."><br><br>
+
+  <label for="agentTools">Agent Tools (JSON):</label>
+  <textarea id="agentTools" placeholder='[{"__module__": "ProvisionPostgresTool", "__class__": "ProvisionPostgresTool"}, {"__module__": "ProvisionWebhookTool", "__class__": "ProvisionWebhookTool"}]'></textarea><br><br>
+
+  <button id="runButton">Run</button>
+</div>
+
+<div id="result-area"></div>
+
+<script>
+  document.getElementById('runButton').addEventListener('click', () => {
+    const taskDescription = document.getElementById('taskDescription').value;
+    const agentRole = document.getElementById('agentRole').value;
+    const agentGoal = document.getElementById('agentGoal').value;
+    const agentBackstory = document.getElementById('agentBackstory').value;
+    const agentToolsString = document.getElementById('agentTools').value;
+
+    try {
+      const agentTools = JSON.parse(agentToolsString);
+      // Simulate kickoff function
+      const db_dsn = "postgres://localhost:5432/embeddings_pipeline";
+
+      const resultArea = document.getElementById('result-area');
+      resultArea.innerHTML = `
+        <p>Starting task: ${taskDescription}</p>
+        <p>Postgres DB DSN reported: ${db_dsn}</p>
+        <p>MODULE_READY: dakshjain_1616_Smolagents_Task_Library</p>
+      `;
+    } catch (error) {
+      document.getElementById('result-area').innerHTML = `<p>Error parsing agent tools JSON: ${error}</p>`;
+    }
+  });
+</script>
+        <div class="meta-footer">MBRN Factory Autonomous Module</div>
+    </div>
+</body>
+</html>
