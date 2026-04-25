@@ -1,124 +1,76 @@
-# MBRN Hub v4.0 FOUNDATION
+# MBRN-HUB-V1: The Autonomous R&D Factory
+![MBRN Status](https://img.shields.io/badge/MBRN--Hub-v4.0--Foundation-blueviolet?style=for-the-badge)
+![Autonomy Level](https://img.shields.io/badge/Autonomy-Level--5--Dry--Run-gold?style=for-the-badge)
+![Tech Stack](https://img.shields.io/badge/Stack-Python_|_JS_|_Supabase-informational?style=for-the-badge)
 
-> Official current-state authority: [000_CANONICAL_STATE.json](file:///c:/DevLab/MBRN-HUB-V1/000_CANONICAL_STATE.json)  
-> This README is a human-readable mirror only.  
-> In any conflict between README text and the canonical state file, the canonical state file wins.
+> **Authority Declaration**: This repository is governed by the [Canonical State](000_CANONICAL_STATE.json). All architectural definitions and component states declared in this document are human-readable mirrors of the system's ground truth.
 
-MBRN Hub ist aktuell auf eine v4.0-Foundation umgestellt: 11 Dimensionen als offizielle Hauptstruktur, optionale `topic_areas` als Zwischenschicht und konkrete Apps oder Websites als operative Surfaces.
+---
 
-## Aktive Systemwahrheit
+## 1. Executive Summary
 
-- Die einzige technische Wahrheit liegt in diesem Repo: `C:\DevLab\MBRN-HUB-V1`
-- `shared/core/` bleibt die IO-freie Mitte
-- `shared/application/` traegt Cross-Pillar-Orchestrierung
-- `bridges/*` und `commerce/*` tragen technische Aussenwelt
-- `pillars/frontend_os/` bleibt die aktive Surface-Komposition
-- `dimensionRegistry` ist die primaere Runtime-Wahrheit fuer Dimensions
-- `topic_area_registry` fuehrt optionale Themenbereiche zwischen Dimension und App
-- `dimensions/*/metadata.json` sind Spiegel, nicht die kanonische Quelle
+**MBRN-HUB-V1** is a high-performance, autonomous intelligence and data manufacturing ecosystem. Designed as a "Dark Factory" for code and insights, it leverages local Large Language Models (LLMs), surgical AST mutation engines, and isolated sandboxing to discover, refine, and manufacture high-value technology modules with minimal human intervention.
 
-## Architektur in Kurzform
+The system is architected to scale from raw data ingestion (Oracle) to autonomous product evolution (Meta-Generator), providing a resilient foundation for the next generation of agentic software.
 
-### Headless Core
+---
 
-`shared/core/` enthaelt:
+## 2. The 4-Pillar Architecture
 
-- Contracts
-- Registries
-- State
-- Storage
-- Config
-- Legal
-- pure Logic
+The ecosystem is organized into four strategic domains, ensuring a clean separation of concerns and maximum modularity.
 
-Keine externe IO lebt dauerhaft im Core.
+| Pillar | Domain | Core Responsibility | Primary Location |
+| :--- | :--- | :--- | :--- |
+| **Frontend OS** | Presentation | User Interface, Visualization, and Dashboard Composition | `pillars/frontend_os/` |
+| **Oracle** | Intelligence | Data Ingestion, Signal Processing, and LLM Enrichment | `pillars/oracle/` |
+| **Monetization** | Economics | Entitlements, Gating, and Economic Governance | `pillars/monetization/` |
+| **Meta-Generator** | Evolution | Autonomous Code Generation, Module Manufacturing, and Self-Mutation | `pillars/meta_generator/` |
 
-### Application Layer
+---
 
-`shared/application/` verbindet Core, Bridges, Commerce und Oberflaechen:
+## 3. The Agentic Engine (Pipelines)
 
-- Actions
-- Auth
-- Sync
-- Observability
-- Read Models
-- Frontend-OS Runtime-Fassaden
+The heart of MBRN-HUB-V1 is its suite of autonomous daemons. These workers operate in a continuous feedback loop, governed by the Prime Director.
 
-### Bridges und Commerce
+### 🔭 Discovery & Analysis
+*   **Horizon Scout** (`mbrn_horizon_scout.py`): Scans global repositories for high-ROI autonomous frameworks. Performs multi-stage synergy analysis using local LLMs to evaluate architectural fit.
+*   **Archivist** (`mbrn_archivist.py`): Compresses manufactured knowledge. Analyzes factory-ready modules to synthesize architectural patterns into the Factory Memory, preventing context bloat.
 
-Produktiv aktiv:
+### 🏗️ Manufacturing & Evolution
+*   **Nexus Bridge** (`mbrn_nexus_bridge.py`): The factory foreman. Orchestrates the transition from Alpha discovery to concrete module manufacturing.
+*   **Autonomous Dev Agent** (`autonomous_dev_agent.py`): A self-healing engineer. Uses `deepseek-coder-v2` to generate Python modules and automatically repairs code based on sandbox execution errors.
+*   **Toolmaker** (`mbrn_toolmaker.py`): The internal MacGyver. Generates custom utility scripts to resolve logical blockages or parsing requirements within the factory pipeline.
+*   **Ouroboros Agent** (`mbrn_ouroboros_agent.py`): A Level-6 mutation engine. Performs surgical AST-level updates to system code, protected by a 5-second runtime safety gate and automatic rollback (Dead Man's Switch).
 
-- `bridges/supabase/`
-- `bridges/python/`
-- `bridges/local_llm/` als aktive Week-2-Struktur fuer lokale JSON-Veredelung
+### 🎮 Governance & Security
+*   **Prime Director** (`mbrn_prime_director.py`): The Level-5 Meta-Controller. Observes factory sensors (backlogs, logs, memory) and adjusts the system's "Factory Control" panel to optimize stability and quality.
+*   **Sentinel Daemon** (`sentinel_daemon.py`): The system's heartbeat. Monitors agent health, manages concurrency locks, and ensures high availability.
+*   **Split-Brain Sandbox** (`sandbox_controller.py`): Ensures security. Orchestrates isolated, network-less Docker containers for safe execution of untrusted code.
 
-Bewusst reserviert / nicht implementiert:
+---
 
-- `bridges/external_apis/`
+## 4. System Structure & Communication
 
-### Pillars
+MBRN utilizes a shared data bus for inter-agent communication, ensuring portability and eliminating external package dependencies.
 
-- `frontend_os` = Shell, Navigation, Dashboard-Komposition, Cards, UI States, `app_surfaces/`, `dimension_views/`, `export_entrypoints/`
-- `oracle` = Daten-, Signal- und Verarbeitungsmaschine
-- `monetization` = Plans, Entitlements, Billing und Gates
-- `meta_generator` = Blueprints, Content, Modules, Assets, Agent Adapters
+### 📂 Directory Mapping
+*   **`scripts/pipelines/`**: Source of the Agentic Engine and autonomous workers.
+*   **`shared/data/`**: The JSON communication bus (Control Panels, Notifications, Reports).
+*   **`shared/alphas/`**: The Alpha Vault; a staging area for high-ROI technology candidates.
+*   **`docs/S3_Data/outputs/factory_ready/`**: The final product gallery of manufactured Python modules.
+*   **`bridges/`**: Connectivity layers for Supabase, Python runtimes, and local LLM (Ollama) integration.
 
-## Dimensions, Topic Areas und Apps
+### 🧠 Factory Memory
+The system maintains a **Package-Free JSON/TF-IDF Memory** (`mbrn_factory_memory.py`). It stores and retrieves prior successful code patterns, allowing the Nexus to inject "Factory Context" into new generation tasks—creating a self-improving architectural feedback loop.
 
-Offizielle Dimensions:
+---
 
-- `zeit`
-- `geld`
-- `physis`
-- `geist`
-- `ausdruck`
-- `netzwerk`
-- `energie`
-- `systeme`
-- `raum`
-- `muster`
-- `wachstum`
+## 5. Security & Operating Principles
 
-Aktive Start-Zuordnungen:
+1.  **No External Packages**: Core stability measures (Memory, Control, Rollback) are written in pure Python to ensure zero-dependency portability.
+2.  **Privacy by Design**: Live session data (`mbrn_factory_control.json`, logs, and reports) are strictly ignored by version control to prevent internal state leakage.
+3.  **Local-First Intelligence**: All mission-critical analysis is performed via local LLM bridges (Ollama), ensuring R&D privacy and immunity to external API disruptions.
+4.  **Runtime Safety**: Every autonomous mutation is verified via a post-write runtime check. If a mutation fails to stay alive for 5 seconds, it is automatically reverted.
 
-- `finance -> geld`
-- `numerology -> muster -> numerologie`
-- `chronos -> zeit`
-- `synergy -> netzwerk`
-
-`topic_areas` sind optional. Eine App darf entweder direkt unter ihrer Dimension haengen oder innerhalb einer `topic_area` gefuehrt werden.
-
-## Supabase
-
-Supabase wird nicht nur als Infrastruktur, sondern auch als Spiegel der kanonischen Dimensions-Wahrheit behandelt.
-
-- `supabase/migrations/15_dimensions_foundation.sql` legt feste Referenztabellen fuer `dimensions` und `topic_areas` an
-- neue Persistenz soll Dimensionszuege ueber Referenzdaten statt freie Legacy-IDs fuehren
-- das fruehere `signal`-Thema bleibt keine eigene Dimension und geht semantisch in `geld` auf
-
-## Status
-
-Der aktuelle Stand ist:
-
-- v4.0-Foundation gesetzt
-- 11 Dimensionen kanonisch eingefuehrt
-- optionale `topic_areas` in Kanon und Runtime vorbereitet
-- bestehende Surfaces neu zugeordnet
-- Supabase-Referenzstruktur fuer Dimensions-Sync vorbereitet
-- generische Week-1-Rohdatenbasis implementiert
-- generische Week-2-Gold-Veredelung mit lokaler LLM-Bridge implementiert
-- Week-3-Gold-Anzeige unter `geld -> oracle_signal` implementiert; Dashboard bleibt nur Cockpit mit kompaktem Sprungpunkt
-- Week-4-Day-Zero-Autopilot implementiert; reine lokale Windows-Automatisierung ohne Stripe-, Paywall- oder Premium-Gating-Aenderungen
-
-## Roadmaps
-
-Roadmaps leben bewusst getrennt von der Ist-Wahrheit.
-
-- operative Ausbau-Roadmap: `docs/roadmaps/2026-04_mbrn_autonomy_machine.md`
-- uebergeordnete Ausbaurichtung: `001_POST_V3_ROADMAP.md`
-
-Nicht behauptet wird:
-
-- dass jede Dimension bereits eine eigene fertige Surface hat
-- dass jede `topic_area` bereits mit einer App gefuellt ist
-- dass historische v3-Dokumente die neue aktive Runtime-Wahrheit ueberschreiben
+---
+*Generated by the MBRN System Architect.*

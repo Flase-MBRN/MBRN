@@ -1,7 +1,7 @@
 {
   "version": "v4.0",
   "release": "FOUNDATION",
-  "last_updated": "2026-04-25T11:31:15Z",
+  "last_updated": "2026-04-25T14:50:00Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
