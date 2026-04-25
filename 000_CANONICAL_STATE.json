@@ -1,7 +1,7 @@
 {
-  "version": "v4.0",
-  "release": "FOUNDATION",
-  "last_updated": "2026-04-25T14:50:00Z",
+  "version": "v5.5",
+  "release": "OMNI-AUTONOMY",
+  "last_updated": "2026-04-25T21:55:00Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -259,10 +259,11 @@
         "sentinel_daemon",
         "mbrn_horizon_scout",
         "mbrn_nexus_bridge",
+        "mbrn_bridge_agent",
         "mbrn_ouroboros_agent",
         "mbrn_prime_director"
       ],
-      "note": "Internal Windows Startup launcher invoked by MBRN_Autostart.bat. Uses an exclusive lock and process guards to avoid duplicate logical worker starts while preserving Prime Director dry-run mode."
+      "note": "Internal Windows Startup launcher invoked by MBRN_Autostart.bat. v5.5 includes the Bridge Agent in autonomous equalizer mode to close the production loop."
     },
     "gold_oracle_signal_surface": {
       "state": "experimental",
@@ -427,7 +428,7 @@
         "mbrn_sqlite_state_layer",
         "local_llm"
       ],
-      "note": "Factory-to-Frontend bridge. Converts ready factory_modules rows into standalone Vanilla HTML tools under dimensions/<dimension>/apps/<module>/index.html using gemma3:12b by default."
+      "note": "Factory-to-Frontend bridge. v5.5 includes Autonomous Equalizer mode for self-balancing dimension population and semantic routing."
     }
   },
   "execution_tracks": {
