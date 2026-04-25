@@ -73,17 +73,41 @@ function createSurfaceCard(parent, options) {
   return card;
 }
 
+function getSnapshotPath() {
+  const path = window.location.pathname;
+  const parts = path.split('/').filter(p => p);
+  
+  // Determine depth based on dimensions folder position
+  const dimensionsIndex = parts.indexOf('dimensions');
+  let depth = 0;
+  
+  if (dimensionsIndex !== -1) {
+    // We are inside dimensions/X/ - need to go up 2 levels to reach shared/data/
+    depth = parts.length - dimensionsIndex;
+  } else {
+    // Fallback: assume we're at root level
+    depth = 0;
+  }
+  
+  // Build relative path: need to go up to root, then into shared/data/
+  const prefix = depth > 0 ? '../'.repeat(depth) : '';
+  const snapshotPath = `${prefix}shared/data/factory_feed_snapshot.json`;
+  
+  console.log('[discoverability] Calculated snapshot path:', snapshotPath, '(depth:', depth, ')');
+  return snapshotPath;
+}
+
 async function fetchDynamicFactoryApps() {
-  const root = getLocalRepoRoot();
-  const snapshotPath = `${root}shared/data/factory_feed_snapshot.json`;
+  const snapshotPath = getSnapshotPath();
   console.log('[discoverability] Fetching apps from:', snapshotPath);
   try {
     const response = await fetch(snapshotPath, { cache: 'no-store' });
     if (!response.ok) {
-      console.warn('[discoverability] Snapshot not found or error:', response.status);
+      console.warn('[discoverability] Snapshot not found or error:', response.status, response.statusText);
       return [];
     }
     const data = await response.json();
+    console.log('[discoverability] Loaded', data.length, 'apps from snapshot');
     return Array.isArray(data) ? data : [];
   } catch (err) {
     console.error('[discoverability] Failed to fetch dynamic apps:', err);
@@ -227,8 +251,13 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
 
   // --- START: Dynamic Factory Apps Section ---
   const dynamicApps = await fetchDynamicFactoryApps();
-  // Aggressive filtering by dimension
+  console.log('[discoverability] Total apps loaded:', dynamicApps.length);
+  console.log('[discoverability] Current dimension:', dimensionId);
+  console.log('[discoverability] Sample app dimensions:', dynamicApps.slice(0, 3).map(a => a.dimension));
+  
+  // Aggressive filtering by dimension - CASE SENSITIVE!
   const dimensionApps = dynamicApps.filter((app) => app.dimension === dimensionId);
+  console.log('[discoverability] Filtered apps for this dimension:', dimensionApps.length);
 
   if (dimensionApps.length > 0) {
     const factorySectionId = `factory-section-${dimensionId}`;
