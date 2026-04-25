@@ -292,16 +292,6 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
       parent: factorySection
     });
 
-    console.log('[discoverability] Rendering', dimensionApps.length, 'factory apps...');
-    console.log('[discoverability] Factory section element:', factorySection);
-    console.log('[discoverability] Factory grid element:', factoryGrid);
-    
-    // DEBUG: Force visible styles
-    factorySection.style.border = '3px solid red';
-    factorySection.style.minHeight = '100px';
-    factoryGrid.style.border = '3px solid lime';
-    factoryGrid.style.minHeight = '200px';
-    
     dimensionApps.forEach((app, index) => {
       const appTitle = app.name || app.module_name || 'Unbekanntes Modul';
       const cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ').toUpperCase();
