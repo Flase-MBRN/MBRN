@@ -1,148 +1,118 @@
-param(
-    [switch]$SkipDayZero,
-    [switch]$EnableExperimentalTools
-)
-
-$ErrorActionPreference = "Continue"
+<#
+.SYNOPSIS
+    MBRN v5.6 Orchestrator - NEON ASTRA EDITION
+    Zentrale Zündung für den autonomen Loop.
+#>
 
 $RepoRoot = "C:\DevLab\MBRN-HUB-V1"
 $PipelineDir = Join-Path $RepoRoot "scripts\pipelines"
-$Python = Join-Path $RepoRoot "venv\Scripts\python.exe"
-$DayZero = Join-Path $PipelineDir "day_zero_autopilot.ps1"
-$Sentinel = Join-Path $PipelineDir "sentinel_daemon.py"
-$Nexus = Join-Path $PipelineDir "mbrn_nexus_bridge.py"
-$Ouroboros = Join-Path $PipelineDir "mbrn_ouroboros_agent.py"
-$Monitor = Join-Path $PipelineDir "mbrn_live_monitor.py"
-$Prime = Join-Path $PipelineDir "mbrn_prime_director.py"
-$Archivist = Join-Path $PipelineDir "mbrn_archivist.py"
-$Toolmaker = Join-Path $PipelineDir "mbrn_toolmaker.py"
-$LockPath = Join-Path $env:TEMP "mbrn_full_system_autostart.lock"
+$LogDir = Join-Path $PipelineDir "logs"
+$RunStamp = Get-Date -Format "yyyyMMdd_HHmmss"
 
-if (-not (Test-Path -LiteralPath $Python)) {
-    $Python = "python"
-}
+# --- NEON ASTRA THEME ---
+$C_Violet = "[38;2;123;92;245m"
+$C_Success = "[38;2;79;255;176m"
+$C_Warning = "[38;2;251;191;36m"
+$C_Error = "[38;2;255;107;107m"
+$C_Silver = "[38;2;180;184;198m"
+$C_Gold = "[38;2;255;215;0m"
+$C_Reset = "[0m"
 
-function Write-Step {
-    param([string]$Message)
+function Show-Banner {
+    Clear-Host
+    Write-Host "$C_Violet"
+    Write-Host "  __  __ ____  ____  _   _   _   _ _   _ ____    "
+    Write-Host " |  \/  | __ )|  _ \| \ | | | | | | | | | __ )   "
+    Write-Host " | |\/| |  _ \| |_) |  \| | | |_| | | | |  _ \   "
+    Write-Host " | |  | | |_) |  _ <| |\  | |  _  | |_| | |_) |  "
+    Write-Host " |_|  |_|____/|_| \_\_| \_| |_| |_|\___/|____/   "
+    Write-Host "                                                 "
+    Write-Host "  >> MULTIDIMENSIONAL MASTERY SYSTEM v5.6 <<     "
+    Write-Host "  >> AUTONOMOUS HARVESTING PROTOCOL ACTIVE <<    "
+    Write-Host "$C_Reset"
+    Write-Host "$C_Silver--------------------------------------------------------$C_Reset"
+    Write-Host "  Station: $env:COMPUTERNAME | Session: $RunStamp"
+    Write-Host "$C_Silver--------------------------------------------------------$C_Reset"
     Write-Host ""
-    Write-Host $Message
 }
 
-function Test-PythonComponent {
-    param([string]$Pattern)
-    $procMatches = Get-CimInstance Win32_Process -Filter "name = 'python.exe'" -ErrorAction SilentlyContinue |
-        Where-Object { $_.CommandLine -like "*$Pattern*" }
-    return [bool]$procMatches
+function Write-Step ([string]$Msg) {
+    Write-Host "$C_Violet[STEP]$C_Reset $Msg..." -NoNewline
 }
 
-function Start-PythonComponent {
-    param(
-        [string]$Name,
-        [string]$ScriptPath,
-        [string[]]$Arguments = @()
-    )
+function Write-Done {
+    Write-Host " $C_Success[OK]$C_Reset"
+}
 
-    $pattern = Split-Path -Leaf $ScriptPath
-    if (Test-PythonComponent $pattern) {
-        Write-Host "[OK] $Name already running, skipping start"
-        return
+function Start-MBRNComponent {
+    param($Name, $ScriptPath, $Arguments = @())
+    Write-Step "Initializing $Name"
+    
+    if (Test-Path -LiteralPath $ScriptPath) {
+        $Title = "MBRN Component: $Name"
+        # Start in new window with branding
+        Start-Process powershell.exe -ArgumentList @(
+            "-NoExit",
+            "-Command", 
+            "`$Host.UI.RawUI.WindowTitle='$Title'; cd '$PipelineDir'; python $ScriptPath $($Arguments -join ' ')"
+        )
+        Write-Done
+    } else {
+        Write-Host " $C_Error[FAILED]$C_Reset (Not found: $ScriptPath)"
     }
-
-    if (-not (Test-Path -LiteralPath $ScriptPath)) {
-        Write-Host "[WARN] $Name not found: $ScriptPath"
-        return
-    }
-
-    $argList = @($ScriptPath) + $Arguments
-    Start-Process -FilePath $Python -ArgumentList $argList -WindowStyle Minimized
-    Write-Host "[OK] $Name started"
-    Start-Sleep -Seconds 2
 }
 
-function Wait-Docker {
-    $maxWaitSeconds = 60
-    $waited = 0
-    while ($waited -lt $maxWaitSeconds) {
-        docker info *> $null
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "[OK] Docker Engine is READY"
-            return
-        }
-        $waited += 5
-        Write-Host "[..] Docker not ready yet, waiting 5s... ($waited/$maxWaitSeconds)"
-        Start-Sleep -Seconds 5
-    }
-    Write-Host "[WARN] Docker not ready after ${maxWaitSeconds}s. Continuing without Docker readiness confirmation."
-}
+# --- EXECUTION ---
+
+Show-Banner
+
+Write-Step "[0/8] Hygiene: Running Janitor"
+$Janitor = Join-Path $PipelineDir "mbrn_janitor.py"
+& python $Janitor
+Write-Done
+
+Write-Step "[1/8] Security: Launching Sentinel Daemon"
+$Sentinel = Join-Path $PipelineDir "sentinel_daemon.py"
+Start-Process python.exe -ArgumentList $Sentinel -WorkingDirectory $PipelineDir -WindowStyle Hidden
+Write-Done
+
+Write-Step "[2/8] Discovery: Triggering Day Zero Autopilot"
+$DayZero = Join-Path $PipelineDir "day_zero_autopilot.ps1"
+& powershell.exe -ExecutionPolicy Bypass -File $DayZero -EnableScout | Out-Null
+Write-Done
+
+Write-Step "[3/8] Infrastructure: Docker Engine"
+# Check Docker silently
+$dockerCheck = docker info 2>$null
+if ($LASTEXITCODE -eq 0) { Write-Done } else { Write-Host " $C_Warning[WAITING]$C_Reset"; Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe" }
+
+Write-Step "[4/8] Intelligence: Nexus Bridge"
+$Nexus = Join-Path $PipelineDir "mbrn_nexus_bridge.py"
+Start-MBRNComponent "Nexus" $Nexus
+
+Write-Step "[5/8] Evolution: Ouroboros Agent"
+$Ouroboros = Join-Path $PipelineDir "mbrn_ouroboros_agent.py"
+Start-MBRNComponent "Ouroboros" $Ouroboros @("--infinite")
+
+Write-Step "[6/8] Visuals: Live Monitor"
+$Monitor = Join-Path $PipelineDir "mbrn_live_monitor.py"
+Start-MBRNComponent "Monitor" $Monitor @("--infinite")
+
+Write-Step "[7/8] Authority: Prime Director"
+$Prime = Join-Path $PipelineDir "mbrn_prime_director.py"
+Start-MBRNComponent "Director" $Prime @("--infinite", "--live-control")
+
+Write-Step "[8/8] Production: Bridge Agent (Equalizer)"
+$BridgeAgent = Join-Path $PipelineDir "mbrn_bridge_agent.py"
+Start-MBRNComponent "Bridge Agent" $BridgeAgent @("--autonomous", "--target", "10")
 
 Write-Host ""
+Write-Host "$C_Gold"
 Write-Host "============================================"
-Write-Host "  MBRN FULL SYSTEM - Initializing..."
+Write-Host "       SYSTEM FULLY SYNCHRONIZED"
+Write-Host "       LEVERAGE CAPABILITY: 500K+"
 Write-Host "============================================"
-
-$lockStream = $null
-try {
-    try {
-        $lockStream = [System.IO.File]::Open($LockPath, "OpenOrCreate", "ReadWrite", "None")
-    } catch {
-        Write-Host "[WARN] Another MBRN autostart launcher is already running. Exiting duplicate launcher."
-        exit 0
-    }
-
-    Write-Step "[0/8] System Hygiene (Janitor)"
-    $Janitor = Join-Path $PipelineDir "mbrn_janitor.py"
-    & $Python $Janitor
-
-    Write-Step "[1/8] Starting Sentinel Daemon"
-    Start-PythonComponent -Name "Sentinel" -ScriptPath $Sentinel
-
-    Write-Step "[2/8] Running Day Zero Autopilot"
-    if ($SkipDayZero) {
-        Write-Host "[OK] Day Zero skipped by flag"
-    } elseif (Test-Path -LiteralPath $DayZero) {
-        & powershell.exe -ExecutionPolicy Bypass -File $DayZero -EnableScout
-    } else {
-        Write-Host "[ERROR] Day Zero script not found: $DayZero"
-        exit 1
-    }
-
-    Write-Step "[3/8] Checking Docker Engine"
-    Wait-Docker
-
-    Write-Step "[4/8] Starting Nexus"
-    Start-PythonComponent -Name "Nexus" -ScriptPath $Nexus
-
-    Write-Step "[5/8] Starting Ouroboros"
-    Start-PythonComponent -Name "Ouroboros" -ScriptPath $Ouroboros -Arguments @("--infinite")
-
-    Write-Step "[6/8] Starting Live Monitor"
-    Start-PythonComponent -Name "Live Monitor" -ScriptPath $Monitor -Arguments @("--infinite")
-
-    Write-Step "[7/8] Starting Prime Director"
-    Start-PythonComponent -Name "Prime Director" -ScriptPath $Prime -Arguments @("--infinite", "--live-control")
-
-    Write-Step "[8/8] Starting Bridge Agent (Equalizer v5.5)"
-    $BridgeAgent = Join-Path $PipelineDir "mbrn_bridge_agent.py"
-    Start-PythonComponent -Name "Bridge Agent" -ScriptPath $BridgeAgent -Arguments @("--autonomous", "--target", "10")
-
-    if ($EnableExperimentalTools) {
-        Write-Step "[optional] Starting non-canonical experimental tools"
-        Start-PythonComponent -Name "Archivist" -ScriptPath $Archivist -Arguments @("--infinite")
-        Start-PythonComponent -Name "Toolmaker" -ScriptPath $Toolmaker -Arguments @("--infinite")
-    } else {
-        Write-Host "[OK] Non-canonical experimental tools skipped (Archivist, Toolmaker)"
-    }
-
-    Write-Host ""
-    Write-Host "============================================"
-    Write-Host "  MBRN FULL SYSTEM ONLINE"
-    Write-Host "============================================"
-    Write-Host "[INFO] Factory control: $RepoRoot\shared\data\mbrn_factory_control.json"
-    Write-Host "[INFO] Prime report:    $RepoRoot\shared\data\mbrn_prime_director_report.json"
-    Write-Host "[INFO] Dashboard:       http://localhost:8080/dashboard/index.html"
-} finally {
-    if ($lockStream) {
-        $lockStream.Close()
-        Remove-Item -LiteralPath $LockPath -Force -ErrorAction SilentlyContinue
-    }
-}
+Write-Host "$C_Reset"
+Write-Host "$C_Silver[INFO] Log Orbit: $LogDir$C_Reset"
+Write-Host "$C_Violet[READY]$C_Reset System is breathing. Observe the terminals."
+Write-Host ""

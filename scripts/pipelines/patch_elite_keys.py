@@ -21,10 +21,16 @@ CONFIG_JS = """
 """
 
 def run_patch():
-    print("[Patch] Starting Ghost-Button Fix (v5.4.1)...")
+    print("[Patch] Starting Elite Cloud Patch (v5.6)...")
     
     with get_db() as conn:
-        modules = conn.execute("SELECT id, name, frontend_file FROM factory_modules WHERE is_elite = 1 OR quality_score >= 0.7").fetchall()
+        modules = conn.execute(
+            """
+            SELECT id, name, frontend_file
+            FROM factory_modules
+            WHERE status = 'deployed' AND is_elite = 1
+            """
+        ).fetchall()
     
     patched = 0
     for mod in modules:

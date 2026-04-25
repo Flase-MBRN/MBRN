@@ -9,28 +9,48 @@ import os
 import re
 import sys
 import time
+import shutil
 import urllib.request
 from pathlib import Path
 from typing import Any, Optional
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 PIPELINES_DIR = Path(__file__).resolve().parent
 
+# --- NEON ASTRA COLORS ---
+ANSI = {
+    "reset": "\033[0m", "bold": "\033[1m",
+    "violet": "\033[38;2;123;92;245m", "success": "\033[38;2;79;255;176m",
+    "warning": "\033[38;2;251;191;36m", "error": "\033[38;2;255;107;107m",
+    "silver": "\033[38;2;180;184;198m", "gold": "\033[38;2;255;215;0m"
+}
+
+def log(level: str, message: object) -> None:
+    ts = time.strftime("%H:%M:%S UTC", time.gmtime())
+    color = ANSI["silver"]
+    if level == "OK": color = ANSI["success"]
+    elif level == "WARN": color = ANSI["warning"]
+    elif level == "ERROR": color = ANSI["error"]
+    elif level == "INFO": color = ANSI["violet"]
+    
+    msg = f"{ANSI['bold']}{color}[{ts}] [BRIDGE] [{level}] {message}{ANSI['reset']}"
+    print(msg)
+
+def show_v5_banner():
+    print(f"{ANSI['violet']}")
+    print("  ⚙️  MBRN BRIDGE AGENT v1.0")
+    print("  >> PRODUCTION PIPELINE: HTML STANDALONE")
+    print(f"  {ANSI['silver']}----------------------------------------{ANSI['reset']}")
 
 def load_pipeline_env(env_path: Path) -> None:
-    """Load scripts/pipelines/.env before reading os.environ.
-
-    Uses python-dotenv when it exists, otherwise falls back to a stdlib parser
-    to keep the v5 no-new-dependency rule intact.
-    """
+    """Load scripts/pipelines/.env before reading os.environ."""
     if not env_path.exists():
         return
     try:
         from dotenv import load_dotenv  # type: ignore
-        load_dotenv(dotenv_path=env_path, override=False)
+        load_dotenv(env_path=env_path, override=False)
         return
     except Exception:
         pass
@@ -44,7 +64,6 @@ def load_pipeline_env(env_path: Path) -> None:
         if key and key not in os.environ:
             os.environ[key] = value
 
-
 load_pipeline_env(PIPELINES_DIR / ".env")
 
 from shared.core.db import (
@@ -56,16 +75,22 @@ from shared.core.db import (
     insert_notification,
 )
 
+from scripts.pipelines.mbrn_logic_auditor import calculate_score
 
+# Configuration
 DIMENSIONS_DIR = PROJECT_ROOT / "dimensions"
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
 OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))
-from scripts.pipelines.mbrn_logic_auditor import calculate_score
-
 MIN_HTML_CHARS = 500
 ELITE_THRESHOLD = 0.8
-CANONICAL_LIST = ["Zeit", "Geld", "Physis", "Geist", "Ausdruck", "Netzwerk", "Energie", "Systeme", "Raum", "Muster", "Wachstum"]
+
+def strip_markdown_fences(text: str) -> str:
+    """Helper for tests and production to clean LLM output."""
+    if not text: return ""
+    text = re.sub(r"^```[a-z]*\n", "", text, flags=re.MULTILINE | re.IGNORECASE)
+    text = re.sub(r"\n```$", "", text, flags=re.MULTILINE)
+    return text.strip()
 
 MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="de">
@@ -99,496 +124,145 @@ MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
         <div class="meta-footer">MBRN Factory Autonomous Module</div>
     </div>
 </body>
-</html>"""
-
-BRIDGE_SYSTEM_PROMPT = """DU BIST EIN SENIOR FRONTEND ENGINEER. DEINE AUFGABE IST ES, DIE MATHEMATISCHE LOGIK EINES PYTHON-TOOLS 1:1 NACH JAVASCRIPT ZU PORTIEREN.
-
-SCHRITT-FÜR-SCHRITT-ANWEISUNG:
-1. ANALYSE: Lies den Python-Code. Identifiziere alle mathematischen Formeln, Daten-Transformationen und Filter-Logiken.
-2. PSEUDOCODE: Erstelle intern einen Plan, wie diese Logik in JS abgebildet wird.
-3. IMPLEMENTIERUNG: Generiere das interaktive HTML/JS-Tool.
-
-STRENGE REGELN (ELITE-KALIBRIERUNG v5.4):
-- JS-LOGIK-PFLICHT: Das Tool MUSS mindestens 50 Zeilen funktionalen JavaScript-Code enthalten.
-- KOMPLEXITÄT: Nutze zwingend Mathematische Algorithmen (Math.*), Regular Expressions (RegExp) oder komplexe Array-Methoden (filter, map, reduce, sort).
-- KEINE PLATZHALTER: Nutze niemals 'key1', 'key2' oder 'data.field'. Du MUSST die echten Variablennamen aus dem Python-Code portieren.
-- INTERAKTIVITÄT: Das Tool muss Eingaben verarbeiten und Ergebnisse im 'result-area' anzeigen.
-- GIB KEIN <html>, <head>, <body> ODER <style> AUS. Das Design ist vorgegeben.
-- NUR DAS INNERE HTML UND DIE <script>-LOGIK.
-- STRICT-FAIL POLICY: Wenn die Python-Logik nicht in funktionales JS übersetzt werden kann, brich ab oder gib eine Fehlermeldung aus. Produziere KEINEN Platzhalter-Code.
-- NUR CODE AUSGEBEN. KEIN MARKDOWN.
-"""
-
-
-def slugify(value: str) -> str:
-    # Remove common technical suffixes
-    value = re.sub(r"_module$", "", value, flags=re.IGNORECASE)
-    slug = re.sub(r"[^A-Za-z0-9_-]+", "_", value.strip()).strip("_").lower()
-    return slug[:80] or "factory_module"
-
-
-def extract_product_name(html: str) -> str:
-    """Extracts a human-readable title from the <h1> tag."""
-    match = re.search(r"<h1>(.*?)</h1>", html, re.IGNORECASE)
-    if match:
-        title = match.group(1).strip()
-        # Handle 20260425_123456 User_Name Tool_Name
-        if re.match(r"^\d{8}[\s_]\d{6}", title):
-            title = re.sub(r"^\d{8}[\s_]\d{6}[\s_]+[a-zA-Z0-9]+[\s_]+", "", title)
-        return title.replace("_", " ").title()
-    return "Autonomous Tool"
-
-
-def extract_logic_description(py_file: Path) -> str:
-    path = py_file if py_file.is_absolute() else PROJECT_ROOT / py_file
-    if not path.exists():
-        return "Logic file missing."
-    
-    content = path.read_text(encoding="utf-8", errors="ignore")
-    lines = content.splitlines()
-    
-    # Filter out MBRN Metadata Headers (Alpha ID, ROI Score, etc.)
-    filtered_lines = []
-    metadata_patterns = [
-        r"Alpha ID:", r"ROI Score:", r"Source Alpha:", r"Factory ID:", 
-        r"Created At:", r"Author:", r"Synergy Score:", r"Bridge Status:"
-    ]
-    
-    for line in lines:
-        if any(re.search(p, line, re.IGNORECASE) for p in metadata_patterns):
-            continue
-        filtered_lines.append(line)
-        
-    return "\n".join(filtered_lines)
-
-
-def get_target_dimension() -> str:
-    """v5.5: Identifies the dimension with the lowest count of elite modules."""
-    with get_db() as conn:
-        # Check counts of elite modules per dimension
-        query = """
-            SELECT dimension, COUNT(*) as cnt 
-            FROM factory_modules 
-            WHERE is_elite = 1 
-            GROUP BY dimension
-        """
-        rows = conn.execute(query).fetchall()
-        counts = {d.lower(): 0 for d in CANONICAL_LIST}
-        for row in rows:
-            if row["dimension"] in counts:
-                counts[row["dimension"]] = row["cnt"]
-        
-        # Sort by count ascending, then random choice among lowest
-        min_count = min(counts.values())
-        weakest = [d for d, c in counts.items() if c == min_count]
-        
-        import random
-        target = random.choice(weakest)
-        print(f"[Equalizer] Target Dimension identified: {target.upper()} (Count: {min_count})")
-        return target
-
-
-def categorize_dimension_semantic(content: str) -> str:
-    """v5.5: Semantic Router - Replaces hardcoded keywords with LLM analysis."""
-    print("[Router] Analyzing module semantics...")
-    prompt = f"""Analysiere dieses Tool. Wähle EXAKT EINE der folgenden MBRN-Dimensionen, die am besten passt: 
-[Zeit, Geld, Physis, Geist, Ausdruck, Netzwerk, Energie, Systeme, Raum, Muster, Wachstum]. 
-Antworte NUR mit dem Namen der Dimension.
-
-TOOL-CONTENT:
-{content[:2000]}
-"""
-    payload = json.dumps({
-        "model": OLLAMA_MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "options": {"temperature": 0.0},
-    }).encode("utf-8")
-    
-    try:
-        req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=30) as response:
-            result = json.loads(response.read().decode("utf-8"))
-            dim = str(result.get("response", "")).strip().lower()
-            # Clean up response (some LLMs add periods or extra words)
-            for canonical in CANONICAL_LIST:
-                if canonical.lower() in dim:
-                    print(f"[Router] Result: {canonical}")
-                    return canonical.lower()
-    except Exception as e:
-        print(f"[Router] Semantic call failed: {e}. Falling back to 'systeme'.")
-    
-    return "systeme"
-
-
-def metadata_scrubber(content: str) -> str:
-    """Removes forbidden metadata keywords from the generated output."""
-    forbidden = [
-        "ROI Score", "Alpha ID", "Source Alpha", "Factory ID", "Quality Score", 
-        "Agent Name", "Created At", "Synergy Score", "Bridge Status"
-    ]
-    cleaned = content
-    for word in forbidden:
-        # Case insensitive replace
-        pattern = re.compile(re.escape(word), re.IGNORECASE)
-        cleaned = pattern.sub("[PROTECTED]", cleaned)
-    return cleaned
-
-
-def strip_markdown_fences(html: str) -> str:
-    """Remove markdown code fences so deployed files start with real HTML."""
-    cleaned = html.strip()
-    fence_match = re.fullmatch(r"```(?:html|HTML)?\s*(.*?)\s*```", cleaned, flags=re.DOTALL)
-    if fence_match:
-        cleaned = fence_match.group(1).strip()
-    else:
-        cleaned = re.sub(r"^```(?:html|HTML)?\s*", "", cleaned).strip()
-        cleaned = re.sub(r"\s*```$", "", cleaned).strip()
-    html_start = cleaned.find("<")
-    if html_start > 0:
-        cleaned = cleaned[html_start:].strip()
-    return cleaned
-
-
-def validate_js_logic(content: str) -> bool:
-    """Checks if the LLM used forbidden placeholders like key1 or key2."""
-    placeholders = [r"data\.key1", r"data\.key2", r"placeholder_key", r"key1", r"key2"]
-    for p in placeholders:
-        if re.search(p, content):
-            return False
-    return True
-
-
-def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str, retry: bool = False, forced_dimension: str = None) -> str:
-    retry_prefix = "DEIN LETZTER VERSUCH WAR FEHLERHAFT (PLATZHALTER GENUTZT). NUTZE DIESES MAL DIE ECHTE LOGIK!\n" if retry else ""
-    
-    # v5.5: Equalizer Hardening
-    target_dim = forced_dimension or dimension
-    focus_directive = f"\nACHTUNG: DIESES TOOL MUSS STRENG AUF DIE DIMENSION '{target_dim.upper()}' AUSGERICHTET SEIN!\n"
-    
-    prompt = f"""{retry_prefix}{focus_directive}
-HIER IST DIE QUELLE DER WAHRHEIT (PYTHON CODE):
-{logic_desc}
-
-PORTIERE ALLE FUNKTIONEN, DIE DATEN VERARBEITEN, 1:1 NACH JAVASCRIPT.
-Nutze <div id="result-area"> für Ergebnisse.
-GIB NUR HTML UND JAVASCRIPT AUS. KEIN CSS. KEIN HEADER."""
-    
-    payload = json.dumps({
-        "model": OLLAMA_MODEL,
-        "prompt": f"[SYSTEM]{BRIDGE_SYSTEM_PROMPT}[/SYSTEM]\n{prompt}",
-        "stream": False,
-        "options": {"temperature": 0.1 if retry else 0.2},
-    }).encode("utf-8")
-    
-    req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT_SECONDS) as response:
-        result = json.loads(response.read().decode("utf-8"))
-    
-    inner_content = str(result.get("response", "")).strip()
-    inner_content = strip_markdown_fences(inner_content)
-    
-    # Validation Gate
-    if not validate_js_logic(inner_content) and not retry:
-        print(f"[Bridge] Validation failed for {name} (placeholders found). Retrying...")
-        return generate_frontend_via_ollama(logic_desc, dimension, name, retry=True)
-        
-    inner_content = metadata_scrubber(inner_content)
-    
-    product_name = extract_product_name(inner_content)
-    
-    # v5.5: Dimension Focus Hardening
-    final_prompt_focus = f"DIESES TOOL WURDE FÜR DIE DIMENSION '{dimension.upper()}' OPTIMIERT."
-    inner_content += f"\n<!-- {final_prompt_focus} -->"
-    
-    final_html = MBRN_HTML_TEMPLATE.replace("{{TITLE}}", product_name).replace("{{CONTENT}}", inner_content)
-    return final_html
-
-
-def generate_dummy_frontend(dimension: str, name: str, logic_desc: str) -> str:
-    # Use clean name if possible, else fallback to name
-    product_name = name.replace("_", " ").title()
-    if re.match(r"^\d{8}[\s_]\d{6}", product_name):
-        product_name = re.sub(r"^\d{8}[\s_]\d{6}[\s_]+[a-zA-Z0-9]+[\s_]+", "", product_name)
-    safe_name = product_name.replace("_", " ").title()
-    return f"""<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{safe_name} | MBRN {dimension}</title>
-  <style>
-    body {{ background-color: #05050A; color: #E0E0E0; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }}
-    .tool-card {{ background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 500px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }}
-    h1 {{ font-size: 20px; margin-bottom: 24px; color: #7B5CF5; text-align: center; }}
-    label {{ display: block; font-size: 12px; color: #999; margin-bottom: 8px; text-transform: uppercase; }}
-    textarea {{ background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; min-height: 100px; }}
-    button {{ background-color: #7B5CF5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: opacity 0.2s; }}
-    button:hover {{ opacity: 0.9; }}
-    output {{ display: block; margin-top: 24px; padding: 16px; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: monospace; font-size: 13px; color: #AFA; }}
-  </style>
-</head>
-<body>
-  <div class="tool-card">
-    <h1>{safe_name}</h1>
-    <label for="input">Eingabe-Daten</label>
-    <textarea id="input">Simulierter Input fuer {name}</textarea>
-    <button id="run">Logik Ausfuehren</button>
-    <output id="result">Bereit für Dimension {dimension}.</output>
-  </div>
-  <script>
-    document.getElementById('run').addEventListener('click', () => {{
-      const text = document.getElementById('input').value;
-      document.getElementById('result').textContent = "AUTONOMER OUTPUT: " + btoa(text).substring(0, 16);
-    }});
-  </script>
-</body>
 </html>
 """
 
-
-def validate_html(html: str) -> None:
-    if not html.lstrip().lower().startswith(("<!doctype html", "<html")):
-        raise ValueError("Generated HTML must start with <!DOCTYPE html> or <html")
-    lowered = html.lower()
-    if len(html) < MIN_HTML_CHARS or "<html" not in lowered or "</html>" not in lowered:
-        raise ValueError(f"Generated HTML is invalid or too short: {len(html)} chars")
-
-
-def deploy_to_dimension(html: str, dimension: str, name: str) -> Path:
-    if dimension not in CANONICAL_DIMENSIONS:
-        dimension = "systeme"
+def generate_standalone_html(module: Dict[str, Any]) -> str:
+    prompt = f"""Erstelle eine Vanilla-HTML/JS Web-App basierend auf diesem Modul.
+    Name: {module['name']}
+    Logik: {module['python_code']}
     
-    product_name = extract_product_name(html)
-    slug = slugify(product_name)
+    Regeln:
+    1. Kein externes CSS/JS außer Google Fonts.
+    2. Alles in einer Datei.
+    3. Nutze ein modernes UI (Dark Mode).
+    4. Das Ergebnis muss direkt im Browser funktionieren.
+    5. GIB NUR DEN HTML/JS CODE ZURÜCK.
+    """
     
-    target_dir = DIMENSIONS_DIR / dimension / "apps" / slug
+    payload = {
+        "model": OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": False
+    }
+    
+    try:
+        req = urllib.request.Request(OLLAMA_URL, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=300) as response:
+            data = json.loads(response.read().decode("utf-8"))
+            return data["response"].strip()
+    except Exception as e:
+        log("ERROR", f"Generation failed: {e}")
+        return ""
+
+def deploy_to_dimension(module: Dict[str, Any], html_content: str):
+    dim = module['dimension'].lower()
+    slug = re.sub(r"[^a-z0-9]", "_", module['name'].lower())
+    folder_name = f"{slug}_module_{module['id']}"
+    target_dir = DIMENSIONS_DIR / dim / "apps" / folder_name
     target_dir.mkdir(parents=True, exist_ok=True)
-    target_file = target_dir / "index.html"
     
-    html = strip_markdown_fences(html)
-    validate_html(html)
-    target_file.write_text(html, encoding="utf-8")
+    index_file = target_dir / "index.html"
     
-    # Optional: If the name was a serial number and different from slug, 
-    # we could log it for cleanup.
-    return target_file
+    # Injection for Elite Cloud Storage
+    if module.get("is_elite"):
+        injection = """
+        <button id="mbrn-cloud-sync" style="margin-top: 10px; background: #00FFB0; color: #000;">SAFE TO MBRN CLOUD</button>
+        <script src="../../../../shared/js/mbrn_storage.js"></script>
+        <script>
+            document.getElementById('mbrn-cloud-sync')?.addEventListener('click', async () => {
+                const payload = { 
+                    module_id: {{MODULE_ID}},
+                    data: document.getElementById('result-area')?.innerText || 'No result'
+                };
+                if (window.MBRN_STORAGE) {
+                    await window.MBRN_STORAGE.save(payload);
+                    alert('Synchronized with MBRN Cloud');
+                }
+            });
+        </script>
+        """
+        html_content = html_content.replace("</body>", f"{injection}</body>").replace("{{MODULE_ID}}", str(module['id']))
 
+    index_file.write_text(html_content, encoding="utf-8")
+    return str(index_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
 
-def sync_to_supabase(name: str, dimension: str, frontend_path: str) -> bool:
-    supabase_url = os.environ.get("SUPABASE_URL")
-    supabase_key = os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
-    if not supabase_url or not supabase_key:
-        print("[Bridge] Supabase sync skipped: env vars missing")
-        return False
-    payload = json.dumps({
-        "name": name,
-        "dimension": dimension,
-        "frontend_file": frontend_path,
-        "status": "deployed",
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        f"{supabase_url.rstrip('/')}/rest/v1/factory_modules",
-        data=payload,
-        method="POST",
-        headers={
-            "apikey": supabase_key,
-            "Authorization": f"Bearer {supabase_key}",
-            "Content-Type": "application/json",
-            "Prefer": "return=minimal",
-        },
-    )
-    try:
-        urllib.request.urlopen(req, timeout=10).read()
-        print(f"[Bridge] Supabase sync OK: {name}")
-        return True
-    except Exception as exc:
-        print(f"[Bridge] Supabase sync failed and was ignored: {exc}")
-        return False
-
-
-def next_ready_module():
+def purge_module(module_id: int, frontend_file: str):
+    log("WARN", f"Purging low-score module {module_id}...")
+    if frontend_file:
+        path = PROJECT_ROOT / frontend_file
+        if path.exists():
+            shutil.rmtree(path.parent)
+    
     with get_db() as conn:
-        return conn.execute(
-            """
-            SELECT * FROM factory_modules
-            WHERE status = 'ready'
-            ORDER BY quality_score DESC, created_at ASC
-            LIMIT 1
-            """
-        ).fetchone()
+        conn.execute("DELETE FROM factory_modules WHERE id = ?", (module_id,))
+        conn.commit()
 
-
-def count_ready_modules() -> int:
+def run_bridge_cycle():
+    log("INFO", "Checking for pending modules...")
     with get_db() as conn:
-        row = conn.execute("SELECT COUNT(*) AS cnt FROM factory_modules WHERE status = 'ready'").fetchone()
-        return int(row["cnt"] if row else 0)
-
-
-def run_bridge_cycle(use_dummy: bool = False, forced_dimension: str = None) -> Optional[dict[str, Any]]:
-    init_db()
-    module = next_ready_module()
-    if not module:
-        return None
-
-    name = str(module["name"])
-    source = Path(str(module["source_file"]))
+        pending = conn.execute("SELECT * FROM factory_modules WHERE status = 'ready'").fetchall()
     
-    # v5.5: Semantic Routing (If not forced)
-    logic_desc = extract_logic_description(source)
-    dimension = forced_dimension if forced_dimension else categorize_dimension_semantic(logic_desc)
-    
-    print(f"[Bridge] Processing {name} -> {dimension}")
-
-    try:
-        html = generate_dummy_frontend(dimension, name, logic_desc) if use_dummy else generate_frontend_via_ollama(logic_desc, dimension, name, forced_dimension=dimension)
-        html = strip_markdown_fences(html)
-        validate_html(html)
-        deployed_path = deploy_to_dimension(html, dimension, name)
+    for row in pending:
+        module = dict(row)
+        log("INFO", f"Bridging module {module['id']}: {module['name']}...")
         
-        # v5.4: Post-Generation Audit
-        score = calculate_score(html)
+        # Calculate Auditor Score
+        score = calculate_score(module['python_code'])
         is_elite = 1 if score >= ELITE_THRESHOLD else 0
         
-        if score < ELITE_THRESHOLD:
-            print(f"[Bridge] PURGE: Score {score:.2f} is below calibration threshold ({ELITE_THRESHOLD}). Deleting folder.")
-            if deployed_path.exists():
-                import shutil
-                shutil.rmtree(deployed_path.parent)
-            atomic_update("factory_modules", {"status": "purged", "quality_score": score}, "id", module["id"])
-            return {"id": module["id"], "name": name, "status": "purged", "score": score}
+        if score < 0.8:
+            purge_module(module['id'], module.get('frontend_file'))
+            continue
 
-        # v5.4: Cloud Storage Injection (Always active for all modules)
-        print(f"[Bridge] Injecting Storage & Cloud Save capabilities.")
-        # GitHub Pages safety: Try to determine the root path dynamically or use the /MBRN/ base
-        storage_script = '<script src="../../../../shared/js/mbrn_storage.js"></script>'
-        # If we are on the live site, /MBRN/shared/js/mbrn_storage.js is often safer
-        if storage_script not in html:
-            html = html.replace("</head>", f"    {storage_script}\n</head>", 1)
-        
-        # Update the file with the injected code
-        deployed_path.write_text(html, encoding="utf-8")
+        html = generate_standalone_html(module)
+        if html:
+            relative_path = deploy_to_dimension(module, html)
+            with get_db() as conn:
+                conn.execute(
+                    "UPDATE factory_modules SET status = 'deployed', frontend_file = ?, is_elite = ?, score = ? WHERE id = ?",
+                    (relative_path, is_elite, score, module['id'])
+                )
+                conn.commit()
+            log("OK", f"Deployed: {relative_path} (Score: {score})")
+            insert_notification("Bridge", f"Module {module['name']} deployed to {module['dimension']}", "info")
+            export_factory_feed_snapshot()
 
-        relative_deployed = str(deployed_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
-        atomic_update("factory_modules", {
-            "status": "deployed", 
-            "dimension": dimension,
-            "frontend_file": relative_deployed,
-            "quality_score": score,
-            "is_elite": is_elite,
-            "curation_status": "elite"
-        }, "id", module["id"])
-        
-        export_factory_feed_snapshot()
-        supabase_synced = sync_to_supabase(name, dimension, relative_deployed)
-        print(f"[Bridge] Deployed: {relative_deployed}")
-        return {
-            "id": module["id"],
-            "name": name,
-            "dimension": dimension,
-            "frontend_file": relative_deployed,
-            "absolute_path": str(deployed_path),
-            "supabase_synced": supabase_synced,
-            "status": "deployed",
-        }
-    except Exception as exc:
-        atomic_update("factory_modules", {"status": "failed"}, "id", module["id"])
-        print(f"[Bridge] Failed {name}: {exc}")
-        return {
-            "id": module["id"],
-            "name": name,
-            "dimension": dimension,
-            "frontend_file": None,
-            "absolute_path": None,
-            "supabase_synced": False,
-            "status": "failed",
-            "error": str(exc),
-        }
+def run_bridge_batch(limit: int):
+    log("INFO", f"Running batch bridge cycle (Limit: {limit})...")
+    for _ in range(limit):
+        run_bridge_cycle()
 
+def run_bridge_until_empty():
+    log("INFO", "Running bridge until queue is empty...")
+    while True:
+        with get_db() as conn:
+            row = conn.execute("SELECT COUNT(*) as cnt FROM factory_modules WHERE status = 'ready'").fetchone()
+            if row["cnt"] == 0: break
+        run_bridge_cycle()
 
-def run_bridge_batch(count: int, use_dummy: bool = False) -> list[dict[str, Any]]:
-    results: list[dict[str, Any]] = []
-    for cycle in range(1, count + 1):
-        print(f"[Bridge] Batch cycle {cycle}/{count}", flush=True)
-        result = run_bridge_cycle(use_dummy=use_dummy)
-        if result is None:
-            break
-        results.append(result)
-    return results
-
-
-def run_bridge_until_empty(use_dummy: bool = False) -> list[dict[str, Any]]:
-    init_db()
-    total = count_ready_modules()
-    results: list[dict[str, Any]] = []
-    print(f"[Bridge] Backlog-Drain gestartet: {total} ready Module", flush=True)
-    while count_ready_modules() > 0:
-        result = run_bridge_cycle(use_dummy=use_dummy)
-        if result is None:
-            break
-        results.append(result)
-        current = len(results)
-        name = result.get("name", "unknown")
-        if result.get("status") == "deployed":
-            print(f"[Bridge] {current}/{total} generiert: {name}", flush=True)
-        else:
-            print(f"[Bridge] {current}/{total} fehlgeschlagen: {name}", flush=True)
-    print("[Bridge] Backlog-Drain abgeschlossen: 0 ready Module", flush=True)
-    return results
-
-
-def run_autonomous_factory(target_per_dimension: int = 5):
-    """v5.5: Continuous run loop to balance dimensions with elite modules."""
-    print(f"[Reactor] Autonomous Equalizer Mode: ON (Goal: {target_per_dimension} elite/dim)")
+def main():
+    show_v5_banner()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--autonomous", action="store_true")
+    parser.add_argument("--target", type=int, default=10)
+    parser.add_argument("--batch-count", type=int, help="Run a specific number of modules.")
+    parser.add_argument("--all-ready", action="store_true", help="Process all ready modules.")
+    args = parser.parse_args()
+    
     init_db()
     
-    while True:
-        target_dim = get_target_dimension()
-        
-        # Check if we still have modules to process
-        if count_ready_modules() == 0:
-            print("[Reactor] No ready modules in backlog. Waiting 60s...")
-            time.sleep(60)
-            continue
-            
-        print(f"[Reactor] Balancing Dimension: {target_dim.upper()}")
-        
-        result = run_bridge_cycle(forced_dimension=target_dim)
-        if result and result.get("status") == "deployed":
-            print(f"[Reactor] Success: {result['name']} deployed to {target_dim.upper()}.")
-        
-        print("[Reactor] Cooling down (10s)...")
-        time.sleep(10)
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Bridge factory modules into Vanilla HTML apps.")
-    parser.add_argument("--once", action="store_true", help="Run one bridge cycle and exit.")
-    parser.add_argument("--dummy", action="store_true", help="Use deterministic dummy HTML instead of Ollama.")
-    parser.add_argument("--batch-count", type=int, default=0, help="Run exactly this many bridge cycles and exit.")
-    parser.add_argument("--all-ready", action="store_true", help="Drain the current ready backlog and exit.")
-    parser.add_argument("--autonomous", action="store_true", help="v5.5: Run in self-balancing equalizer mode.")
-    parser.add_argument("--target", type=int, default=5, help="Elite modules per dimension goal for autonomous mode.")
-    parser.add_argument("--interval-seconds", type=int, default=30)
-    args = parser.parse_args()
-
     if args.autonomous:
-        run_autonomous_factory(target_per_dimension=args.target)
-        return 0
-
-    if args.once:
-        return 0 if run_bridge_cycle(use_dummy=args.dummy) else 1
-    if args.batch_count:
-        results = run_bridge_batch(args.batch_count, use_dummy=args.dummy)
-        return 0 if len(results) == args.batch_count and all(result.get("status") == "deployed" for result in results) else 1
-    if args.all_ready:
-        run_bridge_until_empty(use_dummy=args.dummy)
-        return 0
-
-    while True:
-        run_bridge_cycle(use_dummy=args.dummy)
-        time.sleep(max(5, args.interval_seconds))
-
+        log("INFO", f"Autonomous Production Mode (Target: {args.target} modules)")
+        while True:
+            run_bridge_cycle()
+            time.sleep(30)
+    elif args.batch_count:
+        run_bridge_batch(args.batch_count)
+    elif args.all_ready:
+        run_bridge_until_empty()
+    else:
+        run_bridge_cycle()
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

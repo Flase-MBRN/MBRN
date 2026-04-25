@@ -15,9 +15,14 @@ from shared.core.db import get_db
 def run_migration():
     print("[Migration] Starting Elite Storage Injection...")
     
-    # We define Elite as >= 0.8 as per v5.4 directive
     with get_db() as conn:
-        modules = conn.execute("SELECT id, name, frontend_file, quality_score FROM factory_modules WHERE status = 'deployed'").fetchall()
+        modules = conn.execute(
+            """
+            SELECT id, name, frontend_file, quality_score
+            FROM factory_modules
+            WHERE status = 'deployed' AND is_elite = 1
+            """
+        ).fetchall()
     
     migrated = 0
     

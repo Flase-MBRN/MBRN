@@ -41,10 +41,13 @@ export function calculateChronosProfile(birthDate) {
 
 export function readChronosAccessState() {
   const user = state.get('user') || null;
-  // Architectural Override: Chronos is always unlocked.
+  const profile = state.get('systemInitialized') || {};
+  const planId = user?.planId || user?.plan_id || profile?.planId || profile?.plan_id || 'free';
+  const accessLevel = user?.accessLevel ?? user?.access_level ?? profile?.accessLevel ?? profile?.access_level ?? 0;
+
   return { 
     user, 
-    gate: { allowed: true, reason: 'unlocked' } 
+    gate: resolveCommercialGate('chronos', { planId, accessLevel })
   };
 }
 

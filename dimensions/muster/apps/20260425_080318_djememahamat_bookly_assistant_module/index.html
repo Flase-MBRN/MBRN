@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Tool | MBRN Hub</title>
+    <script>
+        window.MBRN_CONFIG = {
+            supabaseUrl: 'https://wqfijgzlxypqftwwoxxp.supabase.co',
+            supabaseKey: 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO'
+        };
+    </script>
+    <style>
+        body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        h1 { font-size: 22px; font-weight: 800; color: #7B5CF5; margin-bottom: 24px; text-align: center; letter-spacing: -0.02em; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #999; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, textarea, select { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #7B5CF5; outline: none; background: #1F1F2E; }
+        button { background-color: #7B5CF5; color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+        button:hover { background-color: #8C72F7; transform: translateY(-1px); }
+        #result-area { margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(123, 92, 245, 0.2); font-family: monospace; font-size: 13px; color: #AFA; white-space: pre-wrap; word-break: break-all; }
+        .meta-footer { margin-top: 32px; text-align: center; font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; }
+    </style>
+    <script src="../../../../shared/js/mbrn_storage.js"></script>
+</head>
+<body>
+    <div class="tool-card">
+        <h1>Autonomous Tool</h1>
+        <div id="input-area">
+  <textarea id="input-text" placeholder="Enter text to extract postcode"></textarea>
+  <button id="extract-button">Extract Postcode</button>
+</div>
+
+<div id="result-area"></div>
+
+<script>
+function extractPostcode(text) {
+  const pattern = /\b[A-Za-z]{1}\d{1}[A-Za-z]\s?\d{1}[A-Za-z]{1}\b/;
+  const match = text.match(pattern);
+  return match ? match[0] : null;
+}
+
+document.getElementById('extract-button').addEventListener('click', function() {
+  const inputText = document.getElementById('input-text').value;
+  const postcode = extractPostcode(inputText);
+  const resultArea = document.getElementById('result-area');
+
+  if (postcode) {
+    resultArea.innerHTML = `<p>Extracted Postcode: <strong>${postcode}</strong></p>`;
+  } else {
+    resultArea.innerHTML = `<p>No postcode found.</p>`;
+  }
+});
+
+// Self-test function (JavaScript equivalent of Python's self_test)
+function selfTestJS() {
+  const testCases = [
+    "The postcode is AB1 2CD.",
+    "Here is a postcode: AB12CD.",
+    "No valid postcodes here.",
+    "AB1 2CD is the correct one."
+  ];
+
+  const results = testCases.map(case => extractPostcode(case) || "None");
+  console.log("Test Results:", results);
+
+  // Display test results in the result area
+  const resultArea = document.getElementById('result-area');
+  resultArea.innerHTML = `<p><strong>Self-Test Results:</strong> ${results.join(', ')}</p>`;
+}
+
+// Execute self-test on page load
+selfTestJS();
+
+// Additional functionality:  Regular Expression explanation
+document.getElementById('extract-button').addEventListener('click', function() {
+    const inputText = document.getElementById('input-text').value;
+    const postcode = extractPostcode(inputText);
+    const resultArea = document.getElementById('result-area');
+
+    if (postcode) {
+        resultArea.innerHTML = `<p>Extracted Postcode: <strong>${postcode}</strong></p>`;
+        resultArea.innerHTML += `<p><em>Regex Explanation:</em>  The regex <code>\b[A-Za-z]{1}\d{1}[A-Za-z]\s?\d{1}[A-Za-z]{1}\b</code> matches UK postcodes.  <code>\b</code> ensures word boundaries. <code>[A-Za-z]{1}</code> matches a single letter. <code>\d{1}</code> matches a single digit. <code>\s?</code> matches an optional space.`;
+    } else {
+        resultArea.innerHTML = `<p>No postcode found.</p>`;
+    }
+});
+
+// Example of using Math.random() for a demo
+document.getElementById('extract-button').addEventListener('click', function() {
+    const inputText = document.getElementById('input-text').value;
+    const postcode = extractPostcode(inputText);
+    const resultArea = document.getElementById('result-area');
+
+    if (postcode) {
+        resultArea.innerHTML = `<p>Extracted Postcode: <strong>${postcode}</strong></p>`;
+        resultArea.innerHTML += `<p>Random Number: <strong>${Math.random().toFixed(5)}</strong></p>`;
+    } else {
+        resultArea.innerHTML = `<p>No postcode found.</p>`;
+    }
+});
+
+// Example of using Array.filter()
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const evenNumbers = numbers.filter(number => number % 2 === 0);
+console.log("Even Numbers:", evenNumbers);
+
+// Example of using Array.map()
+const squaredNumbers = numbers.map(number => number * number);
+console.log("Squared Numbers:", squaredNumbers);
+
+// Example of using Array.reduce()
+const sum = numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+console.log("Sum:", sum);
+
+// Example of using Array.sort()
+const unsortedNumbers = [5, 2, 8, 1, 9, 4];
+unsortedNumbers.sort((a, b) => a - b);
+console.log("Sorted Numbers:", unsortedNumbers);
+
+// More complex regex example (checking for multiple patterns)
+function checkMultiplePatterns(text) {
+    const pattern1 = /\b[A-Za-z]{1}\d{1}[A-Za-z]\s?\d{1}[A-Za-z]{1}\b/;
+    const pattern2 = /\b\d{5}\b/; // US zip code example
+    const matches = [];
+
+    if (pattern1.test(text)) {
+        matches.push("UK Postcode");
+    }
+    if (pattern2.test(text)) {
+        matches.push("US Zip Code");
+    }
+
+    return matches.length > 0 ? matches.join(", ") : "No match";
+}
+
+document.getElementById('extract-button').addEventListener('click', function() {
+    const inputText = document.getElementById('input-text').value;
+    const postcode = extractPostcode(inputText);
+    const resultArea = document.getElementById('result-area');
+
+    if (postcode) {
+        resultArea.innerHTML = `<p>Extracted Postcode: <strong>${postcode}</strong></p>`;
+    } else {
+        resultArea.innerHTML = `<p>No postcode found.</p>`;
+    }
+
+    const multipleMatches = checkMultiplePatterns(inputText);
+    resultArea.innerHTML += `<p>Multiple Pattern Check: <strong>${multipleMatches}</strong></p>`;
+});
+</script>
+<!-- DIESES TOOL WURDE FÜR DIE DIMENSION 'MUSTER' OPTIMIERT. -->
+        <div class="meta-footer">MBRN Factory Autonomous Module</div>
+    </div>
+</body>
+</html>

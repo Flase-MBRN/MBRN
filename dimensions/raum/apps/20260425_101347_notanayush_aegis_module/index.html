@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Tool | MBRN Hub</title>
+    <script>
+        window.MBRN_CONFIG = {
+            supabaseUrl: 'https://wqfijgzlxypqftwwoxxp.supabase.co',
+            supabaseKey: 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO'
+        };
+    </script>
+    <style>
+        body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        h1 { font-size: 22px; font-weight: 800; color: #7B5CF5; margin-bottom: 24px; text-align: center; letter-spacing: -0.02em; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #999; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, textarea, select { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #7B5CF5; outline: none; background: #1F1F2E; }
+        button { background-color: #7B5CF5; color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+        button:hover { background-color: #8C72F7; transform: translateY(-1px); }
+        #result-area { margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(123, 92, 245, 0.2); font-family: monospace; font-size: 13px; color: #AFA; white-space: pre-wrap; word-break: break-all; }
+        .meta-footer { margin-top: 32px; text-align: center; font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; }
+    </style>
+    <script src="../../../../shared/js/mbrn_storage.js"></script>
+</head>
+<body>
+    <div class="tool-card">
+        <h1>Autonomous Tool</h1>
+        <div id="input-area">
+  <label for="signal-input">Signal:</label>
+  <input type="text" id="signal-input" placeholder="Enter signal here">
+  <button id="check-button">Check for Emergency</button>
+</div>
+
+<div id="result-area"></div>
+
+<script>
+function detectEmergency(signal) {
+  const emergencies = ["fire", "medical emergency", "active shooter"];
+  const lowerSignal = signal.toLowerCase();
+  return emergencies.some(keyword => lowerSignal.includes(keyword));
+}
+
+function testDetectEmergency() {
+  const testSignals = [
+    "Please send help, there's a fire!",
+    "I need medical assistance.",
+    "There's an active shooter in the building."
+  ];
+
+  const expectedResults = [true, true, true];
+  const results = testSignals.map(signal => detectEmergency(signal));
+
+  if (results.length !== expectedResults.length) {
+    console.error("Test failed: Different number of signals and results.");
+    return false;
+  }
+
+  for (let i = 0; i < results.length; i++) {
+    if (results[i] !== expectedResults[i]) {
+      console.error(`Test failed at index ${i}: ${results[i]} != ${expectedResults[i]}`);
+      return false;
+    }
+  }
+
+  console.log("Test passed!");
+  return true;
+}
+
+document.getElementById('check-button').addEventListener('click', function() {
+  const signalInput = document.getElementById('signal-input').value;
+  const resultArea = document.getElementById('result-area');
+  const isEmergency = detectEmergency(signalInput);
+
+  resultArea.innerHTML = `Result: ${isEmergency ? 'Emergency Detected' : 'No Emergency'}`;
+});
+
+// Self-test execution
+try {
+  testDetectEmergency();
+} catch (error) {
+  console.error(error);
+}
+
+console.log("MODULE_READY: NotAnAyush_Aegis");
+
+// Additional functionality:  Simulate a random signal generator
+function generateRandomSignal() {
+  const signalTypes = ["fire", "medical emergency", "active shooter", "routine check", "system test"];
+  const randomType = signalTypes[Math.floor(Math.random() * signalTypes.length)];
+
+  let signal = "";
+  if (randomType === "fire") {
+    signal = "There's a fire! Send help immediately!";
+  } else if (randomType === "medical emergency") {
+    signal = "Medical assistance needed urgently.";
+  } else if (randomType === "active shooter") {
+    signal = "Active shooter situation! Lockdown!";
+  } else if (randomType === "routine check") {
+    signal = "Routine system check in progress.";
+  } else {
+    signal = "System test initiated.";
+  }
+
+  document.getElementById('signal-input').value = signal;
+}
+
+// Example usage: Generate a random signal every 5 seconds
+//setInterval(generateRandomSignal, 5000);
+
+//Advanced Feature: Regular Expression Validation
+function validateSignal(signal) {
+    const regex = /^[a-zA-Z0-9\s.,!?]+$/; // Allows alphanumeric characters, spaces, and common punctuation
+    return regex.test(signal);
+}
+
+document.getElementById('check-button').addEventListener('click', function() {
+    const signalInput = document.getElementById('signal-input').value;
+    const resultArea = document.getElementById('result-area');
+
+    if (!validateSignal(signalInput)) {
+        resultArea.innerHTML = "Error: Invalid signal format.  Only alphanumeric characters, spaces, and common punctuation allowed.";
+        return;
+    }
+
+    const isEmergency = detectEmergency(signalInput);
+    resultArea.innerHTML = `Result: ${isEmergency ? 'Emergency Detected' : 'No Emergency'}`;
+});
+
+//More advanced feature:  Array of possible responses
+const emergencyResponses = [
+    "Dispatching emergency services.",
+    "Initiating lockdown protocol.",
+    "Alerting security personnel.",
+    "Activating emergency broadcast system."
+];
+
+document.getElementById('check-button').addEventListener('click', function() {
+    const signalInput = document.getElementById('signal-input').value;
+    const resultArea = document.getElementById('result-area');
+    const isEmergency = detectEmergency(signalInput);
+
+    if (isEmergency) {
+        const randomIndex = Math.floor(Math.random() * emergencyResponses.length);
+        resultArea.innerHTML = `Result: Emergency Detected. ${emergencyResponses[randomIndex]}`;
+    } else {
+        resultArea.innerHTML = `Result: No Emergency`;
+    }
+});
+
+//Complex Array Manipulation:  Filtering and Mapping
+const signalKeywords = ["fire", "medical", "shooter", "help", "emergency"];
+
+document.getElementById('check-button').addEventListener('click', function() {
+    const signalInput = document.getElementById('signal-input').value;
+    const resultArea = document.getElementById('result-area');
+
+    const keywordMatches = signalKeywords.filter(keyword => signalInput.toLowerCase().includes(keyword));
+    const mappedResults = keywordMatches.map(keyword => `Keyword found: ${keyword}`);
+
+    if (keywordMatches.length > 0) {
+        resultArea.innerHTML = `Keywords found: ${mappedResults.join(", ")}.  Potential Emergency.`;
+    } else {
+        resultArea.innerHTML = `Result: No Emergency`;
+    }
+});
+
+</script>
+<!-- DIESES TOOL WURDE FÜR DIE DIMENSION 'RAUM' OPTIMIERT. -->
+        <div class="meta-footer">MBRN Factory Autonomous Module</div>
+    </div>
+</body>
+</html>

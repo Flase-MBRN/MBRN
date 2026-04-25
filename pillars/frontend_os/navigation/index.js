@@ -10,7 +10,7 @@ import { renderPolicyLinks } from '../shell/legal_blocks.js';
 const SYSTEM_SURFACES = Object.freeze([
   { id: 'home', label: 'Start', route: 'index.html', icon: 'S', includeInNavigation: true },
   { id: 'dashboard', label: 'Dashboard', route: 'dashboard/index.html', icon: 'D', includeInNavigation: true },
-  { id: 'vault', label: 'Data Vault', route: 'dashboard/data_vault.html', icon: 'V', includeInNavigation: true }
+  { id: 'vault', label: 'Data Vault', route: 'dashboard/data_vault.html', icon: 'V', includeInNavigation: false }
 ]);
 
 function getLegacyDimensionRoute(dimensionId) {

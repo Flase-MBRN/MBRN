@@ -1,72 +1,22 @@
 [
   {
-    "id": 11,
-    "name": "20260424_205054_SomanAbbasi_OptiCode_module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/ausdruck/apps/autonomous_tool/index.html",
+    "id": 60,
+    "name": "20260425_101347_NotAnAyush_Aegis_module",
+    "dimension": "raum",
+    "frontend_file": "dimensions/raum/apps/20260425_101347_notanayush_aegis_module/index.html",
+    "quality_score": 0.8999999999999999,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 28,
+    "name": "20260425_080318_djememahamat_bookly_assistant_module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/20260425_080318_djememahamat_bookly_assistant_module/index.html",
     "quality_score": 0.8999999999999999,
     "is_elite": 1,
     "curation_status": "elite",
     "created_at": "2026-04-25 18:06:25"
-  },
-  {
-    "id": 14,
-    "name": "20260424_205300_CaptainIND7_Yatrik_module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/zeit/apps/autonomous_tool/index.html",
-    "quality_score": 1.0,
-    "is_elite": 1,
-    "curation_status": "elite",
-    "created_at": "2026-04-25 18:06:25"
-  },
-  {
-    "id": 16,
-    "name": "20260424_205320_adrian_af_cursorThreads_module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/raum/apps/autonomous_tool/index.html",
-    "quality_score": 0.8999999999999999,
-    "is_elite": 1,
-    "curation_status": "elite",
-    "created_at": "2026-04-25 18:06:25"
-  },
-  {
-    "id": 17,
-    "name": "20260424_205331_fasqua_kausaos_module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/autonomous_tool/index.html",
-    "quality_score": 0.8999999999999999,
-    "is_elite": 1,
-    "curation_status": "elite",
-    "created_at": "2026-04-25 18:06:25"
-  },
-  {
-    "id": 18,
-    "name": "20260424_205341_velvetmonkey_flywheel_ideas_module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/autonomous_tool/index.html",
-    "quality_score": 0.8999999999999999,
-    "is_elite": 1,
-    "curation_status": "elite",
-    "created_at": "2026-04-25 18:06:25"
-  },
-  {
-    "id": 5,
-    "name": "20260424_204803_zxqer_FinAgent_Quant_module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/autonomous_tool/index.html",
-    "quality_score": 0.8999999999999999,
-    "is_elite": 1,
-    "curation_status": "elite",
-    "created_at": "2026-04-25 18:06:24"
-  },
-  {
-    "id": 6,
-    "name": "20260424_204812_Tejascodez_ai_task_manager_module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/autonomous_tool/index.html",
-    "quality_score": 0.8999999999999999,
-    "is_elite": 1,
-    "curation_status": "elite",
-    "created_at": "2026-04-25 18:06:24"
   }
 ]

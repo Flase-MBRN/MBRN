@@ -25,13 +25,13 @@ const mbrnStorage = {
         }
 
         try {
-            const response = await fetch(`${MBRN_STORAGE_CONFIG.url}/rest/v1/user_module_data`, {
+            const response = await fetch(`${MBRN_STORAGE_CONFIG.url}/rest/v1/user_module_data?on_conflict=user_id,module_id`, {
                 method: 'POST',
                 headers: {
                     'apikey': MBRN_STORAGE_CONFIG.key,
                     'Authorization': `Bearer ${MBRN_STORAGE_CONFIG.key}`,
                     'Content-Type': 'application/json',
-                    'Prefer': 'resolution=merge-duplicates'
+                    'Prefer': 'resolution=merge-duplicates,return=minimal'
                 },
                 body: JSON.stringify({
                     user_id: MBRN_STORAGE_CONFIG.userId,
@@ -64,7 +64,9 @@ const mbrnStorage = {
         }
 
         try {
-            const url = `${MBRN_STORAGE_CONFIG.url}/rest/v1/user_module_data?user_id=eq.${MBRN_STORAGE_CONFIG.userId}&module_id=eq.${moduleId}&select=payload`;
+            const userId = encodeURIComponent(MBRN_STORAGE_CONFIG.userId);
+            const safeModuleId = encodeURIComponent(moduleId);
+            const url = `${MBRN_STORAGE_CONFIG.url}/rest/v1/user_module_data?user_id=eq.${userId}&module_id=eq.${safeModuleId}&select=payload`;
             const response = await fetch(url, {
                 headers: {
                     'apikey': MBRN_STORAGE_CONFIG.key,
@@ -126,7 +128,7 @@ const mbrnStorage = {
     },
 
     /**
-     * Helper to inject the "SAVE TO MBRN CLOUD" button into a module.
+     * Helper to inject the "SAFE TO MBRN CLOUD" button into a module.
      */
     injectSaveButton() {
         const footer = document.querySelector('.meta-footer');
@@ -135,7 +137,7 @@ const mbrnStorage = {
 
         const btn = document.createElement('button');
         btn.id = 'mbrn-cloud-save-btn';
-        btn.textContent = 'SAVE TO MBRN CLOUD';
+        btn.textContent = 'SAFE TO MBRN CLOUD';
         btn.style.cssText = 'margin-top: 16px; background: #10b981; font-size: 10px; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; color: white; width: 100%;';
         
         btn.onclick = async () => {
@@ -149,7 +151,8 @@ const mbrnStorage = {
             } else {
                 // Fallback: Scrape all inputs/textareas
                 document.querySelectorAll('input, textarea, select').forEach(el => {
-                    if (el.id) data[el.id] = el.value;
+                    if (!el.id) return;
+                    data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
                 });
                 const resultArea = document.getElementById('result-area');
                 if (resultArea) data.last_result = resultArea.textContent;
@@ -167,7 +170,7 @@ const mbrnStorage = {
             }
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = 'SAVE TO MBRN CLOUD';
+                btn.textContent = 'SAFE TO MBRN CLOUD';
                 btn.style.background = '#10b981';
             }, 3000);
         };
