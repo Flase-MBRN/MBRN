@@ -266,10 +266,23 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
   console.log('[discoverability] Sample app dimensions:', dynamicApps.slice(0, 3).map(a => a.dimension));
   
   // Aggressive filtering by dimension - CASE SENSITIVE!
-  const dimensionApps = dynamicApps.filter((app) => app.dimension === dimensionId);
-  console.log('[discoverability] Filtered apps for this dimension:', dimensionApps.length);
+  let dimensionApps = dynamicApps.filter((app) => app.dimension === dimensionId);
+  
+  // Apply Elite filter by default for the Architect
+  const allAppsCount = dimensionApps.length;
+  const eliteApps = dimensionApps.filter(app => app.is_elite);
+  
+  // State for showing all apps in this dimension
+  const showAllKey = `mbrn_show_all_${dimensionId}`;
+  const showAll = localStorage.getItem(showAllKey) === 'true';
+  
+  if (!showAll) {
+    dimensionApps = eliteApps;
+  }
+  
+  console.log(`[discoverability] Dimension ${dimensionId}: Found ${allAppsCount} total, showing ${dimensionApps.length} (Elite: ${eliteApps.length})`);
 
-  if (dimensionApps.length > 0) {
+  if (dimensionApps.length > 0 || eliteApps.length > 0 || allAppsCount > 0) {
     const factorySectionId = `factory-section-${dimensionId}`;
     let factorySection = root.querySelector(`#${factorySectionId}`);
     
@@ -282,9 +295,22 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
 
       dom.createEl('div', {
         className: 'section-eyebrow-left text-accent',
-        text: 'Autonom gefertigte Apps (v5.3 Logic Enforcement)',
+        text: showAll ? 'Full Factory Output (SEO Feed)' : 'Elite Factory Apps (v5.3 Logic Enforcement)',
         parent: factorySection
       });
+      
+      if (allAppsCount > eliteApps.length) {
+        const toggleBtn = dom.createEl('button', {
+            className: 'btn-secondary text-xs mt-8',
+            text: showAll ? 'Zurück zur Elite-Auswahl' : `Alle ${allAppsCount} Module anzeigen (SEO-Modus)`,
+            parent: factorySection,
+            style: 'padding: 4px 10px; opacity: 0.7; cursor: pointer;'
+        });
+        toggleBtn.onclick = () => {
+            localStorage.setItem(showAllKey, !showAll);
+            window.location.reload();
+        };
+      }
     }
 
     const factoryGrid = dom.createEl('div', {
@@ -294,14 +320,20 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
 
     dimensionApps.forEach((app, index) => {
       const appTitle = app.name || app.module_name || 'Unbekanntes Modul';
-      const cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ').toUpperCase();
+      // Clean title and truncate if needed
+      let cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ').toUpperCase();
+      const fullTitle = cleanTitle;
+      if (cleanTitle.length > 30) {
+        cleanTitle = cleanTitle.substring(0, 27) + '...';
+      }
+      
       const rootPath = getLocalRepoRoot();
       console.log(`[discoverability] Creating card ${index + 1}/${dimensionApps.length}:`, cleanTitle, 'route:', app.frontend_file);
 
       createSurfaceCard(factoryGrid, {
         title: cleanTitle,
         body: 'Eigens für diese Dimension gefertigte Logik-Surface mit v5.3 Härtung.',
-        meta: `Status: Deployed | Dimension: ${app.dimension}`,
+        meta: `Status: Deployed | Score: ${Math.round((app.quality_score || 0)*100)}% ${app.is_elite ? '💎' : ''}`,
         surfaceId: app.id,
         route: app.frontend_file,
         interactive: true,
