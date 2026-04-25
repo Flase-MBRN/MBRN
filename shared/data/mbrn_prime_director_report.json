@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-25T18:26:55+00:00",
+  "generated_at": "2026-04-25T19:00:07+00:00",
   "dry_run": true,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
@@ -9,27 +9,27 @@
   "validation_status": "ok",
   "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T18:25:38+00:00",
+    "generated_at": "2026-04-25T18:56:55+00:00",
     "discoveries": 105,
-    "processed_alphas": 79,
-    "backlog_alphas": 26,
+    "processed_alphas": 80,
+    "backlog_alphas": 25,
     "seen_repo_ids": 403,
-    "factory_ready_modules": 163,
+    "factory_ready_modules": 164,
     "factory_memory_docs": 15,
-    "nexus_notifications": 163,
+    "nexus_notifications": 164,
     "recent_findings": [
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:38:41.273934+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:32:31.245222+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:30:58.748612+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:30:18.381455+00:00] [WARN] GitHub README API failed for ouss-issib/MediGraph-AI: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:30:18.095432+00:00] [WARN] Synergy analysis failed for mohitmail85/ai-ml-fundamentals",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:28:11.608714+00:00] [WARN] GitHub README API failed for kk-taro/ai-competitor-analysis: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:28:11.103298+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:26:06.173602+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:24:03.298664+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:22:37.730256+00:00] [WARN] Synergy analysis failed for lilacmohr/ai-radar-claw",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:20:31.233447+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:18:41.430689+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'"
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:45:50.805902+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:45:14.317612+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:44:45.257100+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:44:05.593765+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:43:40.959912+00:00] [WARN] Synergy analysis failed for andinet/MedExRAG",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:41:34.476627+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:40:52.264800+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:38:50.069666+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:38:12.585843+00:00] [WARN] GitHub README API failed for Jew-011/ai-quant-etf-assistant: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:38:12.391050+00:00] [WARN] GitHub README API failed for RonBeny/langgraph-telegram-agent: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:38:12.180049+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:25:27.487097+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found"
     ],
     "current_control": {
       "scout_status": "running",
@@ -46,6 +46,6 @@
     "ouroboros_target_file": null,
     "prime_directive": "Reduce factory pressure, inspect recent warnings, and keep mutation disabled."
   },
-  "raw_model_response_preview": "",
+  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"running\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": \"scripts/pipelines/mbrn_horizon_scout.py\",\n  \"prime_directive\": \"Address repeated calculate_roi_score() errors in",
   "control_panel_unchanged": true
 }

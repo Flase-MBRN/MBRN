@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Intelligent Assistant</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        #input-container {
+            margin-bottom: 20px;
+        }
+
+        #question-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #rewrite-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #rewrite-button:hover {
+            background-color: #3e8e41;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .original-question {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .rewritten-query {
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Research Paper Intelligent Assistant</h1>
+
+    <div id="input-container">
+        <input type="text" id="question-input" placeholder="Enter your question">
+        <button id="rewrite-button">Rewrite Query</button>
+    </div>
+
+    <div id="results">
+        <h2>Rewritten Queries:</h2>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rewriteButton = document.getElementById('rewrite-button');
+            const questionInput = document.getElementById('question-input');
+            const resultsDiv = document.getElementById('results');
+
+            rewriteButton.addEventListener('click', () => {
+                const question = questionInput.value;
+                const rewrittenQuery = classifyAndRewrite(question);
+
+                const resultItem = document.createElement('div');
+                resultItem.classList.add('result-item');
+
+                const originalQuestionSpan = document.createElement('span');
+                originalQuestionSpan.classList.add('original-question');
+                originalQuestionSpan.textContent = `Original Question: ${question}`;
+                resultItem.appendChild(originalQuestionSpan);
+
+                const rewrittenQuerySpan = document.createElement('span');
+                rewrittenQuerySpan.classList.add('rewritten-query');
+                rewrittenQuerySpan.textContent = ` Rewritten Query: ${rewrittenQuery}`;
+                resultItem.appendChild(rewrittenQuerySpan);
+
+                resultsDiv.appendChild(resultItem);
+            });
+
+            function classifyAndRewrite(question) {
+                if ("factual" in question.toLowerCase()) {
+                    return `factual:${question}`;
+                } else if ("multihop" in question.toLowerCase()) {
+                    return `multihop:${question}`;
+                } else if ("comparison" in question.toLowerCase()) {
+                    return `comparison:${question}`;
+                } else {
+                    return question;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

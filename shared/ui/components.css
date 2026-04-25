@@ -3078,55 +3078,55 @@ button[class*="btn"] {
 
 .dimension-surface-card {
   display: block;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 24px;
-  text-decoration: none;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px !important;
+  padding: 24px !important;
+  text-decoration: none !important;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
+  margin-bottom: 8px;
 }
 
 .dimension-surface-card.is-link:hover {
-  background: rgba(123, 92, 245, 0.05);
-  border-color: var(--accent);
+  background: rgba(123, 92, 245, 0.15) !important;
+  border-color: #7B5CF5 !important;
   transform: translateY(-4px);
   box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(123, 92, 245, 0.15);
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(123, 92, 245, 0.3) !important;
 }
 
 .dimension-surface-card-title {
   font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 12px;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  margin-bottom: 8px !important;
   display: block;
   letter-spacing: 0.02em;
 }
 
 .dimension-surface-card-copy {
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 20px !important;
   display: block;
-  opacity: 0.8;
 }
 
 .dimension-surface-card-meta {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
+  display: inline-block !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-dim);
-  padding: 4px 10px;
-  border-radius: 4px;
-  border: 1px solid rgba(123, 92, 245, 0.2);
+  color: #7B5CF5 !important;
+  background: rgba(123, 92, 245, 0.2) !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(123, 92, 245, 0.4) !important;
 }
 
 .dimension-surface-section {
