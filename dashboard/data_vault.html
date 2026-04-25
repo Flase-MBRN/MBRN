@@ -50,7 +50,7 @@
   </main>
 
   <script type="module">
-    import { dom } from '../shared/ui/dom/index.js';
+    import { dom } from '../shared/ui/dom_utils.js';
     import { actions } from '../shared/application/actions.js';
     import { renderNavigation, nav } from '../pillars/frontend_os/navigation/index.js';
     import { renderAuth } from '../pillars/frontend_os/ui_states/auth_controller.js';
@@ -62,6 +62,11 @@
     };
 
     async function loadVault() {
+        // Initialize Scroll Reveal (MBRN Standard)
+        if (typeof dom.initScrollReveal === 'function') {
+            dom.initScrollReveal();
+        }
+
         // Render Nav & Auth
         renderNavigation();
         nav.bindNavigation();
