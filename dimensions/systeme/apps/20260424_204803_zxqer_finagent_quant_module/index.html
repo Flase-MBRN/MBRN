@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinAgent Quant Module</title>
+    <title>FinAgent-Quant Module</title>
     <style>
         body {
             font-family: sans-serif;
@@ -36,19 +36,16 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        #ema-results {
+        #ema-values {
             margin-top: 10px;
-        }
-
-        #ema-results p {
-            margin-bottom: 2px;
         }
     </style>
 </head>
 <body>
 
+    <h1>FinAgent-Quant Module</h1>
+
     <div class="module-info">
-        <h1>MBRN Factory-Ready Module</h1>
         <p><strong>Source Alpha:</strong> zxqer/FinAgent-Quant</p>
         <p><strong>Alpha ID:</strong> alpha_1219967364</p>
         <p><strong>ROI Score:</strong> 85.0</p>
@@ -58,14 +55,13 @@
 
     <div class="result-container">
         <h2>EMA Calculation</h2>
-        <p>Enter a list of prices (comma-separated) and the EMA period:</p>
+        <p>Enter a list of prices (comma-separated) and the period for EMA calculation:</p>
         <input type="text" id="prices" placeholder="e.g., 10,20,30,40,50,60,70,80,90,100">
         <input type="number" id="period" placeholder="e.g., 3" value="3">
         <button onclick="calculateEMA()">Calculate EMA</button>
 
-        <div id="ema-results">
-            <p>EMA Results:</p>
-            <pre id="ema-output"></pre>
+        <div id="ema-values">
+            <p>EMA Values: <span id="ema-result"></span></p>
         </div>
     </div>
 
@@ -75,14 +71,14 @@
             const period = parseInt(document.getElementById('period').value);
 
             if (!pricesString || isNaN(period) || period <= 0) {
-                document.getElementById('ema-output').textContent = "Invalid input. Please enter a comma-separated list of prices and a valid period.";
+                document.getElementById('ema-result').textContent = 'Invalid input. Please enter valid numbers.';
                 return;
             }
 
             const prices = pricesString.split(',').map(Number);
 
             if (prices.some(isNaN)) {
-                document.getElementById('ema-output').textContent = "Invalid input. Prices must be numbers.";
+                document.getElementById('ema-result').textContent = 'Invalid input. Prices must be numbers.';
                 return;
             }
 
@@ -101,16 +97,9 @@
             }
 
             const emaValues = calculate_ema(prices, period);
-            document.getElementById('ema-output').textContent = JSON.stringify(emaValues, null, 2);
-        }
-
-        // Self-test (optional - can be removed for production)
-        window.onload = function() {
-            calculateEMA();
+            document.getElementById('ema-result').textContent = JSON.stringify(emaValues);
         }
     </script>
-
-    <p>MODULE_READY: zxqer_FinAgent_Quant</p>
 
 </body>
 </html>
