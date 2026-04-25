@@ -65,6 +65,10 @@ async function renderDimensionSurfaceBody(dimensionId, topicAreaId = null) {
     basePath: getRepoRoot(),
     onNavigate: (surfaceId) => nav.navigateTo(surfaceId)
   });
+  
+  // OPTION C: Auto-activate reveal animations after render
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+  
   renderSurfaceFlowRail('dimension-flow-rail', dimensionId);
   injectLegalBlock('dimension-legal-mount', {
     variant: 'sync',
