@@ -96,6 +96,15 @@
                 return;
             }
 
+            // Load mapping from registry to find URLs
+            const registryRes = await fetch('../shared/data/factory_feed_snapshot.json');
+            const registryData = await registryRes.json();
+            const pathMap = {};
+            registryData.forEach(m => {
+                const slug = m.frontend_file.split('/').slice(-2, -1)[0];
+                pathMap[slug] = m.frontend_file;
+            });
+
             data.forEach(item => {
                 const card = dom.createEl('div', { className: 'vault-card', parent: grid });
                 
@@ -106,6 +115,16 @@
                 
                 const actions = dom.createEl('div', { className: 'vault-actions', parent: card });
                 const openBtn = dom.createEl('button', { className: 'btn-secondary', text: 'ÖFFNEN', parent: actions });
+                
+                const modulePath = pathMap[item.module_id];
+                if (modulePath) {
+                    openBtn.onclick = () => {
+                        window.location.href = `../${modulePath}`;
+                    };
+                } else {
+                    openBtn.disabled = true;
+                    openBtn.title = "Pfad nicht in Registry gefunden.";
+                }
                 
                 const deleteBtn = dom.createEl('button', { 
                     className: 'btn-secondary', 

@@ -83,6 +83,49 @@ const mbrnStorage = {
     },
 
     /**
+     * Automatically load and populate module data from the cloud.
+     */
+    async autoLoad() {
+        const moduleId = this.getModuleId();
+        console.log(`[MBRN Storage] Attempting auto-load for ${moduleId}...`);
+        
+        const data = await this.load(moduleId);
+        if (!data) {
+            console.log('[MBRN Storage] No previous data found in cloud.');
+            return;
+        }
+
+        console.log('[MBRN Storage] Restoring state from cloud...', data);
+        
+        Object.entries(data).forEach(([id, value]) => {
+            const el = document.getElementById(id);
+            if (el) {
+                if (el.type === 'checkbox') {
+                    el.checked = value === true || value === 'true';
+                } else {
+                    el.value = value;
+                }
+                // Trigger change event for reactive tools
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+
+        // Special handling for result-area if it was saved
+        if (data.last_result) {
+            const resultArea = document.getElementById('result-area');
+            if (resultArea) resultArea.textContent = data.last_result;
+        }
+    },
+
+    /**
+     * Helper to get moduleId from URL
+     */
+    getModuleId() {
+        return window.location.pathname.split('/').filter(Boolean).slice(-2, -1)[0] || 'unknown';
+    },
+
+    /**
      * Helper to inject the "SAVE TO MBRN CLOUD" button into a module.
      */
     injectSaveButton() {
@@ -139,5 +182,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Check if we should auto-inject
     if (document.querySelector('.tool-card')) {
         mbrnStorage.injectSaveButton();
+        // Trigger auto-load
+        mbrnStorage.autoLoad();
     }
 });
