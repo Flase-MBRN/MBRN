@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Vault - MBRN Hub</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;">
+
+  <link rel="stylesheet" href="../shared/ui/theme.css">
+  <link rel="stylesheet" href="../shared/ui/components.css">
+  <style>
+    .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; margin-top: 32px; }
+    .vault-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+    .vault-card:hover { border-color: #7B5CF5; transform: translateY(-4px); background: rgba(123, 92, 245, 0.05); }
+    .vault-card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #7B5CF5; opacity: 0; transition: opacity 0.3s; }
+    .vault-card:hover::before { opacity: 1; }
+    .module-name { font-weight: 800; font-size: 1.1rem; color: #fff; margin-bottom: 8px; display: block; }
+    .module-meta { font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 0.1em; }
+    .payload-preview { margin-top: 16px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; color: #AFA; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+    .vault-actions { margin-top: 20px; display: flex; gap: 12px; }
+    .empty-state { text-align: center; padding: 80px 20px; opacity: 0.5; font-style: italic; }
+  </style>
+</head>
+<body class="void-bg bg-grid">
+
+  <aside class="nav-sidebar">
+    <div class="nav-brand">
+      <span class="logo-text">MBRN</span>
+    </div>
+    <nav class="nav-menu" id="nav-menu"></nav>
+    <div class="nav-footer">
+      <div id="nav-auth-container"></div>
+    </div>
+  </aside>
+
+  <div class="bg-glow"></div>
+
+  <main class="main-content">
+    <section class="tool-hero reveal">
+      <div class="hero-eyebrow">Digitaler Safe</div>
+      <h1 class="hero-title">Data Vault</h1>
+      <p class="hero-subtitle">Zentrale Einsicht in alle gespeicherten Modul-Zustände und Agenten-Daten.</p>
+    </section>
+
+    <section class="tool-section reveal">
+      <div id="vault-loader" class="text-accent">Synchronisiere mit MBRN Cloud...</div>
+      <div id="vault-grid" class="vault-grid"></div>
+      <div id="vault-empty" class="empty-state" style="display: none;">Dein Vault ist noch leer. Speichere Daten in einem Elite-Modul, um sie hier zu sehen.</div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { dom } from '../shared/ui/dom/index.js';
+    import { actions } from '../shared/application/actions.js';
+    import { renderNavigation, nav } from '../pillars/frontend_os/navigation/index.js';
+    import { renderAuth } from '../pillars/frontend_os/ui_states/auth_controller.js';
+    
+    // Inject MBRN_CONFIG for direct Supabase access
+    window.MBRN_CONFIG = {
+        supabaseUrl: 'https://wqfijgzlxypqftwwoxxp.supabase.co',
+        supabaseKey: 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO'
+    };
+
+    async function loadVault() {
+        // Render Nav & Auth
+        renderNavigation();
+        nav.bindNavigation();
+        renderAuth.init();
+
+        const grid = document.getElementById('vault-grid');
+        const loader = document.getElementById('vault-loader');
+        const empty = document.getElementById('vault-empty');
+
+        try {
+            // Fetch from user_module_data
+            const url = `${window.MBRN_CONFIG.supabaseUrl}/rest/v1/user_module_data?user_id=eq.erikk2k5@gmail.com&select=*&order=updated_at.desc`;
+            const response = await fetch(url, {
+                headers: {
+                    'apikey': window.MBRN_CONFIG.supabaseKey,
+                    'Authorization': `Bearer ${window.MBRN_CONFIG.supabaseKey}`
+                }
+            });
+
+            if (!response.ok) throw new Error('Vault-Zugriff fehlgeschlagen.');
+
+            const data = await response.json();
+            loader.style.display = 'none';
+
+            if (data.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            data.forEach(item => {
+                const card = dom.createEl('div', { className: 'vault-card', parent: grid });
+                
+                dom.createEl('span', { className: 'module-name', text: item.module_id.replace(/_/g, ' ').toUpperCase(), parent: card });
+                dom.createEl('span', { className: 'module-meta', text: `Zuletzt synchronisiert: ${new Date(item.updated_at).toLocaleString()}`, parent: card });
+                
+                const preview = dom.createEl('div', { className: 'payload-preview', text: JSON.stringify(item.payload, null, 2), parent: card });
+                
+                const actions = dom.createEl('div', { className: 'vault-actions', parent: card });
+                const openBtn = dom.createEl('button', { className: 'btn-secondary', text: 'ÖFFNEN', parent: actions });
+                
+                const deleteBtn = dom.createEl('button', { 
+                    className: 'btn-secondary', 
+                    style: { borderColor: '#dc2626', color: '#dc2626' }, 
+                    text: 'LÖSCHEN', 
+                    parent: actions 
+                });
+
+                deleteBtn.onclick = async () => {
+                    if (!confirm('Eintrag wirklich löschen?')) return;
+                    deleteBtn.disabled = true;
+                    deleteBtn.textContent = 'LÖSCHE...';
+                    
+                    const res = await fetch(`${window.MBRN_CONFIG.supabaseUrl}/rest/v1/user_module_data?user_id=eq.erikk2k5@gmail.com&module_id=eq.${item.module_id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': window.MBRN_CONFIG.supabaseKey,
+                            'Authorization': `Bearer ${window.MBRN_CONFIG.supabaseKey}`
+                        }
+                    });
+
+                    if (res.ok) {
+                        card.style.opacity = '0';
+                        setTimeout(() => card.remove(), 300);
+                    } else {
+                        deleteBtn.disabled = false;
+                        deleteBtn.textContent = 'FEHLER';
+                    }
+                };
+            });
+
+        } catch (err) {
+            loader.textContent = 'Fehler beim Laden des Vaults: ' + err.message;
+            loader.style.color = '#dc2626';
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadVault);
+  </script>
+</body>
+</html>
