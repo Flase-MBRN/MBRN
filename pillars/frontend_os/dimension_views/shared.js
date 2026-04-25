@@ -304,7 +304,11 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
             className: 'btn-secondary text-xs mt-8',
             text: showAll ? 'Zurück zur Elite-Auswahl' : `Alle ${allAppsCount} Module anzeigen (SEO-Modus)`,
             parent: factorySection,
-            style: 'padding: 4px 10px; opacity: 0.7; cursor: pointer;'
+            style: {
+                padding: '4px 10px',
+                opacity: '0.7',
+                cursor: 'pointer'
+            }
         });
         toggleBtn.onclick = () => {
             localStorage.setItem(showAllKey, !showAll);
