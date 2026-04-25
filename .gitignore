@@ -86,3 +86,5 @@ shared/data/nexus_notifications.json
 shared/data/monitor_report.json
 docs/S3_Data/outputs/factory_ready/
 shared/data/mbrn_evolution_plan.json
+
+shared/data/mbrn_factory_memory.json

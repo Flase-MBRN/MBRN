@@ -44,16 +44,4 @@ WORKER_REGISTRY = [
         overlap_policy="skip_if_running",
         tags=("pillar3", "trust-matrix", "sec", "official"),
     ),
-    WorkerDefinition(
-        worker_id="oracle_prognosis_engine",
-        display_name="Oracle Prognosis Engine",
-        module_path="oracle.oracle_core",
-        callable_name="run",
-        interval_minutes=60,
-        timeout_seconds=300,
-        enabled=True,
-        uses_ollama=False,
-        overlap_policy="skip_if_running",
-        tags=("pillar4", "oracle", "official"),
-    ),
 ]

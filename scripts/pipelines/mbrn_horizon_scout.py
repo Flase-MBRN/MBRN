@@ -21,6 +21,7 @@ import re
 import sys
 import time
 import urllib.request
+import urllib.error
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -401,50 +402,118 @@ def create_stop_signal():
     except Exception as exc:
         log("WARN", f"Failed to create kill switch: {exc}")
 
+# =============================================================================
+# GITHUB TOKEN ROTATION
+# =============================================================================
+_github_tokens: List[str] = []
+_current_token_idx: int = 0
+_tokens_initialized: bool = False
+
+def _init_github_tokens():
+    global _github_tokens, _tokens_initialized, _current_token_idx
+    if _tokens_initialized:
+        return
+    tokens_env = os.getenv("GITHUB_TOKENS", "").strip()
+    if tokens_env:
+        _github_tokens = [t.strip() for t in tokens_env.split(",") if t.strip()]
+    else:
+        single = os.getenv("GITHUB_TOKEN", "").strip()
+        if single:
+            _github_tokens = [single]
+    _current_token_idx = 0
+    _tokens_initialized = True
+    if len(_github_tokens) > 1:
+        log("INFO", f"Token Rotation Active: Loaded {len(_github_tokens)} GitHub Tokens.")
+
+def get_current_github_token() -> Optional[str]:
+    _init_github_tokens()
+    if not _github_tokens:
+        return None
+    return _github_tokens[_current_token_idx]
+
+def rotate_github_token() -> bool:
+    global _current_token_idx
+    _init_github_tokens()
+    if len(_github_tokens) <= 1:
+        return False
+    old_idx = _current_token_idx
+    _current_token_idx = (_current_token_idx + 1) % len(_github_tokens)
+    log("WARN", f"GitHub Rate Limit hit! Rotating token (Index {old_idx} -> {_current_token_idx})")
+    return True
 
 def scan_github_trending() -> List[Dict[str, Any]]:
     url = f"{SCOUT_CONFIG['github']['search_url']}"
     from urllib.parse import urlencode
-    headers = {"Accept": "application/vnd.github.v3+json", "User-Agent": "MBRN-Horizon-Scout/1.0"}
-    github_token = os.getenv("GITHUB_TOKEN")
-    if github_token:
-        headers["Authorization"] = f"token {github_token}"
+
     repos_by_id: Dict[int, Dict[str, Any]] = {}
     since_date = (datetime.now(timezone.utc) - timedelta(days=SCOUT_CONFIG["github"]["created_within_days"])).strftime("%Y-%m-%d")
+
     for keyword in SCOUT_CONFIG["github"]["keywords"]:
         query = f"{keyword} created:>{since_date}"
         params = {"q": query, "sort": "updated", "order": "desc", "per_page": SCOUT_CONFIG["github"]["per_page"]}
         full_url = f"{url}?{urlencode(params)}"
-        try:
-            req = urllib.request.Request(full_url, headers=headers, method="GET")
-            with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["github"]["timeout_seconds"]) as response:
-                data = json.loads(response.read().decode("utf-8"))
-            for repo in data.get("items", []):
-                repo_id = repo.get("id")
-                if isinstance(repo_id, int):
-                    repos_by_id[repo_id] = repo
-            log("OK", f"GitHub query complete: query='{query}' items={len(data.get('items', []))}")
-            time.sleep(10.0)  # Rate limit prevention (max 10 req/min for unauthenticated search)
-        except Exception as exc:
-            log("WARN", f"GitHub scan failed query='{query}': {exc}")
-            time.sleep(10.0)  # Rate limit prevention
+
+        max_retries = len(_github_tokens) if _github_tokens else 1
+        for attempt in range(max(1, max_retries)):
+            headers = {"Accept": "application/vnd.github.v3+json", "User-Agent": "MBRN-Horizon-Scout/1.0"}
+            token = get_current_github_token()
+            if token:
+                headers["Authorization"] = f"token {token}"
+
+            try:
+                req = urllib.request.Request(full_url, headers=headers, method="GET")
+                with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["github"]["timeout_seconds"]) as response:
+                    data = json.loads(response.read().decode("utf-8"))
+                for repo in data.get("items", []):
+                    repo_id = repo.get("id")
+                    if isinstance(repo_id, int):
+                        repos_by_id[repo_id] = repo
+                log("OK", f"GitHub query complete: query='{query}' items={len(data.get('items', []))}")
+                time.sleep(10.0)  # Rate limit prevention
+                break  # Success, move to next keyword
+            except urllib.error.HTTPError as exc:
+                if exc.code in (403, 429) and rotate_github_token():
+                    continue # Retry with new token
+                log("WARN", f"GitHub scan failed query='{query}': {exc}")
+                time.sleep(10.0)
+                break
+            except Exception as exc:
+                log("WARN", f"GitHub scan failed query='{query}': {exc}")
+                time.sleep(10.0)
+                break
+
     return sorted(repos_by_id.values(), key=lambda r: str(r.get("updated_at") or ""), reverse=True)
 
 
 def extract_readme(repo_full_name: str) -> Optional[str]:
     api_url = f"https://api.github.com/repos/{repo_full_name}/readme"
-    headers = {"Accept": "application/vnd.github.v3.raw", "User-Agent": "MBRN-Horizon-Scout/1.0"}
-    github_token = os.getenv("GITHUB_TOKEN")
-    if github_token:
-        headers["Authorization"] = f"token {github_token}"
-    try:
-        req = urllib.request.Request(api_url, headers=headers, method="GET")
-        with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["github"]["timeout_seconds"]) as response:
-            content = response.read().decode("utf-8")
-        log("OK", f"README extracted via GitHub API: {len(content)} chars")
-        return content
-    except Exception as exc:
-        log("WARN", f"GitHub README API failed for {repo_full_name}: {exc}")
+
+    max_retries = len(_github_tokens) if _github_tokens else 1
+    for attempt in range(max(1, max_retries)):
+        headers = {"Accept": "application/vnd.github.v3.raw", "User-Agent": "MBRN-Horizon-Scout/1.0"}
+        token = get_current_github_token()
+        if token:
+            headers["Authorization"] = f"token {token}"
+
+        try:
+            req = urllib.request.Request(api_url, headers=headers, method="GET")
+            with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["github"]["timeout_seconds"]) as response:
+                content = response.read().decode("utf-8")
+            log("OK", f"README extracted via GitHub API: {len(content)} chars")
+            return content
+        except urllib.error.HTTPError as exc:
+            if exc.code in (403, 429):
+                if rotate_github_token():
+                    continue # Retry with new token
+                log("WARN", f"GitHub README API failed for {repo_full_name}: {exc}")
+                break # Fallback to Jina
+            log("WARN", f"GitHub README API failed for {repo_full_name}: {exc}")
+            break
+        except Exception as exc:
+            log("WARN", f"GitHub README API failed for {repo_full_name}: {exc}")
+            break
+
+    # Jina Fallback
         repo_url = f"https://github.com/{repo_full_name}"
         jina_url = f"{SCOUT_CONFIG['jina']['prefix']}{repo_url}"
         try:
@@ -624,7 +693,7 @@ def run_infinite_synergy_loop():
             log("OK", f"Iteration #{iteration} complete: {new_alphas} alphas found")
         except Exception as exc:
             log("ERROR", f"Iteration #{iteration} failed: {exc}")
-        
+
         cooldown = SCOUT_CONFIG["infinite_loop"]["cooldown_minutes"] * 60
         log("INFO", f"Cooldown: {cooldown // 60} minutes...")
         for _ in range(cooldown // 10):

@@ -1,7 +1,7 @@
 {
   "version": "v4.0",
   "release": "FOUNDATION",
-  "last_updated": "2026-04-24T21:02:00Z",
+  "last_updated": "2026-04-25T11:10:51Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -265,7 +265,7 @@
       "maturity": "implemented",
       "location": "shared/alphas/",
       "owner_domain": "meta_generator",
-      "note": "Experimental one-click integration vault for Scout-discovered high-ROI alphas. Uses frontend, core_logic, and passive_income categories."
+      "note": "Experimental one-click integration vault for Scout-discovered high-ROI alphas. Uses frontend, core_logic, and autonomy categories."
     },
     "admin_entitlement_cli": {
       "state": "internal",
@@ -295,7 +295,10 @@
       "maturity": "implemented",
       "location": "scripts/pipelines/autonomous_dev_agent.py",
       "owner_domain": "meta_generator",
-      "depends_on": ["split_brain_sandbox", "local_llm"],
+      "depends_on": [
+        "split_brain_sandbox",
+        "local_llm"
+      ],
       "note": "Self-healing autonomous code generation agent. Uses Ollama/deepseek-coder-v2 to generate Python code, validates it in the mbrn-sandbox, and auto-heals on failure by feeding stderr back to the LLM. Max 5 retries per goal."
     },
     "mbrn_nexus_bridge": {
@@ -303,10 +306,15 @@
       "maturity": "implemented",
       "location": "scripts/pipelines/mbrn_nexus_bridge.py",
       "owner_domain": "meta_generator",
-      "depends_on": ["mbrn_horizon_scout", "autonomous_dev_agent", "split_brain_sandbox"],
+      "depends_on": [
+        "mbrn_horizon_scout",
+        "autonomous_dev_agent",
+        "split_brain_sandbox",
+        "mbrn_factory_memory"
+      ],
       "output_path": "docs/S3_Data/outputs/factory_ready/",
       "notification_feed": "shared/data/nexus_notifications.json",
-      "note": "Scout-to-Factory closure loop. Reads scout_alphas.json for ROI > 90 entries, commissions MBRN modules via AutoDevAgent, validates in sandbox, persists factory-ready Python modules, and writes dashboard notifications. Runs alongside the Horizon Scout in infinite mode."
+      "note": "Scout-to-Factory closure loop. Reads scout_alphas.json for ROI >= 80 entries, commissions MBRN modules via AutoDevAgent, validates in sandbox, persists factory-ready Python modules, writes dashboard notifications, and can enrich goals with package-free Factory Memory context. Runs alongside the Horizon Scout in infinite mode."
     },
     "factory_feed_ui": {
       "state": "experimental",
@@ -314,9 +322,29 @@
       "location": "pillars/frontend_os/dashboard/factory_feed.js",
       "css": "shared/ui/factory_feed.css",
       "owner_domain": "frontend_os",
-      "depends_on": ["mbrn_nexus_bridge"],
+      "depends_on": [
+        "mbrn_nexus_bridge"
+      ],
       "data_source": "shared/data/nexus_notifications.json",
       "note": "Dashboard panel that reads nexus_notifications.json and renders the last 5 autonomously manufactured modules as a live feed. Auto-refreshes every 60s. Integrated into dashboard/index.html via factory-feed-root mount point."
+    },
+    "mbrn_factory_memory": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_factory_memory.py",
+      "data_path": "shared/data/mbrn_factory_memory.json",
+      "owner_domain": "meta_generator",
+      "note": "Package-free JSON/TF-IDF Factory Memory. Stores and retrieves prior alpha snippets for Nexus goal context without ChromaDB or external dependencies."
+    },
+    "mbrn_ouroboros_agent": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_ouroboros_agent.py",
+      "owner_domain": "meta_generator",
+      "depends_on": [
+        "local_llm"
+      ],
+      "note": "Internal Level-6 autonomy agent for AST-scoped self-mutation. Uses local LLM proposals, syntax checks, runtime safety gate, backup, and rollback for safe code improvement."
     }
   },
   "execution_tracks": {

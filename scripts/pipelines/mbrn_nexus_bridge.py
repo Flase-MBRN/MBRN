@@ -312,6 +312,20 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
         # Keep first 1500 chars — enough context without hitting token limits
         readme_excerpt = f"\n\nREADME EXCERPT (first 1500 chars):\n{readme[:1500]}"
 
+    memory_context = ""
+    try:
+        from mbrn_factory_memory import retrieve_similar_code
+        query = f"{alpha.category} {alpha.repo_name} {alpha.description} {alpha.rationale}"
+        similar_snippets = retrieve_similar_code(query, top_k=1)
+        if similar_snippets:
+            memory_context = "\n\nMBRN FACTORY MEMORY (Similar past solutions):\n"
+            for snip in similar_snippets:
+                memory_context += f"--- {snip['name']} ---\n{snip['code'][:800]}...\n\n"
+    except ImportError:
+        pass
+    except Exception as e:
+        log.warning(f"Factory Memory unavailable: {e}")
+
     goal = f"""Write a standalone Python module that implements the CORE autonomous logic
 extracted from the following GitHub repository discovery.
 
@@ -320,7 +334,7 @@ URL: {alpha.repo_url}
 DESCRIPTION: {alpha.description}
 SCOUT CATEGORY: {alpha.category}
 SCOUT RATIONALE: {alpha.rationale}
-{readme_excerpt}
+{readme_excerpt}{memory_context}
 
 YOUR TASK:
 1. Identify the most valuable, reusable autonomous function or algorithm in this repository.
@@ -332,6 +346,7 @@ YOUR TASK:
    - The MODULE_READY line MUST be inside a print() call — bare labels are not valid Python
 4. Focus on the CORE LOGIC — not setup, config, or external API calls.
 5. Make it MBRN-ready: minimal dependencies, runs in a CPU-only Docker container.
+6. If MBRN FACTORY MEMORY is provided above, use it as inspiration for coding style and patterns.
 
 SANDBOX CONSTRAINTS (HARD RULES — violations will cause test failure):
 - NO git, curl, wget, pip, or any shell commands (subprocess is FORBIDDEN)
@@ -562,48 +577,14 @@ def run_nexus_sweep() -> List[FactoryResult]:
 NEXUS_COOLDOWN_MINUTES = 5
 
 
-def run_infinite_nexus_loop() -> None:
-    """
-    Run the Nexus in infinite mode:
-      1. Sweep all pending alphas
-      2. Sleep 15 minutes (aligned with Scout cooldown)
-      3. Repeat until STOP_NEXUS kill-switch
-
-    Designed to run alongside the Horizon Scout overnight.
-    The Scout discovers, the Nexus manufactures — concurrently.
-    """
-    log.info("MBRN Nexus Bridge v1.0.0 — INFINITE MODE STARTED")
-    log.info(f"Kill-switch: create '{KILL_SWITCH.name}' file in pipelines/ to stop")
-    iteration = 0
-
+def run_infinite_nexus_loop():
     while True:
-        iteration += 1
-        if KILL_SWITCH.exists():
-            log.info("Kill-switch active. Shutting down Nexus Bridge.")
-            break
-
-        log.info(f"\n{'═'*60}")
-        log.info(f"  NEXUS ITERATION #{iteration}")
-        log.info(f"{'═'*60}")
-
         try:
-            results = run_nexus_sweep()
-            if results:
-                log.info(f"Iteration #{iteration}: {len(results)} new module(s) in factory.")
-                for r in results:
-                    log.info(f"  ✅ {r.module_name} (ROI {r.roi_score}, {r.total_agent_attempts} attempts)")
-            else:
-                log.info(f"Iteration #{iteration}: No new modules. Scout may not have new alphas yet.")
-        except Exception as e:
-            log.error(f"Iteration #{iteration} error: {e}", exc_info=True)
-
-        # Cooldown — check kill-switch every 10 seconds
+            run_nexus_sweep()
+        except Exception as exc:
+            log.error(f"Nexus loop iteration failed: {exc}")
         log.info(f"Cooldown: {NEXUS_COOLDOWN_MINUTES} minutes...")
-        for _ in range(NEXUS_COOLDOWN_MINUTES * 6):
-            if KILL_SWITCH.exists():
-                log.info("Kill-switch detected during cooldown. Stopping.")
-                return
-            time.sleep(10)
+        time.sleep(NEXUS_COOLDOWN_MINUTES * 60)
 
 
 # ---------------------------------------------------------------------------

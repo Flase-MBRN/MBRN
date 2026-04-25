@@ -142,6 +142,15 @@ function Start-HorizonScout {
     return $null
   }
 
+  $existingScouts = Get-CimInstance Win32_Process | Where-Object {
+    $_.Name -match '^pythonw?\.exe$' -and $_.CommandLine -match 'mbrn_horizon_scout\.py'
+  }
+  if ($existingScouts) {
+    $pidList = ($existingScouts | Select-Object -ExpandProperty ProcessId) -join ","
+    Write-DayZeroLog "INFO" "Horizon Scout already running; skipping new start pid=$pidList"
+    return [pscustomobject]@{ Id = ($existingScouts | Select-Object -First 1).ProcessId }
+  }
+
   Write-DayZeroLog "INFO" "Starting Horizon Scout in background mode"
   Write-DayZeroLog "INFO" "Scout log: $scoutLogFile"
 
@@ -204,10 +213,16 @@ function Launch-MissionControl {
   
   if (Test-Path -LiteralPath $dashboardDir) {
     try {
-      Write-DayZeroLog "INFO" "Starting local MBRN-OS server on port $port..."
-      # Use Start-Process with Hidden window to keep it in background. Serve from RepoRoot.
-      Start-Process -FilePath $PythonExe -ArgumentList "-m", "http.server", $port, "--directory", $RepoRoot -WindowStyle Hidden
-      Start-Sleep -Seconds 2 # Give it a moment to bind
+      $existingListeners = Get-NetTCPConnection -LocalPort ([int]$port) -State Listen -ErrorAction SilentlyContinue
+      if ($existingListeners) {
+        $listenerPids = ($existingListeners | Select-Object -ExpandProperty OwningProcess -Unique) -join ","
+        Write-DayZeroLog "INFO" "Local MBRN-OS server already listening on port $port; skipping server start pid=$listenerPids"
+      } else {
+        Write-DayZeroLog "INFO" "Starting local MBRN-OS server on port $port..."
+        # Use Start-Process with Hidden window to keep it in background. Serve from RepoRoot.
+        Start-Process -FilePath $PythonExe -ArgumentList "-m", "http.server", $port, "--directory", $RepoRoot -WindowStyle Hidden
+        Start-Sleep -Seconds 2 # Give it a moment to bind
+      }
       
       $dashboardUrl = "http://localhost:$port/dashboard/index.html"
       Start-Process $dashboardUrl

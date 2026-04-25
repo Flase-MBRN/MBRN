@@ -6,7 +6,7 @@ MBRN Ouroboros Agent v2 — Level-6 Autonomy (Chirurgisch)
 Upgrade v2:
   - Model: deepseek-r1:14b (Reasoning Engine — denkt BEVOR es schreibt)
   - Methode: AST-Chirurgie statt Full-Rewrite
-    → LLM liefert nur {"target_function": "...", "new_code": "..."} 
+    → LLM liefert nur {"target_function": "...", "new_code": "..."}
     → System tauscht NUR diese eine Funktion aus (nie main(), nie die ganze Datei)
   - Safety Gate: compile() auf die GESAMTE Datei nach dem Swap
   - Backup: .bak_Datum vor jedem Swap
@@ -18,6 +18,7 @@ import ast
 import json
 import os
 import shutil
+import subprocess
 import sys
 import textwrap
 import time
@@ -122,6 +123,35 @@ def check_syntax(code_string: str) -> bool:
         return True
     except SyntaxError as e:
         log("ERROR", f"Syntax Gate FAILED: {e}")
+        return False
+
+
+def check_runtime_safety(script_path: Path) -> bool:
+    """
+    Testet das Script auf Laufzeit-Abstürze (Dead Man's Switch).
+    Startet das Script für 5 Sekunden. Wenn es in dieser Zeit mit einem Fehler abstürzt,
+    wird False zurückgegeben. Überlebt es (Timeout) oder schließt erfolgreich (0), True.
+    """
+    try:
+        log("INFO", f"Running Runtime Safety Gate for 5s: {script_path.name}...")
+        process = subprocess.run(
+            [sys.executable, str(script_path)],
+            timeout=5,
+            capture_output=True,
+            text=True
+        )
+        if process.returncode != 0:
+            log("ERROR", f"Runtime Crash detected (Code {process.returncode}):\n{process.stderr[-500:]}")
+            return False
+
+        log("OK", "Script completed execution successfully within 5s.")
+        return True
+
+    except subprocess.TimeoutExpired:
+        log("OK", "Script survived 5s Execution Gate without crashing.")
+        return True
+    except Exception as e:
+        log("ERROR", f"Failed to execute Runtime Gate: {e}")
         return False
 
 
@@ -260,8 +290,16 @@ def run_ouroboros_mutation() -> None:
     shutil.copy2(target_path, backup_path)
     log("INFO", f"Backup created: {backup_path.name}")
 
-    # --- Write ---
+    # --- Write & Runtime Gate (Dead Man's Switch) ---
     target_path.write_text(mutated_source, encoding="utf-8")
+
+    log("INFO", "Running Runtime Gate (Dead Man's Switch)...")
+    if not check_runtime_safety(target_path):
+        log("ERROR", "Runtime Gate FAILED! Lethal Failure. Rolling back to backup...")
+        shutil.copy2(backup_path, target_path)
+        log("OK", f"Rollback complete. Original {target_path.name} restored.")
+        return
+
     log("OK", f"OUROBOROS SUCCESS: '{target_func}' in {target_path.name} has been surgically improved!")
 
 
