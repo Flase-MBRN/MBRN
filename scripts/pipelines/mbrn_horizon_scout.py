@@ -45,6 +45,8 @@ if str(PIPELINES_DIR) not in sys.path:
 from pipeline_utils import load_pipeline_env, log as pipeline_log, save_json_atomic
 
 DEFAULT_SCOUT_OLLAMA_MODEL = "gemma3:12b"  # 128K context — ideal for README analysis
+FACTORY_CONTROL_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control.json"
+SCOUT_PAUSE_SECONDS = 600
 
 
 def log(level: str, message: object) -> None:
@@ -68,6 +70,32 @@ def log(level: str, message: object) -> None:
     else:
         text = text.encode("ascii", errors="replace").decode("ascii")
     pipeline_log(level, text)
+
+
+def load_factory_control() -> Dict[str, Any]:
+    """Read package-free factory control state with safe defaults."""
+    default = {
+        "scout_status": "running",
+        "nexus_status": "running",
+        "nexus_roi_threshold": 80.0,
+        "ouroboros_target_file": None,
+        "prime_directive": "Maximize factory output and clear backlog.",
+    }
+    try:
+        if not FACTORY_CONTROL_PATH.exists():
+            return default
+        with open(FACTORY_CONTROL_PATH, "r", encoding="utf-8") as f:
+            control = json.load(f)
+        if not isinstance(control, dict):
+            return default
+        merged = dict(default)
+        merged.update(control)
+        if merged.get("scout_status") not in {"running", "paused"}:
+            merged["scout_status"] = "running"
+        return merged
+    except Exception as exc:
+        log("WARN", f"Factory control unavailable; using defaults: {exc}")
+        return default
 
 
 # =============================================================================
@@ -686,6 +714,11 @@ def run_infinite_synergy_loop():
         iteration += 1
         if should_stop_scout():
             break
+        control = load_factory_control()
+        if control.get("scout_status") == "paused":
+            log("WARN", f"Factory control paused Scout. Sleeping {SCOUT_PAUSE_SECONDS // 60} minutes...")
+            time.sleep(SCOUT_PAUSE_SECONDS)
+            continue
         log("INFO", f"ITERATION #{iteration} starting...")
         try:
             context = load_kanon_context()

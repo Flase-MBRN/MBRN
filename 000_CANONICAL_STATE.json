@@ -1,7 +1,7 @@
 {
   "version": "v4.0",
   "release": "FOUNDATION",
-  "last_updated": "2026-04-25T11:10:51Z",
+  "last_updated": "2026-04-25T11:31:15Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -258,7 +258,7 @@
       "maturity": "implemented",
       "location": "scripts/pipelines/mbrn_horizon_scout.py",
       "owner_domain": "oracle",
-      "note": "Experimental R&D discovery scout. Searches GitHub, evaluates local LLM synergy, persists evolution-plan candidates, and writes high-ROI integration guides into the Alpha Vault."
+      "note": "Experimental R&D discovery scout. Searches GitHub, evaluates local LLM synergy, persists evolution-plan candidates, writes high-ROI integration guides into the Alpha Vault, and obeys the package-free Factory Control pause state."
     },
     "alpha_vault": {
       "state": "experimental",
@@ -314,7 +314,7 @@
       ],
       "output_path": "docs/S3_Data/outputs/factory_ready/",
       "notification_feed": "shared/data/nexus_notifications.json",
-      "note": "Scout-to-Factory closure loop. Reads scout_alphas.json for ROI >= 80 entries, commissions MBRN modules via AutoDevAgent, validates in sandbox, persists factory-ready Python modules, writes dashboard notifications, and can enrich goals with package-free Factory Memory context. Runs alongside the Horizon Scout in infinite mode."
+      "note": "Scout-to-Factory closure loop. Reads scout_alphas.json for ROI >= 80 entries by default, can live-read nexus_roi_threshold and pause state from Factory Control, commissions MBRN modules via AutoDevAgent, validates in sandbox, persists factory-ready Python modules, writes dashboard notifications, and can enrich goals with package-free Factory Memory context."
     },
     "factory_feed_ui": {
       "state": "experimental",
@@ -334,7 +334,7 @@
       "location": "scripts/pipelines/mbrn_factory_memory.py",
       "data_path": "shared/data/mbrn_factory_memory.json",
       "owner_domain": "meta_generator",
-      "note": "Package-free JSON/TF-IDF Factory Memory. Stores and retrieves prior alpha snippets for Nexus goal context without ChromaDB or external dependencies."
+      "note": "Package-free JSON/TF-IDF Factory Memory. Stores and retrieves prior alpha snippets for Nexus goal context without ChromaDB or external dependencies. Provides sensor input for Prime Director dry-run control decisions."
     },
     "mbrn_ouroboros_agent": {
       "state": "internal",
@@ -344,7 +344,23 @@
       "depends_on": [
         "local_llm"
       ],
-      "note": "Internal Level-6 autonomy agent for AST-scoped self-mutation. Uses local LLM proposals, syntax checks, runtime safety gate, backup, and rollback for safe code improvement."
+      "note": "Internal Level-6 autonomy agent for AST-scoped self-mutation. Uses local LLM proposals, syntax checks, runtime safety gate, backup, and rollback for safe code improvement. Prime Director may propose only whitelisted target files; Ouroboros remains the mutation gatekeeper."
+    },
+    "mbrn_prime_director": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_prime_director.py",
+      "owner_domain": "meta_generator",
+      "depends_on": [
+        "local_llm",
+        "mbrn_horizon_scout",
+        "mbrn_nexus_bridge",
+        "mbrn_factory_memory",
+        "mbrn_ouroboros_agent"
+      ],
+      "control_path": "shared/data/mbrn_factory_control.json",
+      "report_path": "shared/data/mbrn_prime_director_report.json",
+      "note": "Mini-Level 5 dry-run controller. Observes factory backlog, modules, memory, and logs; asks local deepseek-r1:14b for a validated control proposal; writes only a dry-run report, not live control."
     }
   },
   "execution_tracks": {

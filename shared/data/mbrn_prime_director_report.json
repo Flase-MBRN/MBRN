@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-04-25T11:34:36+00:00",
+  "dry_run": true,
+  "model": "deepseek-r1:14b",
+  "repair_model": "deepseek-coder-v2",
+  "model_success": true,
+  "repair_used": true,
+  "fallback_used": true,
+  "validation_status": "repaired",
+  "validation_warnings": [
+    "invalid_ouroboros_target_file",
+    "invalid_prime_directive"
+  ],
+  "sensor_snapshot": {
+    "generated_at": "2026-04-25T11:33:20+00:00",
+    "discoveries": 102,
+    "processed_alphas": 38,
+    "backlog_alphas": 64,
+    "seen_repo_ids": 374,
+    "factory_ready_modules": 90,
+    "factory_memory_docs": 15,
+    "nexus_notifications": 90,
+    "recent_findings": [
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:09:43.153429+00:00] [WARN] GitHub scan failed query='crewai-tools created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:09:12.134022+00:00] [WARN] GitHub scan failed query='llm-code-execution-loop created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:02:46.961850+00:00] [WARN] GitHub scan failed query='resume-parser-llm created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:02:36.905815+00:00] [WARN] GitHub scan failed query='automated-trading-agent created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:02:26.829188+00:00] [WARN] GitHub scan failed query='self-improving-prompt created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:01:44.382865+00:00] [WARN] GitHub scan failed query='pydantic-ai created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:01:34.330068+00:00] [WARN] GitHub scan failed query='smolagents created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:01:24.274576+00:00] [WARN] GitHub scan failed query='langgraph-agent created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:00:42.529186+00:00] [WARN] GitHub scan failed query='llm-code-execution-loop created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T10:54:28.004731+00:00] [WARN] GitHub scan failed query='automated-trading-agent created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T10:54:17.962838+00:00] [WARN] GitHub scan failed query='self-improving-prompt created:>2026-04-18': HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_100037.log: [2026-04-25T10:54:07.918252+00:00] [WARN] GitHub scan failed query='ai-coding-assistant-local created:>2026-04-18': HTTP Error 403: rate limit exceeded"
+    ],
+    "current_control": {
+      "scout_status": "running",
+      "nexus_status": "running",
+      "nexus_roi_threshold": 80.0,
+      "ouroboros_target_file": null,
+      "prime_directive": "Maximize factory output and clear backlog."
+    }
+  },
+  "proposed_control": {
+    "scout_status": "paused",
+    "nexus_status": "running",
+    "nexus_roi_threshold": 80.0,
+    "ouroboros_target_file": null,
+    "prime_directive": "Maximize factory output and clear backlog."
+  },
+  "raw_model_response_preview": "{\n  \"scout_status\": \"paused\",\n  \"nexus_status\": \"running\",\n  \"n",
+  "control_panel_unchanged": true
+}

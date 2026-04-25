@@ -81,6 +81,7 @@ log = logging.getLogger("mbrn_nexus_bridge")
 # Configuration
 # ---------------------------------------------------------------------------
 ROI_THRESHOLD = 80.0          # Only alphas above this enter the factory
+ROI_THRESHOLD_OVERRIDE: Optional[float] = None
 MAX_AGENT_RETRIES = 5         # Self-heal retries per alpha
 GITHUB_README_TIMEOUT = 20    # seconds
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -88,9 +89,47 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 ALPHAS_PATH        = _PROJECT_ROOT / "shared" / "data" / "scout_alphas.json"
 FACTORY_OUTPUT_DIR = _PROJECT_ROOT / "docs" / "S3_Data" / "outputs" / "factory_ready"
 NOTIFICATIONS_PATH = _PROJECT_ROOT / "shared" / "data" / "nexus_notifications.json"
+FACTORY_CONTROL_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control.json"
 
 # Kill-switch file — create STOP_NEXUS in pipelines/ to halt the bridge loop
 KILL_SWITCH = _PIPELINES_DIR / "STOP_NEXUS"
+
+
+def _clamp_roi_threshold(value: Any, default: float = ROI_THRESHOLD) -> float:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return default
+    return max(0.0, min(100.0, parsed))
+
+
+def load_factory_control() -> Dict[str, Any]:
+    """Read factory control state with safe defaults for Nexus."""
+    default = {
+        "scout_status": "running",
+        "nexus_status": "running",
+        "nexus_roi_threshold": ROI_THRESHOLD,
+        "ouroboros_target_file": None,
+        "prime_directive": "Maximize factory output and clear backlog.",
+    }
+    try:
+        if not FACTORY_CONTROL_PATH.exists():
+            return default
+        with open(FACTORY_CONTROL_PATH, "r", encoding="utf-8") as f:
+            control = json.load(f)
+        if not isinstance(control, dict):
+            return default
+        merged = dict(default)
+        merged.update(control)
+        if merged.get("nexus_status") not in {"running", "paused"}:
+            merged["nexus_status"] = "running"
+        if merged.get("scout_status") not in {"running", "paused"}:
+            merged["scout_status"] = "running"
+        merged["nexus_roi_threshold"] = _clamp_roi_threshold(merged.get("nexus_roi_threshold"))
+        return merged
+    except Exception as exc:
+        log.warning(f"Factory control unavailable; using defaults: {exc}")
+        return default
 
 
 # ---------------------------------------------------------------------------
@@ -218,6 +257,17 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
 
     log.info(f"Found {len(candidates)} unprocessed alpha(s) with ROI > {ROI_THRESHOLD}")
     return candidates
+
+
+def apply_control_to_nexus() -> Dict[str, Any]:
+    """Apply live Nexus settings from the factory control panel."""
+    global ROI_THRESHOLD
+    control = load_factory_control()
+    if ROI_THRESHOLD_OVERRIDE is not None:
+        ROI_THRESHOLD = _clamp_roi_threshold(ROI_THRESHOLD_OVERRIDE)
+    else:
+        ROI_THRESHOLD = _clamp_roi_threshold(control.get("nexus_roi_threshold"))
+    return control
 
 
 def mark_alpha_processed(alpha_id: str) -> None:
@@ -540,6 +590,11 @@ def run_nexus_sweep() -> List[FactoryResult]:
     Scan all pending high-ROI alphas and run the factory for each.
     Returns a list of FactoryResult for successfully manufactured modules.
     """
+    control = apply_control_to_nexus()
+    if control.get("nexus_status") == "paused":
+        log.info("Factory control paused Nexus. Sweep skipped.")
+        return []
+
     log.info("")
     log.info("╔══════════════════════════════════════════════════════════════════╗")
     log.info("║           MBRN NEXUS BRIDGE — SCOUT-TO-FACTORY SWEEP            ║")
@@ -580,7 +635,11 @@ NEXUS_COOLDOWN_MINUTES = 5
 def run_infinite_nexus_loop():
     while True:
         try:
-            run_nexus_sweep()
+            control = apply_control_to_nexus()
+            if control.get("nexus_status") == "paused":
+                log.info("Factory control paused Nexus. Sweep skipped.")
+            else:
+                run_nexus_sweep()
         except Exception as exc:
             log.error(f"Nexus loop iteration failed: {exc}")
         log.info(f"Cooldown: {NEXUS_COOLDOWN_MINUTES} minutes...")
@@ -612,6 +671,7 @@ if __name__ == "__main__":
 
     # Apply CLI overrides
     if args.roi_threshold != ROI_THRESHOLD:
+        ROI_THRESHOLD_OVERRIDE = args.roi_threshold
         ROI_THRESHOLD = args.roi_threshold
         log.info(f"ROI threshold override: {ROI_THRESHOLD}")
 

@@ -1,0 +1,7 @@
+{
+  "scout_status": "running",
+  "nexus_status": "running",
+  "nexus_roi_threshold": 80.0,
+  "ouroboros_target_file": null,
+  "prime_directive": "Maximize factory output and clear backlog."
+}
