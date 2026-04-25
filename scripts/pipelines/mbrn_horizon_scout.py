@@ -79,18 +79,8 @@ def log(level: str, message: object) -> None:
         f.write(msg + "\n")
 
 def show_v5_banner():
-    # Attempt to reconfigure stdout for UTF-8 on Windows
-    try:
-        if hasattr(sys.stdout, "reconfigure"):
-            sys.stdout.reconfigure(encoding='utf-8')
-    except Exception:
-        pass
-        
     print(f"{ANSI['violet']}")
-    try:
-        print("  🛰️  MBRN HORIZON SCOUT v2.2")
-    except UnicodeEncodeError:
-        print("  [SCOUT] MBRN HORIZON SCOUT v2.2")
+    print("  [o] MBRN HORIZON SCOUT v2.2")
     print("  >> SCANNING MULTIDIMENSIONAL ALPHA VAULT")
     print(f"  {ANSI['silver']}----------------------------------------{ANSI['reset']}")
 

@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-04-25T22:49:29+00:00",
+  "generated_at": "2026-04-25T23:04:46+00:00",
   "dry_run": false,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
   "model_success": true,
   "repair_used": false,
-  "fallback_used": false,
+  "fallback_used": true,
   "validation_status": "ok",
   "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T22:48:44+00:00",
+    "generated_at": "2026-04-25T23:03:57+00:00",
     "discoveries": 0,
     "processed_alphas": 0,
     "backlog_alphas": 0,
@@ -18,6 +18,7 @@
     "factory_memory_docs": 0,
     "nexus_notifications": 200,
     "recent_findings": [
+      "janitor.log: [2026-04-26 01:02:38] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 00:46:46] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 00:05:43] [JANITOR] Hygiene pass complete. Purged: 2, Errors: 0",
       "janitor.log: [2026-04-26 00:03:36] [JANITOR] Hygiene pass complete. Purged: 3, Errors: 0",
@@ -28,25 +29,25 @@
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:19:59.226889+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:19:06.276427+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:07:45.203008+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:45:50.805902+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:45:14.317612+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'"
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:45:50.805902+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'"
     ],
     "current_control": {
-      "scout_status": "running",
+      "scout_status": "paused",
       "nexus_status": "running",
       "nexus_roi_threshold": 80.0,
       "ouroboros_target_file": null,
-      "prime_directive": "Maximize factory output and clear backlog.",
+      "prime_directive": "Stabilize operations and minimize errors.",
       "factory_paused": false
     }
   },
   "proposed_control": {
-    "scout_status": "paused",
+    "scout_status": "running",
     "nexus_status": "running",
-    "nexus_roi_threshold": 80.0,
+    "nexus_roi_threshold": 87.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Stabilize operations and minimize errors."
+    "prime_directive": "Reduce factory pressure, inspect recent warnings, and keep mutation disabled.",
+    "factory_paused": false
   },
-  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"paused\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": null,\n  \"prime_directive\": \"Stabilize operations and minimize errors.\"\n}\n```",
+  "raw_model_response_preview": "",
   "control_panel_unchanged": false
 }
