@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS factory_modules (
     frontend_file TEXT,
     status TEXT DEFAULT 'ready',
     quality_score REAL DEFAULT 0.0,
+    is_elite INTEGER DEFAULT 0,
+    curation_status TEXT DEFAULT 'auto',
     raw_data TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))

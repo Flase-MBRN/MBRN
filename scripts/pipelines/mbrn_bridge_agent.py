@@ -109,8 +109,22 @@ STRENGE REGELN:
 
 
 def slugify(value: str) -> str:
+    # Remove common technical suffixes
+    value = re.sub(r"_module$", "", value, flags=re.IGNORECASE)
     slug = re.sub(r"[^A-Za-z0-9_-]+", "_", value.strip()).strip("_").lower()
     return slug[:80] or "factory_module"
+
+
+def extract_product_name(html: str) -> str:
+    """Extracts a human-readable title from the <h1> tag."""
+    match = re.search(r"<h1>(.*?)</h1>", html, re.IGNORECASE)
+    if match:
+        title = match.group(1).strip()
+        # Handle 20260425_123456 User_Name Tool_Name
+        if re.match(r"^\d{8}[\s_]\d{6}", title):
+            title = re.sub(r"^\d{8}[\s_]\d{6}[\s_]+[a-zA-Z0-9]+[\s_]+", "", title)
+        return title.replace("_", " ").title()
+    return "Autonomous Tool"
 
 
 def extract_logic_description(py_file: Path) -> str:
@@ -259,12 +273,20 @@ def validate_html(html: str) -> None:
 def deploy_to_dimension(html: str, dimension: str, name: str) -> Path:
     if dimension not in CANONICAL_DIMENSIONS:
         dimension = "systeme"
-    target_dir = DIMENSIONS_DIR / dimension / "apps" / slugify(name)
+    
+    product_name = extract_product_name(html)
+    slug = slugify(product_name)
+    
+    target_dir = DIMENSIONS_DIR / dimension / "apps" / slug
     target_dir.mkdir(parents=True, exist_ok=True)
     target_file = target_dir / "index.html"
+    
     html = strip_markdown_fences(html)
     validate_html(html)
     target_file.write_text(html, encoding="utf-8")
+    
+    # Optional: If the name was a serial number and different from slug, 
+    # we could log it for cleanup.
     return target_file
 
 

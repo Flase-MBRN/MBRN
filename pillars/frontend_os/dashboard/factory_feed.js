@@ -8,16 +8,19 @@ const LEGACY_NOTIFICATIONS_PATH = '../../shared/data/nexus_notifications.json';
 const FACTORY_FEED_EDGE_URL = window.MBRN_FACTORY_FEED_URL || '';
 const FACTORY_CONTROL_EDGE_URL = window.MBRN_FACTORY_CONTROL_URL || '';
 const FACTORY_CONTROL_ADMIN_TOKEN = window.MBRN_FACTORY_ADMIN_TOKEN || '';
-const MAX_ENTRIES = 5;
+const MAX_ENTRIES = 8;
+let showOnlyElite = true; // Default to Elite tools for the Architect
 
 function normalizeFeedItems(items) {
   if (!Array.isArray(items)) return [];
   return items.map((item) => ({
     ...item,
     id: item.id || item.name || item.module_name || item.module_file,
-    repo_name: item.repo_name || item.name || item.module_name || 'factory-module',
-    module_file: item.module_file || item.frontend_file || item.module_name || item.name || 'index.html',
-    roi_score: typeof item.roi_score === 'number' ? item.roi_score : Number(item.quality_score || 0),
+    repo_name: item.name || item.module_name || item.repo_name || 'factory-module',
+    module_file: item.frontend_file || item.module_file || 'index.html',
+    roi_score: typeof item.quality_score === 'number' ? item.quality_score * 100 : Number(item.roi_score || 0),
+    is_elite: Boolean(item.is_elite),
+    curation_status: item.curation_status || 'auto',
     agent_attempts: item.agent_attempts || 1,
     self_heals: item.self_heals || 0,
     read: Boolean(item.read),
@@ -102,25 +105,29 @@ function renderNotificationCard(n) {
   const attempts = typeof n.agent_attempts === 'number' ? n.agent_attempts : 1;
   const repoName = n.repo_name || '-';
   const moduleFile = n.module_file || '-';
-  const healBadge = heals > 0
-    ? `<span class="factory-badge factory-badge--heal" title="${heals} Self-Heal(s) applied">${heals}x Heal</span>`
-    : `<span class="factory-badge factory-badge--clean">Clean</span>`;
+  const eliteBadge = n.is_elite 
+    ? `<span class="factory-badge factory-badge--elite">Elite</span>`
+    : `<span class="factory-badge factory-badge--standard">${n.curation_status}</span>`;
+
+  const linkUrl = n.module_file ? `/${n.module_file}` : '#';
 
   return `
-    <div class="factory-card" data-id="${n.id || ''}">
+    <div class="factory-card ${n.is_elite ? 'factory-card--elite' : ''}" data-id="${n.id || ''}">
       <div class="factory-card__header">
-        <span class="factory-card__icon">Factory</span>
+        <span class="factory-card__icon">${n.is_elite ? '💎' : '⚙️'}</span>
         <span class="factory-card__repo">${repoName}</span>
         <span class="factory-card__time">${time}</span>
       </div>
       <div class="factory-card__meta">
-        <span class="factory-roi ${roiClass}">ROI ${roi}</span>
+        <span class="factory-roi ${roiClass}">Score ${roi}%</span>
+        ${eliteBadge}
         ${healBadge}
-        <span class="factory-badge factory-badge--attempts">${attempts} Versuch${attempts !== 1 ? 'e' : ''}</span>
       </div>
       <div class="factory-card__file" title="${moduleFile}">
-        <span class="factory-file-icon">File</span>
-        <code class="factory-filename">${moduleFile}</code>
+        <a href="${linkUrl}" target="_blank" class="factory-link">
+          <span class="factory-file-icon">Open</span>
+          <code class="factory-filename">${moduleFile.split('/').pop()}</code>
+        </a>
       </div>
     </div>
   `.trim();
@@ -137,9 +144,15 @@ function renderEmptyState() {
 }
 
 function buildFactoryFeedHTML(notifications, controlState = null) {
-  const entries = notifications.slice(0, MAX_ENTRIES);
+  const filtered = showOnlyElite 
+    ? notifications.filter(n => n.is_elite)
+    : notifications.filter(n => n.curation_status !== 'trash');
+    
+  const entries = filtered.slice(0, MAX_ENTRIES);
   const unread = notifications.filter((n) => !n.read).length;
   const totalCount = notifications.length;
+  const eliteCount = notifications.filter(n => n.is_elite).length;
+  
   const unreadBadge = unread > 0
     ? `<span class="factory-unread-badge" id="factory-unread-count">${unread}</span>`
     : '';
@@ -164,12 +177,20 @@ function buildFactoryFeedHTML(notifications, controlState = null) {
         <div class="factory-feed-stats">
           <span class="factory-stat">
             <span class="factory-stat__value" id="factory-total-count">${totalCount}</span>
-            <span class="factory-stat__label">Module heute</span>
+            <span class="factory-stat__label">Module</span>
           </span>
           <span class="factory-stat">
-            <span class="factory-stat__value" id="factory-unread-stat">${unread}</span>
-            <span class="factory-stat__label">Neu</span>
+            <span class="factory-stat__value" id="factory-elite-stat">${eliteCount}</span>
+            <span class="factory-stat__label">Elite</span>
           </span>
+          <label class="factory-stat">
+            <input
+              type="checkbox"
+              ${showOnlyElite ? 'checked' : ''}
+              onchange="window.__toggleEliteFilter && window.__toggleEliteFilter(this.checked)"
+            >
+            <span class="factory-stat__label">Nur Elite</span>
+          </label>
           <label class="factory-stat" title="Remote Kill-Switch">
             <input
               id="factory-paused-toggle"
@@ -246,6 +267,11 @@ export async function renderFactoryFeed(containerId = 'factory-feed-root') {
   };
 
   window.__refreshFactoryFeed = () => {
+    renderFactoryFeed(containerId);
+  };
+
+  window.__toggleEliteFilter = (elite) => {
+    showOnlyElite = elite;
     renderFactoryFeed(containerId);
   };
 

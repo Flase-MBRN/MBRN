@@ -339,7 +339,21 @@ def list_notifications(limit: int = 20) -> List[Dict[str, Any]]:
 def export_factory_feed_snapshot(path: Optional[Path] = None, limit: int = 20) -> Path:
     snapshot_path = path or (PROJECT_ROOT / "shared" / "data" / "factory_feed_snapshot.json")
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # We now export from factory_modules instead of notifications for better curation support
+    with get_db() as conn:
+        rows = conn.execute(
+            """
+            SELECT id, name, dimension, frontend_file, quality_score, is_elite, curation_status, created_at
+            FROM factory_modules
+            WHERE status = 'deployed'
+            ORDER BY created_at DESC LIMIT ?
+            """,
+            (int(limit),),
+        ).fetchall()
+    
+    modules = [dict(row) for row in rows]
     tmp = snapshot_path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(list_notifications(limit), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.write_text(json.dumps(modules, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     tmp.replace(snapshot_path)
     return snapshot_path

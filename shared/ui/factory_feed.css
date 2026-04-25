@@ -131,6 +131,15 @@
   transform: translateY(-1px);
 }
 
+.factory-card--elite {
+  border-color: rgba(16, 185, 129, 0.2);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(10, 10, 20, 0.8) 100%);
+}
+
+.factory-card--elite:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
 .factory-card__header {
   display: flex;
   align-items: center;
@@ -196,6 +205,19 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.factory-badge--elite {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.factory-badge--standard {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .factory-badge {
   font-size: 11px;
   font-weight: 600;
@@ -240,6 +262,20 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.factory-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--accent);
+  transition: opacity 0.2s;
+}
+
+.factory-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 /* ── Empty state ─────────────────────────────────────────────────────────── */
