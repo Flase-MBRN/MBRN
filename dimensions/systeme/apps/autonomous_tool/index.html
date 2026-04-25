@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Tool | MBRN Hub</title>
+    <script>
+        window.MBRN_CONFIG = {
+            supabaseUrl: 'https://wqfijgzlxypqftwwoxxp.supabase.co',
+            supabaseKey: 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO'
+        };
+    </script>
+    <style>
+        body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        h1 { font-size: 22px; font-weight: 800; color: #7B5CF5; margin-bottom: 24px; text-align: center; letter-spacing: -0.02em; }
+        label { display: block; font-size: 11px; font-weight: 700; color: #999; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+        input, textarea, select { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #7B5CF5; outline: none; background: #1F1F2E; }
+        button { background-color: #7B5CF5; color: white; border: none; padding: 14px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+        button:hover { background-color: #8C72F7; transform: translateY(-1px); }
+        #result-area { margin-top: 24px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(123, 92, 245, 0.2); font-family: monospace; font-size: 13px; color: #AFA; white-space: pre-wrap; word-break: break-all; }
+        .meta-footer { margin-top: 32px; text-align: center; font-size: 10px; color: #444; letter-spacing: 0.1em; text-transform: uppercase; }
+    </style>
+    <script src="../../../../shared/js/mbrn_storage.js"></script>
+</head>
+<body>
+    <div class="tool-card">
+        <h1>Autonomous Tool</h1>
+        <div id="input-area">
+  <label for="location">Location:</label>
+  <input type="text" id="location" value="Japan"><br><br>
+
+  <label for="trip_duration">Trip Duration:</label>
+  <input type="number" id="trip_duration" value="7"><br><br>
+
+  <label for="interests">Interests (comma-separated):</label>
+  <input type="text" id="interests" value="culture,nature"><br><br>
+
+  <button onclick="recommend()">Recommend</button>
+</div>
+
+<div id="result-area"></div>
+
+<script>
+function recommend() {
+  const location = document.getElementById('location').value;
+  const tripDuration = parseInt(document.getElementById('trip_duration').value);
+  const interestsString = document.getElementById('interests').value;
+  const interests = interestsString.split(',').map(interest => interest.trim());
+
+  const sampleDestinations = [
+    {"name": "Kyoto", "country": "Japan", "type": "culture"},
+    {"name": "Hiroshima", "country": "Japan", "type": "history"},
+    {"name": "Mount Fuji", "country": "Japan", "type": "nature"}
+  ];
+
+  let recommendedDestinations = [];
+
+  for (let i = 0; i < sampleDestinations.length; i++) {
+    const destination = sampleDestinations[i];
+    if (destination.country === location) {
+      let match = false;
+      for (let j = 0; j < interests.length; j++) {
+        if (destination.type === interests[j]) {
+          match = true;
+          break;
+        }
+      }
+      if (match) {
+        recommendedDestinations.push(destination);
+      }
+    }
+    if (recommendedDestinations.length >= 2) {
+      break;
+    }
+  }
+
+  const resultArea = document.getElementById('result-area');
+  resultArea.innerHTML = `<pre>${JSON.stringify(recommendedDestinations, null, 2)}</pre>`;
+}
+
+// Additional functionality:  Filter destinations based on user preferences.
+// Using Array.filter and Array.map for more complex filtering and transformation.
+
+function filterDestinations(userPreferences, destinations) {
+    const location = userPreferences.location;
+    const tripDuration = userPreferences.trip_duration;
+    const interests = userPreferences.interests;
+
+    const filteredDestinations = destinations.filter(destination => {
+        return destination.country === location;
+    });
+
+    const matchedDestinations = filteredDestinations.filter(destination => {
+        return interests.includes(destination.type);
+    });
+
+    return matchedDestinations.slice(0, 2); // Limit to 2 recommendations
+}
+
+// Example usage of filterDestinations (not directly called by the UI, but demonstrates the logic)
+const userPreferencesExample = {
+    "location": "Japan",
+    "trip_duration": 7,
+    "interests": ["culture", "nature"]
+};
+
+const destinationsExample = [
+    {"name": "Kyoto", "country": "Japan", "type": "culture"},
+    {"name": "Hiroshima", "country": "Japan", "type": "history"},
+    {"name": "Mount Fuji", "country": "Japan", "type": "nature"}
+];
+
+const recommendedDestinationsExample = filterDestinations(userPreferencesExample, destinationsExample);
+//console.log("Example Recommendations:", JSON.stringify(recommendedDestinationsExample, null, 2));
+
+// Regular Expression Example (for validating input - not used in core logic, but demonstrates RegExp usage)
+function validateLocation(location) {
+    const regex = /^[A-Za-z\s]+$/; // Allows letters and spaces
+    return regex.test(location);
+}
+
+// Math.random() example (for generating a random recommendation if no matches are found)
+function getRandomDestination(destinations) {
+    const randomIndex = Math.floor(Math.random() * destinations.length);
+    return destinations[randomIndex];
+}
+
+// More complex Array methods (reduce for calculating average trip duration)
+const tripDurations = [3, 5, 7, 10];
+const totalDuration = tripDurations.reduce((sum, duration) => sum + duration, 0);
+const averageDuration = totalDuration / tripDurations.length;
+//console.log("Average Trip Duration:", averageDuration);
+
+// Sorting example
+const destinationsToSort = [
+    {"name": "Kyoto", "rating": 4.5},
+    {"name": "Hiroshima", "rating": 3.8},
+    {"name": "Mount Fuji", "rating": 4.2}
+];
+
+destinationsToSort.sort((a, b) => b.rating - a.rating); // Sort by rating descending
+//console.log("Sorted Destinations:", JSON.stringify(destinationsToSort, null, 2));
+
+</script>
+<!-- DIESES TOOL WURDE FÜR DIE DIMENSION 'SYSTEME' OPTIMIERT. -->
+        <div class="meta-footer">MBRN Factory Autonomous Module</div>
+    </div>
+</body>
+</html>
