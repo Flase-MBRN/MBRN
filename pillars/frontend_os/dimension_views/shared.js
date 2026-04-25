@@ -292,10 +292,12 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
       parent: factorySection
     });
 
-    dimensionApps.forEach((app) => {
+    console.log('[discoverability] Rendering', dimensionApps.length, 'factory apps...');
+    dimensionApps.forEach((app, index) => {
       const appTitle = app.name || app.module_name || 'Unbekanntes Modul';
       const cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ').toUpperCase();
       const rootPath = getLocalRepoRoot();
+      console.log(`[discoverability] Creating card ${index + 1}/${dimensionApps.length}:`, cleanTitle, 'route:', app.frontend_file);
 
       createSurfaceCard(factoryGrid, {
         title: cleanTitle,
