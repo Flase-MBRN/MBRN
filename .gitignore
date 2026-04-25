@@ -101,4 +101,3 @@ _backup/
 *.db
 *.sqlite
 shared/data/mbrn_state.db
-shared/data/factory_feed_snapshot.json
