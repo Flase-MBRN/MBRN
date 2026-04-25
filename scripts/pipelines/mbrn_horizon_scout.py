@@ -43,7 +43,7 @@ if str(PIPELINES_DIR) not in sys.path:
 
 from pipeline_utils import load_pipeline_env, log as pipeline_log, save_json_atomic
 
-DEFAULT_SCOUT_OLLAMA_MODEL = "deepseek-coder-v2"
+DEFAULT_SCOUT_OLLAMA_MODEL = "gemma3:12b"  # 128K context — ideal for README analysis
 
 
 def log(level: str, message: object) -> None:
