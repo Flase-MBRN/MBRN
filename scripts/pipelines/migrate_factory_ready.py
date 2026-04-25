@@ -18,30 +18,11 @@ from shared.core.db import CANONICAL_DIMENSIONS, init_db, upsert_factory_module
 FACTORY_READY = PROJECT_ROOT / "docs" / "S3_Data" / "outputs" / "factory_ready"
 EXPECTED_MINIMUM = 145
 
-DIMENSION_KEYWORDS = {
-    "zeit": ["time", "habit", "streak", "daily", "routine", "timer"],
-    "geld": ["finance", "money", "invest", "budget", "compound", "interest"],
-    "physis": ["fitness", "health", "body", "workout", "sleep"],
-    "geist": ["mindset", "mental", "mood", "focus", "stress"],
-    "ausdruck": ["creative", "content", "style", "express", "voice"],
-    "netzwerk": ["synergy", "compat", "relation", "social", "network"],
-    "energie": ["energy", "flow", "vitality", "circadian", "peak"],
-    "systeme": ["system", "workflow", "process", "automat", "architect"],
-    "raum": ["space", "environment", "location", "ambient", "workspace"],
-    "muster": ["numerology", "pattern", "life_path", "birth", "name"],
-    "wachstum": ["growth", "skill", "learn", "progress", "milestone"],
-}
-
-
 def guess_dimension(filename: str, content: str) -> str:
-    text = f"{filename} {content[:800]}".lower()
-    scores = {dimension: 0 for dimension in CANONICAL_DIMENSIONS}
-    for dimension, keywords in DIMENSION_KEYWORDS.items():
-        for keyword in keywords:
-            if keyword in text:
-                scores[dimension] += 1
-    best = max(scores, key=scores.get)
-    return best if scores[best] > 0 else "systeme"
+    """v5.5: Keyword categorization deprecated. Returning 'systeme' as default.
+    Bridge agent will perform semantic LLM-based routing during deployment.
+    """
+    return "systeme"
 
 
 def iter_modules() -> list[Path]:

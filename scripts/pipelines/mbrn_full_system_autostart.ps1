@@ -115,7 +115,11 @@ try {
     Start-PythonComponent -Name "Live Monitor" -ScriptPath $Monitor -Arguments @("--infinite")
 
     Write-Step "[7/7] Starting Prime Director"
-    Start-PythonComponent -Name "Prime Director" -ScriptPath $Prime -Arguments @("--infinite")
+    Start-PythonComponent -Name "Prime Director" -ScriptPath $Prime -Arguments @("--infinite", "--live-control")
+
+    Write-Step "[8/8] Starting Bridge Agent (Equalizer v5.5)"
+    $BridgeAgent = Join-Path $PipelineDir "mbrn_bridge_agent.py"
+    Start-PythonComponent -Name "Bridge Agent" -ScriptPath $BridgeAgent -Arguments @("--autonomous", "--target", "10")
 
     if ($EnableExperimentalTools) {
         Write-Step "[optional] Starting non-canonical experimental tools"

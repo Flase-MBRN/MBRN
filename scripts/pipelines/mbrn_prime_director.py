@@ -55,6 +55,7 @@ ALLOWED_STATUSES = {"running", "paused"}
 OUROBOROS_TARGET_WHITELIST = {
     "scripts/pipelines/mbrn_horizon_scout.py",
     "scripts/pipelines/mbrn_nexus_bridge.py",
+    "scripts/pipelines/mbrn_bridge_agent.py",
     "scripts/pipelines/mbrn_factory_memory.py",
     "scripts/pipelines/mbrn_live_monitor.py",
 }

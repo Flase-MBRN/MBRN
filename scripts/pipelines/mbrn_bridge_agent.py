@@ -65,6 +65,7 @@ from scripts.pipelines.mbrn_logic_auditor import calculate_score
 
 MIN_HTML_CHARS = 500
 ELITE_THRESHOLD = 0.8
+CANONICAL_LIST = ["Zeit", "Geld", "Physis", "Geist", "Ausdruck", "Netzwerk", "Energie", "Systeme", "Raum", "Muster", "Wachstum"]
 
 MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="de">
@@ -161,6 +162,65 @@ def extract_logic_description(py_file: Path) -> str:
     return "\n".join(filtered_lines)
 
 
+def get_target_dimension() -> str:
+    """v5.5: Identifies the dimension with the lowest count of elite modules."""
+    with get_db() as conn:
+        # Check counts of elite modules per dimension
+        query = """
+            SELECT dimension, COUNT(*) as cnt 
+            FROM factory_modules 
+            WHERE is_elite = 1 
+            GROUP BY dimension
+        """
+        rows = conn.execute(query).fetchall()
+        counts = {d.lower(): 0 for d in CANONICAL_LIST}
+        for row in rows:
+            if row["dimension"] in counts:
+                counts[row["dimension"]] = row["cnt"]
+        
+        # Sort by count ascending, then random choice among lowest
+        min_count = min(counts.values())
+        weakest = [d for d, c in counts.items() if c == min_count]
+        
+        import random
+        target = random.choice(weakest)
+        print(f"[Equalizer] Target Dimension identified: {target.upper()} (Count: {min_count})")
+        return target
+
+
+def categorize_dimension_semantic(content: str) -> str:
+    """v5.5: Semantic Router - Replaces hardcoded keywords with LLM analysis."""
+    print("[Router] Analyzing module semantics...")
+    prompt = f"""Analysiere dieses Tool. Wähle EXAKT EINE der folgenden MBRN-Dimensionen, die am besten passt: 
+[Zeit, Geld, Physis, Geist, Ausdruck, Netzwerk, Energie, Systeme, Raum, Muster, Wachstum]. 
+Antworte NUR mit dem Namen der Dimension.
+
+TOOL-CONTENT:
+{content[:2000]}
+"""
+    payload = json.dumps({
+        "model": OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": False,
+        "options": {"temperature": 0.0},
+    }).encode("utf-8")
+    
+    try:
+        req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=30) as response:
+            result = json.loads(response.read().decode("utf-8"))
+            dim = str(result.get("response", "")).strip().lower()
+            # Clean up response (some LLMs add periods or extra words)
+            for canonical in CANONICAL_LIST:
+                if canonical.lower() in dim:
+                    print(f"[Router] Result: {canonical}")
+                    return canonical.lower()
+    except Exception as e:
+        print(f"[Router] Semantic call failed: {e}. Falling back to 'systeme'.")
+    
+    return "systeme"
+
+
 def metadata_scrubber(content: str) -> str:
     """Removes forbidden metadata keywords from the generated output."""
     forbidden = [
@@ -199,10 +259,15 @@ def validate_js_logic(content: str) -> bool:
     return True
 
 
-def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str, retry: bool = False) -> str:
+def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str, retry: bool = False, forced_dimension: str = None) -> str:
     retry_prefix = "DEIN LETZTER VERSUCH WAR FEHLERHAFT (PLATZHALTER GENUTZT). NUTZE DIESES MAL DIE ECHTE LOGIK!\n" if retry else ""
     
-    prompt = f"""{retry_prefix}HIER IST DIE QUELLE DER WAHRHEIT (PYTHON CODE):
+    # v5.5: Equalizer Hardening
+    target_dim = forced_dimension or dimension
+    focus_directive = f"\nACHTUNG: DIESES TOOL MUSS STRENG AUF DIE DIMENSION '{target_dim.upper()}' AUSGERICHTET SEIN!\n"
+    
+    prompt = f"""{retry_prefix}{focus_directive}
+HIER IST DIE QUELLE DER WAHRHEIT (PYTHON CODE):
 {logic_desc}
 
 PORTIERE ALLE FUNKTIONEN, DIE DATEN VERARBEITEN, 1:1 NACH JAVASCRIPT.
@@ -231,6 +296,11 @@ GIB NUR HTML UND JAVASCRIPT AUS. KEIN CSS. KEIN HEADER."""
     inner_content = metadata_scrubber(inner_content)
     
     product_name = extract_product_name(inner_content)
+    
+    # v5.5: Dimension Focus Hardening
+    final_prompt_focus = f"DIESES TOOL WURDE FÜR DIE DIMENSION '{dimension.upper()}' OPTIMIERT."
+    inner_content += f"\n<!-- {final_prompt_focus} -->"
+    
     final_html = MBRN_HTML_TEMPLATE.replace("{{TITLE}}", product_name).replace("{{CONTENT}}", inner_content)
     return final_html
 
@@ -355,21 +425,23 @@ def count_ready_modules() -> int:
         return int(row["cnt"] if row else 0)
 
 
-def run_bridge_cycle(use_dummy: bool = False) -> Optional[dict[str, Any]]:
+def run_bridge_cycle(use_dummy: bool = False, forced_dimension: str = None) -> Optional[dict[str, Any]]:
     init_db()
     module = next_ready_module()
     if not module:
-        print("[Bridge] No ready modules.")
         return None
 
     name = str(module["name"])
-    dimension = module["dimension"] if module["dimension"] in CANONICAL_DIMENSIONS else "systeme"
     source = Path(str(module["source_file"]))
+    
+    # v5.5: Semantic Routing (If not forced)
+    logic_desc = extract_logic_description(source)
+    dimension = forced_dimension if forced_dimension else categorize_dimension_semantic(logic_desc)
+    
     print(f"[Bridge] Processing {name} -> {dimension}")
 
     try:
-        logic_desc = extract_logic_description(source)
-        html = generate_dummy_frontend(dimension, name, logic_desc) if use_dummy else generate_frontend_via_ollama(logic_desc, dimension, name)
+        html = generate_dummy_frontend(dimension, name, logic_desc) if use_dummy else generate_frontend_via_ollama(logic_desc, dimension, name, forced_dimension=dimension)
         html = strip_markdown_fences(html)
         validate_html(html)
         deployed_path = deploy_to_dimension(html, dimension, name)
@@ -400,6 +472,7 @@ def run_bridge_cycle(use_dummy: bool = False) -> Optional[dict[str, Any]]:
         relative_deployed = str(deployed_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
         atomic_update("factory_modules", {
             "status": "deployed", 
+            "dimension": dimension,
             "frontend_file": relative_deployed,
             "quality_score": score,
             "is_elite": is_elite,
@@ -464,14 +537,44 @@ def run_bridge_until_empty(use_dummy: bool = False) -> list[dict[str, Any]]:
     return results
 
 
+def run_autonomous_factory(target_per_dimension: int = 5):
+    """v5.5: Continuous run loop to balance dimensions with elite modules."""
+    print(f"[Reactor] Autonomous Equalizer Mode: ON (Goal: {target_per_dimension} elite/dim)")
+    init_db()
+    
+    while True:
+        target_dim = get_target_dimension()
+        
+        # Check if we still have modules to process
+        if count_ready_modules() == 0:
+            print("[Reactor] No ready modules in backlog. Waiting 60s...")
+            time.sleep(60)
+            continue
+            
+        print(f"[Reactor] Balancing Dimension: {target_dim.upper()}")
+        
+        result = run_bridge_cycle(forced_dimension=target_dim)
+        if result and result.get("status") == "deployed":
+            print(f"[Reactor] Success: {result['name']} deployed to {target_dim.upper()}.")
+        
+        print("[Reactor] Cooling down (10s)...")
+        time.sleep(10)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bridge factory modules into Vanilla HTML apps.")
     parser.add_argument("--once", action="store_true", help="Run one bridge cycle and exit.")
     parser.add_argument("--dummy", action="store_true", help="Use deterministic dummy HTML instead of Ollama.")
     parser.add_argument("--batch-count", type=int, default=0, help="Run exactly this many bridge cycles and exit.")
     parser.add_argument("--all-ready", action="store_true", help="Drain the current ready backlog and exit.")
+    parser.add_argument("--autonomous", action="store_true", help="v5.5: Run in self-balancing equalizer mode.")
+    parser.add_argument("--target", type=int, default=5, help="Elite modules per dimension goal for autonomous mode.")
     parser.add_argument("--interval-seconds", type=int, default=30)
     args = parser.parse_args()
+
+    if args.autonomous:
+        run_autonomous_factory(target_per_dimension=args.target)
+        return 0
 
     if args.once:
         return 0 if run_bridge_cycle(use_dummy=args.dummy) else 1
