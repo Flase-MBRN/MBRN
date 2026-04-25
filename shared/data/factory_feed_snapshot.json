@@ -1,5 +1,148 @@
 [
   {
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/20260424_204753_orqestly_orqestly_module/index.html",
+    "module_file": "20260424_204753_orqestly_orqestly_module",
+    "type": "module_ready",
+    "id": 38,
+    "module_name": "20260424_204753_orqestly_orqestly_module",
+    "message": "Neues Modul deployed: 20260424_204753_orqestly_orqestly_module in Dimension muster",
+    "read": false,
+    "created_at": "2026-04-25 19:09:15"
+  },
+  {
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/20260424_204741_codediba_taskloop_ai_agent_module/index.html",
+    "module_file": "20260424_204741_codediba_taskloop_ai_agent_module",
+    "type": "module_ready",
+    "id": 37,
+    "module_name": "20260424_204741_codediba_taskloop_ai_agent_module",
+    "message": "Neues Modul deployed: 20260424_204741_codediba_taskloop_ai_agent_module in Dimension zeit",
+    "read": false,
+    "created_at": "2026-04-25 19:08:52"
+  },
+  {
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/20260424_204741_codediba_taskloop_ai_agent_module/index.html",
+    "module_file": "20260424_204741_codediba_taskloop_ai_agent_module",
+    "type": "module_ready",
+    "id": 36,
+    "module_name": "20260424_204741_codediba_taskloop_ai_agent_module",
+    "message": "Neues Modul deployed: 20260424_204741_codediba_taskloop_ai_agent_module in Dimension zeit",
+    "read": false,
+    "created_at": "2026-04-25 19:08:38"
+  },
+  {
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/20260424_185334_nabilnet_org_claude_memory_module/index.html",
+    "module_file": "20260424_185334_NABILNET_ORG_Claude_Memory_module",
+    "type": "module_ready",
+    "id": 35,
+    "module_name": "20260424_185334_NABILNET_ORG_Claude_Memory_module",
+    "message": "Neues Modul deployed: 20260424_185334_NABILNET_ORG_Claude_Memory_module in Dimension systeme",
+    "read": false,
+    "created_at": "2026-04-25 19:08:03"
+  },
+  {
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/20260424_185334_nabilnet_org_claude_memory_module/index.html",
+    "module_file": "20260424_185334_NABILNET_ORG_Claude_Memory_module",
+    "type": "module_ready",
+    "id": 34,
+    "module_name": "20260424_185334_NABILNET_ORG_Claude_Memory_module",
+    "message": "Neues Modul deployed: 20260424_185334_NABILNET_ORG_Claude_Memory_module in Dimension systeme",
+    "read": false,
+    "created_at": "2026-04-25 19:07:36"
+  },
+  {
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/20260424_185319_huxiaoman7_skills_eval_module/index.html",
+    "module_file": "20260424_185319_huxiaoman7_skills_eval_module",
+    "type": "module_ready",
+    "id": 33,
+    "module_name": "20260424_185319_huxiaoman7_skills_eval_module",
+    "message": "Neues Modul deployed: 20260424_185319_huxiaoman7_skills_eval_module in Dimension systeme",
+    "read": false,
+    "created_at": "2026-04-25 19:07:01"
+  },
+  {
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/20260424_185319_huxiaoman7_skills_eval_module/index.html",
+    "module_file": "20260424_185319_huxiaoman7_skills_eval_module",
+    "type": "module_ready",
+    "id": 32,
+    "module_name": "20260424_185319_huxiaoman7_skills_eval_module",
+    "message": "Neues Modul deployed: 20260424_185319_huxiaoman7_skills_eval_module in Dimension systeme",
+    "read": false,
+    "created_at": "2026-04-25 19:06:40"
+  },
+  {
+    "dimension": "netzwerk",
+    "frontend_file": "dimensions/netzwerk/apps/20260425_080521_ann_maria_jaison_autostream_ai_agent_module/index.html",
+    "module_file": "20260425_080521_Ann_Maria_Jaison_AutoStream_AI_Agent_module",
+    "type": "module_ready",
+    "id": 31,
+    "module_name": "20260425_080521_Ann_Maria_Jaison_AutoStream_AI_Agent_module",
+    "message": "Neues Modul deployed: 20260425_080521_Ann_Maria_Jaison_AutoStream_AI_Agent_module in Dimension netzwerk",
+    "read": false,
+    "created_at": "2026-04-25 19:05:49"
+  },
+  {
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/20260425_080440_amirtechai_xmail_module/index.html",
+    "module_file": "20260425_080440_amirtechai_xmail_module",
+    "type": "module_ready",
+    "id": 30,
+    "module_name": "20260425_080440_amirtechai_xmail_module",
+    "message": "Neues Modul deployed: 20260425_080440_amirtechai_xmail_module in Dimension systeme",
+    "read": false,
+    "created_at": "2026-04-25 19:05:17"
+  },
+  {
+    "dimension": "geld",
+    "frontend_file": "dimensions/geld/apps/20260425_080409_websentry_ai_oacb_module/index.html",
+    "module_file": "20260425_080409_websentry_ai_oacb_module",
+    "type": "module_ready",
+    "id": 29,
+    "module_name": "20260425_080409_websentry_ai_oacb_module",
+    "message": "Neues Modul deployed: 20260425_080409_websentry_ai_oacb_module in Dimension geld",
+    "read": false,
+    "created_at": "2026-04-25 19:04:54"
+  },
+  {
+    "dimension": "raum",
+    "frontend_file": "dimensions/raum/apps/20260425_080341_fcg_builds_aifree_module/index.html",
+    "module_file": "20260425_080341_FCG_Builds_aifree_module",
+    "type": "module_ready",
+    "id": 28,
+    "module_name": "20260425_080341_FCG_Builds_aifree_module",
+    "message": "Neues Modul deployed: 20260425_080341_FCG_Builds_aifree_module in Dimension raum",
+    "read": false,
+    "created_at": "2026-04-25 19:04:34"
+  },
+  {
+    "dimension": "ausdruck",
+    "frontend_file": "dimensions/ausdruck/apps/20260425_080318_djememahamat_bookly_assistant_module/index.html",
+    "module_file": "20260425_080318_djememahamat_bookly_assistant_module",
+    "type": "module_ready",
+    "id": 27,
+    "module_name": "20260425_080318_djememahamat_bookly_assistant_module",
+    "message": "Neues Modul deployed: 20260425_080318_djememahamat_bookly_assistant_module in Dimension ausdruck",
+    "read": false,
+    "created_at": "2026-04-25 19:04:04"
+  },
+  {
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/20260424_220013_quotesystemx_go_agent_llm_orchestrator_module/index.html",
+    "module_file": "20260424_220013_QuoteSystemX_go_agent_llm_orchestrator_module",
+    "type": "module_ready",
+    "id": 26,
+    "module_name": "20260424_220013_QuoteSystemX_go_agent_llm_orchestrator_module",
+    "message": "Neues Modul deployed: 20260424_220013_QuoteSystemX_go_agent_llm_orchestrator_module in Dimension systeme",
+    "read": false,
+    "created_at": "2026-04-25 19:01:12"
+  },
+  {
     "dimension": "systeme",
     "frontend_file": "dimensions/systeme/apps/20260424_215904_shrutinaredi_research_paper_intelligent_assistant_module/index.html",
     "module_file": "20260424_215904_shrutinaredi_research_paper_intelligent_assistant_module",
@@ -75,148 +218,5 @@
     "message": "Neues Modul deployed: 20260424_205920_KybernesisAI_arp_module in Dimension systeme",
     "read": false,
     "created_at": "2026-04-25 18:52:43"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_205341_velvetmonkey_flywheel_ideas_module/index.html",
-    "module_file": "20260424_205341_velvetmonkey_flywheel_ideas_module",
-    "type": "module_ready",
-    "id": 18,
-    "module_name": "20260424_205341_velvetmonkey_flywheel_ideas_module",
-    "message": "Neues Modul deployed: 20260424_205341_velvetmonkey_flywheel_ideas_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:52:14"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_205331_fasqua_kausaos_module/index.html",
-    "module_file": "20260424_205331_fasqua_kausaos_module",
-    "type": "module_ready",
-    "id": 17,
-    "module_name": "20260424_205331_fasqua_kausaos_module",
-    "message": "Neues Modul deployed: 20260424_205331_fasqua_kausaos_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:51:48"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_205320_adrian_af_cursorthreads_module/index.html",
-    "module_file": "20260424_205320_adrian_af_cursorThreads_module",
-    "type": "module_ready",
-    "id": 16,
-    "module_name": "20260424_205320_adrian_af_cursorThreads_module",
-    "message": "Neues Modul deployed: 20260424_205320_adrian_af_cursorThreads_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:51:26"
-  },
-  {
-    "dimension": "zeit",
-    "frontend_file": "dimensions/zeit/apps/20260424_205312_dwaynehelena_agent_state_module/index.html",
-    "module_file": "20260424_205312_dwaynehelena_agent_state_module",
-    "type": "module_ready",
-    "id": 15,
-    "module_name": "20260424_205312_dwaynehelena_agent_state_module",
-    "message": "Neues Modul deployed: 20260424_205312_dwaynehelena_agent_state_module in Dimension zeit",
-    "read": false,
-    "created_at": "2026-04-25 18:50:59"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_205300_captainind7_yatrik_module/index.html",
-    "module_file": "20260424_205300_CaptainIND7_Yatrik_module",
-    "type": "module_ready",
-    "id": 14,
-    "module_name": "20260424_205300_CaptainIND7_Yatrik_module",
-    "message": "Neues Modul deployed: 20260424_205300_CaptainIND7_Yatrik_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:50:33"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_205241_vaimr_mcporter_proxy_module/index.html",
-    "module_file": "20260424_205241_vaimr_mcporter_proxy_module",
-    "type": "module_ready",
-    "id": 13,
-    "module_name": "20260424_205241_vaimr_mcporter_proxy_module",
-    "message": "Neues Modul deployed: 20260424_205241_vaimr_mcporter_proxy_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:48:11"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_205231_kybernesisai_arp_module/index.html",
-    "module_file": "20260424_205231_KybernesisAI_arp_module",
-    "type": "module_ready",
-    "id": 12,
-    "module_name": "20260424_205231_KybernesisAI_arp_module",
-    "message": "Neues Modul deployed: 20260424_205231_KybernesisAI_arp_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:46:27"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_205054_somanabbasi_opticode_module/index.html",
-    "module_file": "20260424_205054_SomanAbbasi_OptiCode_module",
-    "type": "module_ready",
-    "id": 11,
-    "module_name": "20260424_205054_SomanAbbasi_OptiCode_module",
-    "message": "Neues Modul deployed: 20260424_205054_SomanAbbasi_OptiCode_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:45:42"
-  },
-  {
-    "dimension": "energie",
-    "frontend_file": "dimensions/energie/apps/20260424_205042_abeardedguru_holden_capital_agentic_workflows_module/index.html",
-    "module_file": "20260424_205042_aBeardedGuru_holden_capital_agentic_workflows_module",
-    "type": "module_ready",
-    "id": 10,
-    "module_name": "20260424_205042_aBeardedGuru_holden_capital_agentic_workflows_module",
-    "message": "Neues Modul deployed: 20260424_205042_aBeardedGuru_holden_capital_agentic_workflows_module in Dimension energie",
-    "read": false,
-    "created_at": "2026-04-25 18:45:05"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_204900_shani_singh1_propab_oss_module/index.html",
-    "module_file": "20260424_204900_shani_singh1_propab_oss_module",
-    "type": "module_ready",
-    "id": 9,
-    "module_name": "20260424_204900_shani_singh1_propab_oss_module",
-    "message": "Neues Modul deployed: 20260424_204900_shani_singh1_propab_oss_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:44:36"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_204847_chenjianfan2000_paper_visualizer_module/index.html",
-    "module_file": "20260424_204847_ChenjianFan2000_paper_visualizer_module",
-    "type": "module_ready",
-    "id": 8,
-    "module_name": "20260424_204847_ChenjianFan2000_paper_visualizer_module",
-    "message": "Neues Modul deployed: 20260424_204847_ChenjianFan2000_paper_visualizer_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:43:57"
-  },
-  {
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/20260424_204803_zxqer_finagent_quant_module/index.html",
-    "module_file": "20260424_204803_zxqer_FinAgent_Quant_module",
-    "type": "module_ready",
-    "id": 7,
-    "module_name": "20260424_204803_zxqer_FinAgent_Quant_module",
-    "message": "Neues Modul deployed: 20260424_204803_zxqer_FinAgent_Quant_module in Dimension systeme",
-    "read": false,
-    "created_at": "2026-04-25 18:41:25"
-  },
-  {
-    "dimension": "muster",
-    "frontend_file": "dimensions/muster/apps/20260424_204753_orqestly_orqestly_module/index.html",
-    "module_file": "20260424_204753_orqestly_orqestly_module",
-    "type": "module_ready",
-    "id": 6,
-    "module_name": "20260424_204753_orqestly_orqestly_module",
-    "message": "Neues Modul deployed: 20260424_204753_orqestly_orqestly_module in Dimension muster",
-    "read": false,
-    "created_at": "2026-04-25 18:40:44"
   }
 ]

@@ -1,45 +1,65 @@
-<!doctype html>
-<html lang="de">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>20260424 185319 Huxiaoman7 Skills Eval Module | MBRN systeme</title>
-  <style>
-    body { margin: 0; font-family: system-ui, sans-serif; background: #05050a; color: #f8fafc; }
-    main { max-width: 760px; margin: 0 auto; padding: 40px 20px; }
-    label, textarea, button { display: block; width: 100%; box-sizing: border-box; }
-    textarea { min-height: 180px; margin: 12px 0; padding: 12px; border: 1px solid #334155; background: #0f172a; color: #f8fafc; }
-    button { padding: 12px 14px; border: 0; background: #7b5cf5; color: white; font-weight: 700; cursor: pointer; }
-    output { display: block; margin-top: 16px; padding: 16px; border: 1px solid #334155; background: #111827; white-space: pre-wrap; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Verification Tool</title>
 </head>
 <body>
-  <main>
-    <h1>20260424 185319 Huxiaoman7 Skills Eval Module</h1>
-    <p>Dimension: systeme. Dieses lokale MBRN-Tool kapselt die importierte Factory-Logik als Browser-Oberflaeche.</p>
-    <label for="input">Eingabe</label>
-    <textarea id="input">"""
-================================================================================
-MBRN Factory-Ready Module
-================================================================================
-Source Alpha    : huxiaoman7</textarea>
-    <button id="run">Berechnen</button>
-    <output id="result">Bereit.</output>
-  </main>
-  <script>
-    const input = document.getElementById('input');
-    const result = document.getElementById('result');
-    document.getElementById('run').addEventListener('click', () => {
-      const text = input.value.trim();
-      const words = text ? text.split(/\s+/).length : 0;
-      result.textContent = JSON.stringify({
-        module: "20260424_185319_huxiaoman7_skills_eval_module",
-        dimension: "systeme",
-        characters: text.length,
-        words,
-        signal: words > 20 ? 'rich_context' : 'compact_context'
-      }, null, 2);
-    });
-  </script>
+    <div class="tool-card">
+        <h1>Skills Verification Tool</h1>
+        <p>Enter the repository URL and layers to verify skills.</p>
+
+        <input type="text" id="repoUrl" placeholder="Repository URL (e.g., https://github.com/huxiaoman7/skills-eval)">
+        <input type="text" id="layers" placeholder="Layers (e.g., 1,2,3)">
+
+        <button onclick="verifySkills()">Verify Skills</button>
+
+        <div id="result">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        function verifySkills() {
+            const repoUrl = document.getElementById('repoUrl').value;
+            const layers = document.getElementById('layers').value;
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = "<p>Verifying... Please wait.</p>";
+
+            // Simulate the Python logic (simplified)
+            setTimeout(() => {
+                // In a real implementation, you would send the repoUrl and layers to a backend server
+                // that would execute the Python script.  Here, we simulate the result.
+
+                let simulatedResults = {};
+                if (repoUrl === "https://github.com/huxiaoman7/skills-eval" && layers === "1,2,3") {
+                    simulatedResults = {
+                        "skill_1": { "status": "verified", "content": "Simulated Content for Skill 1" },
+                        "skill_2": { "status": "verified", "content": "Simulated Content for Skill 2" },
+                        "skill_3": { "status": "verified", "content": "Simulated Content for Skill 3" }
+                    };
+                } else {
+                    simulatedResults = {
+                        "skill_1": { "status": "not found" },
+                        "skill_2": { "status": "not found" },
+                        "skill_3": { "status": "not found" }
+                    };
+                }
+
+                let resultHtml = "<h2>Verification Results:</h2>";
+                for (const skill in simulatedResults) {
+                    resultHtml += `<p>${skill}: ${simulatedResults[skill].status}`;
+                    if (simulatedResults[skill].content) {
+                        resultHtml += `<br>Content: ${simulatedResults[skill].content}`;
+                    }
+                    resultHtml += "</p>";
+                }
+
+                resultDiv.innerHTML = resultHtml;
+            }, 1000); // Simulate a 1-second delay
+        }
+    </script>
 </body>
 </html>

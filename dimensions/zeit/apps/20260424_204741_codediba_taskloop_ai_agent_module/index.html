@@ -3,132 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Loop AI Agent</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #0056b3;
-        }
-
-        p {
-            line-height: 1.6;
-        }
-
-        .output {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-
-        #result {
-            white-space: pre-wrap; /* Preserve formatting */
-        }
-    </style>
+    <title>Task Loop Agent</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Task Loop AI Agent</h1>
-        <p>MBRN Factory-Ready Module</p>
-        <p>Source Alpha: codediba/taskloop-ai-agent</p>
-        <p>Alpha ID: alpha_1219491339</p>
-        <p>ROI Score: 85.0</p>
-        <p>Manufactured At: 2026-04-24T20:47:41.903589+00:00</p>
-        <p>Agent Attempts: 1</p>
+    <div class="tool-card">
+        <h1>Task Loop Agent</h1>
+        <p>Enter a task description and see the simulated execution.</p>
 
-        <div class="output">
-            <h2>Execution Log:</h2>
-            <div id="result"></div>
+        <input type="text" id="taskInput" placeholder="Enter task description...">
+        <button onclick="runTask()">Run Task</button>
+
+        <div id="result">
+            <!-- Result will be displayed here -->
         </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const resultDiv = document.getElementById('result');
-
-                class TaskLoopAgent {
-                    constructor() {
-                        this.tasks = [];
-                        this.evaluations = [];
-                        this.improvements = [];
-                    }
-
-                    add_task(task) {
-                        this.tasks.push(task);
-                    }
-
-                    execute_task(task) {
-                        return new Promise(resolve => {
-                            setTimeout(() => {
-                                const output = `Output of task: ${task}`;
-                                resultDiv.innerHTML += `<p>Executing task: ${task}</p>`;
-                                resolve({ status: "completed", output: output });
-                            }, 1000); // Simulate execution time
-                        });
-                    }
-
-                    evaluate_task(result) {
-                        return new Promise(resolve => {
-                            setTimeout(() => {
-                                const evaluation = { status: "passed", feedback: "Task completed successfully" };
-                                resultDiv.innerHTML += `<p>Evaluating result: ${result}</p>`;
-                                this.evaluations.push(evaluation);
-                                resolve(evaluation);
-                            }, 500);
-                        });
-                    }
-
-                    improve_task(feedback) {
-                        return new Promise(resolve => {
-                            setTimeout(() => {
-                                const improvement = { status: "improved", suggestion: "Try a different approach" };
-                                resultDiv.innerHTML += `<p>Improving task based on feedback: ${feedback}</p>`;
-                                this.improvements.push(improvement);
-                                resolve(improvement);
-                            }, 500);
-                        });
-                    }
-
-                    async run_loop() {
-                        while (this.tasks.length > 0) {
-                            const task = this.tasks.shift();
-                            try {
-                                const result = await this.execute_task(task);
-                                const evaluation = await this.evaluate_task(result.output);
-                                if (evaluation.status === "passed") {
-                                    const feedback = evaluation.feedback;
-                                    const improvement = await this.improve_task(feedback);
-                                }
-                            } catch (error) {
-                                console.error("Error in task loop:", error);
-                            }
-                        }
-                        resultDiv.innerHTML += `<p>All tasks completed.</p>`;
-                        console.log("MODULE_READY: codediba_taskloop_ai_agent");
-                    }
-                }
-
-                const agent = new TaskLoopAgent();
-                agent.add_task("Sample Task 1");
-                agent.add_task("Sample Task 2");
-                agent.run_loop();
-            });
-        </script>
     </div>
+
+    <script>
+        function runTask() {
+            const taskDescription = document.getElementById('taskInput').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!taskDescription) {
+                resultDiv.textContent = "Please enter a task description.";
+                return;
+            }
+
+            // Simulate the Python logic using JavaScript
+            resultDiv.textContent = "Executing task: " + taskDescription + "...";
+            setTimeout(() => {
+                resultDiv.textContent = "Executing task: " + taskDescription + "...\nSimulating execution time...";
+                setTimeout(() => {
+                    resultDiv.textContent = "Executing task: " + taskDescription + "...\nSimulating execution time...\nTask completed successfully!";
+                    resultDiv.innerHTML += "<br>Output of task: " + taskDescription;
+                    resultDiv.innerHTML += "<br>Evaluation: Task completed successfully";
+                    resultDiv.innerHTML += "<br>Suggestion: Try a different approach";
+                }, 1500);
+            }, 1000);
+        }
+    </script>
 </body>
 </html>

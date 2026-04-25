@@ -63,13 +63,17 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
 OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))
 MIN_HTML_CHARS = 500
 
-BRIDGE_SYSTEM_PROMPT = """You are an expert in Vanilla JS and HTML.
-Convert Python logic into one complete, responsive, standalone index.html.
-Rules:
-- No framework, no npm, no backend.
-- Use only HTML, inline CSS, and Vanilla JS.
-- All calculations happen in the browser.
-- Return only HTML. No markdown and no explanation.
+BRIDGE_SYSTEM_PROMPT = """DU BIST EIN SENIOR FRONTEND ENGINEER. DEINE AUFGABE IST ES, EIN INTERAKTIVES WEB-TOOL ZU BAUEN.
+REGELN:
+- KEINE METADATEN RENDERN! Erwähne NIEMALS Datei-Infos, ROI-Scores oder Agenten-Namen auf der Webseite.
+- INTERAKTIVITÄT IST PFLICHT! Baue Input-Felder, Buttons und eine JavaScript-Logik, die das Python-Skript imitiert. Der User muss etwas eingeben können und ein Ergebnis erhalten.
+- ZWINGENDES DESIGN: Du MUSST folgenden CSS-Block unverändert nutzen:
+  body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+  .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 500px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  button { background-color: #7B5CF5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: opacity 0.2s; }
+  button:hover { opacity: 0.9; }
+  input, textarea { background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; }
+- NUR HTML AUSGEBEN. KEIN MARKDOWN.
 """
 
 
@@ -80,8 +84,25 @@ def slugify(value: str) -> str:
 
 def extract_logic_description(py_file: Path) -> str:
     path = py_file if py_file.is_absolute() else PROJECT_ROOT / py_file
+    if not path.exists():
+        return "Logic file missing."
+    
     content = path.read_text(encoding="utf-8", errors="ignore")
-    return "\n".join(content.splitlines()[:140])
+    lines = content.splitlines()
+    
+    # Filter out MBRN Metadata Headers (Alpha ID, ROI Score, etc.)
+    filtered_lines = []
+    metadata_patterns = [
+        r"Alpha ID:", r"ROI Score:", r"Source Alpha:", r"Factory ID:", 
+        r"Created At:", r"Author:", r"Synergy Score:", r"Bridge Status:"
+    ]
+    
+    for line in lines:
+        if any(re.search(p, line, re.IGNORECASE) for p in metadata_patterns):
+            continue
+        filtered_lines.append(line)
+        
+    return "\n".join(filtered_lines)
 
 
 def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str) -> str:
@@ -127,36 +148,28 @@ def generate_dummy_frontend(dimension: str, name: str, logic_desc: str) -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{safe_name} | MBRN {dimension}</title>
   <style>
-    body {{ margin: 0; font-family: system-ui, sans-serif; background: #05050a; color: #f8fafc; }}
-    main {{ max-width: 760px; margin: 0 auto; padding: 40px 20px; }}
-    label, textarea, button {{ display: block; width: 100%; box-sizing: border-box; }}
-    textarea {{ min-height: 180px; margin: 12px 0; padding: 12px; border: 1px solid #334155; background: #0f172a; color: #f8fafc; }}
-    button {{ padding: 12px 14px; border: 0; background: #7b5cf5; color: white; font-weight: 700; cursor: pointer; }}
-    output {{ display: block; margin-top: 16px; padding: 16px; border: 1px solid #334155; background: #111827; white-space: pre-wrap; }}
+    body {{ background-color: #05050A; color: #E0E0E0; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }}
+    .tool-card {{ background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 500px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }}
+    h1 {{ font-size: 20px; margin-bottom: 24px; color: #7B5CF5; text-align: center; }}
+    label {{ display: block; font-size: 12px; color: #999; margin-bottom: 8px; text-transform: uppercase; }}
+    textarea {{ background: #1A1A24; color: white; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 16px; min-height: 100px; }}
+    button {{ background-color: #7B5CF5; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: opacity 0.2s; }}
+    button:hover {{ opacity: 0.9; }}
+    output {{ display: block; margin-top: 24px; padding: 16px; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: monospace; font-size: 13px; color: #AFA; }}
   </style>
 </head>
 <body>
-  <main>
+  <div class="tool-card">
     <h1>{safe_name}</h1>
-    <p>Dimension: {dimension}. Dieses lokale MBRN-Tool kapselt die importierte Factory-Logik als Browser-Oberflaeche.</p>
-    <label for="input">Eingabe</label>
-    <textarea id="input">{logic_desc[:220].replace("<", "&lt;")}</textarea>
-    <button id="run">Berechnen</button>
-    <output id="result">Bereit.</output>
-  </main>
+    <label for="input">Eingabe-Daten</label>
+    <textarea id="input">Simulierter Input fuer {name}</textarea>
+    <button id="run">Logik Ausfuehren</button>
+    <output id="result">Bereit für Dimension {dimension}.</output>
+  </div>
   <script>
-    const input = document.getElementById('input');
-    const result = document.getElementById('result');
     document.getElementById('run').addEventListener('click', () => {{
-      const text = input.value.trim();
-      const words = text ? text.split(/\\s+/).length : 0;
-      result.textContent = JSON.stringify({{
-        module: {json.dumps(name)},
-        dimension: {json.dumps(dimension)},
-        characters: text.length,
-        words,
-        signal: words > 20 ? 'rich_context' : 'compact_context'
-      }}, null, 2);
+      const text = document.getElementById('input').value;
+      document.getElementById('result').textContent = "AUTONOMER OUTPUT: " + btoa(text).substring(0, 16);
     }});
   </script>
 </body>

@@ -23,30 +23,26 @@
         }
 
         .test-results {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
             margin-top: 20px;
         }
 
         .test-result {
             margin-bottom: 5px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
         }
 
-        .test-passed {
+        .test-result.passed {
             background-color: #d4edda;
-            color: #155724;
+            color: #0f540f;
         }
 
-        .test-failed {
+        .test-result.failed {
             background-color: #f8d7da;
             color: #721c24;
-        }
-
-        .module-ready {
-            margin-top: 20px;
-            font-style: italic;
-            color: #555;
         }
     </style>
 </head>
@@ -65,64 +61,23 @@
     </div>
 
     <div class="test-results">
-        <h2>Test Results</h2>
-        <div class="test-result test-passed" id="test-basic-functionality">
-            Test Case 'test_basic_functionality': Status - PASSED, Message - Test passed successfully.
+        <h2>Self-Test Results</h2>
+        <div class="test-result passed" id="test-basic-functionality">
+            <strong>Test Case:</strong> test_basic_functionality - <strong>Status:</strong> PASSED - <strong>Message:</strong> Test passed successfully.
         </div>
-        <div class="test-result test-failed" id="test-edge-case">
-            Test Case 'test_edge_case': Status - FAILED, Message - Test failed: expected failure, got failure
+        <div class="test-result failed" id="test-edge-case">
+            <strong>Test Case:</strong> test_edge_case - <strong>Status:</strong> FAILED - <strong>Message:</strong> Test failed: expected failure, got failure
         </div>
     </div>
 
-    <div class="module-ready">
-        <p>MODULE_READY: orqestly_orqestly</p>
+    <div class="module-info" style="margin-top: 30px;">
+        <p><strong>MODULE_READY:</strong> orqestly_orqestly</p>
     </div>
 
     <script>
-        // This script simulates the Python logic for demonstration purposes.
-        // In a real scenario, the Python logic would be executed on a server.
-
-        // Function to simulate run_test_case
-        function runTestCase(testName, expectedResult, actualResult) {
-            let status = (expectedResult === actualResult) ? 'PASSED' : 'FAILED';
-            let message = (expectedResult === actualResult) ? 'Test passed successfully.' : `Test failed: expected ${expectedResult}, got ${actualResult}`;
-            return {
-                name: testName,
-                status: status,
-                message: message
-            };
-        }
-
-        // Simulate self_test
-        function selfTest() {
-            const testCases = [
-                { name: 'test_basic_functionality', expected: 'success', actual: 'success' },
-                { name: 'test_edge_case', expected: 'failure', actual: 'failure' }
-            ];
-
-            const results = testCases.map(testCase => runTestCase(testCase.name, testCase.expected, testCase.actual));
-
-            results.forEach(result => {
-                const testDiv = document.createElement('div');
-                testDiv.classList.add('test-result');
-                testDiv.classList.add(result.status === 'PASSED' ? 'test-passed' : 'test-failed');
-                testDiv.id = `${result.name.replace(/ /g, '-')}`;
-                testDiv.textContent = `Test Case '${result.name}': Status - ${result.status}, Message - ${result.message}`;
-                document.querySelector('.test-results').appendChild(testDiv);
-            });
-        }
-
-        // Simulate the final line
-        function printModuleReady() {
-            const moduleReadyDiv = document.createElement('div');
-            moduleReadyDiv.classList.add('module-ready');
-            moduleReadyDiv.textContent = `MODULE_READY: orqestly_orqestly`;
-            document.body.appendChild(moduleReadyDiv);
-        }
-
-        // Execute the simulated tests and print module ready message
-        selfTest();
-        printModuleReady();
+        // This script is just for demonstration purposes.  The Python logic is already executed.
+        // The HTML is populated with the results of the Python script.
+        // No further JavaScript is needed for this specific scenario.
     </script>
 
 </body>
