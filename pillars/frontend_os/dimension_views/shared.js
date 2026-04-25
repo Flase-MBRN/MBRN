@@ -77,23 +77,33 @@ function getSnapshotPath() {
   const path = window.location.pathname;
   const parts = path.split('/').filter(p => p);
   
-  // Determine depth based on dimensions folder position
+  // Check if we're in MBRN subfolder deployment
+  const mbrnIndex = parts.indexOf('MBRN');
   const dimensionsIndex = parts.indexOf('dimensions');
+  
   let depth = 0;
   
   if (dimensionsIndex !== -1) {
-    // We are inside dimensions/X/ - need to go up 2 levels to reach shared/data/
-    depth = parts.length - dimensionsIndex;
-  } else {
-    // Fallback: assume we're at root level
-    depth = 0;
+    // We are inside dimensions/X/ - count segments after dimensions (excluding filename)
+    // e.g., MBRN/dimensions/systeme/index.html -> parts after dimensions = ['systeme', 'index.html']
+    // We need to go up: systeme (1) + dimensions (1) = 2 levels to reach MBRN/
+    const segmentsAfterDimensions = parts.length - dimensionsIndex - 1;
+    // Exclude filename if present (ends with .html)
+    const hasFilename = parts[parts.length - 1]?.includes('.');
+    const folderLevels = hasFilename ? segmentsAfterDimensions - 1 : segmentsAfterDimensions;
+    // +1 to also exit the dimensions/ folder itself
+    depth = folderLevels + 1;
+  } else if (mbrnIndex !== -1) {
+    // We're somewhere inside MBRN but not in dimensions
+    depth = parts.length - mbrnIndex - 1;
   }
   
   // Build relative path: need to go up to root, then into shared/data/
   const prefix = depth > 0 ? '../'.repeat(depth) : '';
   const snapshotPath = `${prefix}shared/data/factory_feed_snapshot.json`;
   
-  console.log('[discoverability] Calculated snapshot path:', snapshotPath, '(depth:', depth, ')');
+  console.log('[discoverability] Path:', path, '| Parts:', parts, '| depth:', depth);
+  console.log('[discoverability] Calculated snapshot path:', snapshotPath);
   return snapshotPath;
 }
 
