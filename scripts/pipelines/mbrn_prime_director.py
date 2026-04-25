@@ -223,6 +223,7 @@ Hard rules:
 - Do not pause both scout and nexus unless logs show critical repeated failures.
 - Keep nexus_roi_threshold near 80.0 unless backlog or quality clearly requires a change.
 - Ouroboros target must be null unless a specific safe improvement target is obvious.
+- CRITICAL RULE: If backlog_alphas is greater than 50, YOU MUST set scout_status to paused.
 - Output JSON only. No markdown. No prose.
 
 SENSOR SNAPSHOT:
@@ -314,9 +315,17 @@ def run_control_pass() -> Dict[str, Any]:
     if validation_warnings and not fallback_used:
         fallback_used = True
 
+    # Hard Override: If backlog > 50, force scout pause
+    if int(sensor.get("backlog_alphas", 0)) > 50:
+        proposed_control["scout_status"] = "paused"
+        proposed_control["prime_directive"] = "HARD OVERRIDE: Backlog > 50. Scout forcefully paused."
+
+    # Live Write: Commit the proposed control to the live factory control path
+    atomic_write_json(CONTROL_PATH, proposed_control)
+
     report = {
         "generated_at": utc_now(),
-        "dry_run": True,
+        "dry_run": False,
         "model": PRIME_MODEL,
         "repair_model": REPAIR_MODEL,
         "model_success": model_success,
@@ -327,7 +336,7 @@ def run_control_pass() -> Dict[str, Any]:
         "sensor_snapshot": sensor,
         "proposed_control": proposed_control,
         "raw_model_response_preview": raw_model_response[:1200],
-        "control_panel_unchanged": True,
+        "control_panel_unchanged": False,
     }
     atomic_write_json(REPORT_PATH, report)
     return report
@@ -337,16 +346,16 @@ def run_loop(interval_minutes: int) -> None:
     while True:
         try:
             report = run_control_pass()
-            log("OK", f"Dry-run control pass complete fallback={report['fallback_used']}")
+            log("OK", f"Live control pass complete fallback={report['fallback_used']}")
         except Exception as exc:
             log("ERROR", f"Prime Director loop failed: {exc}")
         time.sleep(max(1, interval_minutes) * 60)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="MBRN Prime Director dry-run controller")
-    parser.add_argument("--dry-run", action="store_true", help="Run one dry-run control pass")
-    parser.add_argument("--infinite", action="store_true", help="Run dry-run control passes forever")
+    parser = argparse.ArgumentParser(description="MBRN Prime Director - Level 5 Meta-Controller")
+    parser.add_argument("--run-once", action="store_true", help="Run one live control pass")
+    parser.add_argument("--infinite", action="store_true", help="Run live control passes forever")
     parser.add_argument("--interval-minutes", type=int, default=DEFAULT_INTERVAL_MINUTES)
     args = parser.parse_args()
 
@@ -355,8 +364,8 @@ def main() -> int:
         return 0
 
     report = run_control_pass()
-    log("OK", f"Dry-run report written: {REPORT_PATH}")
-    log("INFO", f"Proposed control: {json.dumps(report['proposed_control'], ensure_ascii=False)}")
+    log("OK", f"Live control report written: {REPORT_PATH}")
+    log("INFO", f"Active control: {json.dumps(report['proposed_control'], ensure_ascii=False)}")
     return 0
 
 

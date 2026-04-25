@@ -55,7 +55,6 @@ import sys
 import logging
 import time
 import json
-import ast
 from dataclasses import dataclass, field
 from typing import Optional
 import urllib.request
@@ -86,57 +85,6 @@ OLLAMA_TIMEOUT  = 600  # seconds per LLM call
 
 # Agent configuration
 MAX_RETRIES = 5
-FORBIDDEN_IMPORT_ERROR = "ImportGuardError"
-EXPLICITLY_BLOCKED_IMPORTS = {
-    "bs4",
-    "chromadb",
-    "crewai",
-    "dotenv",
-    "fastapi",
-    "langchain",
-    "langgraph",
-    "langgraph_forge",
-    "numpy",
-    "pandas",
-    "pydantic",
-    "requests",
-    "selvedge",
-    "smolagents",
-    "tavily",
-    "yfinance",
-}
-COMMON_STDLIB_MODULES = {
-    "__future__",
-    "argparse",
-    "ast",
-    "base64",
-    "collections",
-    "csv",
-    "dataclasses",
-    "datetime",
-    "decimal",
-    "enum",
-    "functools",
-    "hashlib",
-    "heapq",
-    "html",
-    "itertools",
-    "json",
-    "math",
-    "os",
-    "pathlib",
-    "random",
-    "re",
-    "statistics",
-    "string",
-    "textwrap",
-    "time",
-    "typing",
-    "urllib",
-    "uuid",
-    "xml",
-}
-STDLIB_MODULES = set(getattr(sys, "stdlib_module_names", set())) | COMMON_STDLIB_MODULES
 
 # ---------------------------------------------------------------------------
 # Data Structures
@@ -239,58 +187,6 @@ def _extract_code_block(llm_response: str) -> str:
     return llm_response.strip()
 
 
-def _import_roots(code: str) -> Optional[list[str]]:
-    """
-    Return imported top-level module names, or None if the code has syntax
-    errors that should be handled by the normal sandbox/self-heal path.
-    """
-    try:
-        tree = ast.parse(code)
-    except SyntaxError:
-        return None
-
-    roots: list[str] = []
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            roots.extend(alias.name.split(".", 1)[0] for alias in node.names)
-        elif isinstance(node, ast.ImportFrom):
-            if node.level == 0 and node.module:
-                roots.append(node.module.split(".", 1)[0])
-    return roots
-
-
-def find_forbidden_imports(code: str) -> list[str]:
-    """Find imports that violate the standalone stdlib-only sandbox contract."""
-    roots = _import_roots(code)
-    if roots is None:
-        return []
-
-    forbidden: list[str] = []
-    for root in sorted(set(roots)):
-        if root in EXPLICITLY_BLOCKED_IMPORTS or root not in STDLIB_MODULES:
-            forbidden.append(root)
-    return forbidden
-
-
-def _make_import_guard_failure(code: str, forbidden: list[str]) -> SandboxResult:
-    """Create a synthetic sandbox failure for deterministic import violations."""
-    modules = ", ".join(forbidden)
-    stderr = (
-        f"{FORBIDDEN_IMPORT_ERROR}: external imports are forbidden by the MBRN "
-        f"sandbox contract: {modules}. Rewrite the script to use Python stdlib "
-        "only and implement any needed placeholder/core logic locally."
-    )
-    return SandboxResult(
-        success=False,
-        stdout="",
-        stderr=stderr,
-        exit_code=-3,
-        execution_time_ms=0,
-        code_snippet=code,
-        error_message=stderr,
-    )
-
-
 # ---------------------------------------------------------------------------
 # Prompt Builders
 # ---------------------------------------------------------------------------
@@ -316,24 +212,11 @@ def _build_generation_prompt(goal: str) -> list[dict]:
 
 def _build_healing_prompt(goal: str, broken_code: str, stderr: str, stdout: str, attempt: int) -> list[dict]:
     """Build the self-healing prompt with full error context."""
-    import_rewrite_directive = ""
-    if "ModuleNotFoundError" in stderr or FORBIDDEN_IMPORT_ERROR in stderr:
-        import_rewrite_directive = """
-
-CRITICAL IMPORT REWRITE RULE:
-- The failure is caused by a forbidden or missing external package.
-- Remove every third-party import completely.
-- Do NOT import the missing package again.
-- Replace package-specific classes/functions with local stdlib-only data classes, functions, or deterministic placeholder logic.
-- The corrected script must be one standalone Python file using only stdlib imports.
-"""
-
     user_msg = f"""The following Python script was supposed to accomplish this goal:
 {goal}
 
 But it FAILED during execution. Here is the broken code and the error output.
 Fix ALL bugs and return a corrected, fully working script.
-{import_rewrite_directive}
 
 BROKEN CODE (Attempt #{attempt}):
 ```python
@@ -434,13 +317,8 @@ class AutoDevAgent:
             log.info("  " + "─"*56)
 
             # ── Step 3: Execute in Sandbox ────────────────────────────────
-            forbidden_imports = find_forbidden_imports(current_code)
-            if forbidden_imports:
-                log.warning(f"  Import guard blocked external imports: {forbidden_imports}")
-                sandbox_result = _make_import_guard_failure(current_code, forbidden_imports)
-            else:
-                log.info(f"  🔒 Executing in mbrn-sandbox...")
-                sandbox_result = execute_in_sandbox(current_code)
+            log.info(f"  🔒 Executing in mbrn-sandbox...")
+            sandbox_result = execute_in_sandbox(current_code)
 
             attempt_record = AgentAttempt(
                 attempt_number=attempt_num,

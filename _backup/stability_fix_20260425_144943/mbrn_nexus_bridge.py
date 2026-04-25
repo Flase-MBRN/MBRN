@@ -50,7 +50,7 @@ import time
 import urllib.request
 import urllib.error
 from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -83,8 +83,6 @@ log = logging.getLogger("mbrn_nexus_bridge")
 ROI_THRESHOLD = 80.0          # Only alphas above this enter the factory
 ROI_THRESHOLD_OVERRIDE: Optional[float] = None
 MAX_AGENT_RETRIES = 5         # Self-heal retries per alpha
-MAX_NEXUS_FAILURES = 3
-NEXUS_FAILURE_RETRY_HOURS = 24
 GITHUB_README_TIMEOUT = 20    # seconds
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
@@ -92,48 +90,9 @@ ALPHAS_PATH        = _PROJECT_ROOT / "shared" / "data" / "scout_alphas.json"
 FACTORY_OUTPUT_DIR = _PROJECT_ROOT / "docs" / "S3_Data" / "outputs" / "factory_ready"
 NOTIFICATIONS_PATH = _PROJECT_ROOT / "shared" / "data" / "nexus_notifications.json"
 FACTORY_CONTROL_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control.json"
-TOOL_REQUESTS_PATH = _PROJECT_ROOT / "shared" / "data" / "tool_requests.json"
 
 # Kill-switch file — create STOP_NEXUS in pipelines/ to halt the bridge loop
 KILL_SWITCH = _PIPELINES_DIR / "STOP_NEXUS"
-
-
-def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
-
-
-def _parse_utc_datetime(value: Any) -> Optional[datetime]:
-    if not value:
-        return None
-    try:
-        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
-    return parsed.astimezone(timezone.utc)
-
-
-def _clear_nexus_failure_fields(target: Dict[str, Any]) -> None:
-    for key in (
-        "nexus_failed",
-        "nexus_failed_at",
-        "nexus_failure_reason",
-        "nexus_retry_after",
-        "nexus_quarantined",
-    ):
-        target.pop(key, None)
-
-
-def _is_nexus_retry_blocked(target: Dict[str, Any]) -> bool:
-    if target.get("nexus_quarantined"):
-        return True
-    if int(target.get("nexus_failure_count") or 0) >= MAX_NEXUS_FAILURES:
-        return True
-    if not target.get("nexus_failed"):
-        return False
-    retry_after = _parse_utc_datetime(target.get("nexus_retry_after"))
-    return retry_after is not None and retry_after > _utc_now()
 
 
 def _clamp_roi_threshold(value: Any, default: float = ROI_THRESHOLD) -> float:
@@ -258,8 +217,6 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
                 continue
             if entry.get("nexus_processed"):
                 continue
-            if _is_nexus_retry_blocked(entry):
-                continue
             repo_name = entry["repo"]
             candidates.append(AlphaCandidate(
                 alpha_id=f"raw_{repo_name.replace('/', '_')}",
@@ -282,8 +239,6 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
         if score < ROI_THRESHOLD:
             continue
         if mbrn_enriched.get("nexus_processed"):
-            continue
-        if _is_nexus_retry_blocked(mbrn_enriched):
             continue
 
         repo_name = repo.get("name", "")
@@ -315,34 +270,6 @@ def apply_control_to_nexus() -> Dict[str, Any]:
     return control
 
 
-def _request_tool_if_needed(alpha_id: str, reason: str) -> None:
-    """Operation MacGyver: Request a tool if failure reason suggests missing deps/parsing."""
-    keywords = ["missing", "no module", "library", "parse", "format", "tool", "regex", "json", "csv", "xml"]
-    reason_lower = reason.lower()
-    if any(kw in reason_lower for kw in keywords):
-        try:
-            requests = []
-            if TOOL_REQUESTS_PATH.exists():
-                with open(TOOL_REQUESTS_PATH, "r", encoding="utf-8") as f:
-                    requests = json.load(f)
-            
-            if any(req.get("alpha_id") == alpha_id for req in requests):
-                return
-
-            requests.append({
-                "alpha_id": alpha_id,
-                "requested_tool_description": f"Automated fix needed for: {reason}",
-                "status": "pending",
-                "created_at": _utc_now().isoformat()
-            })
-            
-            with open(TOOL_REQUESTS_PATH, "w", encoding="utf-8") as f:
-                json.dump(requests, f, indent=2, ensure_ascii=False)
-            log.info(f"MACGYVER: Tool request created for alpha {alpha_id}")
-        except Exception as e:
-            log.warning(f"Failed to create tool request: {e}")
-
-
 def mark_alpha_processed(alpha_id: str) -> None:
     """Mark an alpha as processed in scout_alphas.json so it won't re-run."""
     data = _load_alphas_json()
@@ -355,63 +282,17 @@ def mark_alpha_processed(alpha_id: str) -> None:
         if "roi" in entry and isinstance(entry.get("repo"), str):
             if f"raw_{entry['repo'].replace('/', '_')}" == alpha_id:
                 entry["nexus_processed"] = True
-                entry["nexus_status"] = "processed"
-                entry["nexus_processed_at"] = _utc_now().isoformat()
-                _clear_nexus_failure_fields(entry)
+                entry["nexus_processed_at"] = datetime.now(timezone.utc).isoformat()
                 break
         # Format A
         elif entry.get("id") == alpha_id:
             enriched = entry.setdefault("mbrn_enriched", {})
             enriched["nexus_processed"] = True
-            enriched["nexus_status"] = "processed"
-            enriched["nexus_processed_at"] = _utc_now().isoformat()
-            _clear_nexus_failure_fields(enriched)
+            enriched["nexus_processed_at"] = datetime.now(timezone.utc).isoformat()
             break
 
     _save_alphas_json(data)
     log.info(f"Alpha '{alpha_id}' marked as processed.")
-
-
-def mark_alpha_failed(alpha_id: str, failure_reason: str) -> None:
-    """Record a retryable Nexus failure without marking the alpha processed."""
-    data = _load_alphas_json()
-    if not data:
-        return
-
-    now = _utc_now()
-    retry_after = now + timedelta(hours=NEXUS_FAILURE_RETRY_HOURS)
-    reason = (failure_reason or "unknown_failure").strip()[:1000]
-
-    discoveries = data.get("discoveries", [])
-    for entry in discoveries:
-        target: Optional[Dict[str, Any]] = None
-        if "roi" in entry and isinstance(entry.get("repo"), str):
-            if f"raw_{entry['repo'].replace('/', '_')}" == alpha_id:
-                target = entry
-        elif entry.get("id") == alpha_id:
-            target = entry.setdefault("mbrn_enriched", {})
-
-        if target is None:
-            continue
-
-        failure_count = int(target.get("nexus_failure_count") or 0) + 1
-        target["nexus_processed"] = False
-        target["nexus_failed"] = True
-        target["nexus_status"] = "failed"
-        target["nexus_failed_at"] = now.isoformat()
-        target["nexus_failure_reason"] = reason
-        target["nexus_failure_count"] = failure_count
-        if failure_count >= MAX_NEXUS_FAILURES:
-            target["nexus_quarantined"] = True
-            target["nexus_retry_after"] = None
-            # Operation MacGyver triage
-            _request_tool_if_needed(alpha_id, reason)
-        else:
-            target["nexus_retry_after"] = retry_after.isoformat()
-        break
-
-    _save_alphas_json(data)
-    log.info(f"Alpha '{alpha_id}' marked as failed for retry/quarantine handling.")
 
 
 # ---------------------------------------------------------------------------
@@ -631,7 +512,7 @@ def run_factory_for_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
       3. Agent generates + self-heals code in sandbox
       4. Save factory-ready module
       5. Push dashboard notification
-      6. Mark alpha as processed or record retryable failure metadata
+      6. Mark alpha as processed
 
     Returns FactoryResult on success, None on failure.
     """
@@ -662,7 +543,8 @@ def run_factory_for_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
     if not result.success:
         log.error(f"  AutoDevAgent failed after {result.total_attempts} attempts.")
         log.error(f"  Failure reason: {result.failure_reason}")
-        mark_alpha_failed(alpha.alpha_id, result.failure_reason or "AutoDevAgent failed")
+        # Still mark processed to avoid infinite retry loops
+        mark_alpha_processed(alpha.alpha_id)
         return None
 
     log.info(f"  Agent SUCCESS: {result.total_attempts} attempt(s), "

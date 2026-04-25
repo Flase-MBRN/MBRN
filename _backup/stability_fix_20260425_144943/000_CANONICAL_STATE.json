@@ -362,7 +362,7 @@
       "note": "Internal Level-6 autonomy agent for AST-scoped self-mutation. Uses local LLM proposals, syntax checks, runtime safety gate, backup, and rollback for safe code improvement. Prime Director may propose only whitelisted target files; Ouroboros remains the mutation gatekeeper."
     },
     "mbrn_prime_director": {
-      "state": "active",
+      "state": "experimental",
       "maturity": "implemented",
       "location": "scripts/pipelines/mbrn_prime_director.py",
       "owner_domain": "meta_generator",
@@ -375,29 +375,7 @@
       ],
       "control_path": "shared/data/mbrn_factory_control.json",
       "report_path": "shared/data/mbrn_prime_director_report.json",
-      "note": "Level 5 Meta-Controller. Observes factory backlog, modules, memory, and logs; asks local deepseek-r1:14b for a validated control proposal; actively writes live control panel decisions."
-    },
-    "mbrn_archivist": {
-      "state": "internal",
-      "maturity": "implemented",
-      "location": "scripts/pipelines/mbrn_archivist.py",
-      "owner_domain": "meta_generator",
-      "depends_on": [
-        "local_llm",
-        "mbrn_factory_memory"
-      ],
-      "note": "Knowledge Compression Agent. Analyzes factory-ready modules to synthesize master architectural patterns into the factory memory, preventing context bloat for future generation tasks."
-    },
-    "mbrn_toolmaker": {
-      "state": "internal",
-      "maturity": "implemented",
-      "location": "scripts/pipelines/mbrn_toolmaker.py",
-      "owner_domain": "meta_generator",
-      "depends_on": [
-        "local_llm",
-        "split_brain_sandbox"
-      ],
-      "note": "Self-Tooling Agent. Generates and validates standalone Python scripts to resolve Nexus blockages caused by missing logic or complex parsing requirements."
+      "note": "Mini-Level 5 dry-run controller. Observes factory backlog, modules, memory, and logs; asks local deepseek-r1:14b for a validated control proposal; writes only a dry-run report, not live control."
     }
   },
   "execution_tracks": {

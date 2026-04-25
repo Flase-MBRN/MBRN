@@ -39,9 +39,6 @@ import urllib.error
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-_PROJECT_ROOT_UTILS = Path(__file__).resolve().parents[2]
-DEFAULT_PIPELINE_DATA_DIR = _PROJECT_ROOT_UTILS / "AI" / "models" / "data"
-
 
 # =============================================================================
 # CONFIGURATION
@@ -59,7 +56,7 @@ class PipelineConfig:
     
     # Cache settings
     cache_ttl_seconds: int = 300  # 5 minutes
-    cache_dir: Path = DEFAULT_PIPELINE_DATA_DIR
+    cache_dir: Path = Path("AI/models/data")
     
     # Retry settings
     max_retries: int = 3
@@ -138,6 +135,7 @@ def log(level: str, message: str) -> None:
 # ERROR PERSISTENCE (Track A – Robustness Foundation)
 # =============================================================================
 
+_PROJECT_ROOT_UTILS = Path(__file__).resolve().parents[2]
 ERROR_LOG_DIR = _PROJECT_ROOT_UTILS / "docs" / "S3_Data" / "errors"
 
 
@@ -699,9 +697,7 @@ class PipelineCache:
     
     def __init__(self, config: PipelineConfig = CONFIG):
         self.config = config
-        self.cache_dir = Path(config.cache_dir)
-        if not self.cache_dir.is_absolute():
-            self.cache_dir = _PROJECT_ROOT_UTILS / self.cache_dir
+        self.cache_dir = config.cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
     
     def get(self, key: str) -> Optional[Dict[str, Any]]:

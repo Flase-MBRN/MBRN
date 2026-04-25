@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
 import sys
 import time
@@ -147,6 +148,7 @@ SCOUT_CONFIG = {
     },
     "persistence": {
         "alphas_path": _PROJECT_ROOT / "shared" / "data" / "scout_alphas.json",
+        "seen_repos_path": _PROJECT_ROOT / "shared" / "data" / "seen_repos.json",
         "evolution_path": _PROJECT_ROOT / "shared" / "data" / "mbrn_evolution_plan.json",
         "alpha_vault_root": _PROJECT_ROOT / "shared" / "alphas",
     },
@@ -469,14 +471,14 @@ def rotate_github_token() -> bool:
     log("WARN", f"GitHub Rate Limit hit! Rotating token (Index {old_idx} -> {_current_token_idx})")
     return True
 
-def scan_github_trending() -> List[Dict[str, Any]]:
+def scan_github_trending(keywords: List[str]) -> List[Dict[str, Any]]:
     url = f"{SCOUT_CONFIG['github']['search_url']}"
     from urllib.parse import urlencode
 
     repos_by_id: Dict[int, Dict[str, Any]] = {}
     since_date = (datetime.now(timezone.utc) - timedelta(days=SCOUT_CONFIG["github"]["created_within_days"])).strftime("%Y-%m-%d")
 
-    for keyword in SCOUT_CONFIG["github"]["keywords"]:
+    for keyword in keywords:
         query = f"{keyword} created:>{since_date}"
         params = {"q": query, "sort": "updated", "order": "desc", "per_page": SCOUT_CONFIG["github"]["per_page"]}
         full_url = f"{url}?{urlencode(params)}"
@@ -598,11 +600,24 @@ def load_existing_alphas() -> Dict[str, Any]:
         return {"discoveries": [], "seen_repo_ids": []}
 
 
-def save_alphas(data: Dict[str, Any]) -> bool:
-    output_path = SCOUT_CONFIG["persistence"]["alphas_path"]
+def load_seen_repos() -> Set[int]:
+    path = SCOUT_CONFIG["persistence"]["seen_repos_path"]
+    if not path.exists():
+        # Migration check: see if they are in scout_alphas.json
+        alphas = load_existing_alphas()
+        return set(alphas.get("seen_repo_ids", []))
     try:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        save_json_atomic(output_path, data)
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return set(data) if isinstance(data, list) else set()
+    except Exception:
+        return set()
+
+
+def save_seen_repos(seen_ids: Set[int]) -> bool:
+    path = SCOUT_CONFIG["persistence"]["seen_repos_path"]
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        save_json_atomic(path, sorted(list(seen_ids)))
         return True
     except Exception:
         return False
@@ -666,13 +681,14 @@ def backfill_alpha_vault_from_evolution_plan():
             write_alpha_vault_entry(repo, analysis, "")
 
 
-def run_synergy_patrol(context: Dict[str, Any]) -> Tuple[int, int]:
-    log("INFO", "=== INFINITE SYNERGY SCOUT PATROL STARTED ===")
-    alphas_data = load_existing_alphas()
-    seen_repo_ids = set(alphas_data.get("seen_repo_ids", []))
-    repos = scan_github_trending()
+def run_synergy_patrol(context: Dict[str, Any], keywords: List[str]) -> Tuple[int, int]:
+    log("INFO", f"=== INFINITE SYNERGY SCOUT PATROL STARTED (Keywords: {keywords}) ===")
+    seen_repo_ids = load_seen_repos()
+    repos = scan_github_trending(keywords)
     if not repos:
         return 0, 0
+    
+    alphas_data = load_existing_alphas()
     new_discoveries = 0
     repos_analyzed = 0
     for repo in repos:
@@ -680,17 +696,19 @@ def run_synergy_patrol(context: Dict[str, Any]) -> Tuple[int, int]:
             break
         repo_id = repo.get("id")
         repo_name = repo.get("full_name")
-        if repo_id in seen_repo_ids:
+        if not isinstance(repo_id, int) or repo_id in seen_repo_ids:
             continue
         log("INFO", f"Analyzing: {repo_name}")
         readme = extract_readme(repo_name)
         if not readme:
             seen_repo_ids.add(repo_id)
+            save_seen_repos(seen_repo_ids)
             continue
         analysis = analyze_tool_synergy(repo, readme, context)
         repos_analyzed += 1
         if not analysis:
             seen_repo_ids.add(repo_id)
+            save_seen_repos(seen_repo_ids)
             continue
         roi_score = analysis.get("roi_score", 0)
         if roi_score >= SCOUT_CONFIG["thresholds"]["roi_score_min"]:
@@ -699,10 +717,10 @@ def run_synergy_patrol(context: Dict[str, Any]) -> Tuple[int, int]:
             save_evolution_entry(repo, analysis, context)
             alphas_data = load_existing_alphas() # Refresh
             alphas_data["discoveries"].append({"repo": repo_name, "roi": roi_score})
+            save_json_atomic(SCOUT_CONFIG["persistence"]["alphas_path"], alphas_data)
             new_discoveries += 1
         seen_repo_ids.add(repo_id)
-        alphas_data["seen_repo_ids"] = list(seen_repo_ids)
-        save_alphas(alphas_data)
+        save_seen_repos(seen_repo_ids)
     return new_discoveries, repos_analyzed
 
 
@@ -721,8 +739,12 @@ def run_infinite_synergy_loop():
             continue
         log("INFO", f"ITERATION #{iteration} starting...")
         try:
+            all_keywords = SCOUT_CONFIG["github"]["keywords"]
+            num_to_pick = random.randint(1, 2)
+            selected_keywords = random.sample(all_keywords, min(len(all_keywords), num_to_pick))
+            
             context = load_kanon_context()
-            new_alphas, analyzed = run_synergy_patrol(context)
+            new_alphas, analyzed = run_synergy_patrol(context, selected_keywords)
             log("OK", f"Iteration #{iteration} complete: {new_alphas} alphas found")
         except Exception as exc:
             log("ERROR", f"Iteration #{iteration} failed: {exc}")
@@ -743,6 +765,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     load_pipeline_env(PIPELINES_DIR / ".env")
     if args.single:
-        run_synergy_patrol(load_kanon_context())
+        all_keywords = SCOUT_CONFIG["github"]["keywords"]
+        selected = random.sample(all_keywords, min(len(all_keywords), 2))
+        run_synergy_patrol(load_kanon_context(), selected)
     else:
         run_infinite_synergy_loop()

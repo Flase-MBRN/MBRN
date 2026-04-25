@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
@@ -13,6 +14,10 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 import requests
+
+PIPELINES_DIR = Path(__file__).resolve().parents[1]
+if str(PIPELINES_DIR) not in sys.path:
+    sys.path.insert(0, str(PIPELINES_DIR))
 
 from pipeline_utils import OllamaEnricher, SupabaseUplink, load_pipeline_env, save_json_atomic, save_to_json
 # NOTE: schema_validator module archived - validation disabled

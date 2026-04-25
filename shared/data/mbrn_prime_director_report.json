@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-25T11:34:36+00:00",
+  "generated_at": "2026-04-25T13:53:34+00:00",
   "dry_run": true,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
@@ -8,31 +8,30 @@
   "fallback_used": true,
   "validation_status": "repaired",
   "validation_warnings": [
-    "invalid_ouroboros_target_file",
-    "invalid_prime_directive"
+    "invalid_ouroboros_target_file"
   ],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T11:33:20+00:00",
+    "generated_at": "2026-04-25T13:52:47+00:00",
     "discoveries": 102,
-    "processed_alphas": 38,
-    "backlog_alphas": 64,
-    "seen_repo_ids": 374,
-    "factory_ready_modules": 90,
+    "processed_alphas": 64,
+    "backlog_alphas": 38,
+    "seen_repo_ids": 381,
+    "factory_ready_modules": 125,
     "factory_memory_docs": 15,
-    "nexus_notifications": 90,
+    "nexus_notifications": 125,
     "recent_findings": [
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:09:43.153429+00:00] [WARN] GitHub scan failed query='crewai-tools created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:09:12.134022+00:00] [WARN] GitHub scan failed query='llm-code-execution-loop created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:02:46.961850+00:00] [WARN] GitHub scan failed query='resume-parser-llm created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:02:36.905815+00:00] [WARN] GitHub scan failed query='automated-trading-agent created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:02:26.829188+00:00] [WARN] GitHub scan failed query='self-improving-prompt created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:01:44.382865+00:00] [WARN] GitHub scan failed query='pydantic-ai created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:01:34.330068+00:00] [WARN] GitHub scan failed query='smolagents created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:01:24.274576+00:00] [WARN] GitHub scan failed query='langgraph-agent created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T11:00:42.529186+00:00] [WARN] GitHub scan failed query='llm-code-execution-loop created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T10:54:28.004731+00:00] [WARN] GitHub scan failed query='automated-trading-agent created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T10:54:17.962838+00:00] [WARN] GitHub scan failed query='self-improving-prompt created:>2026-04-18': HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_100037.log: [2026-04-25T10:54:07.918252+00:00] [WARN] GitHub scan failed query='ai-coding-assistant-local created:>2026-04-18': HTTP Error 403: rate limit exceeded"
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.678909+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.617432+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.552349+00:00] [WARN] GitHub README API failed for rohitpatill/Symposium: HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.510536+00:00] [WARN] GitHub README API failed for soaebhasan12/autostream-agent: HTTP Error 403: rate limit exceeded",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:36:25.472820+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:36:25.246379+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:36:25.019989+00:00] [WARN] GitHub README API failed for rohitpatill/Symposium: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:28:13.084951+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:28:12.865163+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:19:09.908494+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 404: Not Found",
+      "day_zero_autopilot_2026-04-25_140558.log:         \"title\": \"Pirro could reopen Fed probe at any time, Democratic senators warn\",",
+      "horizon_scout_2026-04-25_135142.log: [2026-04-25T11:52:34.700920+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai"
     ],
     "current_control": {
       "scout_status": "running",
@@ -47,8 +46,8 @@
     "nexus_status": "running",
     "nexus_roi_threshold": 80.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Maximize factory output and clear backlog."
+    "prime_directive": "HARD OVERRIDE: Backlog > 0. Scout forcefully paused."
   },
-  "raw_model_response_preview": "{\n  \"scout_status\": \"paused\",\n  \"nexus_status\": \"running\",\n  \"n",
+  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"running\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": \"scripts/pipelines/mbrn_horizon_scout.py\",\n  \"prime_directive\": \"Focus on Horizon Scout stability and GitHub",
   "control_panel_unchanged": true
 }
