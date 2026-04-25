@@ -109,7 +109,10 @@ function renderNotificationCard(n) {
     ? `<span class="factory-badge factory-badge--elite">Elite</span>`
     : `<span class="factory-badge factory-badge--standard">${n.curation_status}</span>`;
 
-  const linkUrl = n.module_file ? `/${n.module_file}` : '#';
+  // Calculate path relative to root
+  const isDashboard = window.location.pathname.includes('/dashboard/');
+  const rootPrefix = isDashboard ? '../' : '';
+  const linkUrl = n.module_file ? `${rootPrefix}${n.module_file}` : '#';
   
   // Truncate long titles
   const displayTitle = repoName.length > 30 ? repoName.substring(0, 27) + '...' : repoName;

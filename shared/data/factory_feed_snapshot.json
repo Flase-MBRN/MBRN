@@ -20,16 +20,6 @@
     "created_at": "2026-04-25 18:06:29"
   },
   {
-    "id": 159,
-    "name": "1616 Smolagents Task Library Module",
-    "dimension": "muster",
-    "frontend_file": "dimensions/muster/apps/1616_smolagents_task_library_module_1/index.html",
-    "quality_score": 0.4,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:29"
-  },
-  {
     "id": 160,
     "name": "Ai Resume Screening System Module",
     "dimension": "systeme",
@@ -60,61 +50,11 @@
     "created_at": "2026-04-25 18:06:29"
   },
   {
-    "id": 163,
-    "name": "Ai Resume Screening System Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/ai_resume_screening_system_module_1/index.html",
-    "quality_score": 0.55,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:29"
-  },
-  {
-    "id": 124,
-    "name": "Sketch Pydanticai Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/sketch_pydanticai_module_1/index.html",
-    "quality_score": 0.30000000000000004,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
     "id": 125,
     "name": "Declaracion Renta Ai Module",
     "dimension": "ausdruck",
     "frontend_file": "dimensions/ausdruck/apps/declaracion_renta_ai_module/index.html",
     "quality_score": 0.55,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 126,
-    "name": "Ai Oacb Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/ai_oacb_module_5/index.html",
-    "quality_score": 0.30000000000000004,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 127,
-    "name": "Xmail Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/xmail_module_4/index.html",
-    "quality_score": 0.4,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 128,
-    "name": "Maria Jaison Autostream Ai Agent Module",
-    "dimension": "netzwerk",
-    "frontend_file": "dimensions/netzwerk/apps/maria_jaison_autostream_ai_agent_module_4/index.html",
-    "quality_score": 0.4,
     "is_elite": 0,
     "curation_status": "standard",
     "created_at": "2026-04-25 18:06:28"
@@ -130,66 +70,6 @@
     "created_at": "2026-04-25 18:06:28"
   },
   {
-    "id": 130,
-    "name": "Seo Blog Writer Agent Module",
-    "dimension": "ausdruck",
-    "frontend_file": "dimensions/ausdruck/apps/seo_blog_writer_agent_module_2/index.html",
-    "quality_score": 0.30000000000000004,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 131,
-    "name": "Ai Oacb Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/ai_oacb_module_6/index.html",
-    "quality_score": 0.30000000000000004,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 132,
-    "name": "Xmail Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/xmail_module_5/index.html",
-    "quality_score": 0.4,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 133,
-    "name": "Maria Jaison Autostream Ai Agent Module",
-    "dimension": "netzwerk",
-    "frontend_file": "dimensions/netzwerk/apps/maria_jaison_autostream_ai_agent_module_5/index.html",
-    "quality_score": 0.4,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 134,
-    "name": "Smallclawlm Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/smallclawlm_module_4/index.html",
-    "quality_score": 0.4,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
-    "id": 135,
-    "name": "Stackpulse Module",
-    "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/stackpulse_module_4/index.html",
-    "quality_score": 0.2,
-    "is_elite": 0,
-    "curation_status": "standard",
-    "created_at": "2026-04-25 18:06:28"
-  },
-  {
     "id": 136,
     "name": "Enigmagent Module",
     "dimension": "systeme",
@@ -198,5 +78,665 @@
     "is_elite": 0,
     "curation_status": "standard",
     "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 137,
+    "name": "Smallclawlm Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/smallclawlm_module_5/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 143,
+    "name": "Sketch Pydanticai Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/sketch_pydanticai_module_2/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 146,
+    "name": "Hub Sentinel Ai Enterprise Llm Governance Security  Module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/hub_sentinel_ai_enterprise_llm_governance_security_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 148,
+    "name": "Maxpilot Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/maxpilot_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 149,
+    "name": "Verifiable Tool Invocation Flow Module",
+    "dimension": "energie",
+    "frontend_file": "dimensions/energie/apps/verifiable_tool_invocation_flow_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 152,
+    "name": "Ai Resume Matcher Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/ai_resume_matcher_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 153,
+    "name": "Rai Pc Librarian Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/rai_pc_librarian_module/index.html",
+    "quality_score": 0.8500000000000001,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 154,
+    "name": "Finagent Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/finagent_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 155,
+    "name": "Ghx Atlas Module",
+    "dimension": "ausdruck",
+    "frontend_file": "dimensions/ausdruck/apps/ghx_atlas_module/index.html",
+    "quality_score": 0.5,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:28"
+  },
+  {
+    "id": 87,
+    "name": "Apple Notes Mcp Module",
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/apple_notes_mcp_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 89,
+    "name": "Hivemind Module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/hivemind_module/index.html",
+    "quality_score": 0.75,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 90,
+    "name": "Memor Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/memor_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 92,
+    "name": "Xmail Module",
+    "dimension": "ausdruck",
+    "frontend_file": "dimensions/ausdruck/apps/xmail_module/index.html",
+    "quality_score": 0.45000000000000007,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 93,
+    "name": "Maria Jaison Autostream Ai Agent Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/maria_jaison_autostream_ai_agent_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 102,
+    "name": "Enigmagent Mcp Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/enigmagent_mcp_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 104,
+    "name": "Autonomous Research Agent Module",
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/autonomous_research_agent_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 105,
+    "name": "Selvedge Module",
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/selvedge_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 106,
+    "name": "Chronos Agent Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/chronos_agent_module_2/index.html",
+    "quality_score": 0.7000000000000001,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 107,
+    "name": "Mcp Warden Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/mcp_warden_module_1/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 109,
+    "name": "Gitflow Module",
+    "dimension": "energie",
+    "frontend_file": "dimensions/energie/apps/gitflow_module_2/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 110,
+    "name": "Video Extract Agents Module",
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/video_extract_agents_module_1/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 111,
+    "name": "Llm Control Engine Module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/llm_control_engine_module/index.html",
+    "quality_score": 0.5,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 116,
+    "name": "Somnus Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/somnus_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 117,
+    "name": "Guildr Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/guildr_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 118,
+    "name": "Ecomerce Pydantic Ai Module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/ecomerce_pydantic_ai_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 119,
+    "name": "Ds Warehouse Financial Doc Agent Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/ds_warehouse_financial_doc_agent_module/index.html",
+    "quality_score": 0.45000000000000007,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 122,
+    "name": "Ab Castor Module",
+    "dimension": "physis",
+    "frontend_file": "dimensions/physis/apps/ab_castor_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 123,
+    "name": "Discord Nexus Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/discord_nexus_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:27"
+  },
+  {
+    "id": 50,
+    "name": "Agentic Eval Team Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/agentic_eval_team_module_1/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 51,
+    "name": "Gandhi 2411 Agentic Shopping Assistant Module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/gandhi_2411_agentic_shopping_assistant_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 55,
+    "name": "Milestonehub Langgraph Forge Module",
+    "dimension": "wachstum",
+    "frontend_file": "dimensions/wachstum/apps/milestonehub_langgraph_forge_module_1/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 58,
+    "name": "Coder Buddy Agentic Ai Using Langgraph Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/coder_buddy_agentic_ai_using_langgraph_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 60,
+    "name": "Aegis Module",
+    "dimension": "geist",
+    "frontend_file": "dimensions/geist/apps/aegis_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 64,
+    "name": "Xfusion Guardian Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/xfusion_guardian_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 66,
+    "name": "Job Search Agent Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/job_search_agent_module_1/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 67,
+    "name": "Builds Aifree Module",
+    "dimension": "raum",
+    "frontend_file": "dimensions/raum/apps/builds_aifree_module_1/index.html",
+    "quality_score": 0.45000000000000007,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 73,
+    "name": "Seo Blog Writer Agent Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/seo_blog_writer_agent_module_1/index.html",
+    "quality_score": 0.45000000000000007,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 83,
+    "name": "Enterprise Knowledge Rag Agent Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/enterprise_knowledge_rag_agent_module/index.html",
+    "quality_score": 0.8999999999999999,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:26"
+  },
+  {
+    "id": 8,
+    "name": "Paper Visualizer Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/paper_visualizer_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 9,
+    "name": "Singh1 Propab Oss Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/singh1_propab_oss_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 10,
+    "name": "Holden Capital Agentic Workflows Module",
+    "dimension": "energie",
+    "frontend_file": "dimensions/energie/apps/holden_capital_agentic_workflows_module/index.html",
+    "quality_score": 0.0,
+    "is_elite": 0,
+    "curation_status": "trash",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 11,
+    "name": "Opticode Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/opticode_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 14,
+    "name": "Yatrik Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/yatrik_module/index.html",
+    "quality_score": 0.5,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 15,
+    "name": "Agent State Module",
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/agent_state_module/index.html",
+    "quality_score": 0.75,
+    "is_elite": 1,
+    "curation_status": "elite",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 16,
+    "name": "Af Cursorthreads Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/af_cursorthreads_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 17,
+    "name": "Kausaos Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/kausaos_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 18,
+    "name": "Flywheel Ideas Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/flywheel_ideas_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 19,
+    "name": "Arp Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/arp_module_1/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 20,
+    "name": "Mcporter Proxy Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/mcporter_proxy_module_1/index.html",
+    "quality_score": 0.5,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 21,
+    "name": "Agent Valley Module",
+    "dimension": "ausdruck",
+    "frontend_file": "dimensions/ausdruck/apps/agent_valley_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 22,
+    "name": "Agent Team Module",
+    "dimension": "geld",
+    "frontend_file": "dimensions/geld/apps/agent_team_module/index.html",
+    "quality_score": 0.30000000000000004,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 24,
+    "name": "A1 Fx Zerosync Trader Module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/a1_fx_zerosync_trader_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 25,
+    "name": "Research Paper Intelligent Assistant Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/research_paper_intelligent_assistant_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 26,
+    "name": "Go Agent Llm Orchestrator Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/go_agent_llm_orchestrator_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 28,
+    "name": "Bookly Assistant Module",
+    "dimension": "ausdruck",
+    "frontend_file": "dimensions/ausdruck/apps/bookly_assistant_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 39,
+    "name": "Work Flow Agent Factory Module",
+    "dimension": "energie",
+    "frontend_file": "dimensions/energie/apps/work_flow_agent_factory_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 40,
+    "name": "Skill Trainer Module",
+    "dimension": "wachstum",
+    "frontend_file": "dimensions/wachstum/apps/skill_trainer_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 43,
+    "name": "Video Workflow Module",
+    "dimension": "geld",
+    "frontend_file": "dimensions/geld/apps/video_workflow_module/index.html",
+    "quality_score": 0.45000000000000007,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 46,
+    "name": "Ai Oacb Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/ai_oacb_module/index.html",
+    "quality_score": 0.45000000000000007,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:25"
+  },
+  {
+    "id": 1,
+    "name": "Skills Eval Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/skills_eval_module/index.html",
+    "quality_score": 0.55,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:24"
+  },
+  {
+    "id": 2,
+    "name": "Org Claude Memory Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/org_claude_memory_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:24"
+  },
+  {
+    "id": 3,
+    "name": "Taskloop Ai Agent Module",
+    "dimension": "zeit",
+    "frontend_file": "dimensions/zeit/apps/taskloop_ai_agent_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:24"
+  },
+  {
+    "id": 4,
+    "name": "Orqestly Module",
+    "dimension": "muster",
+    "frontend_file": "dimensions/muster/apps/orqestly_module/index.html",
+    "quality_score": 0.5,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:24"
+  },
+  {
+    "id": 5,
+    "name": "Finagent Quant Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/finagent_quant_module/index.html",
+    "quality_score": 0.45000000000000007,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:24"
+  },
+  {
+    "id": 6,
+    "name": "Ai Task Manager Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/ai_task_manager_module/index.html",
+    "quality_score": 0.4,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:24"
+  },
+  {
+    "id": 7,
+    "name": "Labellm Module",
+    "dimension": "systeme",
+    "frontend_file": "dimensions/systeme/apps/labellm_module/index.html",
+    "quality_score": 0.6,
+    "is_elite": 0,
+    "curation_status": "standard",
+    "created_at": "2026-04-25 18:06:24"
   }
 ]
