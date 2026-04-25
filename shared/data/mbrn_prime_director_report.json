@@ -1,54 +1,51 @@
 {
-  "generated_at": "2026-04-25T16:04:24+00:00",
-  "dry_run": false,
+  "generated_at": "2026-04-25T16:49:17+00:00",
+  "dry_run": true,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
   "model_success": true,
-  "repair_used": true,
-  "fallback_used": true,
-  "validation_status": "repaired",
-  "validation_warnings": [
-    "invalid_ouroboros_target_file",
-    "invalid_prime_directive"
-  ],
+  "repair_used": false,
+  "fallback_used": false,
+  "validation_status": "ok",
+  "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T16:02:34+00:00",
+    "generated_at": "2026-04-25T16:48:08+00:00",
     "discoveries": 105,
-    "processed_alphas": 69,
-    "backlog_alphas": 36,
+    "processed_alphas": 75,
+    "backlog_alphas": 30,
     "seen_repo_ids": 403,
-    "factory_ready_modules": 145,
+    "factory_ready_modules": 155,
     "factory_memory_docs": 15,
-    "nexus_notifications": 145,
+    "nexus_notifications": 155,
     "recent_findings": [
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:46:51.792301+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:36:51.790770+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:26:51.779342+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:16:51.776972+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:06:51.774976+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:56:51.765630+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:46:51.763671+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:36:51.762601+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:41.017822+00:00] [WARN] GitHub README API failed for chopra2007/claude-discover: HTTP Error 404: Not Found",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:40.799843+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:26.415818+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:59:18.728204+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:49:18.725952+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:39:18.724818+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.717719+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.705145+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.703990+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai"
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:59:18.728204+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes..."
     ],
     "current_control": {
-      "scout_status": "paused",
+      "scout_status": "running",
       "nexus_status": "running",
       "nexus_roi_threshold": 80.0,
-      "ouroboros_target_file": "scripts/pipelines/mbrn_factory_memory.py",
-      "prime_directive": "Resolve GitHub API errors and function argument issues."
+      "ouroboros_target_file": null,
+      "prime_directive": "Maintain stable throughput with Prime Director in canonical dry-run mode."
     }
   },
   "proposed_control": {
-    "scout_status": "paused",
+    "scout_status": "running",
     "nexus_status": "running",
     "nexus_roi_threshold": 80.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Maximize factory output and clear backlog."
+    "prime_directive": "Focus on system stability; monitor Scout pauses and address underlying issues."
   },
-  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"paused\",\n  \"nexus_status\": \"running\",\n  \"n",
-  "control_panel_unchanged": false
+  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"running\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": null,\n  \"prime_directive\": \"Focus on system stability; monitor Scout pauses and address underlying issues.\"\n}\n```",
+  "control_panel_unchanged": true
 }

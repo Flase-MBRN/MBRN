@@ -1,5 +1,6 @@
 param(
-    [switch]$SkipDayZero
+    [switch]$SkipDayZero,
+    [switch]$EnableExperimentalTools
 )
 
 $ErrorActionPreference = "Continue"
@@ -88,10 +89,10 @@ try {
         exit 0
     }
 
-    Write-Step "[1/9] Starting Sentinel Daemon"
+    Write-Step "[1/7] Starting Sentinel Daemon"
     Start-PythonComponent -Name "Sentinel" -ScriptPath $Sentinel
 
-    Write-Step "[2/9] Running Day Zero Autopilot"
+    Write-Step "[2/7] Running Day Zero Autopilot"
     if ($SkipDayZero) {
         Write-Host "[OK] Day Zero skipped by flag"
     } elseif (Test-Path -LiteralPath $DayZero) {
@@ -101,26 +102,28 @@ try {
         exit 1
     }
 
-    Write-Step "[3/9] Checking Docker Engine"
+    Write-Step "[3/7] Checking Docker Engine"
     Wait-Docker
 
-    Write-Step "[4/9] Starting Nexus"
+    Write-Step "[4/7] Starting Nexus"
     Start-PythonComponent -Name "Nexus" -ScriptPath $Nexus
 
-    Write-Step "[5/9] Starting Ouroboros"
+    Write-Step "[5/7] Starting Ouroboros"
     Start-PythonComponent -Name "Ouroboros" -ScriptPath $Ouroboros -Arguments @("--infinite")
 
-    Write-Step "[6/9] Starting Live Monitor"
+    Write-Step "[6/7] Starting Live Monitor"
     Start-PythonComponent -Name "Live Monitor" -ScriptPath $Monitor -Arguments @("--infinite")
 
-    Write-Step "[7/9] Starting Archivist"
-    Start-PythonComponent -Name "Archivist" -ScriptPath $Archivist -Arguments @("--infinite")
-
-    Write-Step "[8/9] Starting Toolmaker"
-    Start-PythonComponent -Name "Toolmaker" -ScriptPath $Toolmaker -Arguments @("--infinite")
-
-    Write-Step "[9/9] Starting Prime Director"
+    Write-Step "[7/7] Starting Prime Director"
     Start-PythonComponent -Name "Prime Director" -ScriptPath $Prime -Arguments @("--infinite")
+
+    if ($EnableExperimentalTools) {
+        Write-Step "[optional] Starting non-canonical experimental tools"
+        Start-PythonComponent -Name "Archivist" -ScriptPath $Archivist -Arguments @("--infinite")
+        Start-PythonComponent -Name "Toolmaker" -ScriptPath $Toolmaker -Arguments @("--infinite")
+    } else {
+        Write-Host "[OK] Non-canonical experimental tools skipped (Archivist, Toolmaker)"
+    }
 
     Write-Host ""
     Write-Host "============================================"

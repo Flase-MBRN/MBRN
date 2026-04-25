@@ -9,12 +9,24 @@ import json
 import math
 import os
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MEMORY_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_memory.json"
+_SAFE_IMPORT_ROOTS = set(getattr(sys, "stdlib_module_names", ())) | {
+    "collections",
+    "dataclasses",
+    "datetime",
+    "functools",
+    "itertools",
+    "math",
+    "pathlib",
+    "re",
+    "typing",
+}
 
 def _tokenize(text: str) -> List[str]:
     """Simple alphanumeric tokenizer."""
@@ -29,6 +41,53 @@ def _load_memory() -> Dict[str, Any]:
             return json.load(f)
     except Exception:
         return {"documents": []}
+
+def _is_stdlib_import(line: str) -> bool:
+    from_match = re.match(r"\s*from\s+([A-Za-z_][\w.]*)\s+import\b", line)
+    import_match = re.match(r"\s*import\s+(.+)", line)
+    if from_match:
+        roots = [from_match.group(1).split(".", 1)[0]]
+    elif import_match:
+        imports = import_match.group(1).split("#", 1)[0]
+        roots = [
+            part.strip().split(" ", 1)[0].split(".", 1)[0]
+            for part in imports.split(",")
+            if part.strip()
+        ]
+    else:
+        return True
+    return bool(roots) and all(root in _SAFE_IMPORT_ROOTS for root in roots)
+
+def sanitize_code_snippet(code_snippet: str) -> str:
+    """Return a Factory Memory snippet with external imports and install commands removed."""
+    sanitized: List[str] = []
+    removed = 0
+    skip_import_block = False
+
+    for line in str(code_snippet or "").splitlines():
+        stripped = line.strip()
+        if skip_import_block:
+            removed += 1
+            if ")" in stripped:
+                skip_import_block = False
+            continue
+
+        if re.search(r"\b(pip|poetry|uv)\s+install\b", stripped):
+            removed += 1
+            continue
+
+        is_import = bool(re.match(r"\s*(from\s+\S+\s+import\b|import\s+)", line))
+        if is_import and not _is_stdlib_import(line):
+            removed += 1
+            if stripped.endswith("("):
+                skip_import_block = True
+            continue
+
+        sanitized.append(line)
+
+    if removed:
+        sanitized.insert(0, f"# Factory Memory sanitized: removed {removed} external import/install line(s).")
+    return "\n".join(sanitized).strip()
 
 def _save_memory(data: Dict[str, Any]) -> None:
     MEMORY_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -100,7 +159,15 @@ def retrieve_similar_code(query: str, top_k: int = 3) -> List[Dict[str, Any]]:
     query_tokens = _tokenize(query)
     
     scored_docs = _calculate_tf_idf(query_tokens, memory["documents"])
-    return [doc for score, doc in scored_docs[:top_k]]
+    results: List[Dict[str, Any]] = []
+    for _score, doc in scored_docs[:top_k]:
+        sanitized = dict(doc)
+        sanitized["code"] = sanitize_code_snippet(str(doc.get("code", "")))
+        metadata = dict(sanitized.get("metadata", {}))
+        metadata["stdlib_sanitized"] = True
+        sanitized["metadata"] = metadata
+        results.append(sanitized)
+    return results
 
 def init_memory_from_alphas() -> int:
     """One-time run to load existing alphas into memory."""

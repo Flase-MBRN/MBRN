@@ -292,13 +292,40 @@ def load_manifest_context() -> Optional[str]:
 # =============================================================================
 # ROI CALCULATION ENGINE
 # =============================================================================
-def calculate_roi_score(prices, period):
+def calculate_price_roi_score(prices, period):
+    """Calculate price-vs-EMA ROI for numeric market-style series."""
     ema = calculate_ema(prices, period)
     if not ema:
         return 0.0
     current_price = prices[-1]
     roi = ((current_price - ema[-1]) / ema[-1]) * 100
     return round(roi, 2)
+
+
+def calculate_synergy_roi_score(analysis: Dict[str, Any]) -> Tuple[float, str]:
+    """Calculate Scout synergy ROI from LLM score dimensions."""
+    weights = SCOUT_CONFIG["roi_weights"]
+
+    def score_value(key: str) -> float:
+        try:
+            return max(0.0, min(100.0, float(analysis.get(key, 0))))
+        except (TypeError, ValueError):
+            return 0.0
+
+    scalability = score_value("scalability_score")
+    maintenance = score_value("maintenance_score")
+    uniqueness = score_value("uniqueness_score")
+    roi = (
+        scalability * weights["scalability"]
+        + maintenance * weights["maintenance"]
+        + uniqueness * weights["uniqueness"]
+    )
+    rationale = (
+        f"weighted ROI: scalability={scalability:.0f}*{weights['scalability']}, "
+        f"maintenance={maintenance:.0f}*{weights['maintenance']}, "
+        f"uniqueness={uniqueness:.0f}*{weights['uniqueness']}"
+    )
+    return round(roi, 1), rationale
 
 
 ALPHA_VAULT_CATEGORIES = ("frontend", "core_logic", "autonomy")
@@ -535,7 +562,7 @@ def analyze_tool_synergy(repo_data: Dict[str, Any], readme_content: str, context
         if not success:
             log("WARN", f"Synergy analysis failed for {repo_data.get('full_name')}")
             return None
-        roi_score, roi_rationale = calculate_roi_score(result)
+        roi_score, roi_rationale = calculate_synergy_roi_score(result)
         result["roi_score"] = roi_score
         result["roi_rationale"] = roi_rationale
         log("OK", f"Synergy analysis complete: ROI={roi_score}/100 | Pillar={result.get('pillar_alignment')}")

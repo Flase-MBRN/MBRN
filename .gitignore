@@ -91,3 +91,8 @@ shared/data/mbrn_factory_memory.json
 shared/data/mbrn_factory_control.json
 shared/data/mbrn_prime_director_report.json
 shared/data/seen_repos.json
+
+# Internal Audit Files
+shared/data/full_audit_scan.csv
+shared/data/project_audit_filtered.csv
+_backup/

@@ -293,7 +293,7 @@ def fallback_decision(sensor: Dict[str, Any]) -> Dict[str, Any]:
     return control
 
 
-def run_control_pass() -> Dict[str, Any]:
+def run_control_pass(live_control: bool = False) -> Dict[str, Any]:
     sensor = collect_sensor_snapshot()
     prompt = build_prime_prompt(sensor)
     fallback_used = False
@@ -320,12 +320,12 @@ def run_control_pass() -> Dict[str, Any]:
         proposed_control["scout_status"] = "paused"
         proposed_control["prime_directive"] = "HARD OVERRIDE: Backlog > 50. Scout forcefully paused."
 
-    # Live Write: Commit the proposed control to the live factory control path
-    atomic_write_json(CONTROL_PATH, proposed_control)
+    if live_control:
+        atomic_write_json(CONTROL_PATH, proposed_control)
 
     report = {
         "generated_at": utc_now(),
-        "dry_run": False,
+        "dry_run": not live_control,
         "model": PRIME_MODEL,
         "repair_model": REPAIR_MODEL,
         "model_success": model_success,
@@ -336,36 +336,43 @@ def run_control_pass() -> Dict[str, Any]:
         "sensor_snapshot": sensor,
         "proposed_control": proposed_control,
         "raw_model_response_preview": raw_model_response[:1200],
-        "control_panel_unchanged": False,
+        "control_panel_unchanged": not live_control,
     }
     atomic_write_json(REPORT_PATH, report)
     return report
 
 
-def run_loop(interval_minutes: int) -> None:
+def run_loop(interval_minutes: int, live_control: bool = False) -> None:
     while True:
         try:
-            report = run_control_pass()
-            log("OK", f"Live control pass complete fallback={report['fallback_used']}")
+            report = run_control_pass(live_control=live_control)
+            mode = "live" if live_control else "dry-run"
+            log("OK", f"{mode} control pass complete fallback={report['fallback_used']}")
         except Exception as exc:
             log("ERROR", f"Prime Director loop failed: {exc}")
         time.sleep(max(1, interval_minutes) * 60)
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="MBRN Prime Director - Level 5 Meta-Controller")
-    parser.add_argument("--run-once", action="store_true", help="Run one live control pass")
-    parser.add_argument("--infinite", action="store_true", help="Run live control passes forever")
+    parser = argparse.ArgumentParser(description="MBRN Prime Director - Level 5 Dry-Run Meta-Controller")
+    parser.add_argument("--run-once", action="store_true", help="Run one dry-run control pass")
+    parser.add_argument("--infinite", action="store_true", help="Run dry-run control passes forever")
+    parser.add_argument(
+        "--live-control",
+        action="store_true",
+        help="Opt-in drift mode: write proposed control to the live factory control file",
+    )
     parser.add_argument("--interval-minutes", type=int, default=DEFAULT_INTERVAL_MINUTES)
     args = parser.parse_args()
 
     if args.infinite:
-        run_loop(args.interval_minutes)
+        run_loop(args.interval_minutes, live_control=args.live_control)
         return 0
 
-    report = run_control_pass()
-    log("OK", f"Live control report written: {REPORT_PATH}")
-    log("INFO", f"Active control: {json.dumps(report['proposed_control'], ensure_ascii=False)}")
+    report = run_control_pass(live_control=args.live_control)
+    mode = "live" if args.live_control else "dry-run"
+    log("OK", f"{mode} control report written: {REPORT_PATH}")
+    log("INFO", f"Proposed control: {json.dumps(report['proposed_control'], ensure_ascii=False)}")
     return 0
 
 

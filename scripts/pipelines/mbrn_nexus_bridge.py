@@ -125,6 +125,24 @@ def _clear_nexus_failure_fields(target: Dict[str, Any]) -> None:
         target.pop(key, None)
 
 
+def _normalize_repo_name(repo_name: Any) -> str:
+    return str(repo_name or "").strip().lower().removesuffix(".git")
+
+
+def _repo_name_for_entry(entry: Dict[str, Any]) -> str:
+    if "roi" in entry and isinstance(entry.get("repo"), str):
+        return str(entry.get("repo") or "")
+    repo = entry.get("repo", {})
+    return str(repo.get("name") or "") if isinstance(repo, dict) else ""
+
+
+def _is_entry_nexus_processed(entry: Dict[str, Any]) -> bool:
+    if entry.get("nexus_processed"):
+        return True
+    enriched = entry.get("mbrn_enriched", {})
+    return isinstance(enriched, dict) and bool(enriched.get("nexus_processed"))
+
+
 def _is_nexus_retry_blocked(target: Dict[str, Any]) -> bool:
     if target.get("nexus_quarantined"):
         return True
@@ -249,6 +267,13 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
 
     candidates: List[AlphaCandidate] = []
     discoveries = data.get("discoveries", [])
+    processed_repo_names = {
+        _normalize_repo_name(_repo_name_for_entry(entry))
+        for entry in discoveries
+        if isinstance(entry, dict) and _is_entry_nexus_processed(entry)
+    }
+    processed_repo_names.discard("")
+    candidate_repo_names = set()
 
     for entry in discoveries:
         # ── Format B: raw ROI entry ─────────────────────────────────────
@@ -261,6 +286,10 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
             if _is_nexus_retry_blocked(entry):
                 continue
             repo_name = entry["repo"]
+            normalized_repo_name = _normalize_repo_name(repo_name)
+            if normalized_repo_name in processed_repo_names or normalized_repo_name in candidate_repo_names:
+                continue
+            candidate_repo_names.add(normalized_repo_name)
             candidates.append(AlphaCandidate(
                 alpha_id=f"raw_{repo_name.replace('/', '_')}",
                 repo_name=repo_name,
@@ -289,6 +318,10 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
         repo_name = repo.get("name", "")
         if not repo_name:
             continue
+        normalized_repo_name = _normalize_repo_name(repo_name)
+        if normalized_repo_name in processed_repo_names or normalized_repo_name in candidate_repo_names:
+            continue
+        candidate_repo_names.add(normalized_repo_name)
 
         candidates.append(AlphaCandidate(
             alpha_id=alpha_id,
@@ -441,7 +474,6 @@ def fetch_readme(repo_name: str) -> Optional[str]:
     except Exception as e:
         log.warning(f"GitHub README API failed for {repo_name}: {e}")
 
-    # Jina fallback
     jina_url = f"https://r.jina.ai/https://github.com/{repo_name}"
     try:
         req = urllib.request.Request(
@@ -487,7 +519,7 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
         query = f"{alpha.category} {alpha.repo_name} {alpha.description} {alpha.rationale}"
         similar_snippets = retrieve_similar_code(query, top_k=1)
         if similar_snippets:
-            memory_context = "\n\nMBRN FACTORY MEMORY (Similar past solutions):\n"
+            memory_context = "\n\nMBRN FACTORY MEMORY (Similar past solutions, stdlib-sanitized; use concepts only, do not copy imports):\n"
             for snip in similar_snippets:
                 memory_context += f"--- {snip['name']} ---\n{snip['code'][:800]}...\n\n"
     except ImportError:

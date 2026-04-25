@@ -49,7 +49,7 @@ ANSI = {
     "silver": "\033[38;2;180;184;198m"
 }
 
-def log_event(message: str, level: str = "INFO"):
+def log_event(message: str, level: str = "INFO") -> None:
     """Präzises Logging für Konsole und Datei."""
     if CONFIG["quiet_mode"] and level == "INFO" and "OK" in message: return
     
