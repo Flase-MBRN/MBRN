@@ -78,3 +78,10 @@ logs/
 scripts/pipelines/mbrn_toolkit/
 
 **/*.bak_*
+
+# Auto-Generated Data & Factory Output (Keep Repo Clean)
+shared/alphas/
+shared/data/scout_alphas.json
+shared/data/nexus_notifications.json
+shared/data/monitor_report.json
+docs/S3_Data/outputs/factory_ready/
