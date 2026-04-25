@@ -1,51 +1,54 @@
 {
-  "generated_at": "2026-04-25T14:30:51+00:00",
+  "generated_at": "2026-04-25T16:04:24+00:00",
   "dry_run": false,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
   "model_success": true,
-  "repair_used": false,
-  "fallback_used": false,
-  "validation_status": "ok",
-  "validation_warnings": [],
+  "repair_used": true,
+  "fallback_used": true,
+  "validation_status": "repaired",
+  "validation_warnings": [
+    "invalid_ouroboros_target_file",
+    "invalid_prime_directive"
+  ],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T14:29:35+00:00",
+    "generated_at": "2026-04-25T16:02:34+00:00",
     "discoveries": 105,
     "processed_alphas": 69,
     "backlog_alphas": 36,
     "seen_repo_ids": 403,
-    "factory_ready_modules": 135,
+    "factory_ready_modules": 145,
     "factory_memory_docs": 15,
-    "nexus_notifications": 135,
+    "nexus_notifications": 145,
     "recent_findings": [
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:56:51.765630+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:46:51.763671+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:36:51.762601+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:41.017822+00:00] [WARN] GitHub README API failed for chopra2007/claude-discover: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:40.799843+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:26.415818+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:59:18.728204+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:49:18.725952+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:39:18.724818+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.717719+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
       "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.705145+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.703990+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.702337+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\core_logic\\2026-04-25_perrorapidito_declaracion-renta-ai",
-      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:25:27.487097+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:16:35.920027+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:15:50.178934+00:00] [WARN] GitHub README API failed for tansenkhan1990/RAG_OpenAI_Agent_SDK_LangGraph_VP: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:15:33.760637+00:00] [WARN] GitHub README API failed for rohitpatill/Symposium: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:07:54.030426+00:00] [WARN] GitHub README API failed for aparg/agent-orchestration: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:07:53.829301+00:00] [WARN] GitHub README API failed for khushalchandpa7/wat-framework-automation: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.678909+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.617432+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 403: rate limit exceeded"
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.703990+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai"
     ],
     "current_control": {
       "scout_status": "paused",
-      "nexus_status": "paused",
+      "nexus_status": "running",
       "nexus_roi_threshold": 80.0,
-      "ouroboros_target_file": null,
-      "prime_directive": "Maximize factory output and clear backlog."
+      "ouroboros_target_file": "scripts/pipelines/mbrn_factory_memory.py",
+      "prime_directive": "Resolve GitHub API errors and function argument issues."
     }
   },
   "proposed_control": {
     "scout_status": "paused",
-    "nexus_status": "paused",
+    "nexus_status": "running",
     "nexus_roi_threshold": 80.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Focus on stability and resolve GitHub API issues."
+    "prime_directive": "Maximize factory output and clear backlog."
   },
-  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"paused\",\n  \"nexus_status\": \"paused\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": null,\n  \"prime_directive\": \"Focus on stability and resolve GitHub API issues.\"\n}\n```",
+  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"paused\",\n  \"nexus_status\": \"running\",\n  \"n",
   "control_panel_unchanged": false
 }
