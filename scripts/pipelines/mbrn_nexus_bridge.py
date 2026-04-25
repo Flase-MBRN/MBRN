@@ -596,19 +596,6 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
             memory_context = "\n\nMBRN FACTORY MEMORY (Similar past solutions, stdlib-sanitized; use concepts only, do not copy imports):\n"
             for snip in similar_snippets:
                 memory_context += f"--- {snip['name']} ---\n{snip['code'][:800]}...\n\n"
-The output will be validated by running it in an isolated CPU-only Docker container.
-"""
-    return goal
-
-
-# ---------------------------------------------------------------------------
-# Factory Output Writer
-# ---------------------------------------------------------------------------
-
-def save_factory_module(alpha: AlphaCandidate, code: str, result: AgentResult) -> Path:
-    """
-    Write the validated module to docs/S3_Data/outputs/factory_ready/.
-    Returns the path to the written file.
     """
     FACTORY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
