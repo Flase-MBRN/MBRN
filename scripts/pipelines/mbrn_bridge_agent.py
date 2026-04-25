@@ -91,13 +91,19 @@ MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
 </body>
 </html>"""
 
-BRIDGE_SYSTEM_PROMPT = """DU BIST EIN SENIOR FRONTEND ENGINEER. DEINE AUFGABE IST ES, DAS INNERE EINES INTERAKTIVEN WEB-TOOLS ZU BAUEN.
-REGELN:
+BRIDGE_SYSTEM_PROMPT = """DU BIST EIN SENIOR FRONTEND ENGINEER. DEINE AUFGABE IST ES, DIE MATHEMATISCHE LOGIK EINES PYTHON-TOOLS 1:1 NACH JAVASCRIPT ZU PORTIEREN.
+
+SCHRITT-FÜR-SCHRITT-ANWEISUNG:
+1. ANALYSE: Lies den Python-Code. Identifiziere alle mathematischen Formeln, Daten-Transformationen und Filter-Logiken.
+2. PSEUDOCODE: Erstelle intern einen Plan, wie diese Logik in JS abgebildet wird.
+3. IMPLEMENTIERUNG: Generiere das interaktive HTML/JS-Tool.
+
+STRENGE REGELN:
+- NUTZE KEINE PLATZHALTER wie 'key1', 'key2' oder 'data.field'. Du MUSST die echten Variablennamen und Datenstrukturen aus dem Python-Code verwenden.
+- INTERAKTIVITÄT IST PFLICHT! Das Tool muss Eingaben verarbeiten und die berechneten Ergebnisse im 'result-area' anzeigen.
 - GIB KEIN <html>, <head>, <body> ODER <style> AUS. Das Design ist bereits vorgegeben.
-- GIB NUR DAS INNERE HTML (Inputs, Labels, Buttons) UND DIE <script>-LOGIK AUS.
-- INTERAKTIVITÄT IST PFLICHT! Das Tool muss auf Benutzereingaben reagieren.
-- KEINE METADATEN RENDERN! Erwähne NIEMALS Datei-Infos, ROI-Scores oder Agenten-Namen.
-- Halte dich strikt an die ID-Vorgaben für das CSS (z.B. nutze <div id="result-area"> für Ausgaben).
+- GIB NUR DAS INNERE HTML (Labels, Inputs, Buttons) UND DIE <script>-LOGIK AUS.
+- KEINE METADATEN RENDERN (ROI, ID, etc.).
 - NUR CODE AUSGEBEN. KEIN MARKDOWN.
 """
 
@@ -159,20 +165,30 @@ def strip_markdown_fences(html: str) -> str:
     return cleaned
 
 
-def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str) -> str:
-    prompt = f"""DIMENSION: {dimension}
-MODULE: {name}
-PYTHON LOGIC:
+def validate_js_logic(content: str) -> bool:
+    """Checks if the LLM used forbidden placeholders like key1 or key2."""
+    placeholders = [r"data\.key1", r"data\.key2", r"placeholder_key", r"key1", r"key2"]
+    for p in placeholders:
+        if re.search(p, content):
+            return False
+    return True
+
+
+def generate_frontend_via_ollama(logic_desc: str, dimension: str, name: str, retry: bool = False) -> str:
+    retry_prefix = "DEIN LETZTER VERSUCH WAR FEHLERHAFT (PLATZHALTER GENUTZT). NUTZE DIESES MAL DIE ECHTE LOGIK!\n" if retry else ""
+    
+    prompt = f"""{retry_prefix}HIER IST DIE QUELLE DER WAHRHEIT (PYTHON CODE):
 {logic_desc}
 
-Erstelle das interaktive Innenleben für dieses Tool. Nutze <div id="result-area"> für Ergebnisse.
+PORTIERE ALLE FUNKTIONEN, DIE DATEN VERARBEITEN, 1:1 NACH JAVASCRIPT.
+Nutze <div id="result-area"> für Ergebnisse.
 GIB NUR HTML UND JAVASCRIPT AUS. KEIN CSS. KEIN HEADER."""
     
     payload = json.dumps({
         "model": OLLAMA_MODEL,
         "prompt": f"[SYSTEM]{BRIDGE_SYSTEM_PROMPT}[/SYSTEM]\n{prompt}",
         "stream": False,
-        "options": {"temperature": 0.2},
+        "options": {"temperature": 0.1 if retry else 0.2},
     }).encode("utf-8")
     
     req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
@@ -181,6 +197,12 @@ GIB NUR HTML UND JAVASCRIPT AUS. KEIN CSS. KEIN HEADER."""
     
     inner_content = str(result.get("response", "")).strip()
     inner_content = strip_markdown_fences(inner_content)
+    
+    # Validation Gate
+    if not validate_js_logic(inner_content) and not retry:
+        print(f"[Bridge] Validation failed for {name} (placeholders found). Retrying...")
+        return generate_frontend_via_ollama(logic_desc, dimension, name, retry=True)
+        
     inner_content = metadata_scrubber(inner_content)
     
     safe_name = name.replace("_", " ").title()

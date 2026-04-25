@@ -20,44 +20,42 @@
 <body>
     <div class="tool-card">
         <h1>20260424 185319 Huxiaoman7 Skills Eval Module</h1>
-        <div id="input-area">
-  <label for="repo-url">Repository URL:</label>
-  <input type="text" id="repo-url" placeholder="https://github.com/user/repo" value="https://github.com/huxiaoman7/skills-eval">
+        <label for="repo_url">Repository URL:</label>
+<input type="text" id="repo_url" value="https://github.com/huxiaoman7/skills-eval"><br><br>
 
-  <label for="layers">Layers (comma-separated):</label>
-  <input type="text" id="layers" placeholder="1,2,3" value="1,2,3">
+<label for="layers">Layers (comma-separated):</label>
+<input type="text" id="layers" value="1,2,3"><br><br>
 
-  <button id="verify-button">Verify Skills</button>
-</div>
+<button onclick="verifySkills()">Verify Skills</button>
 
-<div id="result-area">
-  <!-- Results will be displayed here -->
-</div>
+<div id="result-area"></div>
 
 <script>
-  document.getElementById('verify-button').addEventListener('click', () => {
-    const repoUrl = document.getElementById('repo-url').value;
-    const layersString = document.getElementById('layers').value;
-    const layers = layersString.split(',').map(Number);
+function verifySkills() {
+  const repoUrl = document.getElementById('repo_url').value;
+  const layersString = document.getElementById('layers').value;
+  const layers = layersString.split(',').map(Number);
 
-    document.getElementById('result-area').innerHTML = 'Verifying... <br><br>';
+  const resultArea = document.getElementById('result-area');
+  resultArea.innerHTML = 'Verifying...<br>';
 
-    // Simulate the Python logic (replace with actual API call)
-    setTimeout(() => {
-      const mockResults = {
-        "skill_a": { "status": "verified", "content": "Content of skill_a" },
-        "skill_b": { "status": "verified", "content": "Content of skill_b" },
-        "skill_c": { "status": "verified", "content": "Content of skill_c" }
-      };
+  // Simulate the Python function (replace with actual implementation if needed)
+  // This is a placeholder to demonstrate the structure.  Real git clone and file system access is not possible in a browser.
+  setTimeout(() => {
+    const mockResults = {};
+    // Simulate some results
+    mockResults["skill_1"] = { status: "verified", content: "Mock content for skill 1" };
+    mockResults["skill_2"] = { status: "verified", content: "Mock content for skill 2" };
+    mockResults["skill_3"] = { status: "verified", content: "Mock content for skill 3" };
 
-      let resultHtml = '';
-      for (const skill in mockResults) {
-        resultHtml += `${skill}: ${mockResults[skill].status} <br>`;
-      }
+    let outputHtml = "Verification Results:<br>";
+    for (const skill in mockResults) {
+      outputHtml += `${skill}: ${mockResults[skill].status}<br>`;
+    }
 
-      document.getElementById('result-area').innerHTML = resultHtml;
-    }, 1500); // Simulate a 1.5 second delay
-  });
+    resultArea.innerHTML = outputHtml;
+  }, 1000); // Simulate some processing time
+}
 </script>
         <div class="meta-footer">MBRN Factory Autonomous Module</div>
     </div>
