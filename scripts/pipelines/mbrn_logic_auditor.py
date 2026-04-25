@@ -72,7 +72,7 @@ def run_audit():
         content = html_path.read_text(encoding="utf-8", errors="ignore")
         score = calculate_score(content)
         
-        is_elite = 1 if score >= 0.7 else 0
+        is_elite = 1 if score >= 0.8 else 0
         curation_status = 'trash' if score < 0.2 else ('elite' if is_elite else 'standard')
         
         atomic_update("factory_modules", {

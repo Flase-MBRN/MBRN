@@ -61,7 +61,10 @@ DIMENSIONS_DIR = PROJECT_ROOT / "dimensions"
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
 OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))
+from scripts.pipelines.mbrn_logic_auditor import calculate_score
+
 MIN_HTML_CHARS = 500
+ELITE_THRESHOLD = 0.8
 
 MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="de">
@@ -98,12 +101,14 @@ SCHRITT-FÜR-SCHRITT-ANWEISUNG:
 2. PSEUDOCODE: Erstelle intern einen Plan, wie diese Logik in JS abgebildet wird.
 3. IMPLEMENTIERUNG: Generiere das interaktive HTML/JS-Tool.
 
-STRENGE REGELN:
-- NUTZE KEINE PLATZHALTER wie 'key1', 'key2' oder 'data.field'. Du MUSST die echten Variablennamen und Datenstrukturen aus dem Python-Code verwenden.
-- INTERAKTIVITÄT IST PFLICHT! Das Tool muss Eingaben verarbeiten und die berechneten Ergebnisse im 'result-area' anzeigen.
-- GIB KEIN <html>, <head>, <body> ODER <style> AUS. Das Design ist bereits vorgegeben.
-- GIB NUR DAS INNERE HTML (Labels, Inputs, Buttons) UND DIE <script>-LOGIK AUS.
-- KEINE METADATEN RENDERN (ROI, ID, etc.).
+STRENGE REGELN (ELITE-KALIBRIERUNG v5.4):
+- JS-LOGIK-PFLICHT: Das Tool MUSS mindestens 50 Zeilen funktionalen JavaScript-Code enthalten.
+- KOMPLEXITÄT: Nutze zwingend Mathematische Algorithmen (Math.*), Regular Expressions (RegExp) oder komplexe Array-Methoden (filter, map, reduce, sort).
+- KEINE PLATZHALTER: Nutze niemals 'key1', 'key2' oder 'data.field'. Du MUSST die echten Variablennamen aus dem Python-Code portieren.
+- INTERAKTIVITÄT: Das Tool muss Eingaben verarbeiten und Ergebnisse im 'result-area' anzeigen.
+- GIB KEIN <html>, <head>, <body> ODER <style> AUS. Das Design ist vorgegeben.
+- NUR DAS INNERE HTML UND DIE <script>-LOGIK.
+- STRICT-FAIL POLICY: Wenn die Python-Logik nicht in funktionales JS übersetzt werden kann, brich ab oder gib eine Fehlermeldung aus. Produziere KEINEN Platzhalter-Code.
 - NUR CODE AUSGEBEN. KEIN MARKDOWN.
 """
 
@@ -362,20 +367,39 @@ def run_bridge_cycle(use_dummy: bool = False) -> Optional[dict[str, Any]]:
         html = strip_markdown_fences(html)
         validate_html(html)
         deployed_path = deploy_to_dimension(html, dimension, name)
+        
+        # v5.4: Post-Generation Audit
+        score = calculate_score(html)
+        is_elite = 1 if score >= ELITE_THRESHOLD else 0
+        
+        if score < ELITE_THRESHOLD:
+            print(f"[Bridge] PURGE: Score {score:.2f} is below calibration threshold ({ELITE_THRESHOLD}). Deleting folder.")
+            if deployed_path.exists():
+                import shutil
+                shutil.rmtree(deployed_path.parent)
+            atomic_update("factory_modules", {"status": "purged", "quality_score": score}, "id", module["id"])
+            return {"id": module["id"], "name": name, "status": "purged", "score": score}
+
+        # v5.4: Elite Injection (Storage & Save Button)
+        if is_elite:
+            print(f"[Bridge] ELITE DETECTED (Score {score:.2f}). Injecting Storage & Cloud Save.")
+            storage_script = '<script src="/shared/js/mbrn_storage.js"></script>'
+            # Inject before the first <script> tag or before </body> fallback
+            if storage_script not in html:
+                html = html.replace("<script>", f"{storage_script}\n<script>", 1)
+            
+            # Update the file with the injected code
+            deployed_path.write_text(html, encoding="utf-8")
+
         relative_deployed = str(deployed_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
-        atomic_update("factory_modules", {"status": "deployed", "frontend_file": relative_deployed}, "id", module["id"])
-        insert_notification(
-            "module_ready",
-            f"Neues Modul deployed: {name} in Dimension {dimension}",
-            dimension=dimension,
-            module_name=name,
-            raw_data={
-                "module_file": name,
-                "frontend_file": relative_deployed,
-                "dimension": dimension,
-                "type": "module_ready",
-            },
-        )
+        atomic_update("factory_modules", {
+            "status": "deployed", 
+            "frontend_file": relative_deployed,
+            "quality_score": score,
+            "is_elite": is_elite,
+            "curation_status": "elite"
+        }, "id", module["id"])
+        
         export_factory_feed_snapshot()
         supabase_synced = sync_to_supabase(name, dimension, relative_deployed)
         print(f"[Bridge] Deployed: {relative_deployed}")
