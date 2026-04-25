@@ -97,9 +97,38 @@ print(count)
     expect(prime).toContain('def is_factory_paused()');
     expect(prime).toContain('save_db_factory_control');
     expect(bridge).toContain('OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")');
+    expect(bridge).toContain('OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))');
     expect(bridge).toContain('MIN_HTML_CHARS = 500');
+    expect(bridge).toContain('def run_bridge_batch(');
+    expect(bridge).toContain('def run_bridge_until_empty(');
+    expect(bridge).toContain('parser.add_argument("--batch-count"');
+    expect(bridge).toContain('parser.add_argument("--all-ready"');
     expect(feed).toContain('factory_feed_snapshot.json');
     expect(feed).toContain('MBRN_FACTORY_CONTROL_URL');
   });
-});
 
+  test('bridge strips markdown fences and exposes a dependency-free env loader', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mbrn-env-'));
+    const envPath = path.join(tempDir, '.env');
+    fs.writeFileSync(envPath, 'MBRN_TEST_ENV_LOADER=ok\\n', 'utf8');
+
+    const output = runPython(`
+import importlib.util
+import os
+from pathlib import Path
+spec = importlib.util.spec_from_file_location("bridge", Path("scripts/pipelines/mbrn_bridge_agent.py"))
+bridge = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(bridge)
+bridge.load_pipeline_env(Path(${JSON.stringify(envPath)}))
+print(os.environ.get("MBRN_TEST_ENV_LOADER"))
+print(bridge.strip_markdown_fences("""\`\`\`html
+<!DOCTYPE html>
+<html></html>
+\`\`\`"""))
+`);
+
+    expect(output).toContain('ok');
+    expect(output).toContain('<!DOCTYPE html>');
+    expect(output).not.toContain('```');
+  });
+});

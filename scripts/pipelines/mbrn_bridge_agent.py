@@ -11,12 +11,41 @@ import sys
 import time
 import urllib.request
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+PIPELINES_DIR = Path(__file__).resolve().parent
+
+
+def load_pipeline_env(env_path: Path) -> None:
+    """Load scripts/pipelines/.env before reading os.environ.
+
+    Uses python-dotenv when it exists, otherwise falls back to a stdlib parser
+    to keep the v5 no-new-dependency rule intact.
+    """
+    if not env_path.exists():
+        return
+    try:
+        from dotenv import load_dotenv  # type: ignore
+        load_dotenv(dotenv_path=env_path, override=False)
+        return
+    except Exception:
+        pass
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+load_pipeline_env(PIPELINES_DIR / ".env")
 
 from shared.core.db import (
     CANONICAL_DIMENSIONS,
@@ -31,6 +60,7 @@ from shared.core.db import (
 DIMENSIONS_DIR = PROJECT_ROOT / "dimensions"
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
+OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))
 MIN_HTML_CHARS = 500
 
 BRIDGE_SYSTEM_PROMPT = """You are an expert in Vanilla JS and HTML.
@@ -68,9 +98,24 @@ Create a complete index.html for this MBRN dimension. The user should get an imm
         "options": {"temperature": 0.2},
     }).encode("utf-8")
     req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=120) as response:
+    with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT_SECONDS) as response:
         result = json.loads(response.read().decode("utf-8"))
     return str(result.get("response", "")).strip()
+
+
+def strip_markdown_fences(html: str) -> str:
+    """Remove markdown code fences so deployed files start with real HTML."""
+    cleaned = html.strip()
+    fence_match = re.fullmatch(r"```(?:html|HTML)?\s*(.*?)\s*```", cleaned, flags=re.DOTALL)
+    if fence_match:
+        cleaned = fence_match.group(1).strip()
+    else:
+        cleaned = re.sub(r"^```(?:html|HTML)?\s*", "", cleaned).strip()
+        cleaned = re.sub(r"\s*```$", "", cleaned).strip()
+    html_start = cleaned.find("<")
+    if html_start > 0:
+        cleaned = cleaned[html_start:].strip()
+    return cleaned
 
 
 def generate_dummy_frontend(dimension: str, name: str, logic_desc: str) -> str:
@@ -120,6 +165,8 @@ def generate_dummy_frontend(dimension: str, name: str, logic_desc: str) -> str:
 
 
 def validate_html(html: str) -> None:
+    if not html.lstrip().lower().startswith(("<!doctype html", "<html")):
+        raise ValueError("Generated HTML must start with <!DOCTYPE html> or <html")
     lowered = html.lower()
     if len(html) < MIN_HTML_CHARS or "<html" not in lowered or "</html>" not in lowered:
         raise ValueError(f"Generated HTML is invalid or too short: {len(html)} chars")
@@ -131,16 +178,18 @@ def deploy_to_dimension(html: str, dimension: str, name: str) -> Path:
     target_dir = DIMENSIONS_DIR / dimension / "apps" / slugify(name)
     target_dir.mkdir(parents=True, exist_ok=True)
     target_file = target_dir / "index.html"
+    html = strip_markdown_fences(html)
+    validate_html(html)
     target_file.write_text(html, encoding="utf-8")
     return target_file
 
 
-def sync_to_supabase(name: str, dimension: str, frontend_path: str) -> None:
+def sync_to_supabase(name: str, dimension: str, frontend_path: str) -> bool:
     supabase_url = os.environ.get("SUPABASE_URL")
     supabase_key = os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
     if not supabase_url or not supabase_key:
         print("[Bridge] Supabase sync skipped: env vars missing")
-        return
+        return False
     payload = json.dumps({
         "name": name,
         "dimension": dimension,
@@ -161,8 +210,10 @@ def sync_to_supabase(name: str, dimension: str, frontend_path: str) -> None:
     try:
         urllib.request.urlopen(req, timeout=10).read()
         print(f"[Bridge] Supabase sync OK: {name}")
+        return True
     except Exception as exc:
         print(f"[Bridge] Supabase sync failed and was ignored: {exc}")
+        return False
 
 
 def next_ready_module():
@@ -177,12 +228,18 @@ def next_ready_module():
         ).fetchone()
 
 
-def run_bridge_cycle(use_dummy: bool = False) -> bool:
+def count_ready_modules() -> int:
+    with get_db() as conn:
+        row = conn.execute("SELECT COUNT(*) AS cnt FROM factory_modules WHERE status = 'ready'").fetchone()
+        return int(row["cnt"] if row else 0)
+
+
+def run_bridge_cycle(use_dummy: bool = False) -> Optional[dict[str, Any]]:
     init_db()
     module = next_ready_module()
     if not module:
         print("[Bridge] No ready modules.")
-        return False
+        return None
 
     name = str(module["name"])
     dimension = module["dimension"] if module["dimension"] in CANONICAL_DIMENSIONS else "systeme"
@@ -192,6 +249,7 @@ def run_bridge_cycle(use_dummy: bool = False) -> bool:
     try:
         logic_desc = extract_logic_description(source)
         html = generate_dummy_frontend(dimension, name, logic_desc) if use_dummy else generate_frontend_via_ollama(logic_desc, dimension, name)
+        html = strip_markdown_fences(html)
         validate_html(html)
         deployed_path = deploy_to_dimension(html, dimension, name)
         relative_deployed = str(deployed_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
@@ -209,24 +267,80 @@ def run_bridge_cycle(use_dummy: bool = False) -> bool:
             },
         )
         export_factory_feed_snapshot()
-        sync_to_supabase(name, dimension, relative_deployed)
+        supabase_synced = sync_to_supabase(name, dimension, relative_deployed)
         print(f"[Bridge] Deployed: {relative_deployed}")
-        return True
+        return {
+            "id": module["id"],
+            "name": name,
+            "dimension": dimension,
+            "frontend_file": relative_deployed,
+            "absolute_path": str(deployed_path),
+            "supabase_synced": supabase_synced,
+            "status": "deployed",
+        }
     except Exception as exc:
         atomic_update("factory_modules", {"status": "failed"}, "id", module["id"])
         print(f"[Bridge] Failed {name}: {exc}")
-        return False
+        return {
+            "id": module["id"],
+            "name": name,
+            "dimension": dimension,
+            "frontend_file": None,
+            "absolute_path": None,
+            "supabase_synced": False,
+            "status": "failed",
+            "error": str(exc),
+        }
+
+
+def run_bridge_batch(count: int, use_dummy: bool = False) -> list[dict[str, Any]]:
+    results: list[dict[str, Any]] = []
+    for cycle in range(1, count + 1):
+        print(f"[Bridge] Batch cycle {cycle}/{count}", flush=True)
+        result = run_bridge_cycle(use_dummy=use_dummy)
+        if result is None:
+            break
+        results.append(result)
+    return results
+
+
+def run_bridge_until_empty(use_dummy: bool = False) -> list[dict[str, Any]]:
+    init_db()
+    total = count_ready_modules()
+    results: list[dict[str, Any]] = []
+    print(f"[Bridge] Backlog-Drain gestartet: {total} ready Module", flush=True)
+    while count_ready_modules() > 0:
+        result = run_bridge_cycle(use_dummy=use_dummy)
+        if result is None:
+            break
+        results.append(result)
+        current = len(results)
+        name = result.get("name", "unknown")
+        if result.get("status") == "deployed":
+            print(f"[Bridge] {current}/{total} generiert: {name}", flush=True)
+        else:
+            print(f"[Bridge] {current}/{total} fehlgeschlagen: {name}", flush=True)
+    print("[Bridge] Backlog-Drain abgeschlossen: 0 ready Module", flush=True)
+    return results
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bridge factory modules into Vanilla HTML apps.")
     parser.add_argument("--once", action="store_true", help="Run one bridge cycle and exit.")
     parser.add_argument("--dummy", action="store_true", help="Use deterministic dummy HTML instead of Ollama.")
+    parser.add_argument("--batch-count", type=int, default=0, help="Run exactly this many bridge cycles and exit.")
+    parser.add_argument("--all-ready", action="store_true", help="Drain the current ready backlog and exit.")
     parser.add_argument("--interval-seconds", type=int, default=30)
     args = parser.parse_args()
 
     if args.once:
         return 0 if run_bridge_cycle(use_dummy=args.dummy) else 1
+    if args.batch_count:
+        results = run_bridge_batch(args.batch_count, use_dummy=args.dummy)
+        return 0 if len(results) == args.batch_count and all(result.get("status") == "deployed" for result in results) else 1
+    if args.all_ready:
+        run_bridge_until_empty(use_dummy=args.dummy)
+        return 0
 
     while True:
         run_bridge_cycle(use_dummy=args.dummy)
@@ -235,4 +349,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

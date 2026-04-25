@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Description Classifier</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        #job-description-container {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        #result {
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-top: 20px;
+            word-wrap: break-word;
+        }
+
+        .unclassified {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Job Description Classifier</h1>
+
+    <div id="job-description-container">
+        <label for="job-description">Enter Job Description:</label>
+        <textarea id="job-description"></textarea>
+        <button onclick="classifyJob()">Classify</button>
+    </div>
+
+    <div id="result">
+        <!-- Result will be displayed here -->
+    </div>
+
+    <script>
+        function classifyJob() {
+            const jobDescription = document.getElementById('job-description').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Clear previous result
+
+            if (!jobDescription) {
+                resultDiv.innerHTML = "<p>Please enter a job description.</p>";
+                return;
+            }
+
+            const classification = classifyJobDescription(jobDescription);
+
+            if (classification && Object.keys(classification).length > 0) {
+                resultDiv.innerHTML = `<pre>${JSON.stringify(classification, null, 2)}</pre>`;
+            } else {
+                resultDiv.innerHTML = `<p class="unclassified">Unclassified</p>`;
+            }
+        }
+
+        function classifyJobDescription(jobDesc) {
+            const seniorityMap = {
+                "junior": ["entry level", "graduate"],
+                "mid": ["3-5 years", "intermediate"],
+                "senior": ["7+ years", "lead", "principal"],
+                "staff-plus": ["staff"]
+            };
+
+            const workModeMap = {
+                "remote": ["fully remote"],
+                "hybrid": ["hybrid"],
+                "onsite": ["onsite"]
+            };
+
+            const industryMap = {
+                "fintech": ["fintech", "financial technology"],
+                "healthtech": ["health tech", "healthcare technology"],
+                "consumer": ["consumer goods"],
+                "enterprise-saas": ["enterprise saas"],
+                "other": []
+            };
+
+            const words = jobDesc.toLowerCase().split(/\s+/);
+
+            let classification = {};
+
+            for (const level in seniorityMap) {
+                if (seniorityMap[level].some(keyword => words.includes(keyword))) {
+                    classification["seniority"] = level;
+                    break;
+                }
+            }
+
+            for (const mode in workModeMap) {
+                if (workModeMap[mode].some(keyword => words.includes(keyword))) {
+                    classification["work_mode"] = mode;
+                    break;
+                }
+            }
+
+            for (const industry in industryMap) {
+                if (industryMap[industry].some(keyword => words.includes(keyword))) {
+                    classification["industry"] = industry;
+                    break;
+                }
+            }
+
+            return Object.keys(classification).length > 0 ? classification : null;
+        }
+    </script>
+
+</body>
+</html>

@@ -1,18 +1,15 @@
 {
-  "generated_at": "2026-04-25T17:55:38+00:00",
+  "generated_at": "2026-04-25T18:26:55+00:00",
   "dry_run": true,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
-  "model_success": false,
-  "repair_used": true,
+  "model_success": true,
+  "repair_used": false,
   "fallback_used": true,
-  "validation_status": "repaired",
-  "validation_warnings": [
-    "invalid_ouroboros_target_file",
-    "invalid_prime_directive"
-  ],
+  "validation_status": "ok",
+  "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T17:52:43+00:00",
+    "generated_at": "2026-04-25T18:25:38+00:00",
     "discoveries": 105,
     "processed_alphas": 79,
     "backlog_alphas": 26,
@@ -43,12 +40,12 @@
     }
   },
   "proposed_control": {
-    "scout_status": "paused",
-    "nexus_status": "paused",
-    "nexus_roi_threshold": 80.0,
+    "scout_status": "running",
+    "nexus_status": "running",
+    "nexus_roi_threshold": 87.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Maximize factory output and clear backlog."
+    "prime_directive": "Reduce factory pressure, inspect recent warnings, and keep mutation disabled."
   },
-  "raw_model_response_preview": "timed out",
+  "raw_model_response_preview": "",
   "control_panel_unchanged": true
 }
