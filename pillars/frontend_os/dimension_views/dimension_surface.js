@@ -60,7 +60,7 @@ async function renderDimensionSurfaceBody(dimensionId, topicAreaId = null) {
     return;
   }
 
-  renderDimensionViewCard(mount, dimensionId, {
+  await renderDimensionViewCard(mount, dimensionId, {
     eyebrow: 'Dimensions-Hub',
     basePath: getRepoRoot(),
     onNavigate: (surfaceId) => nav.navigateTo(surfaceId)

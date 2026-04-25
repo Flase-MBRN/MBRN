@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBRN Factory-Ready Module</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .module-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fafafa;
+        }
+
+        .module-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MBRN Factory-Ready Module</h1>
+
+        <div class="module-info">
+            <p><strong>Source Alpha:</strong> KybernesisAI/arp</p>
+            <p><strong>Alpha ID:</strong> alpha_1218247987</p>
+            <p><strong>ROI Score:</strong> 85.0</p>
+            <p><strong>Manufactured At:</strong> 2026-04-24T20:59:20.492689+00:00</p>
+            <p><strong>Agent Attempts:</strong> 1</p>
+        </div>
+
+        <h2>Agent Information</h2>
+
+        <table id="agentTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody id="agentBody">
+                <!-- Agent data will be populated here by JavaScript -->
+            </tbody>
+        </table>
+
+        <p id="moduleReady" style="font-style: italic; color: green;">MODULE_READY: KybernesisAI_arp</p>
+    </div>
+
+    <script>
+        const arpSample = `
+        {
+          "agents": [
+            {
+              "id": "agent1",
+              "name": "Agent One",
+              "role": "Admin"
+            },
+            {
+              "id": "agent2",
+              "name": "Agent Two",
+              "role": "User"
+            }
+          ]
+        }`;
+
+        const parsedArp = JSON.parse(arpSample);
+        const agentBody = document.getElementById('agentBody');
+
+        parsedArp.agents.forEach(agent => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${agent.id}</td>
+                <td>${agent.name}</td>
+                <td>${agent.role}</td>
+            `;
+            agentBody.appendChild(row);
+        });
+    </script>
+</body>
+</html>

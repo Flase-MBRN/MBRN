@@ -1,6 +1,27 @@
 import { dom } from '../../../shared/ui/dom_utils.js';
 import { getDimensionSurfaceModel } from '../../../shared/application/frontend_os/discoverability_runtime.js';
-import { getRepoRoot } from '../navigation/index.js';
+
+/**
+ * Robustly determine the repository root path (e.g., / or /MBRN/)
+ */
+function getLocalRepoRoot() {
+  const currentPath = window.location.pathname;
+  const mbrnPrefix = '/MBRN/';
+  if (currentPath.startsWith(mbrnPrefix)) return mbrnPrefix;
+  
+  // Fallback for subfolder deployments or local testing
+  const parts = currentPath.split('/');
+  const dimensionsIndex = parts.indexOf('dimensions');
+  if (dimensionsIndex !== -1) {
+    return parts.slice(0, dimensionsIndex).join('/') + '/';
+  }
+  const dashboardIndex = parts.indexOf('dashboard');
+  if (dashboardIndex !== -1) {
+    return parts.slice(0, dashboardIndex).join('/') + '/';
+  }
+  
+  return '/';
+}
 
 function createSurfaceCard(parent, options) {
   const {
@@ -53,14 +74,19 @@ function createSurfaceCard(parent, options) {
 }
 
 async function fetchDynamicFactoryApps() {
-  const snapshotPath = `${getRepoRoot()}shared/data/factory_feed_snapshot.json`;
+  const root = getLocalRepoRoot();
+  const snapshotPath = `${root}shared/data/factory_feed_snapshot.json`;
+  console.log('[discoverability] Fetching apps from:', snapshotPath);
   try {
     const response = await fetch(snapshotPath, { cache: 'no-store' });
-    if (!response.ok) return [];
+    if (!response.ok) {
+      console.warn('[discoverability] Snapshot not found or error:', response.status);
+      return [];
+    }
     const data = await response.json();
     return Array.isArray(data) ? data : [];
   } catch (err) {
-    console.warn('[discoverability] Failed to fetch dynamic apps:', err);
+    console.error('[discoverability] Failed to fetch dynamic apps:', err);
     return [];
   }
 }
@@ -223,6 +249,7 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
     dimensionApps.forEach((app) => {
       const appTitle = app.module_name || app.repo_name || 'Unbekanntes Modul';
       const cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ');
+      const root = getLocalRepoRoot();
 
       createSurfaceCard(factoryGrid, {
         title: cleanTitle,
@@ -231,10 +258,9 @@ export async function renderDimensionViewCard(container, dimensionId, options = 
         surfaceId: app.id,
         route: app.frontend_file || app.module_file,
         interactive: true,
-        basePath: getRepoRoot(),
+        basePath: root,
         onNavigate: (id) => {
-          // Dynamic apps might not be in the nav-registry, so we use direct window navigation
-          const target = `${getRepoRoot()}${app.frontend_file || app.module_file}`;
+          const target = `${root}${app.frontend_file || app.module_file}`;
           window.location.href = target;
         }
       });

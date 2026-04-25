@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBRN Factory-Ready Module</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 5px;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        .result {
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 20px;
+        }
+
+        .module-ready {
+            font-style: italic;
+            color: green;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MBRN Factory-Ready Module</h1>
+        <p>Source Alpha: vaimr/mcporter-proxy</p>
+        <p>Alpha ID: alpha_1217922333</p>
+        <p>ROI Score: 85.0</p>
+        <p>Manufactured At: 2026-04-24T20:59:33.927020+00:00</p>
+        <p>Agent Attempts: 1</p>
+
+        <div class="result">
+            Generated Secrets Key: <span id="secretsKey"></span>
+        </div>
+
+        <div class="module-ready">
+            MODULE_READY: vaimr_mcporter_proxy
+        </div>
+    </div>
+
+    <script>
+        function parseAgentKey(authKey) {
+            if (authKey.includes('-')) {
+                const parts = authKey.split('-', 1);
+                const sep = '-';
+                const agentId = parts[0];
+                const agentKey = parts[1];
+                return { agentId, agentKey, sep };
+            } else if (authKey.includes('/')) {
+                const parts = authKey.split('/', 1);
+                const sep = '/';
+                const agentId = parts[0];
+                const agentKey = parts[1];
+                return { agentId, agentKey, sep };
+            } else {
+                throw new Error("Invalid auth key format");
+            }
+        }
+
+        function generateSecretsKey(prefix, separator, agentId, mcptype) {
+            return `${prefix}${separator}${agentId}${separator}${mcptype}`;
+        }
+
+        const authKey = "agent123-secret456";
+        const prefix = "mcpproxy";
+
+        try {
+            const { agentId, agentKey, sep } = parseAgentKey(authKey);
+            const mcptype = "exampleTool";
+            const secretsKey = generateSecretsKey(prefix, sep, agentId, mcptype);
+            document.getElementById("secretsKey").textContent = secretsKey;
+        } catch (error) {
+            document.getElementById("secretsKey").textContent = "Error: " + error.message;
+        }
+    </script>
+</body>
+</html>
