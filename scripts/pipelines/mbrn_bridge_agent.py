@@ -72,6 +72,12 @@ MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{TITLE}} | MBRN Hub</title>
+    <script>
+        window.MBRN_CONFIG = {
+            supabaseUrl: 'https://wqfijgzlxypqftwwoxxp.supabase.co',
+            supabaseKey: 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO'
+        };
+    </script>
     <style>
         body { background-color: #05050A; color: #E0E0E0; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
         .tool-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
@@ -382,10 +388,11 @@ def run_bridge_cycle(use_dummy: bool = False) -> Optional[dict[str, Any]]:
 
         # v5.4: Cloud Storage Injection (Always active for all modules)
         print(f"[Bridge] Injecting Storage & Cloud Save capabilities.")
+        # GitHub Pages safety: Try to determine the root path dynamically or use the /MBRN/ base
         storage_script = '<script src="../../../../shared/js/mbrn_storage.js"></script>'
-        # Inject before the first <script> tag or before </body> fallback
+        # If we are on the live site, /MBRN/shared/js/mbrn_storage.js is often safer
         if storage_script not in html:
-            html = html.replace("<script>", f"{storage_script}\n<script>", 1)
+            html = html.replace("</head>", f"    {storage_script}\n</head>", 1)
         
         # Update the file with the injected code
         deployed_path.write_text(html, encoding="utf-8")

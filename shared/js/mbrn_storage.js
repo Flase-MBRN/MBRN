@@ -4,8 +4,8 @@
  */
 
 const MBRN_STORAGE_CONFIG = {
-    url: window.MBRN_SUPABASE_URL || 'https://wqfijgzlxypqftwwoxxp.supabase.co',
-    key: window.MBRN_SUPABASE_ANON_KEY || '', // Should be injected or set in dashboard
+    url: (window.MBRN_CONFIG && window.MBRN_CONFIG.supabaseUrl) || 'https://wqfijgzlxypqftwwoxxp.supabase.co',
+    key: (window.MBRN_CONFIG && window.MBRN_CONFIG.supabaseKey) || '',
     userId: 'erikk2k5@gmail.com'
 };
 
