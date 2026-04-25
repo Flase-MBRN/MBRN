@@ -66,6 +66,18 @@ if str(_PIPELINES_DIR) not in sys.path:
     sys.path.insert(0, str(_PIPELINES_DIR))
 
 from autonomous_dev_agent import AutoDevAgent, AgentResult
+from shared.core.db import (
+    CANONICAL_DIMENSIONS,
+    export_factory_feed_snapshot,
+    init_db,
+    insert_notification,
+    list_scout_alphas,
+    load_factory_control as load_db_factory_control,
+    mark_scout_alpha_status,
+    save_factory_control,
+    upsert_factory_module,
+    atomic_write,
+)
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -163,7 +175,7 @@ def _clamp_roi_threshold(value: Any, default: float = ROI_THRESHOLD) -> float:
 
 
 def load_factory_control() -> Dict[str, Any]:
-    """Read factory control state with safe defaults for Nexus."""
+    """Read factory control state from SQLite, with legacy JSON fallback."""
     default = {
         "scout_status": "running",
         "nexus_status": "running",
@@ -171,6 +183,16 @@ def load_factory_control() -> Dict[str, Any]:
         "ouroboros_target_file": None,
         "prime_directive": "Maximize factory output and clear backlog.",
     }
+    try:
+        control = load_db_factory_control(default)
+        if control.get("nexus_status") not in {"running", "paused"}:
+            control["nexus_status"] = "running"
+        if control.get("scout_status") not in {"running", "paused"}:
+            control["scout_status"] = "running"
+        control["nexus_roi_threshold"] = _clamp_roi_threshold(control.get("nexus_roi_threshold"))
+        return control
+    except Exception as exc:
+        log.warning(f"SQLite factory control unavailable; falling back to legacy JSON: {exc}")
     try:
         if not FACTORY_CONTROL_PATH.exists():
             return default
@@ -206,6 +228,8 @@ class AlphaCandidate:
     category: str           # automation | integration | autonomy
     rationale: str
     processed: bool = False
+    dimension: str = "systeme"
+    source_url: str = ""
 
 
 @dataclass
@@ -253,7 +277,8 @@ def _save_alphas_json(data: Dict[str, Any]) -> None:
 
 def scan_pending_alphas() -> List[AlphaCandidate]:
     """
-    Scan scout_alphas.json for all unprocessed entries with ROI > threshold.
+    Scan SQLite scout_alphas for all unprocessed entries with ROI > threshold.
+    Falls back to the read-only JSON snapshot only when no SQLite candidates exist.
 
     Handles two formats found in the file:
     Format A (structured discoveries):
@@ -261,6 +286,39 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
     Format B (raw ROI entries):
       {"repo": "owner/name", "roi": 95.0}
     """
+    try:
+        rows = list_scout_alphas(statuses=("pending", "approved"), min_score=ROI_THRESHOLD)
+        db_candidates: List[AlphaCandidate] = []
+        for row in rows:
+            raw = json.loads(row["raw_data"] or "{}")
+            repo = raw.get("repo") if isinstance(raw, dict) else {}
+            analysis = raw.get("analysis") if isinstance(raw, dict) else {}
+            repo_name = (
+                repo.get("full_name")
+                or repo.get("name")
+                or raw.get("repo_name")
+                or row["title"]
+            )
+            if not repo_name:
+                continue
+            dimension = row["dimension"] if row["dimension"] in CANONICAL_DIMENSIONS else "systeme"
+            db_candidates.append(AlphaCandidate(
+                alpha_id=f"sqlite_{row['id']}",
+                repo_name=str(repo_name),
+                repo_url=str(row["source_url"] or repo.get("html_url") or f"https://github.com/{repo_name}"),
+                roi_score=float(row["score"] or 0.0),
+                description=str(repo.get("description") or raw.get("description") or ""),
+                category=str(analysis.get("category") or "automation") if isinstance(analysis, dict) else "automation",
+                rationale=str(analysis.get("synergy_summary") or analysis.get("roi_rationale") or "") if isinstance(analysis, dict) else "",
+                dimension=dimension,
+                source_url=str(row["source_url"]),
+            ))
+        if db_candidates:
+            log.info(f"Found {len(db_candidates)} SQLite alpha(s) with ROI > {ROI_THRESHOLD}")
+            return db_candidates
+    except Exception as exc:
+        log.warning(f"SQLite alpha scan unavailable; falling back to JSON snapshot: {exc}")
+
     data = _load_alphas_json()
     if not data:
         return []
@@ -297,7 +355,9 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
                 roi_score=roi,
                 description=f"High-ROI Scout discovery (ROI={roi})",
                 category="automation",
-                rationale=f"Scout raw ROI score: {roi}"
+                rationale=f"Scout raw ROI score: {roi}",
+                dimension=str(entry.get("dimension") or "systeme"),
+                source_url=str(entry.get("source_url") or f"https://github.com/{repo_name}"),
             ))
             continue
 
@@ -330,7 +390,9 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
             roi_score=score,
             description=repo.get("description") or "",
             category=analysis.get("category", "automation"),
-            rationale=analysis.get("rationale", "")
+            rationale=analysis.get("rationale", ""),
+            dimension=str(entry.get("dimension") or "systeme"),
+            source_url=str(entry.get("source_url") or repo.get("url") or f"https://github.com/{repo_name}"),
         ))
 
     log.info(f"Found {len(candidates)} unprocessed alpha(s) with ROI > {ROI_THRESHOLD}")
@@ -354,6 +416,17 @@ def _request_tool_if_needed(alpha_id: str, reason: str) -> None:
     reason_lower = reason.lower()
     if any(kw in reason_lower for kw in keywords):
         try:
+            atomic_write("tool_requests", {
+                "alpha_id": alpha_id,
+                "requested_tool_description": f"Automated fix needed for: {reason}",
+                "status": "pending",
+                "raw_data": {
+                    "alpha_id": alpha_id,
+                    "requested_tool_description": f"Automated fix needed for: {reason}",
+                    "status": "pending",
+                    "created_at": _utc_now().isoformat(),
+                },
+            })
             requests = []
             if TOOL_REQUESTS_PATH.exists():
                 with open(TOOL_REQUESTS_PATH, "r", encoding="utf-8") as f:
@@ -378,6 +451,8 @@ def _request_tool_if_needed(alpha_id: str, reason: str) -> None:
 
 def mark_alpha_processed(alpha_id: str) -> None:
     """Mark an alpha as processed in scout_alphas.json so it won't re-run."""
+    if alpha_id.startswith("sqlite_"):
+        return
     data = _load_alphas_json()
     if not data:
         return
@@ -407,6 +482,8 @@ def mark_alpha_processed(alpha_id: str) -> None:
 
 def mark_alpha_failed(alpha_id: str, failure_reason: str) -> None:
     """Record a retryable Nexus failure without marking the alpha processed."""
+    if alpha_id.startswith("sqlite_"):
+        return
     data = _load_alphas_json()
     if not data:
         return
@@ -593,6 +670,20 @@ Agent Attempts  : {result.total_attempts}
 
 '''
     output_path.write_text(header + code, encoding="utf-8")
+    upsert_factory_module(
+        name=output_path.stem,
+        dimension=alpha.dimension if alpha.dimension in CANONICAL_DIMENSIONS else "systeme",
+        source_file=str(output_path),
+        frontend_file=None,
+        status="ready",
+        quality_score=alpha.roi_score,
+        raw_data={
+            "alpha_id": alpha.alpha_id,
+            "repo_name": alpha.repo_name,
+            "roi_score": alpha.roi_score,
+            "agent_attempts": result.total_attempts,
+        },
+    )
     log.info(f"Factory module saved: {output_path}")
     return output_path
 
@@ -603,9 +694,7 @@ Agent Attempts  : {result.total_attempts}
 
 def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result: AgentResult) -> None:
     """
-    Append a notification to shared/data/nexus_notifications.json.
-    The dashboard (render_dashboard.js) can poll this file to show the Mission
-    Control feed without any backend changes.
+    Append a notification to SQLite and refresh the local read-only dashboard snapshot.
     """
     NOTIFICATIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
 
@@ -639,6 +728,15 @@ def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result
         "created_at": datetime.now(timezone.utc).isoformat(),
         "read": False
     }
+
+    insert_notification(
+        notification_type="factory_module_ready",
+        dimension=alpha.dimension if alpha.dimension in CANONICAL_DIMENSIONS else "systeme",
+        module_name=output_path.name,
+        message=notification["message"],
+        raw_data=notification,
+    )
+    export_factory_feed_snapshot()
 
     notifications.insert(0, notification)  # newest first
 
@@ -694,6 +792,12 @@ def run_factory_for_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
     if not result.success:
         log.error(f"  AutoDevAgent failed after {result.total_attempts} attempts.")
         log.error(f"  Failure reason: {result.failure_reason}")
+        if alpha.source_url:
+            mark_scout_alpha_status(alpha.source_url, "failed", {
+                "nexus_status": "failed",
+                "nexus_failure_reason": result.failure_reason or "AutoDevAgent failed",
+                "nexus_failed_at": _utc_now().isoformat(),
+            })
         mark_alpha_failed(alpha.alpha_id, result.failure_reason or "AutoDevAgent failed")
         return None
 
@@ -710,6 +814,11 @@ def run_factory_for_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
     push_dashboard_notification(alpha, output_path, result)
 
     # Mark processed
+    if alpha.source_url:
+        mark_scout_alpha_status(alpha.source_url, "built", {
+            "nexus_status": "processed",
+            "nexus_processed_at": _utc_now().isoformat(),
+        })
     mark_alpha_processed(alpha.alpha_id)
 
     factory_result = FactoryResult(
@@ -818,6 +927,7 @@ if __name__ == "__main__":
         help=f"Minimum ROI score for factory processing (default: {ROI_THRESHOLD})"
     )
     args = parser.parse_args()
+    init_db()
 
     # Apply CLI overrides
     if args.roi_threshold != ROI_THRESHOLD:

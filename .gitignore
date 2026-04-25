@@ -96,3 +96,9 @@ shared/data/seen_repos.json
 shared/data/full_audit_scan.csv
 shared/data/project_audit_filtered.csv
 _backup/
+
+# Database & State Layer
+*.db
+*.sqlite
+shared/data/mbrn_state.db
+shared/data/factory_feed_snapshot.json

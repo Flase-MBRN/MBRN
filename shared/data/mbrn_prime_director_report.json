@@ -1,35 +1,38 @@
 {
-  "generated_at": "2026-04-25T16:49:17+00:00",
+  "generated_at": "2026-04-25T17:55:38+00:00",
   "dry_run": true,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
-  "model_success": true,
-  "repair_used": false,
-  "fallback_used": false,
-  "validation_status": "ok",
-  "validation_warnings": [],
+  "model_success": false,
+  "repair_used": true,
+  "fallback_used": true,
+  "validation_status": "repaired",
+  "validation_warnings": [
+    "invalid_ouroboros_target_file",
+    "invalid_prime_directive"
+  ],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T16:48:08+00:00",
+    "generated_at": "2026-04-25T17:52:43+00:00",
     "discoveries": 105,
-    "processed_alphas": 75,
-    "backlog_alphas": 30,
+    "processed_alphas": 79,
+    "backlog_alphas": 26,
     "seen_repo_ids": 403,
-    "factory_ready_modules": 155,
+    "factory_ready_modules": 163,
     "factory_memory_docs": 15,
-    "nexus_notifications": 155,
+    "nexus_notifications": 163,
     "recent_findings": [
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:46:51.792301+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:36:51.790770+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:26:51.779342+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:16:51.776972+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T16:06:51.774976+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:56:51.765630+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:46:51.763671+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:36:51.762601+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:41.017822+00:00] [WARN] GitHub README API failed for chopra2007/claude-discover: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:40.799843+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T15:26:26.415818+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:59:18.728204+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes..."
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:38:41.273934+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:32:31.245222+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:30:58.748612+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:30:18.381455+00:00] [WARN] GitHub README API failed for ouss-issib/MediGraph-AI: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:30:18.095432+00:00] [WARN] Synergy analysis failed for mohitmail85/ai-ml-fundamentals",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:28:11.608714+00:00] [WARN] GitHub README API failed for kk-taro/ai-competitor-analysis: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:28:11.103298+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:26:06.173602+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:24:03.298664+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:22:37.730256+00:00] [WARN] Synergy analysis failed for lilacmohr/ai-radar-claw",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:20:31.233447+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T17:18:41.430689+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'"
     ],
     "current_control": {
       "scout_status": "running",
@@ -40,12 +43,12 @@
     }
   },
   "proposed_control": {
-    "scout_status": "running",
-    "nexus_status": "running",
+    "scout_status": "paused",
+    "nexus_status": "paused",
     "nexus_roi_threshold": 80.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Focus on system stability; monitor Scout pauses and address underlying issues."
+    "prime_directive": "Maximize factory output and clear backlog."
   },
-  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"running\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": null,\n  \"prime_directive\": \"Focus on system stability; monitor Scout pauses and address underlying issues.\"\n}\n```",
+  "raw_model_response_preview": "timed out",
   "control_panel_unchanged": true
 }

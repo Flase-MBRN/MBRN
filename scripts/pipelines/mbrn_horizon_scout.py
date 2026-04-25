@@ -44,6 +44,17 @@ if str(PIPELINES_DIR) not in sys.path:
     sys.path.append(str(PIPELINES_DIR))
 
 from pipeline_utils import load_pipeline_env, log as pipeline_log, save_json_atomic
+from shared.core.db import (
+    CANONICAL_DIMENSIONS,
+    count_factory_modules_by_dimension,
+    init_db,
+    list_scout_alphas,
+    list_seen_repo_ids,
+    load_factory_control as load_db_factory_control,
+    mark_repo_seen,
+    upsert_scout_alpha,
+    atomic_write,
+)
 
 DEFAULT_SCOUT_OLLAMA_MODEL = "gemma3:12b"  # 128K context — ideal for README analysis
 FACTORY_CONTROL_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control.json"
@@ -74,7 +85,7 @@ def log(level: str, message: object) -> None:
 
 
 def load_factory_control() -> Dict[str, Any]:
-    """Read package-free factory control state with safe defaults."""
+    """Read factory control state from SQLite, with legacy JSON fallback."""
     default = {
         "scout_status": "running",
         "nexus_status": "running",
@@ -82,6 +93,13 @@ def load_factory_control() -> Dict[str, Any]:
         "ouroboros_target_file": None,
         "prime_directive": "Maximize factory output and clear backlog.",
     }
+    try:
+        control = load_db_factory_control(default)
+        if control.get("scout_status") not in {"running", "paused"}:
+            control["scout_status"] = "running"
+        return control
+    except Exception as exc:
+        log("WARN", f"SQLite factory control unavailable; falling back to legacy JSON: {exc}")
     try:
         if not FACTORY_CONTROL_PATH.exists():
             return default
@@ -161,6 +179,34 @@ SCOUT_CONFIG = {
         "source": "github_discovery",
     }
 }
+
+DIMENSION_QUERIES = {
+    "zeit": ["habit streak tracker", "daily check-in", "time blocking", "productivity timer", "routine tracker"],
+    "geld": ["compound interest calculator", "budget tracker", "investment simulator", "expense analyzer", "net worth"],
+    "physis": ["fitness tracker", "body metrics", "health score", "workout planner", "sleep quality"],
+    "geist": ["mindset tracker", "mental health check", "mood journal", "stress level", "focus score"],
+    "ausdruck": ["creative portfolio", "content generator", "style analyzer", "voice finder", "expression score"],
+    "netzwerk": ["relationship compatibility", "synergy score", "team dynamics", "social graph", "connection strength"],
+    "energie": ["energy level tracker", "circadian rhythm", "flow state", "peak performance", "vitality score"],
+    "systeme": ["workflow automation", "process optimizer", "system mapper", "productivity system", "habit architecture"],
+    "raum": ["environment optimizer", "space analyzer", "location score", "digital workspace", "ambient tracker"],
+    "muster": ["numerology calculator", "pattern analysis", "life path", "personality score", "birth date analysis"],
+    "wachstum": ["growth tracker", "skill progress", "learning velocity", "milestone tracker", "compound growth"],
+}
+
+
+def get_priority_dimension() -> str:
+    """Return the canonical dimension with the fewest ready/deployed factory modules."""
+    try:
+        counts = count_factory_modules_by_dimension()
+    except Exception as exc:
+        log("WARN", f"Dimension priority unavailable; using systeme: {exc}")
+        return "systeme"
+    return min(CANONICAL_DIMENSIONS, key=lambda dimension: counts.get(dimension, 0))
+
+
+def get_queries_for_dimension(dimension: str) -> List[str]:
+    return DIMENSION_QUERIES.get(dimension, ["useful web tool vanilla js"])
 
 SYNERGY_ANALYSIS_PROMPT = """Analysiere, ob dieses Projekt MBRN auf das Level einer 500kEUR-Organisation hebt.
 
@@ -573,6 +619,25 @@ def analyze_tool_synergy(repo_data: Dict[str, Any], readme_content: str, context
 
 
 def load_existing_alphas() -> Dict[str, Any]:
+    try:
+        rows = list_scout_alphas()
+        discoveries = []
+        seen_repo_ids = list_seen_repo_ids()
+        for row in rows:
+            raw = json.loads(row["raw_data"] or "{}")
+            repo_name = raw.get("repo", {}).get("full_name") or raw.get("repo_name") or row["title"]
+            discoveries.append({
+                "id": f"sqlite_alpha_{row['id']}",
+                "repo": repo_name,
+                "roi": row["score"],
+                "dimension": row["dimension"],
+                "status": row["status"],
+                "source_url": row["source_url"],
+                "raw_data": raw,
+            })
+        return {"metadata": {"version": "sqlite-v5-snapshot"}, "discoveries": discoveries, "seen_repo_ids": seen_repo_ids}
+    except Exception as exc:
+        log("WARN", f"SQLite alpha load unavailable; falling back to snapshot JSON: {exc}")
     output_path = SCOUT_CONFIG["persistence"]["alphas_path"]
     if not output_path.exists():
         return {"metadata": {"version": "2.0"}, "discoveries": [], "seen_repo_ids": []}
@@ -584,6 +649,12 @@ def load_existing_alphas() -> Dict[str, Any]:
 
 
 def load_seen_repos() -> Set[int]:
+    try:
+        db_ids = set(list_seen_repo_ids())
+        if db_ids:
+            return db_ids
+    except Exception as exc:
+        log("WARN", f"SQLite seen-repo load unavailable; falling back to snapshot JSON: {exc}")
     path = SCOUT_CONFIG["persistence"]["seen_repos_path"]
     if not path.exists():
         # Migration check: see if they are in scout_alphas.json
@@ -599,6 +670,8 @@ def load_seen_repos() -> Set[int]:
 def save_seen_repos(seen_ids: Set[int]) -> bool:
     path = SCOUT_CONFIG["persistence"]["seen_repos_path"]
     try:
+        for repo_id in seen_ids:
+            mark_repo_seen(int(repo_id))
         path.parent.mkdir(parents=True, exist_ok=True)
         save_json_atomic(path, sorted(list(seen_ids)))
         return True
@@ -638,6 +711,14 @@ def save_evolution_entry(repo: Dict[str, Any], analysis: Dict[str, Any], context
                 "roi_rationale": analysis.get("roi_rationale"),
             }
         }
+        atomic_write("evolution_entries", {
+            "id": entry["id"],
+            "tool_name": entry["tool_name"],
+            "category": entry["category"],
+            "roi_score": entry["roi_score"],
+            "dimension": analysis.get("dimension") or "systeme",
+            "raw_data": entry,
+        })
         entries.append(entry)
         path.parent.mkdir(parents=True, exist_ok=True)
         save_json_atomic(path, entries)
@@ -664,8 +745,9 @@ def backfill_alpha_vault_from_evolution_plan():
             write_alpha_vault_entry(repo, analysis, "")
 
 
-def run_synergy_patrol(context: Dict[str, Any], keywords: List[str]) -> Tuple[int, int]:
-    log("INFO", f"=== INFINITE SYNERGY SCOUT PATROL STARTED (Keywords: {keywords}) ===")
+def run_synergy_patrol(context: Dict[str, Any], keywords: List[str], dimension: Optional[str] = None) -> Tuple[int, int]:
+    active_dimension = dimension if dimension in CANONICAL_DIMENSIONS else get_priority_dimension()
+    log("INFO", f"=== INFINITE SYNERGY SCOUT PATROL STARTED (Dimension: {active_dimension}, Keywords: {keywords}) ===")
     seen_repo_ids = load_seen_repos()
     repos = scan_github_trending(keywords)
     if not repos:
@@ -696,12 +778,34 @@ def run_synergy_patrol(context: Dict[str, Any], keywords: List[str]) -> Tuple[in
         roi_score = analysis.get("roi_score", 0)
         if roi_score >= SCOUT_CONFIG["thresholds"]["roi_score_min"]:
             log("OK", f"🎯 ALPHA DISCOVERED: {repo_name} (ROI: {roi_score})")
+            analysis["dimension"] = active_dimension
+            source_url = str(repo.get("html_url") or f"https://github.com/{repo_name}")
+            upsert_scout_alpha(
+                source_url=source_url,
+                title=str(repo_name or source_url),
+                score=float(roi_score or 0.0),
+                dimension=active_dimension,
+                raw_data={
+                    "repo": repo,
+                    "analysis": analysis,
+                    "query_dimension": active_dimension,
+                    "query_keywords": keywords,
+                    "context_maturity": context.get("system_maturity"),
+                },
+                status="pending",
+            )
             write_alpha_vault_entry(repo, analysis, readme)
             save_evolution_entry(repo, analysis, context)
             alphas_data = load_existing_alphas() # Refresh
-            alphas_data["discoveries"].append({"repo": repo_name, "roi": roi_score})
+            alphas_data["discoveries"].append({
+                "repo": repo_name,
+                "roi": roi_score,
+                "dimension": active_dimension,
+                "source_url": source_url,
+            })
             save_json_atomic(SCOUT_CONFIG["persistence"]["alphas_path"], alphas_data)
             new_discoveries += 1
+        mark_repo_seen(int(repo_id), str(repo_name or ""))
         seen_repo_ids.add(repo_id)
         save_seen_repos(seen_repo_ids)
     return new_discoveries, repos_analyzed
@@ -722,12 +826,13 @@ def run_infinite_synergy_loop():
             continue
         log("INFO", f"ITERATION #{iteration} starting...")
         try:
-            all_keywords = SCOUT_CONFIG["github"]["keywords"]
+            priority_dimension = get_priority_dimension()
+            all_keywords = get_queries_for_dimension(priority_dimension)
             num_to_pick = random.randint(1, 2)
             selected_keywords = random.sample(all_keywords, min(len(all_keywords), num_to_pick))
             
             context = load_kanon_context()
-            new_alphas, analyzed = run_synergy_patrol(context, selected_keywords)
+            new_alphas, analyzed = run_synergy_patrol(context, selected_keywords, dimension=priority_dimension)
             log("OK", f"Iteration #{iteration} complete: {new_alphas} alphas found")
         except Exception as exc:
             log("ERROR", f"Iteration #{iteration} failed: {exc}")
@@ -747,9 +852,11 @@ if __name__ == "__main__":
     parser.add_argument("--infinite", action="store_true", help="Run in infinite loop (default)")
     args = parser.parse_args()
     load_pipeline_env(PIPELINES_DIR / ".env")
+    init_db()
     if args.single:
-        all_keywords = SCOUT_CONFIG["github"]["keywords"]
+        priority_dimension = get_priority_dimension()
+        all_keywords = get_queries_for_dimension(priority_dimension)
         selected = random.sample(all_keywords, min(len(all_keywords), 2))
-        run_synergy_patrol(load_kanon_context(), selected)
+        run_synergy_patrol(load_kanon_context(), selected, dimension=priority_dimension)
     else:
         run_infinite_synergy_loop()

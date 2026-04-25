@@ -169,22 +169,21 @@ class WorkerState:
     next_run_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
-def worker_wrapper(definition: WorkerDefinition, state: WorkerState):
-    """Führt Worker isoliert in Threads aus."""
+def worker_wrapper(func, data):
+    from nabilnet_org_claude_memory import chunk_text
     try:
-        module = importlib.import_module(definition.module_path)
-        func = getattr(module, definition.callable_name)
-        log_event(f"Worker START: {definition.worker_id}")
-        if func() is not False:
-            log_event(f"Worker OK: {definition.worker_id}")
+        if isinstance(data, str) and len(data) > 1000:  # Chunk if text is long
+            chunks = chunk_text(data, max_tokens=1000)
+            for i, chunk in enumerate(chunks):
+                result = func(chunk)
+                log_event(f'Processed chunk {i+1}')
         else:
-            log_event(f"Worker FAIL: {definition.worker_id}", "ERROR")
+            result = func(data)
+            log_event('Task completed successfully')
+        return result
     except Exception as e:
-        log_event(f"Worker CRASH {definition.worker_id}: {e}", "ERROR")
-    finally:
-        with state.lock:
-            state.is_running = False
-            state.next_run_at = datetime.now(timezone.utc) + timedelta(minutes=definition.interval_minutes)
+        log_event(f'Error processing task: {str(e)}')
+        raise
 
 def main():
     load_env()

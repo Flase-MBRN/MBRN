@@ -73,11 +73,11 @@
     }
   },
   "dimensions": {
-    "time": {
+    "zeit": {
       "state": "active",
       "maturity": "stable",
       "primary_app": null,
-      "note": "Standardized naming (English) for the temporal dimension."
+      "note": "Standardized v3 naming for the temporal dimension."
     },
     "geld": {
       "state": "active",
@@ -208,6 +208,16 @@
       "topic_area": null,
       "surface_kind": "app",
       "ui": "none"
+    },
+    "20260424_185319_huxiaoman7_skills_eval_module": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "dimension": "systeme",
+      "topic_area": null,
+      "surface_kind": "app",
+      "ui": "complete",
+      "location": "dimensions/systeme/apps/20260424_185319_huxiaoman7_skills_eval_module/index.html",
+      "note": "First v5 Bridge dummy deployment from a migrated factory_modules row. Generated as an acceptance surface without requiring live Ollama."
     }
   },
   "systems": {
@@ -373,9 +383,9 @@
         "mbrn_factory_memory",
         "mbrn_ouroboros_agent"
       ],
-      "control_path": "shared/data/mbrn_factory_control.json",
+      "control_path": "shared/data/mbrn_state.db:factory_control",
       "report_path": "shared/data/mbrn_prime_director_report.json",
-      "note": "Level 5 Meta-Controller. Observes factory backlog, modules, memory, and logs; asks local deepseek-r1:14b for a validated control proposal; actively writes live control panel decisions."
+      "note": "Level 5 Meta-Controller. Observes SQLite factory backlog, modules, memory, and logs; checks the factory_paused kill-switch; asks local deepseek-r1:14b for a validated control proposal; actively writes live SQLite control panel decisions."
     },
     "mbrn_archivist": {
       "state": "internal",
@@ -398,6 +408,26 @@
         "split_brain_sandbox"
       ],
       "note": "Self-Tooling Agent. Generates and validates standalone Python scripts to resolve Nexus blockages caused by missing logic or complex parsing requirements."
+    },
+    "mbrn_sqlite_state_layer": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "shared/core/db.py",
+      "schema": "shared/core/schema.sql",
+      "data_path": "shared/data/mbrn_state.db",
+      "owner_domain": "meta_generator",
+      "note": "v5 Omni state foundation. Provides WAL-mode SQLite tables for scout alphas, notifications, factory control, factory modules, factory memory, seen repos, tool requests, and evolution entries."
+    },
+    "mbrn_bridge_agent": {
+      "state": "experimental",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_bridge_agent.py",
+      "owner_domain": "meta_generator",
+      "depends_on": [
+        "mbrn_sqlite_state_layer",
+        "local_llm"
+      ],
+      "note": "Factory-to-Frontend bridge. Converts ready factory_modules rows into standalone Vanilla HTML tools under dimensions/<dimension>/apps/<module>/index.html using gemma3:12b by default."
     }
   },
   "execution_tracks": {
@@ -459,6 +489,44 @@
             "scripts/pipelines/"
           ],
           "note": "Day Zero is implemented as pure local automation. The Windows autopilot runs the Week-1 collector and then the Week-2 local LLM worker once per Windows login through a Startup-folder shortcut. Stripe, premium gating, paywalls, and frontend commerce remain intentionally untouched."
+        }
+      }
+    },
+    "omni_v5": {
+      "state": "active",
+      "maturity": "partial",
+      "document": "MBRN_V5_OMNI_ROADMAP.md",
+      "note": "Approved v5 Omni execution track. Roadmap direction is active, but only concrete systems declared in systems count as implemented state.",
+      "phases": {
+        "sprint_1_sqlite_kill_switch": {
+          "state": "active",
+          "maturity": "implemented",
+          "primary_locations": [
+            "shared/core/db.py",
+            "shared/core/schema.sql",
+            "scripts/pipelines/",
+            "supabase/migrations/19_factory_omni_state.sql"
+          ],
+          "note": "SQLite WAL state layer, factory-ready migration, and Prime Director kill-switch are implemented as the v5 foundation."
+        },
+        "sprint_2_dimension_queries": {
+          "state": "active",
+          "maturity": "implemented",
+          "primary_locations": [
+            "scripts/pipelines/mbrn_horizon_scout.py"
+          ],
+          "note": "Horizon Scout uses canonical dimension queries and prioritizes the dimension with the fewest ready/deployed factory modules."
+        },
+        "sprint_3_factory_frontend_bridge": {
+          "state": "active",
+          "maturity": "implemented",
+          "primary_locations": [
+            "scripts/pipelines/mbrn_bridge_agent.py",
+            "pillars/frontend_os/dashboard/factory_feed.js",
+            "supabase/functions/factory-feed/",
+            "supabase/functions/factory-control/"
+          ],
+          "note": "Bridge agent and hybrid dashboard feed are implemented. Actual generated app count depends on ready module queue and local Ollama availability."
         }
       }
     }

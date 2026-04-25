@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 Track-A Validation Test: with_retry decorator + log_error_to_disk()
 Run: .\venv\Scripts\python.exe scripts\pipelines\_test_retry_decorator.py
 """

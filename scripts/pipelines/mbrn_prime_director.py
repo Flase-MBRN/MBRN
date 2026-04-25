@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
-MBRN Prime Director - Mini-Level 5 dry-run controller.
+MBRN Prime Director - Level 5 factory controller.
 
 Observes the local factory, asks a local Ollama model for a control proposal,
-validates it, and writes a dry-run report. It never mutates the live control
-panel in this first phase.
+validates it, and writes live control decisions when requested.
 """
 
 from __future__ import annotations
@@ -19,8 +18,22 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+import sys
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from shared.core.db import (
+    get_control_value,
+    get_db,
+    init_db,
+    list_notifications,
+    load_factory_control as load_db_factory_control,
+    save_factory_control as save_db_factory_control,
+)
+
 DATA_DIR = PROJECT_ROOT / "shared" / "data"
 LOG_DIR = PROJECT_ROOT / "scripts" / "pipelines" / "logs"
 FACTORY_READY_DIR = PROJECT_ROOT / "docs" / "S3_Data" / "outputs" / "factory_ready"
@@ -32,6 +45,8 @@ MEMORY_PATH = DATA_DIR / "mbrn_factory_memory.json"
 NOTIFICATIONS_PATH = DATA_DIR / "nexus_notifications.json"
 
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 PRIME_MODEL = "deepseek-r1:14b"
 REPAIR_MODEL = "deepseek-coder-v2"
 DEFAULT_INTERVAL_MINUTES = 30
@@ -146,8 +161,36 @@ def validate_control(candidate: Any) -> Tuple[Dict[str, Any], List[str]]:
 
 
 def load_control() -> Dict[str, Any]:
+    try:
+        control, _warnings = validate_control(load_db_factory_control(DEFAULT_CONTROL))
+        return control
+    except Exception as exc:
+        log("WARN", f"SQLite control unavailable; falling back to legacy JSON: {exc}")
     control, _warnings = validate_control(read_json(CONTROL_PATH, DEFAULT_CONTROL))
     return control
+
+
+def save_control(control: Dict[str, Any]) -> None:
+    save_db_factory_control(validate_control(control)[0])
+
+
+def is_factory_paused() -> bool:
+    """Remote kill-switch. Supabase errors fail closed; local DB is dev fallback."""
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            url = f"{SUPABASE_URL.rstrip('/')}/rest/v1/factory_flags?key=eq.factory_paused&select=value"
+            req = urllib.request.Request(url, headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "Accept": "application/json",
+            })
+            with urllib.request.urlopen(req, timeout=5) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            return bool(data[0].get("value")) if data else False
+        except Exception as exc:
+            log("ERROR", f"Remote kill-switch unavailable; failing closed: {exc}")
+            return True
+    return bool(get_control_value("factory_paused", False))
 
 
 def count_processed(discoveries: List[Dict[str, Any]]) -> int:
@@ -186,24 +229,52 @@ def collect_recent_log_findings(limit: int = 12) -> List[str]:
 
 
 def collect_sensor_snapshot() -> Dict[str, Any]:
-    alphas = read_json(ALPHAS_PATH, {"discoveries": [], "seen_repo_ids": []})
-    discoveries = alphas.get("discoveries", []) if isinstance(alphas, dict) else []
-    if not isinstance(discoveries, list):
-        discoveries = []
-    processed = count_processed(discoveries)
-    memory = read_json(MEMORY_PATH, {"documents": []})
-    notifications = read_json(NOTIFICATIONS_PATH, [])
-    modules = list(FACTORY_READY_DIR.glob("*.py")) if FACTORY_READY_DIR.exists() else []
+    try:
+        with get_db() as conn:
+            alpha_counts = conn.execute(
+                """
+                SELECT
+                    COUNT(*) AS total,
+                    SUM(CASE WHEN status IN ('built', 'rejected', 'failed') THEN 1 ELSE 0 END) AS processed,
+                    SUM(CASE WHEN status IN ('pending', 'approved') THEN 1 ELSE 0 END) AS backlog
+                FROM scout_alphas
+                """
+            ).fetchone()
+            module_counts = conn.execute("SELECT COUNT(*) AS total FROM factory_modules").fetchone()
+            memory_counts = conn.execute("SELECT COUNT(*) AS total FROM factory_memory").fetchone()
+        discoveries_total = int(alpha_counts["total"] or 0)
+        processed = int(alpha_counts["processed"] or 0)
+        backlog = int(alpha_counts["backlog"] or 0)
+        modules_total = int(module_counts["total"] or 0)
+        memory_total = int(memory_counts["total"] or 0)
+        notifications_total = len(list_notifications(limit=200))
+        seen_repo_ids = 0
+    except Exception as exc:
+        log("WARN", f"SQLite sensors unavailable; falling back to legacy JSON: {exc}")
+        alphas = read_json(ALPHAS_PATH, {"discoveries": [], "seen_repo_ids": []})
+        discoveries = alphas.get("discoveries", []) if isinstance(alphas, dict) else []
+        if not isinstance(discoveries, list):
+            discoveries = []
+        processed = count_processed(discoveries)
+        discoveries_total = len(discoveries)
+        backlog = max(0, len(discoveries) - processed)
+        modules = list(FACTORY_READY_DIR.glob("*.py")) if FACTORY_READY_DIR.exists() else []
+        modules_total = len(modules)
+        memory = read_json(MEMORY_PATH, {"documents": []})
+        memory_total = len(memory.get("documents", [])) if isinstance(memory, dict) else 0
+        notifications = read_json(NOTIFICATIONS_PATH, [])
+        notifications_total = len(notifications) if isinstance(notifications, list) else 0
+        seen_repo_ids = len(alphas.get("seen_repo_ids", [])) if isinstance(alphas, dict) else 0
 
     return {
         "generated_at": utc_now(),
-        "discoveries": len(discoveries),
+        "discoveries": discoveries_total,
         "processed_alphas": processed,
-        "backlog_alphas": max(0, len(discoveries) - processed),
-        "seen_repo_ids": len(alphas.get("seen_repo_ids", [])) if isinstance(alphas, dict) else 0,
-        "factory_ready_modules": len(modules),
-        "factory_memory_docs": len(memory.get("documents", [])) if isinstance(memory, dict) else 0,
-        "nexus_notifications": len(notifications) if isinstance(notifications, list) else 0,
+        "backlog_alphas": backlog,
+        "seen_repo_ids": seen_repo_ids,
+        "factory_ready_modules": modules_total,
+        "factory_memory_docs": memory_total,
+        "nexus_notifications": notifications_total,
         "recent_findings": collect_recent_log_findings(),
         "current_control": load_control(),
     }
@@ -321,7 +392,7 @@ def run_control_pass(live_control: bool = False) -> Dict[str, Any]:
         proposed_control["prime_directive"] = "HARD OVERRIDE: Backlog > 50. Scout forcefully paused."
 
     if live_control:
-        atomic_write_json(CONTROL_PATH, proposed_control)
+        save_control(proposed_control)
 
     report = {
         "generated_at": utc_now(),
@@ -345,6 +416,10 @@ def run_control_pass(live_control: bool = False) -> Dict[str, Any]:
 def run_loop(interval_minutes: int, live_control: bool = False) -> None:
     while True:
         try:
+            if is_factory_paused():
+                log("WARN", "Factory paused via kill-switch. Sleeping 60 seconds.")
+                time.sleep(60)
+                continue
             report = run_control_pass(live_control=live_control)
             mode = "live" if live_control else "dry-run"
             log("OK", f"{mode} control pass complete fallback={report['fallback_used']}")
@@ -354,13 +429,14 @@ def run_loop(interval_minutes: int, live_control: bool = False) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="MBRN Prime Director - Level 5 Dry-Run Meta-Controller")
-    parser.add_argument("--run-once", action="store_true", help="Run one dry-run control pass")
-    parser.add_argument("--infinite", action="store_true", help="Run dry-run control passes forever")
+    init_db()
+    parser = argparse.ArgumentParser(description="MBRN Prime Director - Level 5 Meta-Controller")
+    parser.add_argument("--run-once", action="store_true", help="Run one control pass")
+    parser.add_argument("--infinite", action="store_true", help="Run control passes forever")
     parser.add_argument(
         "--live-control",
         action="store_true",
-        help="Opt-in drift mode: write proposed control to the live factory control file",
+        help="Write proposed control to the live SQLite factory control panel",
     )
     parser.add_argument("--interval-minutes", type=int, default=DEFAULT_INTERVAL_MINUTES)
     args = parser.parse_args()

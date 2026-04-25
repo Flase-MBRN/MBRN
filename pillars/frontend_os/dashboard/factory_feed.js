@@ -1,40 +1,79 @@
 /**
- * MBRN Factory Feed — Nexus Notification Panel
- * Reads nexus_notifications.json and renders the autonomous factory output
- * as a live feed section in the Dashboard.
- *
- * Architecture Note:
- *   - Fetches relative path from dashboard (works with local dev server or file://)
- *   - Gracefully degrades if file is missing or empty
- *   - No external dependencies — pure stdlib DOM
+ * MBRN Factory Feed - SQLite/Supabase hybrid panel.
+ * Supabase Edge is the browser path; local JSON is a read-only snapshot fallback.
  */
 
-const NOTIFICATIONS_PATH = '../../shared/data/nexus_notifications.json';
+const SNAPSHOT_PATH = '../../shared/data/factory_feed_snapshot.json';
+const LEGACY_NOTIFICATIONS_PATH = '../../shared/data/nexus_notifications.json';
+const FACTORY_FEED_EDGE_URL = window.MBRN_FACTORY_FEED_URL || '';
+const FACTORY_CONTROL_EDGE_URL = window.MBRN_FACTORY_CONTROL_URL || '';
+const FACTORY_CONTROL_ADMIN_TOKEN = window.MBRN_FACTORY_ADMIN_TOKEN || '';
 const MAX_ENTRIES = 5;
 
-/**
- * Fetch nexus notifications from the local data file.
- * Returns an empty array on any error (graceful degradation).
- * @returns {Promise<Array>}
- */
-async function fetchNexusNotifications() {
+function normalizeFeedItems(items) {
+  if (!Array.isArray(items)) return [];
+  return items.map((item) => ({
+    ...item,
+    id: item.id || item.name || item.module_name || item.module_file,
+    repo_name: item.repo_name || item.name || item.module_name || 'factory-module',
+    module_file: item.module_file || item.frontend_file || item.module_name || item.name || 'index.html',
+    roi_score: typeof item.roi_score === 'number' ? item.roi_score : Number(item.quality_score || 0),
+    agent_attempts: item.agent_attempts || 1,
+    self_heals: item.self_heals || 0,
+    read: Boolean(item.read),
+    created_at: item.created_at || new Date().toISOString()
+  }));
+}
+
+async function fetchJsonList(url) {
   try {
-    const response = await fetch(NOTIFICATIONS_PATH, {
-      cache: 'no-store' // Always fresh — factory runs while dashboard is open
-    });
+    const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) return [];
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return normalizeFeedItems(Array.isArray(data) ? data : []);
   } catch {
     return [];
   }
 }
 
-/**
- * Format an ISO timestamp to a human-readable relative string.
- * @param {string} isoString
- * @returns {string}
- */
+async function fetchNexusNotifications() {
+  if (FACTORY_FEED_EDGE_URL) {
+    const edgeItems = await fetchJsonList(FACTORY_FEED_EDGE_URL);
+    if (edgeItems.length) return edgeItems;
+  }
+  const snapshotItems = await fetchJsonList(SNAPSHOT_PATH);
+  if (snapshotItems.length) return snapshotItems;
+  return fetchJsonList(LEGACY_NOTIFICATIONS_PATH);
+}
+
+async function fetchFactoryPausedState() {
+  if (!FACTORY_CONTROL_EDGE_URL) return null;
+  try {
+    const response = await fetch(FACTORY_CONTROL_EDGE_URL, { cache: 'no-store' });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return Boolean(data.factory_paused);
+  } catch {
+    return null;
+  }
+}
+
+async function setFactoryPausedState(paused) {
+  if (!FACTORY_CONTROL_EDGE_URL) return null;
+  const headers = { 'Content-Type': 'application/json' };
+  if (FACTORY_CONTROL_ADMIN_TOKEN) {
+    headers['x-mbrn-admin-token'] = FACTORY_CONTROL_ADMIN_TOKEN;
+  }
+  const response = await fetch(FACTORY_CONTROL_EDGE_URL, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ factory_paused: paused })
+  });
+  if (!response.ok) throw new Error('factory-control request failed');
+  const data = await response.json();
+  return Boolean(data.factory_paused);
+}
+
 function formatRelativeTime(isoString) {
   try {
     const diff = Date.now() - new Date(isoString).getTime();
@@ -45,43 +84,32 @@ function formatRelativeTime(isoString) {
     if (hours < 24) return `vor ${hours} Std.`;
     return `vor ${Math.floor(hours / 24)} Tag(en)`;
   } catch {
-    return '—';
+    return '-';
   }
 }
 
-/**
- * Get a ROI color class based on score.
- * @param {number} roi
- * @returns {string}
- */
 function getRoiClass(roi) {
   if (roi >= 95) return 'factory-roi--elite';
   if (roi >= 90) return 'factory-roi--high';
   return 'factory-roi--normal';
 }
 
-/**
- * Render a single notification card.
- * @param {Object} n - notification object
- * @returns {string} HTML string
- */
 function renderNotificationCard(n) {
   const time = formatRelativeTime(n.created_at);
-  const roi = typeof n.roi_score === 'number' ? n.roi_score.toFixed(1) : '—';
+  const roi = typeof n.roi_score === 'number' && n.roi_score > 0 ? n.roi_score.toFixed(1) : '-';
   const roiClass = getRoiClass(n.roi_score);
   const heals = typeof n.self_heals === 'number' ? n.self_heals : 0;
   const attempts = typeof n.agent_attempts === 'number' ? n.agent_attempts : 1;
-  const repoName = n.repo_name || '—';
-  const moduleFile = n.module_file || '—';
-
+  const repoName = n.repo_name || '-';
+  const moduleFile = n.module_file || '-';
   const healBadge = heals > 0
-    ? `<span class="factory-badge factory-badge--heal" title="${heals} Self-Heal(s) applied">⟳ ${heals}×</span>`
-    : `<span class="factory-badge factory-badge--clean">✓ Clean</span>`;
+    ? `<span class="factory-badge factory-badge--heal" title="${heals} Self-Heal(s) applied">${heals}x Heal</span>`
+    : `<span class="factory-badge factory-badge--clean">Clean</span>`;
 
   return `
     <div class="factory-card" data-id="${n.id || ''}">
       <div class="factory-card__header">
-        <span class="factory-card__icon">⚙</span>
+        <span class="factory-card__icon">Factory</span>
         <span class="factory-card__repo">${repoName}</span>
         <span class="factory-card__time">${time}</span>
       </div>
@@ -91,56 +119,47 @@ function renderNotificationCard(n) {
         <span class="factory-badge factory-badge--attempts">${attempts} Versuch${attempts !== 1 ? 'e' : ''}</span>
       </div>
       <div class="factory-card__file" title="${moduleFile}">
-        <span class="factory-file-icon">📄</span>
+        <span class="factory-file-icon">File</span>
         <code class="factory-filename">${moduleFile}</code>
       </div>
     </div>
   `.trim();
 }
 
-/**
- * Render the empty state when no notifications exist.
- * @returns {string}
- */
 function renderEmptyState() {
   return `
     <div class="factory-empty">
-      <span class="factory-empty__icon">🏭</span>
+      <span class="factory-empty__icon">Factory</span>
       <p class="factory-empty__text">Noch keine Module gefertigt.</p>
-      <p class="factory-empty__hint">Starte Scout + Nexus — erste Ergebnisse erscheinen nach ca. 15 Min.</p>
+      <p class="factory-empty__hint">Scout, Nexus und Bridge schreiben zuerst in SQLite.</p>
     </div>
   `.trim();
 }
 
-/**
- * Build the complete Factory Feed HTML section.
- * @param {Array} notifications
- * @returns {string}
- */
-function buildFactoryFeedHTML(notifications) {
+function buildFactoryFeedHTML(notifications, controlState = null) {
   const entries = notifications.slice(0, MAX_ENTRIES);
-  const unread = notifications.filter(n => !n.read).length;
+  const unread = notifications.filter((n) => !n.read).length;
   const totalCount = notifications.length;
-
   const unreadBadge = unread > 0
     ? `<span class="factory-unread-badge" id="factory-unread-count">${unread}</span>`
     : '';
-
   const cardsHTML = entries.length > 0
     ? entries.map(renderNotificationCard).join('')
     : renderEmptyState();
-
   const folderPathWin = 'C:\\DevLab\\MBRN-HUB-V1\\docs\\S3_Data\\outputs\\factory_ready';
+  const controlLabel = controlState === true ? 'Factory pausiert' : 'Factory aktiv';
+  const controlDisabled = FACTORY_CONTROL_EDGE_URL ? '' : 'disabled';
+  const controlChecked = controlState === true ? 'checked' : '';
 
   return `
     <section class="factory-feed-section reveal" id="factory-feed-section">
       <div class="factory-feed-header">
         <div class="factory-feed-title-row">
-          <span class="factory-feed-icon">🏭</span>
+          <span class="factory-feed-icon">Factory</span>
           <h2 class="factory-feed-title">MBRN Factory Feed ${unreadBadge}</h2>
         </div>
         <p class="factory-feed-subtitle">
-          Autonom gefertigte Module — Scout → Nexus → Sandbox → Produktion
+          Autonom gefertigte Module - Scout -> Nexus -> SQLite -> Bridge -> Frontend
         </p>
         <div class="factory-feed-stats">
           <span class="factory-stat">
@@ -149,8 +168,18 @@ function buildFactoryFeedHTML(notifications) {
           </span>
           <span class="factory-stat">
             <span class="factory-stat__value" id="factory-unread-stat">${unread}</span>
-            <span class="factory-stat__label">Neu (ungelesen)</span>
+            <span class="factory-stat__label">Neu</span>
           </span>
+          <label class="factory-stat" title="Remote Kill-Switch">
+            <input
+              id="factory-paused-toggle"
+              type="checkbox"
+              ${controlChecked}
+              ${controlDisabled}
+              onchange="window.__setFactoryPaused && window.__setFactoryPaused(this.checked)"
+            >
+            <span class="factory-stat__label">${controlLabel}</span>
+          </label>
         </div>
       </div>
 
@@ -164,9 +193,9 @@ function buildFactoryFeedHTML(notifications) {
           class="factory-action-btn factory-action-btn--primary"
           data-folder="${folderPathWin}"
           onclick="window.__openFactoryFolder && window.__openFactoryFolder(this.dataset.folder)"
-          title="Öffne den factory_ready Ordner"
+          title="Oeffne den factory_ready Ordner"
         >
-          <span>📂</span> Module-Ordner öffnen
+          Module-Ordner oeffnen
         </button>
         <button
           id="factory-refresh-btn"
@@ -174,23 +203,17 @@ function buildFactoryFeedHTML(notifications) {
           onclick="window.__refreshFactoryFeed && window.__refreshFactoryFeed()"
           title="Feed aktualisieren"
         >
-          <span>↻</span> Aktualisieren
+          Aktualisieren
         </button>
       </div>
 
       <p class="factory-feed-path">
-        Ausgabe: <code>docs/S3_Data/outputs/factory_ready/</code>
+        Ausgabe: <code>shared/data/mbrn_state.db</code> + <code>shared/data/factory_feed_snapshot.json</code>
       </p>
     </section>
   `.trim();
 }
 
-/**
- * Main render function — fetches data and injects the Factory Feed
- * into the specified container element.
- *
- * @param {string} containerId - ID of the target DOM element
- */
 export async function renderFactoryFeed(containerId = 'factory-feed-root') {
   const container = document.getElementById(containerId);
   if (!container) {
@@ -198,7 +221,6 @@ export async function renderFactoryFeed(containerId = 'factory-feed-root') {
     return;
   }
 
-  // Loading state
   container.innerHTML = `
     <div class="factory-loading">
       <span class="factory-loading__dot"></span>
@@ -207,16 +229,16 @@ export async function renderFactoryFeed(containerId = 'factory-feed-root') {
     </div>
   `;
 
-  const notifications = await fetchNexusNotifications();
-  container.innerHTML = buildFactoryFeedHTML(notifications);
+  const [notifications, controlState] = await Promise.all([
+    fetchNexusNotifications(),
+    fetchFactoryPausedState()
+  ]);
+  container.innerHTML = buildFactoryFeedHTML(notifications, controlState);
 
-  // Register global handlers (called from inline onclick — CSP-safe pattern)
   window.__openFactoryFolder = (folderPath) => {
-    // In a local HTML context, we can't open native folders directly.
-    // We copy the path to clipboard as the best available action.
     if (navigator.clipboard) {
       navigator.clipboard.writeText(folderPath).then(() => {
-        _showFactoryToast('Pfad in Zwischenablage kopiert — füge ihn in den Explorer ein.');
+        _showFactoryToast('Pfad in Zwischenablage kopiert.');
       });
     } else {
       _showFactoryToast(`Ordner: ${folderPath}`);
@@ -227,7 +249,17 @@ export async function renderFactoryFeed(containerId = 'factory-feed-root') {
     renderFactoryFeed(containerId);
   };
 
-  // Auto-refresh every 60 seconds while dashboard is open
+  window.__setFactoryPaused = async (paused) => {
+    try {
+      await setFactoryPausedState(paused);
+      _showFactoryToast(paused ? 'Factory pausiert.' : 'Factory aktiviert.');
+      renderFactoryFeed(containerId);
+    } catch {
+      _showFactoryToast('Factory-Control ist nicht erreichbar.');
+      renderFactoryFeed(containerId);
+    }
+  };
+
   if (!window.__factoryFeedInterval) {
     window.__factoryFeedInterval = setInterval(() => {
       renderFactoryFeed(containerId);
@@ -237,18 +269,11 @@ export async function renderFactoryFeed(containerId = 'factory-feed-root') {
   console.log(`[FactoryFeed] Rendered ${notifications.length} notification(s).`);
 }
 
-/**
- * Small toast notification — uses existing MBRN toast system if available,
- * falls back to a minimal inline toast.
- * @param {string} message
- */
 function _showFactoryToast(message) {
-  // Try existing MBRN toast
   if (window.__mbrnToast) {
     window.__mbrnToast(message);
     return;
   }
-  // Minimal fallback
   const toast = document.createElement('div');
   toast.className = 'toast-notification toast-info';
   toast.textContent = message;
@@ -258,3 +283,4 @@ function _showFactoryToast(message) {
     setTimeout(() => toast.remove(), 350);
   }, 3000);
 }
+
