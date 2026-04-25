@@ -198,6 +198,7 @@ def _ollama_chat(messages: list[dict], temperature: float = 0.2) -> str:
         "model": OLLAMA_MODEL,
         "messages": messages,
         "stream": False,
+        "keep_alive": 0,  # CRITICAL: Release VRAM immediately
         "options": {
             "temperature": temperature,
             "num_predict": 2048,

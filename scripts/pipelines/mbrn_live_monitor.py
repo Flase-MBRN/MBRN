@@ -31,7 +31,7 @@ def log(level: str, message: object) -> None:
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
-MONITOR_MODEL    = "llama3.1:8b"     # Hyper-schnell — kein Reasoning nötig
+MONITOR_MODEL    = "llama3.2:latest"  # Ultra-fast — only 2GB VRAM footprint
 MONITOR_TIMEOUT  = 120               # Allow one full guarded Ollama slot cycle
 SCAN_INTERVAL_S  = 300               # Alle 5 Minuten scannen
 RECENT_FINDINGS_WINDOW_S = 7200      # Only last 2h affects live status

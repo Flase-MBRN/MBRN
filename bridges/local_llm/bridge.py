@@ -110,6 +110,7 @@ class LocalLLMBridge:
             "model": self.config.model,
             "prompt": prompt,
             "stream": False,
+            "keep_alive": 0,  # CRITICAL: Force VRAM release immediately after request
             "options": {
                 "temperature": self.config.temperature,
             },

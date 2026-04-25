@@ -430,6 +430,7 @@ def repair_json_with_ollama(
             "model": model,
             "prompt": prompt,
             "stream": False,
+            "keep_alive": 0,  # CRITICAL: Force VRAM release immediately after request
             "options": {
                 "temperature": 0.0,
             },

@@ -80,7 +80,7 @@ from scripts.pipelines.mbrn_logic_auditor import calculate_score
 # Configuration
 DIMENSIONS_DIR = PROJECT_ROOT / "dimensions"
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "deepseek-coder-v2:latest")
 OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))
 MIN_HTML_CHARS = 500
 ELITE_THRESHOLD = 0.8
@@ -158,7 +158,8 @@ def generate_standalone_html(module: Dict[str, Any], logic_desc: str) -> str:
     payload = {
         "model": OLLAMA_MODEL,
         "prompt": prompt,
-        "stream": False
+        "stream": False,
+        "keep_alive": 0  # CRITICAL: Force VRAM release immediately
     }
     
     try:
