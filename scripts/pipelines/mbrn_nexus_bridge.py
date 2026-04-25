@@ -581,13 +581,10 @@ def _make_slug(repo_name: str) -> str:
 def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
     """
     Construct a concrete, standalone-Python goal string for the AutoDevAgent.
-
-    The goal asks the agent to distill the CORE autonomous logic from the
-    Scout's find into a self-contained, runnable MBRN module.
+    Harden the prompt to prevent the 'hallucination loop' of external imports.
     """
     readme_excerpt = ""
     if readme:
-        # Keep first 1500 chars — enough context without hitting token limits
         readme_excerpt = f"\n\nREADME EXCERPT (first 1500 chars):\n{readme[:1500]}"
 
     memory_context = ""
@@ -599,42 +596,6 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
             memory_context = "\n\nMBRN FACTORY MEMORY (Similar past solutions, stdlib-sanitized; use concepts only, do not copy imports):\n"
             for snip in similar_snippets:
                 memory_context += f"--- {snip['name']} ---\n{snip['code'][:800]}...\n\n"
-    except ImportError:
-        pass
-    except Exception as e:
-        log.warning(f"Factory Memory unavailable: {e}")
-
-    goal = f"""Write a standalone Python module that implements the CORE autonomous logic
-extracted from the following GitHub repository discovery.
-
-REPOSITORY: {alpha.repo_name}
-URL: {alpha.repo_url}
-DESCRIPTION: {alpha.description}
-SCOUT CATEGORY: {alpha.category}
-SCOUT RATIONALE: {alpha.rationale}
-{readme_excerpt}{memory_context}
-
-YOUR TASK:
-1. Identify the most valuable, reusable autonomous function or algorithm in this repository.
-2. Implement it as a clean, standalone Python script using ONLY Python stdlib.
-3. The script must:
-   - Define at least one callable function with a clear docstring.
-   - Execute a self-test at module level (print results to stdout).
-   - As the very last statement, print exactly: print("MODULE_READY: {_make_slug(alpha.repo_name)}")
-   - The MODULE_READY line MUST be inside a print() call — bare labels are not valid Python
-4. Focus on the CORE LOGIC — not setup, config, or external API calls.
-5. Make it MBRN-ready: minimal dependencies, runs in a CPU-only Docker container.
-6. If MBRN FACTORY MEMORY is provided above, use it as inspiration for coding style and patterns.
-
-SANDBOX CONSTRAINTS (HARD RULES — violations will cause test failure):
-- NO git, curl, wget, pip, or any shell commands (subprocess is FORBIDDEN)
-- NO network access — the sandbox has --network none
-- NO file system writes — use only in-memory data structures
-- NO external packages — ONLY Python stdlib (os, json, re, math, collections, etc.)
-- The self-test data must be HARDCODED — do not read from files or network
-- If the algorithm normally requires fetching data (e.g. git clone), implement
-  the PROCESSING logic only, with hardcoded sample data as the test input.
-
 The output will be validated by running it in an isolated CPU-only Docker container.
 """
     return goal
