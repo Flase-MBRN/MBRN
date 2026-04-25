@@ -1,5 +1,6 @@
 import { dom } from '../../../shared/ui/dom_utils.js';
 import { getDimensionSurfaceModel } from '../../../shared/application/frontend_os/discoverability_runtime.js';
+import { getRepoRoot } from '../navigation/index.js';
 
 function createSurfaceCard(parent, options) {
   const {
@@ -51,7 +52,20 @@ function createSurfaceCard(parent, options) {
   return card;
 }
 
-export function renderDimensionViewCard(container, dimensionId, options = {}) {
+async function fetchDynamicFactoryApps() {
+  const snapshotPath = `${getRepoRoot()}shared/data/factory_feed_snapshot.json`;
+  try {
+    const response = await fetch(snapshotPath, { cache: 'no-store' });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.warn('[discoverability] Failed to fetch dynamic apps:', err);
+    return [];
+  }
+}
+
+export async function renderDimensionViewCard(container, dimensionId, options = {}) {
   const model = getDimensionSurfaceModel(dimensionId);
   if (!model) {
     throw new Error(`Unknown dimension model: ${dimensionId}`);
@@ -184,6 +198,49 @@ export function renderDimensionViewCard(container, dimensionId, options = {}) {
       parent: placeholder
     });
   }
+
+  // --- START: Dynamic Factory Apps Section ---
+  const dynamicApps = await fetchDynamicFactoryApps();
+  const dimensionApps = dynamicApps.filter((app) => app.dimension === dimensionId);
+
+  if (dimensionApps.length > 0) {
+    const factorySection = dom.createEl('section', {
+      className: 'dimension-surface-section mt-32',
+      parent: root
+    });
+
+    dom.createEl('div', {
+      className: 'section-eyebrow-left text-accent',
+      text: 'Autonom gefertigte Apps (Factory)',
+      parent: factorySection
+    });
+
+    const factoryGrid = dom.createEl('div', {
+      className: 'dimension-surface-grid',
+      parent: factorySection
+    });
+
+    dimensionApps.forEach((app) => {
+      const appTitle = app.module_name || app.repo_name || 'Unbekanntes Modul';
+      const cleanTitle = appTitle.replace(/^\d{8}_\d{6}_/, '').replace(/_module$/, '').replace(/_/g, ' ');
+
+      createSurfaceCard(factoryGrid, {
+        title: cleanTitle,
+        body: app.message || 'Eigens für diese Dimension gefertigte Logik-Surface.',
+        meta: `Status: Factory-Ready | ID: ${app.id}`,
+        surfaceId: app.id,
+        route: app.frontend_file || app.module_file,
+        interactive: true,
+        basePath: getRepoRoot(),
+        onNavigate: (id) => {
+          // Dynamic apps might not be in the nav-registry, so we use direct window navigation
+          const target = `${getRepoRoot()}${app.frontend_file || app.module_file}`;
+          window.location.href = target;
+        }
+      });
+    });
+  }
+  // --- END: Dynamic Factory Apps Section ---
 
   return { root, model };
 }

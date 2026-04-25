@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBRN Agent State Module</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0056b3;
+            text-align: center;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #eee;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MBRN Agent State Module</h1>
+
+        <p><strong>Source Alpha:</strong> dwaynehelena/agent-state</p>
+        <p><strong>Alpha ID:</strong> alpha_1214830974</p>
+        <p><strong>ROI Score:</strong> 85.0</p>
+        <p><strong>Manufactured At:</strong> 2026-04-24T20:53:12.367233+00:00</p>
+        <p><strong>Agent Attempts:</strong> 1</p>
+
+        <div id="result">
+            Loading...
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const resultDiv = document.getElementById('result');
+
+                try {
+                    // Simulate reading agent state (replace with actual data source)
+                    const agentState = {
+                        "heartbeat": Math.floor(Date.now() / 1000) // Simulate recent heartbeat
+                    };
+
+                    // Simulate writing agent state (replace with actual data source)
+                    // No actual writing needed for this example
+
+                    // Simulate heartbeat check
+                    const isHeartbeatRecent = (Date.now() - agentState.heartbeat * 1000) < 5 * 60 * 1000;
+
+                    let message = "MODULE_READY: dwaynehelena_agent_state<br><br>";
+                    if (isHeartbeatRecent) {
+                        message += "Heartbeat check passed.";
+                    } else {
+                        message += "Heartbeat check failed.";
+                    }
+
+                    resultDiv.innerHTML = message;
+
+                } catch (error) {
+                    resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

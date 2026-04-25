@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destination Recommender</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #0056b3;
+        }
+
+        .destination-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .destination-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .destination-item h3 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+
+        .destination-item p {
+            margin-bottom: 0;
+        }
+
+        #module-info {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Destination Recommender</h1>
+
+        <div id="destination-list" class="destination-list">
+            <!-- Recommended destinations will be displayed here -->
+        </div>
+
+        <div id="module-info">
+            MODULE_READY: CaptainIND7_Yatrik
+        </div>
+    </div>
+
+    <script>
+        const destinations = [
+            {"name": "Kyoto", "country": "Japan", "type": "culture"},
+            {"name": "Hiroshima", "country": "Japan", "type": "history"},
+            {"name": "Mount Fuji", "country": "Japan", "type": "nature"}
+        ];
+
+        const userPreferences = {
+            "location": "Japan",
+            "trip_duration": 7,
+            "interests": ["culture", "nature"]
+        };
+
+        function recommendDestinations(userPreferences, destinations) {
+            const recommendedDestinations = [];
+            for (const dest of destinations) {
+                if (dest.country === userPreferences.location && recommendedDestinations.length < 2) {
+                    recommendedDestinations.push(dest);
+                }
+            }
+            return recommendedDestinations;
+        }
+
+        function displayDestinations(destinations) {
+            const destinationList = document.getElementById("destination-list");
+            destinationList.innerHTML = ""; // Clear existing list
+
+            if (destinations.length === 0) {
+                destinationList.innerHTML = "<p>No destinations found based on your preferences.</p>";
+                return;
+            }
+
+            destinations.forEach(dest => {
+                const listItem = document.createElement("div");
+                listItem.classList.add("destination-item");
+                listItem.innerHTML = `
+                    <h3>${dest.name}</h3>
+                    <p>Country: ${dest.country}</p>
+                    <p>Type: ${dest.type}</p>
+                `;
+                destinationList.appendChild(listItem);
+            });
+        }
+
+        const recommended = recommendDestinations(userPreferences, destinations);
+        displayDestinations(recommended);
+    </script>
+</body>
+</html>
