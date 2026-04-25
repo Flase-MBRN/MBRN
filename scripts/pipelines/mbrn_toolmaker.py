@@ -176,12 +176,27 @@ def run_toolmaker_pass() -> int:
     return 1 if success else 0
 
 
+def run_loop(interval_minutes: int) -> None:
+    log("INFO", f"Starting Toolmaker loop with {interval_minutes}m interval.")
+    while True:
+        try:
+            run_toolmaker_pass()
+        except Exception as exc:
+            log("ERROR", f"Toolmaker pass failed: {exc}")
+        time.sleep(interval_minutes * 60)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="MBRN Toolmaker - Operation MacGyver Agent")
     parser.add_argument("--once", action="store_true", help="Process one pending request and exit")
+    parser.add_argument("--infinite", action="store_true", help="Run toolmaker passes forever")
+    parser.add_argument("--interval-minutes", type=int, default=30)
     args = parser.parse_args()
 
-    # Always run once as per request
+    if args.infinite:
+        run_loop(args.interval_minutes)
+        return 0
+
     run_toolmaker_pass()
     return 0
 

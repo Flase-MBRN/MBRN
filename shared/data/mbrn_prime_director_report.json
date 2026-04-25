@@ -1,41 +1,39 @@
 {
-  "generated_at": "2026-04-25T13:53:34+00:00",
-  "dry_run": true,
+  "generated_at": "2026-04-25T14:30:51+00:00",
+  "dry_run": false,
   "model": "deepseek-r1:14b",
   "repair_model": "deepseek-coder-v2",
   "model_success": true,
-  "repair_used": true,
-  "fallback_used": true,
-  "validation_status": "repaired",
-  "validation_warnings": [
-    "invalid_ouroboros_target_file"
-  ],
+  "repair_used": false,
+  "fallback_used": false,
+  "validation_status": "ok",
+  "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T13:52:47+00:00",
-    "discoveries": 102,
-    "processed_alphas": 64,
-    "backlog_alphas": 38,
-    "seen_repo_ids": 381,
-    "factory_ready_modules": 125,
+    "generated_at": "2026-04-25T14:29:35+00:00",
+    "discoveries": 105,
+    "processed_alphas": 69,
+    "backlog_alphas": 36,
+    "seen_repo_ids": 403,
+    "factory_ready_modules": 135,
     "factory_memory_docs": 15,
-    "nexus_notifications": 125,
+    "nexus_notifications": 135,
     "recent_findings": [
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.717719+00:00] [WARN] Factory control paused Scout. Sleeping 10 minutes...",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.705145+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.703990+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai",
+      "horizon_scout_2026-04-25_162755.log: [2026-04-25T14:29:18.702337+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\core_logic\\2026-04-25_perrorapidito_declaracion-renta-ai",
+      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:25:27.487097+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:16:35.920027+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:15:50.178934+00:00] [WARN] GitHub README API failed for tansenkhan1990/RAG_OpenAI_Agent_SDK_LangGraph_VP: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:15:33.760637+00:00] [WARN] GitHub README API failed for rohitpatill/Symposium: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:07:54.030426+00:00] [WARN] GitHub README API failed for aparg/agent-orchestration: HTTP Error 404: Not Found",
+      "horizon_scout_2026-04-25_155804.log: [2026-04-25T14:07:53.829301+00:00] [WARN] GitHub README API failed for khushalchandpa7/wat-framework-automation: HTTP Error 404: Not Found",
       "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.678909+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.617432+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.552349+00:00] [WARN] GitHub README API failed for rohitpatill/Symposium: HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.510536+00:00] [WARN] GitHub README API failed for soaebhasan12/autostream-agent: HTTP Error 403: rate limit exceeded",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:36:25.472820+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:36:25.246379+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:36:25.019989+00:00] [WARN] GitHub README API failed for rohitpatill/Symposium: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:28:13.084951+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:28:12.865163+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:19:09.908494+00:00] [WARN] GitHub README API failed for HHZY-BYT/ai-diet-agent: HTTP Error 404: Not Found",
-      "day_zero_autopilot_2026-04-25_140558.log:         \"title\": \"Pirro could reopen Fed probe at any time, Democratic senators warn\",",
-      "horizon_scout_2026-04-25_135142.log: [2026-04-25T11:52:34.700920+00:00] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-25_perrorapidito_declaracion-renta-ai"
+      "horizon_scout_2026-04-25_140558.log: [2026-04-25T12:44:36.617432+00:00] [WARN] GitHub README API failed for saigomad7/qna_agent_dev: HTTP Error 403: rate limit exceeded"
     ],
     "current_control": {
-      "scout_status": "running",
-      "nexus_status": "running",
+      "scout_status": "paused",
+      "nexus_status": "paused",
       "nexus_roi_threshold": 80.0,
       "ouroboros_target_file": null,
       "prime_directive": "Maximize factory output and clear backlog."
@@ -43,11 +41,11 @@
   },
   "proposed_control": {
     "scout_status": "paused",
-    "nexus_status": "running",
+    "nexus_status": "paused",
     "nexus_roi_threshold": 80.0,
     "ouroboros_target_file": null,
-    "prime_directive": "HARD OVERRIDE: Backlog > 0. Scout forcefully paused."
+    "prime_directive": "Focus on stability and resolve GitHub API issues."
   },
-  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"running\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": \"scripts/pipelines/mbrn_horizon_scout.py\",\n  \"prime_directive\": \"Focus on Horizon Scout stability and GitHub",
-  "control_panel_unchanged": true
+  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"paused\",\n  \"nexus_status\": \"paused\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": null,\n  \"prime_directive\": \"Focus on stability and resolve GitHub API issues.\"\n}\n```",
+  "control_panel_unchanged": false
 }

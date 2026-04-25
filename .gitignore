@@ -88,3 +88,5 @@ docs/S3_Data/outputs/factory_ready/
 shared/data/mbrn_evolution_plan.json
 
 shared/data/mbrn_factory_memory.json
+shared/data/mbrn_factory_control.json
+shared/data/mbrn_prime_director_report.json

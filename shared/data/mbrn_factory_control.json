@@ -1,7 +1,7 @@
 {
-  "scout_status": "running",
-  "nexus_status": "running",
+  "scout_status": "paused",
+  "nexus_status": "paused",
   "nexus_roi_threshold": 80.0,
   "ouroboros_target_file": null,
-  "prime_directive": "Maximize factory output and clear backlog."
+  "prime_directive": "Focus on stability and resolve GitHub API issues."
 }
