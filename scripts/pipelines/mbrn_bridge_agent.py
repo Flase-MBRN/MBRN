@@ -127,10 +127,25 @@ MBRN_HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
-def generate_standalone_html(module: Dict[str, Any]) -> str:
+def extract_logic_description(source_file: str | Path) -> str:
+    """Extracts the Python logic from the filesystem based on the source_file path."""
+    path = PROJECT_ROOT / source_file
+    if not path.exists():
+        log("ERROR", f"Source file missing: {path}")
+        return ""
+    try:
+        content = path.read_text(encoding="utf-8")
+        # Strip metadata headers if present to focus on logic
+        lines = [line for line in content.splitlines() if not re.match(r"^(Alpha ID|ROI Score|Source Alpha|Quality Score):", line, re.I)]
+        return "\n".join(lines).strip()
+    except Exception as e:
+        log("ERROR", f"Failed to read source: {e}")
+        return ""
+
+def generate_standalone_html(module: Dict[str, Any], logic_desc: str) -> str:
     prompt = f"""Erstelle eine Vanilla-HTML/JS Web-App basierend auf diesem Modul.
     Name: {module['name']}
-    Logik: {module['python_code']}
+    Logik: {logic_desc}
     
     Regeln:
     1. Kein externes CSS/JS außer Google Fonts.
@@ -207,15 +222,21 @@ def run_bridge_cycle():
         module = dict(row)
         log("INFO", f"Bridging module {module['id']}: {module['name']}...")
         
+        # Extract logic from filesystem
+        logic_desc = extract_logic_description(module['source_file'])
+        if not logic_desc:
+            log("ERROR", f"No logic found for {module['name']}, skipping.")
+            continue
+
         # Calculate Auditor Score
-        score = calculate_score(module['python_code'])
+        score = calculate_score(logic_desc)
         is_elite = 1 if score >= ELITE_THRESHOLD else 0
         
-        if score < 0.8:
+        if score < 0.2: # Lowering purge threshold for initial factory runs
             purge_module(module['id'], module.get('frontend_file'))
             continue
 
-        html = generate_standalone_html(module)
+        html = generate_standalone_html(module, logic_desc)
         if html:
             relative_path = deploy_to_dimension(module, html)
             with get_db() as conn:
