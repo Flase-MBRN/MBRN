@@ -3065,3 +3065,76 @@ button[class*="btn"] {
   font-size: 0.78rem;
   text-transform: uppercase;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   DIMENSION SURFACE SYSTEM (Dynamic Factory Apps)
+   ═══════════════════════════════════════════════════════════════ */
+
+.dimension-surface-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.dimension-surface-card {
+  display: block;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dimension-surface-card.is-link:hover {
+  background: rgba(123, 92, 245, 0.05);
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(123, 92, 245, 0.15);
+}
+
+.dimension-surface-card-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: block;
+  letter-spacing: 0.02em;
+}
+
+.dimension-surface-card-copy {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  display: block;
+  opacity: 0.8;
+}
+
+.dimension-surface-card-meta {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(123, 92, 245, 0.2);
+}
+
+.dimension-surface-section {
+  position: relative;
+}
+
+.dimension-surface-section.mt-32 {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-subtle);
+}
