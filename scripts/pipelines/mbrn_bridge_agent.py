@@ -219,13 +219,17 @@ GIB NUR HTML UND JAVASCRIPT AUS. KEIN CSS. KEIN HEADER."""
         
     inner_content = metadata_scrubber(inner_content)
     
-    safe_name = name.replace("_", " ").title()
-    final_html = MBRN_HTML_TEMPLATE.replace("{{TITLE}}", safe_name).replace("{{CONTENT}}", inner_content)
+    product_name = extract_product_name(inner_content)
+    final_html = MBRN_HTML_TEMPLATE.replace("{{TITLE}}", product_name).replace("{{CONTENT}}", inner_content)
     return final_html
 
 
 def generate_dummy_frontend(dimension: str, name: str, logic_desc: str) -> str:
-    safe_name = name.replace("_", " ").title()
+    # Use clean name if possible, else fallback to name
+    product_name = name.replace("_", " ").title()
+    if re.match(r"^\d{8}[\s_]\d{6}", product_name):
+        product_name = re.sub(r"^\d{8}[\s_]\d{6}[\s_]+[a-zA-Z0-9]+[\s_]+", "", product_name)
+    safe_name = product_name.replace("_", " ").title()
     return f"""<!doctype html>
 <html lang="de">
 <head>
