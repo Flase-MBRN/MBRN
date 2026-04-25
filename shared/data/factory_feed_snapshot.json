@@ -13,7 +13,7 @@
     "id": 14,
     "name": "20260424_205300_CaptainIND7_Yatrik_module",
     "dimension": "systeme",
-    "frontend_file": "dimensions/systeme/apps/autonomous_tool/index.html",
+    "frontend_file": "dimensions/zeit/apps/autonomous_tool/index.html",
     "quality_score": 1.0,
     "is_elite": 1,
     "curation_status": "elite",

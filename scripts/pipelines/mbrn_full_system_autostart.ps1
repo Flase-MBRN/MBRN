@@ -30,9 +30,9 @@ function Write-Step {
 
 function Test-PythonComponent {
     param([string]$Pattern)
-    $matches = Get-CimInstance Win32_Process -Filter "name = 'python.exe'" -ErrorAction SilentlyContinue |
+    $procMatches = Get-CimInstance Win32_Process -Filter "name = 'python.exe'" -ErrorAction SilentlyContinue |
         Where-Object { $_.CommandLine -like "*$Pattern*" }
-    return [bool]$matches
+    return [bool]$procMatches
 }
 
 function Start-PythonComponent {
