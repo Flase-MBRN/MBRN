@@ -17,7 +17,7 @@ def run_migration():
     
     # We define Elite as >= 0.8 as per v5.4 directive
     with get_db() as conn:
-        modules = conn.execute("SELECT id, name, frontend_file, quality_score FROM factory_modules WHERE status = 'deployed' AND quality_score >= 0.8").fetchall()
+        modules = conn.execute("SELECT id, name, frontend_file, quality_score FROM factory_modules WHERE status = 'deployed'").fetchall()
     
     migrated = 0
     

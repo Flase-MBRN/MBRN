@@ -380,16 +380,15 @@ def run_bridge_cycle(use_dummy: bool = False) -> Optional[dict[str, Any]]:
             atomic_update("factory_modules", {"status": "purged", "quality_score": score}, "id", module["id"])
             return {"id": module["id"], "name": name, "status": "purged", "score": score}
 
-        # v5.4: Elite Injection (Storage & Save Button)
-        if is_elite:
-            print(f"[Bridge] ELITE DETECTED (Score {score:.2f}). Injecting Storage & Cloud Save.")
-            storage_script = '<script src="/shared/js/mbrn_storage.js"></script>'
-            # Inject before the first <script> tag or before </body> fallback
-            if storage_script not in html:
-                html = html.replace("<script>", f"{storage_script}\n<script>", 1)
-            
-            # Update the file with the injected code
-            deployed_path.write_text(html, encoding="utf-8")
+        # v5.4: Cloud Storage Injection (Always active for all modules)
+        print(f"[Bridge] Injecting Storage & Cloud Save capabilities.")
+        storage_script = '<script src="../../../../shared/js/mbrn_storage.js"></script>'
+        # Inject before the first <script> tag or before </body> fallback
+        if storage_script not in html:
+            html = html.replace("<script>", f"{storage_script}\n<script>", 1)
+        
+        # Update the file with the injected code
+        deployed_path.write_text(html, encoding="utf-8")
 
         relative_deployed = str(deployed_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
         atomic_update("factory_modules", {
