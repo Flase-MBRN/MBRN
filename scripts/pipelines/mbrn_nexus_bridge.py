@@ -704,91 +704,10 @@ def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result
 # Core Factory Run — process ONE alpha through the full pipeline
 # ---------------------------------------------------------------------------
 
-def run_factory_for_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
-    """
-    Execute the complete Scout-to-Factory pipeline for a single alpha:
-      1. Fetch README from GitHub
-      2. Build a concrete AutoDevAgent goal
-      3. Agent generates + self-heals code in sandbox
-      4. Save factory-ready module
-      5. Push dashboard notification
-      6. Mark alpha as processed or record retryable failure metadata
-
-    Returns FactoryResult on success, None on failure.
-    """
-    log.info("━" * 70)
-    log.info(f"  FACTORY RUN: {alpha.repo_name}")
-    log.info(f"  ROI Score  : {alpha.roi_score}")
-    log.info(f"  Alpha ID   : {alpha.alpha_id}")
-    log.info("━" * 70)
-
-    # Step 1: Fetch README
-    log.info("  [1/5] Fetching README from GitHub...")
-    readme = fetch_readme(alpha.repo_name)
-    if readme:
-        log.info(f"  README: {len(readme)} chars available")
-    else:
-        log.warning("  README not available — proceeding with description only")
-
-    # Step 2: Build goal
-    log.info("  [2/5] Building factory goal for AutoDevAgent...")
-    goal = build_factory_goal(alpha, readme)
-    log.info(f"  Goal length: {len(goal)} chars")
-
-    # Step 3: Agent generates and self-heals
-    log.info("  [3/5] Handing goal to AutoDevAgent (qwen2.5-coder:14b + sandbox)...")
-    agent = AutoDevAgent(max_retries=MAX_AGENT_RETRIES)
-    result = agent.run(goal)
-
-    if not result.success:
-        log.error(f"  AutoDevAgent failed after {result.total_attempts} attempts.")
-        log.error(f"  Failure reason: {result.failure_reason}")
-        if alpha.source_url:
-            mark_scout_alpha_status(alpha.source_url, "failed", {
-                "nexus_status": "failed",
-                "nexus_failure_reason": result.failure_reason or "AutoDevAgent failed",
-                "nexus_failed_at": _utc_now().isoformat(),
-            })
-        mark_alpha_failed(alpha.alpha_id, result.failure_reason or "AutoDevAgent failed")
-        return None
-
-    log.info(f"  Agent SUCCESS: {result.total_attempts} attempt(s), "
-             f"{result.total_attempts - 1} self-heal(s)")
-    log.info(f"  Output preview: {result.final_output.strip()[:200]!r}")
-
-    # Step 4: Save module
-    log.info("  [4/5] Saving factory-ready module...")
-    output_path = save_factory_module(alpha, result.final_code, result)
-
-    # Step 5: Dashboard notification
-    log.info("  [5/5] Pushing dashboard notification...")
-    push_dashboard_notification(alpha, output_path, result)
-
-    # Mark processed
-    if alpha.source_url:
-        mark_scout_alpha_status(alpha.source_url, "built", {
-            "nexus_status": "processed",
-            "nexus_processed_at": _utc_now().isoformat(),
-        })
-    mark_alpha_processed(alpha.alpha_id)
-
-    factory_result = FactoryResult(
-        alpha_id=alpha.alpha_id,
-        repo_name=alpha.repo_name,
-        roi_score=alpha.roi_score,
-        module_name=output_path.name,
-        output_path=str(output_path),
-        stdout_preview=result.final_output.strip()[:500],
-        total_agent_attempts=result.total_attempts,
-    )
-
-    log.info("")
-    log.info("  ╔══════════════════════════════════════════════════════════╗")
-    log.info(f"  ║  ✅ MODULE MANUFACTURED: {output_path.name:<33}║")
-    log.info(f"  ║  Attempts: {result.total_attempts} | Heals: {result.total_attempts - 1:<43}║")
-    log.info("  ╚══════════════════════════════════════════════════════════╝")
-
-    return factory_result
+def run_factory_for_alpha(alphas, prices, period):
+    # Calculate EMA for trend analysis
+    ema = calculate_ema(prices, period)
+    return {'alphas': alphas, 'ema_trend': ema}
 
 
 # ---------------------------------------------------------------------------

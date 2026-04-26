@@ -39,7 +39,7 @@ ANALYSIS_SCHEMA_HINT = (
 class LocalLLMBridgeConfig:
     host: str = "localhost"
     port: int = 11434
-    model: str = "deepseek-coder-v2"
+    model: str = "llama3.2:latest"
     timeout_seconds: int = 120
     temperature: float = 0.2
     analysis_version: str = DEFAULT_ANALYSIS_VERSION

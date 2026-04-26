@@ -1,53 +1,51 @@
 {
-  "generated_at": "2026-04-25T23:04:46+00:00",
+  "generated_at": "2026-04-26T01:01:47+00:00",
   "dry_run": false,
-  "model": "deepseek-r1:14b",
-  "repair_model": "deepseek-coder-v2",
+  "model": "phi4:latest",
+  "repair_model": "qwen2.5-coder:14b",
   "model_success": true,
   "repair_used": false,
-  "fallback_used": true,
+  "fallback_used": false,
   "validation_status": "ok",
   "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-25T23:03:57+00:00",
+    "generated_at": "2026-04-26T01:01:12+00:00",
     "discoveries": 0,
     "processed_alphas": 0,
     "backlog_alphas": 0,
     "seen_repo_ids": 0,
-    "factory_ready_modules": 132,
+    "factory_ready_modules": 2,
     "factory_memory_docs": 0,
     "nexus_notifications": 200,
     "recent_findings": [
+      "day_zero_autopilot_2026-04-26_030024.log: [2026-04-26T03:01:08.5230818+02:00] [WARN] Day Zero Autopilot completed with partial failure(s) collector=0 sentiment=0 llm=1 scout_running_pid=2592 final_exit=2",
+      "day_zero_autopilot_2026-04-26_030024.log: [2026-04-26T01:01:05.037061+00:00] [ERROR] Week-2 enrichment failed raw_item_id=dd3981bb-7e7d-47c2-9c4e-2cfd8d5607cf reason=HTTP Error 404: Not Found",
+      "day_zero_autopilot_2026-04-26_030024.log: [2026-04-26T01:01:04.265240+00:00] [ERROR] Week-2 enrichment failed raw_item_id=3af41b3f-cd04-4912-9a37-b96d93bc0f9b reason=HTTP Error 404: Not Found",
+      "day_zero_autopilot_2026-04-26_030024.log:     \"key_theme\": \"bridge_error\",",
+      "day_zero_autopilot_2026-04-26_030024.log:     \"analysis\": \"Bridge failed: Request failed: HTTP Error 404: Not Found\",",
+      "janitor.log: [2026-04-26 03:00:24] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
+      "janitor.log: [2026-04-26 01:23:52] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 01:02:38] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 00:46:46] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 00:05:43] [JANITOR] Hygiene pass complete. Purged: 2, Errors: 0",
-      "janitor.log: [2026-04-26 00:03:36] [JANITOR] Hygiene pass complete. Purged: 3, Errors: 0",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:22:16.937215+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:21:36.377402+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:21:01.783492+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:19:59.472150+00:00] [WARN] GitHub README API failed for michicken/adb-mcp-agent: HTTP Error 404: Not Found",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:19:59.226889+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:19:06.276427+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T19:07:45.203008+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'",
-      "horizon_scout_2026-04-25_162755.log: [2026-04-25T18:45:50.805902+00:00] [WARN] Synergy analysis error: calculate_roi_score() missing 1 required positional argument: 'period'"
+      "janitor.log: [2026-04-26 00:03:36] [JANITOR] Hygiene pass complete. Purged: 3, Errors: 0"
     ],
     "current_control": {
-      "scout_status": "paused",
+      "scout_status": "running",
       "nexus_status": "running",
-      "nexus_roi_threshold": 80.0,
+      "nexus_roi_threshold": 87.0,
       "ouroboros_target_file": null,
-      "prime_directive": "Stabilize operations and minimize errors.",
+      "prime_directive": "Reduce factory pressure, inspect recent warnings, and keep mutation disabled.",
       "factory_paused": false
     }
   },
   "proposed_control": {
     "scout_status": "running",
     "nexus_status": "running",
-    "nexus_roi_threshold": 87.0,
+    "nexus_roi_threshold": 80.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Reduce factory pressure, inspect recent warnings, and keep mutation disabled.",
-    "factory_paused": false
+    "prime_directive": "Maintain current operations, monitor for repeated failures, and adjust ROI threshold to stabilize."
   },
-  "raw_model_response_preview": "",
+  "raw_model_response_preview": "```json\n{\n    \"scout_status\": \"running\",\n    \"nexus_status\": \"running\",\n    \"nexus_roi_threshold\": 80.0,\n    \"ouroboros_target_file\": null,\n    \"prime_directive\": \"Maintain current operations, monitor for repeated failures, and adjust ROI threshold to stabilize.\"\n}\n```",
   "control_panel_unchanged": false
 }

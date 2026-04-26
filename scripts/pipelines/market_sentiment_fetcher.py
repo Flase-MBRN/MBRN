@@ -70,7 +70,7 @@ PIPELINE_CONFIG = {
     "ollama": {
         "host": "localhost",
         "port": 11434,
-        "model": "deepseek-coder-v2",
+        "model": "llama3.2:latest",
         "temperature": 0.3,
         "timeout_seconds": 120,
     },
