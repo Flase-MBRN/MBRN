@@ -17,7 +17,7 @@ Architecture:
   │                 │  docker run --rm           │
   │  ┌──────────────▼──────────────────────┐    │
   │  │  mbrn-sandbox (Linux Container)     │    │  ← Code runs here, ISOLATED
-  │  │  CPU-only │ --network none           │    │
+  │  │  CPU-only │ --network bridge         │    │
   │  │  --memory 512m │ --cpus 0.5         │    │
   │  └─────────────────────────────────────┘    │
   └─────────────────────────────────────────────┘
@@ -61,7 +61,8 @@ SANDBOX_DOCKERFILE_DIR = Path(__file__).parent / "sandbox"
 
 # Hard security limits — these are non-negotiable
 DOCKER_SECURITY_FLAGS = [
-    "--network", "none",       # Zero network isolation
+    "--network", "bridge",     # Enable external API access (e.g. for scrapers)
+    "--dns", "8.8.8.8",        # Explicit Google DNS for stability
     "--memory", "512m",        # Max RAM
     "--memory-swap", "512m",   # No swap either
     "--cpus", "0.5",           # Max 0.5 CPU cores

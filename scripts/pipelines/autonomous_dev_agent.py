@@ -20,7 +20,7 @@ Architecture:
   │  │  sandbox_controller         │                                │
   │  │  execute_in_sandbox()       │                                │
   │  └──────────────┬──────────────┘                                │
-  │                 │  docker run --rm --network none                │
+  │                 │  docker run --rm --network bridge              │
   │  ┌──────────────▼──────────────┐                                │
   │  │  mbrn-sandbox (Linux)       │  ← Code cage                  │
   │  │  CPU-only | isolated        │                                │
