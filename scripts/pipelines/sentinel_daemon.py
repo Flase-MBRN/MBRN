@@ -169,21 +169,19 @@ class WorkerState:
     next_run_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
-def worker_wrapper(func, data):
-    from nabilnet_org_claude_memory import chunk_text
-    try:
-        if isinstance(data, str) and len(data) > 1000:  # Chunk if text is long
-            chunks = chunk_text(data, max_tokens=1000)
-            for i, chunk in enumerate(chunks):
-                result = func(chunk)
-                log_event(f'Processed chunk {i+1}')
-        else:
-            result = func(data)
-            log_event('Task completed successfully')
-        return result
-    except Exception as e:
-        log_event(f'Error processing task: {str(e)}')
-        raise
+def worker_wrapper(func):
+    def wrapped(*args, **kwargs):
+        try:
+            result = func(*args, **kwargs)
+            test_name = f"{func.__name__}_test"
+            expected_result = ... # Define expected output
+            actual_result = result
+            test_case = run_test_case(test_name, expected_result, actual_result)
+            return result
+        except Exception as e:
+            log_event(f"Error in worker: {str(e)}")
+            raise
+    return wrapped
 
 def main():
     load_env()

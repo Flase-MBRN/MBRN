@@ -141,11 +141,17 @@ def _normalize_repo_name(repo_name: Any) -> str:
     return str(repo_name or "").strip().lower().removesuffix(".git")
 
 
-def _repo_name_for_entry(entry: Dict[str, Any]) -> str:
-    if "roi" in entry and isinstance(entry.get("repo"), str):
-        return str(entry.get("repo") or "")
-    repo = entry.get("repo", {})
-    return str(repo.get("name") or "") if isinstance(repo, dict) else ""
+import re
+
+def _repo_name_for_entry(entry):
+    # Replace any non-alphanumeric character with underscore
+    cleaned = re.sub(r'[^a-zA-Z0-9]', '_', entry)
+    # Ensure the name starts with a letter
+    if not cleaned:
+        return 'default_repo'
+    if cleaned[0].isdigit():
+        cleaned = '_' + cleaned
+    return cleaned.lower()
 
 
 def _is_entry_nexus_processed(entry: Dict[str, Any]) -> bool:
@@ -166,12 +172,8 @@ def _is_nexus_retry_blocked(target: Dict[str, Any]) -> bool:
     return retry_after is not None and retry_after > _utc_now()
 
 
-def _clamp_roi_threshold(value: Any, default: float = ROI_THRESHOLD) -> float:
-    try:
-        parsed = float(value)
-    except (TypeError, ValueError):
-        return default
-    return max(0.0, min(100.0, parsed))
+def _clamp_roi_threshold(value, lower_bound, upper_bound):
+    return max(lower_bound, min(value, upper_bound))
 
 
 def load_factory_control() -> Dict[str, Any]:
@@ -771,10 +773,10 @@ def run_nexus_sweep() -> List[FactoryResult]:
 
     log.info("")
     log.info("╔══════════════════════════════════════════════════════════════════╗")
-    log.info("║           MBRN NEXUS BRIDGE — SCOUT-TO-FACTORY SWEEP            ║")
+    log.info("║           MBRN NEXUS BRIDGE — SCOUT-TO-FACTORY SWEEP             ║")
     log.info("╠══════════════════════════════════════════════════════════════════╣")
     log.info(f"║  ROI Threshold : > {ROI_THRESHOLD:<47.0f}║")
-    log.info(f"║  Output Dir    : docs/S3_Data/outputs/factory_ready/           ║")
+    log.info(f"║  Output Dir    : docs/S3_Data/outputs/factory_ready/             ║")
     log.info(f"║  Agent Retries : {MAX_AGENT_RETRIES:<48}║")
     log.info("╚══════════════════════════════════════════════════════════════════╝")
 
