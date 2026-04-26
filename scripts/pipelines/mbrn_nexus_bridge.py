@@ -137,13 +137,35 @@ def _clear_nexus_failure_fields(target: Dict[str, Any]) -> None:
         target.pop(key, None)
 
 
-def _normalize_repo_name(repo_name: Any) -> str:
-    return str(repo_name or "").strip().lower().removesuffix(".git")
+def _normalize_repo_name(repo_url):
+    # Verify the repo URL using verify_skills
+    verification = verify_skills(repo_url, layers=[1])
+    if not verification.get('success', False):
+        raise ValueError(f'Invalid repository URL: {repo_url}')
+    # Extract and normalize the repo name
+    parts = repo_url.split('/')[-2:]
+    owner, repo = parts[0], parts[1].replace('.git', '')
+    return f'{owner}/{repo}'
 
 
 import re
 
 def _repo_name_for_entry(entry):
+    """Extract and normalize repo name from a discovery entry dict."""
+    # CRITICAL FIX: Handle dict entries by extracting repo name first
+    if isinstance(entry, dict):
+        # Try to extract repo name from various formats
+        repo = entry.get("repo", {})
+        if isinstance(repo, str):
+            entry = repo
+        elif isinstance(repo, dict):
+            entry = repo.get("full_name") or repo.get("name") or ""
+        else:
+            entry = entry.get("repo_name") or entry.get("id") or "unknown"
+    
+    if not isinstance(entry, str):
+        entry = str(entry) if entry else "unknown"
+    
     # Replace any non-alphanumeric character with underscore
     cleaned = re.sub(r'[^a-zA-Z0-9]', '_', entry)
     # Ensure the name starts with a letter
@@ -296,7 +318,14 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
         rows = list_scout_alphas(statuses=("pending", "approved"), min_score=ROI_THRESHOLD)
         db_candidates: List[AlphaCandidate] = []
         for row in rows:
-            raw = json.loads(row["raw_data"] or "{}")
+            # CRITICAL FIX: Handle None raw_data safely
+            raw_data = row.get("raw_data") if row else None
+            if not raw_data or not isinstance(raw_data, str):
+                raw_data = "{}"
+            try:
+                raw = json.loads(raw_data)
+            except json.JSONDecodeError:
+                raw = {}
             repo = raw.get("repo") if isinstance(raw, dict) else {}
             analysis = raw.get("analysis") if isinstance(raw, dict) else {}
             repo_name = (

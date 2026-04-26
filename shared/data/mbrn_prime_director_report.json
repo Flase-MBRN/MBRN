@@ -1,52 +1,53 @@
 {
-  "generated_at": "2026-04-26T11:58:30+00:00",
+  "generated_at": "2026-04-26T13:34:00+00:00",
   "dry_run": false,
   "model": "phi4:latest",
   "repair_model": "qwen2.5-coder:14b",
-  "model_success": true,
+  "model_success": false,
   "repair_used": false,
-  "fallback_used": false,
+  "fallback_used": true,
   "validation_status": "ok",
   "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-26T11:57:55+00:00",
-    "discoveries": 0,
+    "generated_at": "2026-04-26T13:30:30+00:00",
+    "discoveries": 20,
     "processed_alphas": 0,
-    "backlog_alphas": 0,
+    "backlog_alphas": 20,
     "seen_repo_ids": 0,
     "factory_ready_modules": 2,
     "factory_memory_docs": 0,
     "nexus_notifications": 200,
     "recent_findings": [
-      "day_zero_autopilot_2026-04-26_082527.log:     \"key_theme\": \"bridge_error\",",
-      "day_zero_autopilot_2026-04-26_082527.log:     \"analysis\": \"Bridge failed: JSON parse error: strict_json_parse_failed:Expecting ',' delimiter: line 9 column 24 (char 346)\",",
-      "day_zero_autopilot_2026-04-26_082033.log:     \"key_theme\": \"bridge_error\",",
-      "day_zero_autopilot_2026-04-26_082033.log:     \"analysis\": \"Bridge failed: JSON parse error: strict_json_parse_failed:Expecting ',' delimiter: line 9 column 29 (char 386)\",",
+      "day_zero_autopilot_2026-04-26_153001.log: [2026-04-26T15:30:27.8151934+02:00] [WARN] Day Zero Autopilot completed with partial failure(s) collector=0 sentiment=0 llm=1 scout_running_pid=15604 final_exit=2",
+      "day_zero_autopilot_2026-04-26_153001.log: [2026-04-26T13:30:26.873992+00:00] [ERROR] Week-2 enrichment failed raw_item_id=58c47cf9-5744-4179-97b4-49992cc11257 reason=HTTP Error 404: Not Found",
+      "day_zero_autopilot_2026-04-26_153001.log: [2026-04-26T13:30:26.054157+00:00] [ERROR] Week-2 enrichment failed raw_item_id=6c51f272-c7c5-46cd-824b-dd7e4aa09d41 reason=HTTP Error 404: Not Found",
+      "day_zero_autopilot_2026-04-26_153001.log:     \"key_theme\": \"bridge_error\",",
+      "day_zero_autopilot_2026-04-26_153001.log:     \"analysis\": \"Bridge failed: JSON parse error: strict_json_parse_failed:Expecting ',' delimiter: line 9 column 33 (char 368)\",",
+      "janitor.log: [2026-04-26 15:30:01] [JANITOR] Hygiene pass complete. Purged: 1, Errors: 0",
+      "janitor.log: [2026-04-26 14:33:14] [JANITOR] Hygiene pass complete. Purged: 3, Errors: 0",
       "janitor.log: [2026-04-26 08:20:33] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 03:15:31] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 03:09:28] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 03:00:24] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
-      "janitor.log: [2026-04-26 01:23:52] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
-      "janitor.log: [2026-04-26 01:02:38] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
-      "janitor.log: [2026-04-26 00:46:46] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
-      "janitor.log: [2026-04-26 00:05:43] [JANITOR] Hygiene pass complete. Purged: 2, Errors: 0"
+      "janitor.log: [2026-04-26 01:23:52] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0"
     ],
     "current_control": {
       "scout_status": "running",
       "nexus_status": "running",
       "nexus_roi_threshold": 80.0,
       "ouroboros_target_file": null,
-      "prime_directive": "Monitor bridge errors, maintain current operations.",
+      "prime_directive": "Bridge errors detected; continue monitoring and maintain current operations.",
       "factory_paused": false
     }
   },
   "proposed_control": {
     "scout_status": "running",
     "nexus_status": "running",
-    "nexus_roi_threshold": 80.0,
+    "nexus_roi_threshold": 87.0,
     "ouroboros_target_file": null,
-    "prime_directive": "Bridge errors detected; continue monitoring and maintain current operations."
+    "prime_directive": "Reduce factory pressure, inspect recent warnings, and keep mutation disabled.",
+    "factory_paused": false
   },
-  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"running\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": null,\n  \"prime_directive\": \"Bridge errors detected; continue monitoring and maintain current operations.\"\n}\n```",
+  "raw_model_response_preview": "timed out",
   "control_panel_unchanged": false
 }
