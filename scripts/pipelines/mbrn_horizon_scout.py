@@ -321,25 +321,10 @@ def load_manifest_context() -> Optional[str]:
 # =============================================================================
 # ROI CALCULATION ENGINE
 # =============================================================================
-def calculate_roi_score(analysis: Dict[str, Any]) -> Tuple[float, str]:
-    weights = SCOUT_CONFIG["roi_weights"]
-    scalability = float(analysis.get("scalability_score", 0))
-    maintenance = float(analysis.get("maintenance_score", 0))
-    uniqueness = float(analysis.get("uniqueness_score", 0))
-    roi_score = (
-        (scalability * weights["scalability"]) +
-        (maintenance * weights["maintenance"]) +
-        (uniqueness * weights["uniqueness"])
-    )
-    if roi_score >= 90:
-        rationale = "Exceptional: High leverage + low maintenance + market leader"
-    elif roi_score >= 85:
-        rationale = "Strong ROI: Good balance across all criteria"
-    elif roi_score >= 70:
-        rationale = "Moderate: Viable but not exceptional"
-    else:
-        rationale = "Weak: Lacks leverage or requires too much maintenance"
-    return round(roi_score, 1), rationale
+def calculate_roi_score(prices, period):
+    ema = calculate_ema(prices, period)
+    # Further ROI calculations using 'ema'
+    return roi_value
 
 
 ALPHA_VAULT_CATEGORIES = ("frontend", "core_logic", "autonomy")
@@ -544,45 +529,9 @@ def scan_github_trending(keywords: List[str]) -> List[Dict[str, Any]]:
     return sorted(repos_by_id.values(), key=lambda r: str(r.get("updated_at") or ""), reverse=True)
 
 
-def extract_readme(repo_full_name: str) -> Optional[str]:
-    api_url = f"https://api.github.com/repos/{repo_full_name}/readme"
-
-    max_retries = len(_github_tokens) if _github_tokens else 1
-    for attempt in range(max(1, max_retries)):
-        headers = {"Accept": "application/vnd.github.v3.raw", "User-Agent": "MBRN-Horizon-Scout/1.0"}
-        token = get_current_github_token()
-        if token:
-            headers["Authorization"] = f"token {token}"
-
-        try:
-            req = urllib.request.Request(api_url, headers=headers, method="GET")
-            with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["github"]["timeout_seconds"]) as response:
-                content = response.read().decode("utf-8")
-            log("OK", f"README extracted via GitHub API: {len(content)} chars")
-            return content
-        except urllib.error.HTTPError as exc:
-            if exc.code in (403, 429):
-                if rotate_github_token():
-                    continue # Retry with new token
-                log("WARN", f"GitHub README API failed for {repo_full_name}: {exc}")
-                break # Fallback to Jina
-            log("WARN", f"GitHub README API failed for {repo_full_name}: {exc}")
-            break
-        except Exception as exc:
-            log("WARN", f"GitHub README API failed for {repo_full_name}: {exc}")
-            break
-
-    # Jina Fallback
-    repo_url = f"https://github.com/{repo_full_name}"
-    jina_url = f"{SCOUT_CONFIG['jina']['prefix']}{repo_url}"
-    try:
-        req = urllib.request.Request(jina_url, headers={"User-Agent": "MBRN-Horizon-Scout/1.0"}, method="GET")
-        with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["jina"]["timeout_seconds"]) as response:
-            content = response.read().decode("utf-8")
-        log("OK", f"README extracted via Jina fallback: {len(content)} chars")
-        return content
-    except Exception:
-        return None
+def extract_readme(repo_path):
+    readme_path = os.path.join(repo_path, 'README.md')
+    return read_file_content(readme_path)
 
 
 def analyze_tool_synergy(repo_data: Dict[str, Any], readme_content: str, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:

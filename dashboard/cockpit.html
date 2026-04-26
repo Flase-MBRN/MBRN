@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBRN Cockpit - System Command Center</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;">
+
+  <!-- MBRN Theme -->
+  <link rel="stylesheet" href="../shared/ui/theme.css">
+  <link rel="stylesheet" href="./cockpit_styles.css">
+</head>
+<body class="void-bg bg-grid">
+
+  <!-- Audio Toggle (Top Right) -->
+  <div class="audio-toggle">
+    <label>
+      <input type="checkbox" id="audio-toggle">
+      <span>🔊 Audio Alerts</span>
+    </label>
+  </div>
+
+  <!-- Main Cockpit Container -->
+  <div class="cockpit-container">
+    
+    <!-- Header -->
+    <header class="cockpit-header">
+      <h1>🎯 MBRN Command Center</h1>
+      <p class="subtitle">Real-time System Orchestration Dashboard</p>
+      <p class="update-info">Updates every 2 seconds • PM2 Process Monitor</p>
+    </header>
+
+    <!-- 8-Module Grid -->
+    <section class="cockpit-grid" id="cockpit-grid">
+      <!-- Grid populated by JavaScript -->
+    </section>
+
+  </div>
+
+  <!-- System Status Bar (Bottom) -->
+  <footer class="system-status-bar" id="system-status-bar">
+    <div class="status-indicator">
+      <span>●</span>
+      <span class="status-text">System Initializing...</span>
+    </div>
+    <div class="status-details">
+      Waiting for Hub Observer...
+    </div>
+  </footer>
+
+  <!-- Forensic Drawer (Hidden by default) -->
+  <aside class="forensic-drawer forensic-drawer--hidden" id="forensic-drawer">
+    <div class="forensic-drawer__content" id="forensic-content">
+      <!-- Populated by JavaScript when CRITICAL clicked -->
+    </div>
+  </aside>
+
+  <!-- Cockpit Renderer -->
+  <script src="./cockpit_renderer.js"></script>
+
+</body>
+</html>

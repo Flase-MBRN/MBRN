@@ -563,43 +563,13 @@ def mark_alpha_failed(alpha_id: str, failure_reason: str) -> None:
 # README Fetcher — GitHub API with Jina fallback
 # ---------------------------------------------------------------------------
 
-def fetch_readme(repo_name: str) -> Optional[str]:
-    """
-    Fetch README for a GitHub repo.
-    Primary:  GitHub API (/repos/{name}/readme, raw Accept header)
-    Fallback: Jina reader (r.jina.ai)
-    """
-    headers = {
-        "Accept": "application/vnd.github.v3.raw",
-        "User-Agent": "MBRN-Nexus-Bridge/1.0"
-    }
-    if GITHUB_TOKEN:
-        headers["Authorization"] = f"token {GITHUB_TOKEN}"
-
-    api_url = f"https://api.github.com/repos/{repo_name}/readme"
-    try:
-        req = urllib.request.Request(api_url, headers=headers, method="GET")
-        with urllib.request.urlopen(req, timeout=GITHUB_README_TIMEOUT) as resp:
-            content = resp.read().decode("utf-8")
-        log.info(f"README fetched via GitHub API: {len(content)} chars")
-        return content[:8000]
-    except Exception as e:
-        log.warning(f"GitHub README API failed for {repo_name}: {e}")
-
-    jina_url = f"https://r.jina.ai/https://github.com/{repo_name}"
-    try:
-        req = urllib.request.Request(
-            jina_url,
-            headers={"User-Agent": "MBRN-Nexus-Bridge/1.0"},
-            method="GET"
-        )
-        with urllib.request.urlopen(req, timeout=GITHUB_README_TIMEOUT) as resp:
-            content = resp.read().decode("utf-8")
-        log.info(f"README fetched via Jina fallback: {len(content)} chars")
-        return content[:8000]
-    except Exception as e:
-        log.warning(f"Jina fallback also failed for {repo_name}: {e}")
-        return None
+def fetch_readme(repo_path):
+    md_files = extract_md_files(repo_path)
+    readme_content = read_file_content('README.md')
+    if readme_content:
+        chunks = chunk_text(readme_content, max_tokens=1000)
+        return '\n'.join(chunks)
+    return ''
 
 
 # ---------------------------------------------------------------------------
