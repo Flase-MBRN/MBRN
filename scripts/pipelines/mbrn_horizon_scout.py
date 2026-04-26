@@ -50,7 +50,7 @@ from shared.core.db import (
     CANONICAL_DIMENSIONS
 )
 
-DEFAULT_SCOUT_OLLAMA_MODEL = "gemma3:12b"  # 128K context — ideal for README analysis
+DEFAULT_SCOUT_OLLAMA_MODEL = "mistral-nemo:latest"  # Elite context for Scout synergy analysis
 FACTORY_CONTROL_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control.json"
 SCOUT_PAUSE_SECONDS = 600
 

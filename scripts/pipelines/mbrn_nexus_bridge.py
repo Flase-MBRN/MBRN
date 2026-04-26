@@ -589,14 +589,17 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
 
     memory_context = ""
     try:
-        from mbrn_factory_memory import retrieve_similar_code
+        from mbrn_factory_memory import retrieve_elite_modules
         query = f"{alpha.category} {alpha.repo_name} {alpha.description} {alpha.rationale}"
-        similar_snippets = retrieve_similar_code(query, top_k=1)
-        if similar_snippets:
-            memory_context = "\n\nMBRN FACTORY MEMORY (Similar past solutions, stdlib-sanitized; use concepts only, do not copy imports):\n"
-            for snip in similar_snippets:
-                memory_context += f"--- {snip['name']} ---\n{snip['code'][:800]}...\n\n"
-    """
+        # Retrieve only Diamond-tier modules (score > 0.8)
+        elite_modules = retrieve_elite_modules(query, min_score=0.8, top_k=2)
+        if elite_modules:
+            memory_context = "\n\nMBRN FACTORY MEMORY (Diamond-tier elite modules only, score > 0.8; use concepts only, do not copy imports):\n"
+            for mod in elite_modules:
+                memory_context += f"--- {mod['name']} (Score: {mod.get('quality_score', 'N/A')}) ---\n{mod['code'][:800]}...\n\n"
+    except Exception:
+        pass  # Factory memory unavailable, continue without context
+
     FACTORY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     slug = _make_slug(alpha.repo_name)
@@ -733,7 +736,7 @@ def run_factory_for_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
     log.info(f"  Goal length: {len(goal)} chars")
 
     # Step 3: Agent generates and self-heals
-    log.info("  [3/5] Handing goal to AutoDevAgent (deepseek-coder-v2 + sandbox)...")
+    log.info("  [3/5] Handing goal to AutoDevAgent (qwen2.5-coder:14b + sandbox)...")
     agent = AutoDevAgent(max_retries=MAX_AGENT_RETRIES)
     result = agent.run(goal)
 

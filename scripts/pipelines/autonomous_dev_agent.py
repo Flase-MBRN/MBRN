@@ -81,7 +81,7 @@ log = logging.getLogger("autonomous_dev_agent")
 # Ollama Configuration
 # ---------------------------------------------------------------------------
 OLLAMA_BASE_URL = "http://localhost:11434"
-OLLAMA_MODEL    = "deepseek-coder-v2"
+OLLAMA_MODEL    = "qwen2.5-coder:14b"
 OLLAMA_TIMEOUT  = 600  # seconds per LLM call
 
 # Agent configuration

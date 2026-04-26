@@ -47,8 +47,8 @@ NOTIFICATIONS_PATH = DATA_DIR / "nexus_notifications.json"
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-PRIME_MODEL = "deepseek-r1:14b"
-REPAIR_MODEL = "deepseek-coder-v2"
+PRIME_MODEL = "phi4:latest"
+REPAIR_MODEL = "qwen2.5-coder:14b"
 DEFAULT_INTERVAL_MINUTES = 30
 
 ALLOWED_STATUSES = {"running", "paused"}
@@ -308,6 +308,7 @@ def call_ollama(model: str, prompt: str, timeout_seconds: int = 120) -> Tuple[bo
         "model": model,
         "prompt": prompt,
         "stream": False,
+        "keep_alive": 0,  # CRITICAL: Force VRAM release immediately
         "options": {
             "temperature": 0.1,
             "num_predict": 512,

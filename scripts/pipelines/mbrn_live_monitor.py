@@ -217,14 +217,20 @@ def run_monitor_scan() -> None:
         return
 
     prompt = MONITOR_PROMPT.format(log_excerpt=log_excerpt)
+    
+    # OBSERVABILITY: Measure cold-start time (9GB model load)
+    t0 = time.monotonic()
     success, result = bridge.execute_custom_prompt(
         prompt=prompt,
         required_keys=["status", "summary", "errors_found", "warnings_found", "recommendation"],
         schema_hint=MONITOR_SCHEMA,
         worker_name="live_monitor_agent"
     )
-
+    cold_start_ms = int((time.monotonic() - t0) * 1000)
+    log("INFO", f"Cold-start timing: {cold_start_ms}ms (model load + inference)")
+    
     if success and isinstance(result, dict):
+        result["cold_start_ms"] = cold_start_ms  # Add to report for future analysis
         push_monitor_report(apply_recency_policy(result, log_excerpt))
     else:
         log("WARN", f"LLM analysis failed: {result}")

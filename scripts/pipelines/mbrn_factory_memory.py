@@ -169,6 +169,28 @@ def retrieve_similar_code(query: str, top_k: int = 3) -> List[Dict[str, Any]]:
         results.append(sanitized)
     return results
 
+
+def retrieve_elite_modules(query: str, min_score: float = 0.8, top_k: int = 3) -> List[Dict[str, Any]]:
+    """Retrieve only Diamond-tier modules with quality_score >= min_score."""
+    memory = _load_memory()
+    query_tokens = _tokenize(query)
+    
+    scored_docs = _calculate_tf_idf(query_tokens, memory["documents"])
+    results: List[Dict[str, Any]] = []
+    
+    for _score, doc in scored_docs:
+        metadata = doc.get("metadata", {})
+        quality_score = metadata.get("quality_score", 0.0)
+        if quality_score >= min_score:
+            sanitized = dict(doc)
+            sanitized["code"] = sanitize_code_snippet(str(doc.get("code", "")))
+            sanitized["quality_score"] = quality_score
+            results.append(sanitized)
+        if len(results) >= top_k:
+            break
+    
+    return results
+
 def init_memory_from_alphas() -> int:
     """One-time run to load existing alphas into memory."""
     alpha_vault = _PROJECT_ROOT / "shared" / "alphas"
