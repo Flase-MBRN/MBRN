@@ -54,6 +54,10 @@ DEFAULT_SCOUT_OLLAMA_MODEL = "mistral-nemo:latest"  # Elite context for Scout sy
 FACTORY_CONTROL_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control.json"
 SCOUT_PAUSE_SECONDS = 600
 
+# Logging Paths
+LOG_DIR = Path(__file__).resolve().parent / "logs"
+LOG_PATH = LOG_DIR / f"horizon_scout_{datetime.now(timezone.utc).strftime('%Y-%m-%d_%H%M%S')}.log"
+
 
 # --- NEON ASTRA COLORS ---
 ANSI = {
