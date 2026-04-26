@@ -25,11 +25,18 @@ import json
 import time
 import queue
 import threading
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from pathlib import Path
+
+# Import cross-process file lock from pipeline_utils
+PIPELINES_DIR = Path(__file__).resolve().parent
+if str(PIPELINES_DIR) not in sys.path:
+    sys.path.insert(0, str(PIPELINES_DIR))
+from pipeline_utils import _cross_process_file_lock, save_json_atomic
 
 
 class Priority(Enum):
@@ -284,29 +291,33 @@ class PipelineQueue:
             for item in items
         ]
         
-        self.persist_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.persist_path, 'w') as f:
-            json.dump(data, f, indent=2)
+        # CRITICAL: Use atomic write with cross-process file lock to prevent corruption
+        lock_path = self.persist_path.with_suffix('.lock')
+        with _cross_process_file_lock(lock_path):
+            save_json_atomic(self.persist_path, data)
         
         # Restore queue
         for item_data in data:
             self._queue.put(QueueItem(**item_data))
     
     def _load_persisted(self):
-        """Load persisted queue state."""
+        """Load persisted queue state with file lock protection."""
         if not self.persist_path or not self.persist_path.exists():
             return
         
-        try:
-            with open(self.persist_path, 'r') as f:
-                data = json.load(f)
-            
-            for item_data in data:
-                self._queue.put(QueueItem(**item_data))
-            
-            print(f"[Queue] Loaded {len(data)} persisted items")
-        except Exception as e:
-            print(f"[Queue] Failed to load persisted state: {e}")
+        # CRITICAL: Use file lock to prevent reading during write
+        lock_path = self.persist_path.with_suffix('.lock')
+        with _cross_process_file_lock(lock_path):
+            try:
+                with open(self.persist_path, 'r') as f:
+                    data = json.load(f)
+                
+                for item_data in data:
+                    self._queue.put(QueueItem(**item_data))
+                
+                print(f"[Queue] Loaded {len(data)} persisted items")
+            except (json.JSONDecodeError, IOError) as e:
+                print(f"[Queue] Failed to load persisted state: {e}")
 
 
 class WorkerPool:

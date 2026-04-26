@@ -83,6 +83,7 @@ log = logging.getLogger("autonomous_dev_agent")
 OLLAMA_BASE_URL = "http://localhost:11434"
 OLLAMA_MODEL    = "qwen2.5-coder:14b"
 OLLAMA_TIMEOUT  = 600  # seconds per LLM call
+MAX_PROMPT_CHARS = 6000  # CRITICAL: Protect Ollama VRAM from context overflow
 
 # Agent configuration
 MAX_RETRIES = 5
@@ -307,11 +308,20 @@ RULES:
 - Do NOT use any external libraries; only Python stdlib
 """
 
+def _truncate_for_llm(text: str, max_chars: int = MAX_PROMPT_CHARS) -> str:
+    """Truncate text to protect Ollama VRAM from context overflow."""
+    if len(text) <= max_chars:
+        return text
+    truncation_notice = f"\n\n[TRUNCATED: Input exceeded {max_chars} char limit for VRAM protection]"
+    return text[:max_chars - len(truncation_notice)] + truncation_notice
+
+
 def _build_generation_prompt(goal: str) -> list[dict]:
     """Build the initial code generation prompt."""
+    safe_goal = _truncate_for_llm(goal, MAX_PROMPT_CHARS)
     return [
         {"role": "system", "content": _SYSTEM_PROMPT},
-        {"role": "user",   "content": f"Write a Python script that accomplishes the following goal:\n\n{goal}"}
+        {"role": "user",   "content": f"Write a Python script that accomplishes the following goal:\n\n{safe_goal}"}
     ]
 
 
@@ -329,26 +339,31 @@ CRITICAL IMPORT REWRITE RULE:
 - The corrected script must be one standalone Python file using only stdlib imports.
 """
 
+    # CRITICAL: Truncate all inputs to protect Ollama VRAM
+    safe_goal = _truncate_for_llm(goal, MAX_PROMPT_CHARS // 3)
+    safe_broken_code = _truncate_for_llm(broken_code, MAX_PROMPT_CHARS // 3)
+    safe_stderr = _truncate_for_llm(stderr.strip() if stderr.strip() else '<no stderr>', MAX_PROMPT_CHARS // 6)
+    safe_stdout = _truncate_for_llm(stdout.strip() if stdout.strip() else '<empty>', MAX_PROMPT_CHARS // 6)
+    
     user_msg = f"""The following Python script was supposed to accomplish this goal:
-{goal}
+{safe_goal}
 
 But it FAILED during execution. Here is the broken code and the error output.
-Fix ALL bugs and return a corrected, fully working script.
 {import_rewrite_directive}
 
 BROKEN CODE (Attempt #{attempt}):
 ```python
-{broken_code}
+{safe_broken_code}
 ```
 
 EXECUTION ERROR (stderr):
 ```
-{stderr.strip() if stderr.strip() else '<no stderr>'}
+{safe_stderr}
 ```
 
 STDOUT (before crash):
 ```
-{stdout.strip() if stdout.strip() else '<empty>'}
+{safe_stdout}
 ```
 
 Return ONLY the corrected Python code block. No explanations."""

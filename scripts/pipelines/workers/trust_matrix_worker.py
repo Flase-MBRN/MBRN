@@ -530,8 +530,24 @@ def build_payloads(item: SecFeedItem, analysis: Dict[str, Any]) -> List[Dict[str
     return [credibility_payload, impact_payload]
 
 
+def _dispatch_with_retry(uplink: SupabaseUplink, payload: Dict[str, Any], max_retries: int = 3) -> bool:
+    """Dispatch to Supabase with exponential backoff retry logic."""
+    import time
+    for attempt in range(max_retries):
+        try:
+            if uplink.dispatch(payload):
+                return True
+        except Exception as exc:
+            worker_log("WARN", f"Dispatch exception (attempt {attempt + 1}/{max_retries}): {exc}")
+            if attempt < max_retries - 1:
+                delay = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                worker_log("INFO", f"Retrying in {delay}s...")
+                time.sleep(delay)
+    return False
+
+
 def dispatch_payloads(payloads: List[Dict[str, Any]], validator: SchemaValidator, uplink: SupabaseUplink) -> List[Dict[str, Any]]:
-    """Validate and dispatch payloads to Supabase."""
+    """Validate and dispatch payloads to Supabase with retry resilience."""
     dispatched: List[Dict[str, Any]] = []
 
     for payload in payloads:
@@ -541,14 +557,15 @@ def dispatch_payloads(payloads: List[Dict[str, Any]], validator: SchemaValidator
             worker_log("ERROR", f"Schema validation failed for {payload.get('signal_type')}: {exc.errors}")
             continue
 
-        if uplink.dispatch(validated):
+        # CRITICAL: Use retry loop for network resilience
+        if _dispatch_with_retry(uplink, validated):
             dispatched.append(validated)
             worker_log(
                 "OK",
                 f"Signal dispatched type={validated['signal_type']} score={validated['normalized_score']} verdict={validated['verdict']}",
             )
         else:
-            worker_log("ERROR", f"Dispatch failed for {validated['signal_type']} from {validated['source']}")
+            worker_log("ERROR", f"Dispatch failed after retries for {validated['signal_type']} from {validated['source']}")
 
     return dispatched
 

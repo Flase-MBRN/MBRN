@@ -573,16 +573,16 @@ def extract_readme(repo_full_name: str) -> Optional[str]:
             break
 
     # Jina Fallback
-        repo_url = f"https://github.com/{repo_full_name}"
-        jina_url = f"{SCOUT_CONFIG['jina']['prefix']}{repo_url}"
-        try:
-            req = urllib.request.Request(jina_url, headers={"User-Agent": "MBRN-Horizon-Scout/1.0"}, method="GET")
-            with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["jina"]["timeout_seconds"]) as response:
-                content = response.read().decode("utf-8")
-            log("OK", f"README extracted via Jina fallback: {len(content)} chars")
-            return content
-        except Exception:
-            return None
+    repo_url = f"https://github.com/{repo_full_name}"
+    jina_url = f"{SCOUT_CONFIG['jina']['prefix']}{repo_url}"
+    try:
+        req = urllib.request.Request(jina_url, headers={"User-Agent": "MBRN-Horizon-Scout/1.0"}, method="GET")
+        with urllib.request.urlopen(req, timeout=SCOUT_CONFIG["jina"]["timeout_seconds"]) as response:
+            content = response.read().decode("utf-8")
+        log("OK", f"README extracted via Jina fallback: {len(content)} chars")
+        return content
+    except Exception:
+        return None
 
 
 def analyze_tool_synergy(repo_data: Dict[str, Any], readme_content: str, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:

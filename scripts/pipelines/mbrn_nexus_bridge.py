@@ -172,8 +172,12 @@ def _is_nexus_retry_blocked(target: Dict[str, Any]) -> bool:
     return retry_after is not None and retry_after > _utc_now()
 
 
-def _clamp_roi_threshold(value, lower_bound, upper_bound):
-    return max(lower_bound, min(value, upper_bound))
+def _clamp_roi_threshold(value, lower_bound=0.0, upper_bound=100.0):
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return ROI_THRESHOLD
+    return max(lower_bound, min(parsed, upper_bound))
 
 
 def load_factory_control() -> Dict[str, Any]:

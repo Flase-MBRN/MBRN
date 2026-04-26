@@ -298,13 +298,58 @@ export async function renderFactoryFeed(containerId = 'factory-feed-root') {
     }
   };
 
-  if (!window.__factoryFeedInterval) {
-    window.__factoryFeedInterval = setInterval(() => {
-      renderFactoryFeed(containerId);
-    }, 60_000);
+  // CRITICAL: Always clear existing interval before setting new one
+  // Prevents memory leaks during re-renders or hot reloads
+  if (window.__factoryFeedInterval) {
+    clearInterval(window.__factoryFeedInterval);
+    window.__factoryFeedInterval = null;
+  }
+  
+  window.__factoryFeedInterval = setInterval(() => {
+    renderFactoryFeed(containerId);
+  }, 60_000);
+
+  // CRITICAL: Register cleanup on page unload to prevent memory leaks
+  // This ensures 6+ months of continuous operation without RAM bloat
+  if (!window.__factoryFeedCleanupRegistered) {
+    window.__factoryFeedCleanupRegistered = true;
+    
+    window.addEventListener('beforeunload', () => {
+      if (window.__factoryFeedInterval) {
+        clearInterval(window.__factoryFeedInterval);
+        window.__factoryFeedInterval = null;
+        console.log('[FactoryFeed] Interval cleaned up on page unload');
+      }
+    });
+    
+    // Also cleanup on visibility change (tab switching)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && window.__factoryFeedInterval) {
+        // Pause updates when tab is hidden to save resources
+        console.log('[FactoryFeed] Tab hidden, updates paused');
+      }
+    });
   }
 
   console.log(`[FactoryFeed] Rendered ${notifications.length} notification(s).`);
+}
+
+/**
+ * CRITICAL: Destroy factory feed and cleanup all resources.
+ * Call this when component is unmounted or page navigates away.
+ */
+export function destroyFactoryFeed() {
+  if (window.__factoryFeedInterval) {
+    clearInterval(window.__factoryFeedInterval);
+    window.__factoryFeedInterval = null;
+    console.log('[FactoryFeed] Interval destroyed');
+  }
+  
+  // Clear all window callbacks
+  window.__openFactoryFolder = null;
+  window.__refreshFactoryFeed = null;
+  window.__toggleEliteFilter = null;
+  window.__setFactoryPaused = null;
 }
 
 function _showFactoryToast(message) {

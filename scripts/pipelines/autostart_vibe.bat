@@ -67,7 +67,7 @@ if "%MBRN_ENABLE_SCOUT%"=="1" (
     echo [SYSTEM] Scout-Log: %SCOUT_LOG% >> "%LOG_FILE%" 2>&1
     
     REM Starte Scout im Hintergrund (neues Fenster, detached)
-    start "MBRN Horizon Scout" /MIN cmd /c "cd /d "%SCRIPT_DIR%" && "%PYTHON_EXE%" mbrn_horizon_scout.py --loop ^>"%SCOUT_LOG%" 2^>^&1"
+    start "MBRN Horizon Scout" /MIN cmd /c "cd /d "%SCRIPT_DIR%" && "%PYTHON_EXE%" mbrn_horizon_scout.py --infinite ^>"%SCOUT_LOG%" 2^>^&1"
     
     echo [OK] Horizon Scout gestartet (Scan-Intervall: 60 Minuten) >> "%LOG_FILE%" 2>&1
     echo [OK] Horizon Scout gestartet (Scan-Intervall: 60 Minuten)

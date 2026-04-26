@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Callable, Dict, Optional
 import requests
 from worker_registry import WORKER_REGISTRY, WorkerDefinition
-from pipeline_utils import CircuitBreaker, RetryHandler
+from pipeline_utils import CircuitBreaker
 
 # Make sibling script modules importable for worker dispatching.
 SCRIPT_ROOT = Path(__file__).resolve().parents[1]
@@ -169,19 +169,22 @@ class WorkerState:
     next_run_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
-def worker_wrapper(func):
-    def wrapped(*args, **kwargs):
-        try:
-            result = func(*args, **kwargs)
-            test_name = f"{func.__name__}_test"
-            expected_result = ... # Define expected output
-            actual_result = result
-            test_case = run_test_case(test_name, expected_result, actual_result)
-            return result
-        except Exception as e:
-            log_event(f"Error in worker: {str(e)}")
-            raise
-    return wrapped
+def worker_wrapper(func, worker_def, state):
+    """Execute worker function with error handling and state management."""
+    try:
+        import importlib
+        module = importlib.import_module(worker_def.module_path)
+        worker_func = getattr(module, worker_def.callable_name)
+        result = worker_func()
+        log_event(f"Worker {worker_def.worker_id} completed successfully")
+        return result
+    except Exception as e:
+        log_event(f"Error in worker {worker_def.worker_id}: {str(e)}", "ERROR")
+        raise
+    finally:
+        with state.lock:
+            state.is_running = False
+            state.next_run_at = datetime.now(timezone.utc) + timedelta(minutes=worker_def.interval_minutes)
 
 def main():
     load_env()
@@ -210,7 +213,7 @@ def main():
             with state.lock:
                 if not state.is_running and now_dt >= state.next_run_at:
                     state.is_running = True
-                    threading.Thread(target=worker_wrapper, args=(d, state), daemon=True).start()
+                    threading.Thread(target=worker_wrapper, args=(d, d, state), daemon=True).start()
 
         time.sleep(CONFIG["scheduler_tick_seconds"])
 

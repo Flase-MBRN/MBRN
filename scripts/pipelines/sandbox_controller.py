@@ -32,7 +32,7 @@ Workflow:
     6. Return structured SandboxResult
 
 Security Guarantees:
-  - --network none:   Zero network access inside container
+  - --network bridge: Enable external API access inside container
   - --memory 512m:    Hard RAM cap — OOM kills runaway code
   - --cpus 0.5:       Max 50% of one CPU core
   - --rm:             Container deleted immediately after execution
