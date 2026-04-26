@@ -20,7 +20,7 @@ The NEXUS closes the loop:
   │        │         ┌───────────────┼───────────────────┐                 │
   │        │         │               │                   │                  │
   │        │    README fetch    AutoDevAgent         Sandbox               │
-  │        │    (GitHub API)    (deepseek-coder-v2)  (mbrn-sandbox)        │
+  │        │    (GitHub API)    (qwen2.5-coder:14b)  (mbrn-sandbox)        │
   │        │         │               │                   │                  │
   │        │         └───────────────┼───────────────────┘                 │
   │        │                         │                                      │
@@ -571,17 +571,9 @@ def fetch_readme(repo_name: str) -> Optional[str]:
 # Goal Builder — translate alpha metadata into a concrete agent goal
 # ---------------------------------------------------------------------------
 
-_SLUG_RE = re.compile(r"[^A-Za-z0-9_]+")
-
-def _make_slug(repo_name: str) -> str:
-    """Turn 'owner/repo-name' into 'owner_repo_name'."""
-    return _SLUG_RE.sub("_", repo_name).strip("_")[:60]
-
-
 def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
     """
     Construct a concrete, standalone-Python goal string for the AutoDevAgent.
-    Harden the prompt to prevent the 'hallucination loop' of external imports.
     """
     readme_excerpt = ""
     if readme:
@@ -591,52 +583,30 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
     try:
         from mbrn_factory_memory import retrieve_elite_modules
         query = f"{alpha.category} {alpha.repo_name} {alpha.description} {alpha.rationale}"
-        # Retrieve only Diamond-tier modules (score > 0.8)
         elite_modules = retrieve_elite_modules(query, min_score=0.8, top_k=2)
         if elite_modules:
-            memory_context = "\n\nMBRN FACTORY MEMORY (Diamond-tier elite modules only, score > 0.8; use concepts only, do not copy imports):\n"
+            memory_context = "\n\nMBRN FACTORY MEMORY (Diamond-tier elite modules only):\n"
             for mod in elite_modules:
                 memory_context += f"--- {mod['name']} (Score: {mod.get('quality_score', 'N/A')}) ---\n{mod['code'][:800]}...\n\n"
     except Exception:
-        pass  # Factory memory unavailable, continue without context
+        pass
 
-    FACTORY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    goal = f"""Goal: Reimplement the core logic of the GitHub repository '{alpha.repo_name}' into a SINGLE standalone Python file.
 
-    slug = _make_slug(alpha.repo_name)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    filename = f"{ts}_{slug}_module.py"
-    output_path = FACTORY_OUTPUT_DIR / filename
+ARCHITECTURAL MANDATE (v1.2):
+- DO NOT copy the README content or metadata as a placeholder.
+- DO NOT attempt to import external libraries like 'crewai', 'langchain', 'pandas' etc.
+- USE ONLY the Python standard library (json, urllib, re, math, etc.).
+- REIMPLEMENT the logic (e.g. specialized scrapers, calculators, or agents) from scratch in pure Python.
+- Output MUST be a valid, executable Python script with a main() entry point.
 
-    header = f'''"""
-================================================================================
-MBRN Factory-Ready Module
-================================================================================
-Source Alpha    : {alpha.repo_name}
-Alpha ID        : {alpha.alpha_id}
-ROI Score       : {alpha.roi_score}
-Manufactured At : {datetime.now(timezone.utc).isoformat()}
-Agent Attempts  : {result.total_attempts}
-================================================================================
-"""
+ALPHA CONTEXT:
+- Category: {alpha.category}
+- Description: {alpha.description}
+- Rationale: {alpha.rationale}{readme_excerpt}{memory_context}
 
-'''
-    output_path.write_text(header + code, encoding="utf-8")
-    upsert_factory_module(
-        name=output_path.stem,
-        dimension=alpha.dimension if alpha.dimension in CANONICAL_DIMENSIONS else "systeme",
-        source_file=str(output_path),
-        frontend_file=None,
-        status="ready",
-        quality_score=alpha.roi_score,
-        raw_data={
-            "alpha_id": alpha.alpha_id,
-            "repo_name": alpha.repo_name,
-            "roi_score": alpha.roi_score,
-            "agent_attempts": result.total_attempts,
-        },
-    )
-    log.info(f"Factory module saved: {output_path}")
-    return output_path
+The final module should be efficient, autonomous, and fit for production use in the MBRN Hub."""
+    return goal
 
 
 # ---------------------------------------------------------------------------
@@ -704,10 +674,85 @@ def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result
 # Core Factory Run — process ONE alpha through the full pipeline
 # ---------------------------------------------------------------------------
 
-def run_factory_for_alpha(alphas, prices, period):
-    # Calculate EMA for trend analysis
-    ema = calculate_ema(prices, period)
-    return {'alphas': alphas, 'ema_trend': ema}
+def process_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
+    """
+    The main execution flow: README -> Goal -> Agent -> Code Save -> DB Upsert.
+    """
+    log.info(f"--- STARTING FACTORY RUN: {alpha.repo_name} (ROI: {alpha.roi_score}) ---")
+
+    # 1. Fetch README
+    readme = fetch_readme(alpha.repo_name)
+    
+    # 2. Build Goal
+    goal = build_factory_goal(alpha, readme)
+    
+    # 3. Initialize Agent
+    agent = AutoDevAgent(max_retries=MAX_AGENT_RETRIES)
+    
+    # 4. Run Agent
+    result = agent.run(goal)
+    
+    if not result.success:
+        log.error(f"AutoDevAgent failed for {alpha.repo_name}: {result.failure_reason}")
+        mark_alpha_failed(alpha.alpha_id, result.failure_reason or "agent_failed")
+        return None
+
+    # 5. Success! Save and process
+    FACTORY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    slug = _make_slug(alpha.repo_name)
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    filename = f"{ts}_{slug}_module.py"
+    output_path = FACTORY_OUTPUT_DIR / filename
+
+    header = f'''"""
+================================================================================
+MBRN Factory-Ready Module
+================================================================================
+Source Alpha    : {alpha.repo_name}
+Alpha ID        : {alpha.alpha_id}
+ROI Score       : {alpha.roi_score}
+Manufactured At : {datetime.now(timezone.utc).isoformat()}
+Agent Attempts  : {result.total_attempts}
+================================================================================
+"""
+
+'''
+    output_path.write_text(header + result.final_code, encoding="utf-8")
+    
+    # DB Upsert
+    upsert_factory_module(
+        name=output_path.stem,
+        dimension=alpha.dimension if alpha.dimension in CANONICAL_DIMENSIONS else "systeme",
+        source_file=str(output_path),
+        frontend_file=None,
+        status="ready",
+        quality_score=alpha.roi_score,
+        raw_data={
+            "alpha_id": alpha.alpha_id,
+            "repo_name": alpha.repo_name,
+            "roi_score": alpha.roi_score,
+            "agent_attempts": result.total_attempts,
+        },
+    )
+    
+    # Mark as processed
+    mark_alpha_processed(alpha.alpha_id)
+    mark_scout_alpha_status(alpha.alpha_id, "processed")
+    
+    # Dashboard Notification
+    push_dashboard_notification(alpha, output_path, result)
+    
+    log.info(f"✅ SUCCESS: Factory module manufactured at {output_path}")
+
+    return FactoryResult(
+        alpha_id=alpha.alpha_id,
+        repo_name=alpha.repo_name,
+        roi_score=alpha.roi_score,
+        module_name=output_path.stem,
+        output_path=str(output_path),
+        stdout_preview=result.final_output[:500],
+        total_agent_attempts=result.total_attempts
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -745,7 +790,7 @@ def run_nexus_sweep() -> List[FactoryResult]:
             break
 
         log.info(f"\n[{i}/{len(candidates)}] Processing alpha: {alpha.repo_name}")
-        factory_result = run_factory_for_alpha(alpha)
+        factory_result = process_alpha(alpha)
         if factory_result:
             results.append(factory_result)
 

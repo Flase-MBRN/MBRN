@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-26T01:01:47+00:00",
+  "generated_at": "2026-04-26T01:10:50+00:00",
   "dry_run": false,
   "model": "phi4:latest",
   "repair_model": "qwen2.5-coder:14b",
@@ -9,7 +9,7 @@
   "validation_status": "ok",
   "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-26T01:01:12+00:00",
+    "generated_at": "2026-04-26T01:10:14+00:00",
     "discoveries": 0,
     "processed_alphas": 0,
     "backlog_alphas": 0,
@@ -18,24 +18,25 @@
     "factory_memory_docs": 0,
     "nexus_notifications": 200,
     "recent_findings": [
-      "day_zero_autopilot_2026-04-26_030024.log: [2026-04-26T03:01:08.5230818+02:00] [WARN] Day Zero Autopilot completed with partial failure(s) collector=0 sentiment=0 llm=1 scout_running_pid=2592 final_exit=2",
-      "day_zero_autopilot_2026-04-26_030024.log: [2026-04-26T01:01:05.037061+00:00] [ERROR] Week-2 enrichment failed raw_item_id=dd3981bb-7e7d-47c2-9c4e-2cfd8d5607cf reason=HTTP Error 404: Not Found",
-      "day_zero_autopilot_2026-04-26_030024.log: [2026-04-26T01:01:04.265240+00:00] [ERROR] Week-2 enrichment failed raw_item_id=3af41b3f-cd04-4912-9a37-b96d93bc0f9b reason=HTTP Error 404: Not Found",
-      "day_zero_autopilot_2026-04-26_030024.log:     \"key_theme\": \"bridge_error\",",
-      "day_zero_autopilot_2026-04-26_030024.log:     \"analysis\": \"Bridge failed: Request failed: HTTP Error 404: Not Found\",",
+      "day_zero_autopilot_2026-04-26_030929.log: [2026-04-26T03:10:09.9979898+02:00] [WARN] Day Zero Autopilot completed with partial failure(s) collector=0 sentiment=0 llm=1 scout_running_pid=5772 final_exit=2",
+      "day_zero_autopilot_2026-04-26_030929.log: [2026-04-26T01:10:08.540699+00:00] [ERROR] Week-2 enrichment failed raw_item_id=d10f5f71-097a-4640-959a-7ff62fffb1ad reason=HTTP Error 404: Not Found",
+      "day_zero_autopilot_2026-04-26_030929.log:     \"key_theme\": \"bridge_error\",",
+      "day_zero_autopilot_2026-04-26_030929.log:     \"analysis\": \"Bridge failed: JSON parse error: strict_json_parse_failed:Expecting ',' delimiter: line 9 column 31 (char 334)\",",
+      "janitor.log: [2026-04-26 03:09:28] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 03:00:24] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 01:23:52] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 01:02:38] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 00:46:46] [JANITOR] Hygiene pass complete. Purged: 0, Errors: 0",
       "janitor.log: [2026-04-26 00:05:43] [JANITOR] Hygiene pass complete. Purged: 2, Errors: 0",
-      "janitor.log: [2026-04-26 00:03:36] [JANITOR] Hygiene pass complete. Purged: 3, Errors: 0"
+      "janitor.log: [2026-04-26 00:03:36] [JANITOR] Hygiene pass complete. Purged: 3, Errors: 0",
+      "day_zero_autopilot_2026-04-26_030024.log: [2026-04-26T03:01:08.5230818+02:00] [WARN] Day Zero Autopilot completed with partial failure(s) collector=0 sentiment=0 llm=1 scout_running_pid=2592 final_exit=2"
     ],
     "current_control": {
       "scout_status": "running",
       "nexus_status": "running",
-      "nexus_roi_threshold": 87.0,
+      "nexus_roi_threshold": 80.0,
       "ouroboros_target_file": null,
-      "prime_directive": "Reduce factory pressure, inspect recent warnings, and keep mutation disabled.",
+      "prime_directive": "Maintain current operations, monitor for repeated failures, and adjust ROI threshold to stabilize.",
       "factory_paused": false
     }
   },
@@ -46,6 +47,6 @@
     "ouroboros_target_file": null,
     "prime_directive": "Maintain current operations, monitor for repeated failures, and adjust ROI threshold to stabilize."
   },
-  "raw_model_response_preview": "```json\n{\n    \"scout_status\": \"running\",\n    \"nexus_status\": \"running\",\n    \"nexus_roi_threshold\": 80.0,\n    \"ouroboros_target_file\": null,\n    \"prime_directive\": \"Maintain current operations, monitor for repeated failures, and adjust ROI threshold to stabilize.\"\n}\n```",
+  "raw_model_response_preview": "```json\n{\n  \"scout_status\": \"running\",\n  \"nexus_status\": \"running\",\n  \"nexus_roi_threshold\": 80.0,\n  \"ouroboros_target_file\": null,\n  \"prime_directive\": \"Maintain current operations, monitor for repeated failures, and adjust ROI threshold to stabilize.\"\n}\n```",
   "control_panel_unchanged": false
 }
