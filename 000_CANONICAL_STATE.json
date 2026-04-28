@@ -162,12 +162,22 @@
   },
   "apps": {
     "finance": {
+      "state": "deprecated",
+      "maturity": "stable",
+      "dimension": "geld",
+      "topic_area": null,
+      "surface_kind": "widget",
+      "ui": "minimal",
+      "note": "Superseded by ledger app. Widget mode only."
+    },
+    "ledger": {
       "state": "active",
       "maturity": "stable",
       "dimension": "geld",
       "topic_area": null,
       "surface_kind": "app",
-      "ui": "complete"
+      "ui": "complete",
+      "note": "Full offline micro-business ledger with Guided Mode and Ghost Profit Insight."
     },
     "oracle": {
       "state": "active",
