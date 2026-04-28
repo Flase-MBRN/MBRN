@@ -25,6 +25,9 @@ import subprocess
 import tempfile
 import threading
 import time
+
+# Windows: Suppress console window for subprocess calls
+CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -53,7 +56,7 @@ class PipelineConfig:
     # Ollama settings
     ollama_host: str = "localhost"
     ollama_port: int = 11434
-    ollama_model: str = "deepseek-coder-v2"
+    ollama_model: str = "qwen2.5-coder:14b"
     ollama_temperature: float = 0.3
     ollama_timeout: int = 600
     
@@ -355,6 +358,57 @@ def extract_json_object(text: str) -> Optional[str]:
     return None
 
 
+def extract_json_with_regex(text: str) -> Optional[str]:
+    """
+    Extract JSON object using regex - more aggressive extraction for messy LLM outputs.
+    Finds content between first { and last } to handle nested structures.
+    """
+    if not text:
+        return None
+
+    # Find first opening brace
+    first_brace = text.find("{")
+    if first_brace == -1:
+        return None
+
+    # Find last closing brace
+    last_brace = text.rfind("}")
+    if last_brace == -1 or last_brace <= first_brace:
+        return None
+
+    # Extract everything between first { and last }
+    candidate = text[first_brace:last_brace + 1].strip()
+
+    # Additional regex cleanup: remove any markdown fences that might be inside
+    candidate = re.sub(r'```\w*\n?', '', candidate)
+    candidate = re.sub(r'```', '', candidate)
+
+    return candidate if candidate else None
+
+
+def lazy_json_repair(text: str) -> str:
+    """Attempt to repair common minor JSON formatting issues.
+
+    This is intentionally conservative: it only applies simple, mechanical fixes
+    before strict parsing.
+    """
+    cleaned = _strip_markdown_fences(text or "")
+    if not cleaned:
+        return ""
+
+    # Remove BOM / zero-width chars that can break json.loads
+    cleaned = cleaned.replace("\ufeff", "").replace("\u200b", "")
+
+    # Remove trailing commas before closing braces/brackets
+    cleaned = re.sub(r",\s*([}\]])", r"\1", cleaned)
+
+    # Add missing commas between a value/close-brace and the next string key
+    # Example: }\n  "key": -> },\n  "key":
+    cleaned = re.sub(r"([}\]\d\"])(\s*)(\")", r"\1,\2\3", cleaned)
+
+    return cleaned
+
+
 def parse_strict_json_response(
     text: str,
     required_keys: Optional[List[str]] = None,
@@ -373,9 +427,26 @@ def parse_strict_json_response(
     if direct:
         candidates.append(direct)
 
+    repaired = lazy_json_repair(raw_text)
+    if repaired and repaired not in candidates:
+        candidates.append(repaired)
+
     extracted = extract_json_object(raw_text)
     if extracted and extracted not in candidates:
         candidates.append(extracted)
+
+    extracted_repaired = extract_json_object(repaired) if repaired else None
+    if extracted_repaired and extracted_repaired not in candidates:
+        candidates.append(extracted_repaired)
+
+    # Regex-based extraction for aggressive JSON recovery
+    regex_extracted = extract_json_with_regex(raw_text)
+    if regex_extracted and regex_extracted not in candidates:
+        candidates.append(regex_extracted)
+
+    regex_repaired = extract_json_with_regex(repaired) if repaired else None
+    if regex_repaired and regex_repaired not in candidates:
+        candidates.append(regex_repaired)
 
     first_brace = raw_text.find("{")
     last_brace = raw_text.rfind("}")
@@ -410,9 +481,14 @@ def repair_json_with_ollama(
     timeout: int,
     host: str = "localhost",
     port: int = 11434,
+    temperature: float = 0.0,
 ) -> Optional[Dict[str, Any]]:
     """
     Ask Ollama to repair malformed model output into one valid JSON object.
+
+    Args:
+        temperature: Higher values (e.g., 0.4) allow more creativity in repair attempts.
+                    Default 0.0 for deterministic output.
 
     Returns None when repair fails.
     """
@@ -432,7 +508,8 @@ def repair_json_with_ollama(
             "stream": False,
             "keep_alive": 0,  # CRITICAL: Force VRAM release immediately after request
             "options": {
-                "temperature": 0.0,
+                "temperature": temperature,
+                "num_ctx": 4096,
             },
         }
 
@@ -891,7 +968,8 @@ class GPUMemoryGuard:
             # Try nvidia-smi first (if available)
             result = subprocess.run(
                 ['nvidia-smi', '--query-compute-apps=pid,used_memory', '--format=csv,noheader,nounits'],
-                capture_output=True, text=True, timeout=5
+                capture_output=True, text=True, timeout=5,
+                creationflags=CREATE_NO_WINDOW
             )
             if result.returncode == 0:
                 total_mb = 0.0
@@ -911,7 +989,8 @@ class GPUMemoryGuard:
         try:
             result = subprocess.run(
                 ['ollama', 'ps'],
-                capture_output=True, text=True, timeout=5
+                capture_output=True, text=True, timeout=5,
+                creationflags=CREATE_NO_WINDOW
             )
             if result.returncode == 0:
                 # Parse memory usage from ollama ps output
@@ -1227,8 +1306,10 @@ class OllamaEnricher:
                 "model": self.config.ollama_model,
                 "prompt": prompt,
                 "stream": False,
+                "keep_alive": 0,
                 "options": {
-                    "temperature": self.config.ollama_temperature
+                    "temperature": self.config.ollama_temperature,
+                    "num_ctx": int(os.environ.get("OLLAMA_NUM_CTX", "4096"))
                 }
             }
 
@@ -1332,8 +1413,10 @@ Respond in this exact JSON format:
                 "model": self.config.ollama_model,
                 "prompt": prompt,
                 "stream": False,
+                "keep_alive": 0,
                 "options": {
-                    "temperature": self.config.ollama_temperature
+                    "temperature": self.config.ollama_temperature,
+                    "num_ctx": 4096
                 }
             }
             

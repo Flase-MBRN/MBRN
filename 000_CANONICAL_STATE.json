@@ -1,7 +1,7 @@
 {
-  "version": "v5.6",
+  "version": "v5.6.2",
   "release": "AUTONOMOUS-HARVESTING",
-  "last_updated": "2026-04-26T00:00:00Z",
+  "last_updated": "2026-04-28T00:00:00Z",
   "authority": {
     "rule": "This file is the single source of truth for current system state.",
     "conflict_resolution": "If code, README, plans, or agent reports differ from this file, this file wins until formally updated."
@@ -259,9 +259,15 @@
         "sentinel_daemon",
         "mbrn_horizon_scout",
         "mbrn_nexus_bridge",
+        "mbrn_value_router",
         "mbrn_bridge_agent",
         "mbrn_ouroboros_agent",
-        "mbrn_prime_director"
+        "mbrn_prime_director",
+        "mbrn_logic_auditor",
+        "mbrn_live_monitor",
+        "mbrn_hub_observer",
+        "mbrn_cockpit_server",
+        "mbrn_cockpit_sync"
       ],
       "note": "Internal Windows Startup launcher invoked by MBRN_Autostart.bat. v5.5 includes the Bridge Agent in autonomous equalizer mode to close the production loop."
     },
@@ -325,7 +331,7 @@
         "split_brain_sandbox",
         "local_llm"
       ],
-      "note": "Self-healing autonomous code generation agent. Uses Ollama/deepseek-coder-v2 to generate Python code, validates it in the mbrn-sandbox, and auto-heals on failure by feeding stderr back to the LLM. Max 5 retries per goal."
+      "note": "Self-healing autonomous code generation agent. Uses Ollama/phi4:latest to generate Python code, validates it in the mbrn-sandbox, and auto-heals on failure by feeding stderr back to the LLM. Max 5 retries per goal."
     },
     "mbrn_nexus_bridge": {
       "state": "experimental",
@@ -341,6 +347,14 @@
       "output_path": "docs/S3_Data/outputs/factory_ready/",
       "notification_feed": "shared/data/nexus_notifications.json",
       "note": "Scout-to-Factory closure loop. Reads scout_alphas.json for ROI >= 80 entries by default, can live-read nexus_roi_threshold and pause state from Factory Control, commissions MBRN modules via AutoDevAgent, validates in sandbox, persists factory-ready Python modules, writes dashboard notifications, and can enrich goals with package-free Factory Memory context."
+    },
+    "mbrn_value_router": {
+      "state": "active",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_value_router.py",
+      "owner_domain": "meta_generator",
+      "output_path": "docs/S3_Data/outputs/integration_queue/",
+      "note": "Deterministic value scoring and specialized routing engine. Maps dimensions to v3 nomenclature (geld->finance, zeit->chronos, muster->numerology) and promotes high-value modules to specialized queues."
     },
     "factory_feed_ui": {
       "state": "experimental",
@@ -375,18 +389,16 @@
     "mbrn_prime_director": {
       "state": "active",
       "maturity": "implemented",
-      "location": "scripts/pipelines/mbrn_prime_director.py",
+      "location": "scripts/pipelines/mbrn_prime_director_v2.py",
       "owner_domain": "meta_generator",
       "depends_on": [
         "local_llm",
-        "mbrn_horizon_scout",
-        "mbrn_nexus_bridge",
-        "mbrn_factory_memory",
-        "mbrn_ouroboros_agent"
+        "mbrn_value_router",
+        "mbrn_factory_memory"
       ],
-      "control_path": "shared/data/mbrn_state.db:factory_control",
-      "report_path": "shared/data/mbrn_prime_director_report.json",
-      "note": "Level 5 Meta-Controller. Observes SQLite factory backlog, modules, memory, and logs; checks the factory_paused kill-switch; asks local deepseek-r1:14b for a validated control proposal; actively writes live SQLite control panel decisions."
+      "decision_feed": "docs/S3_Data/outputs/prime_decisions.json",
+      "plans_path": "docs/S3_Data/outputs/integration_plans/",
+      "note": "Level 5 Decision Engine (v2). Scans integration_queue, applies rule-based triage (Prepare/Review/Hold), generates automated Markdown Patch Plans, and exports verified decisions for the Visual Cockpit."
     },
     "mbrn_archivist": {
       "state": "internal",
@@ -457,6 +469,35 @@
       "location": "scripts/pipelines/mbrn_janitor.py",
       "owner_domain": "oracle",
       "note": "Automated system hygiene agent. Purges old backup files from the pipeline directory."
+    },
+    "mbrn_live_monitor": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_live_monitor.py",
+      "owner_domain": "oracle",
+      "note": "Internal system health observer. Part of the PM2 silent engine."
+    },
+    "mbrn_hub_observer": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_hub_observer.py",
+      "owner_domain": "oracle",
+      "note": "Cockpit data aggregator for the Visual Cockpit. Part of the PM2 silent engine."
+    },
+    "mbrn_cockpit_server": {
+      "state": "internal",
+      "maturity": "implemented",
+      "location": "N/A (http.server 8080)",
+      "owner_domain": "frontend_os",
+      "note": "Localhost gateway server to prevent CORS issues for the Visual Cockpit."
+    },
+    "mbrn_cockpit_sync": {
+      "state": "active",
+      "maturity": "implemented",
+      "location": "scripts/pipelines/mbrn_cockpit_sync.ps1",
+      "owner_domain": "frontend_os",
+      "output_path": "dashboard/diamonds.json",
+      "note": "Truth Layer Sync for the Visual Cockpit. Aggregates verified modules from the integration_queue into a clean dashboard feed and ensures JSON array compliance."
     }
   },
   "execution_tracks": {

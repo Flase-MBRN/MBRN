@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -395,25 +396,26 @@ def shortlist_items(items: List[SecFeedItem], recent_hashes: set[str]) -> tuple[
 
 
 def build_prompt(item: SecFeedItem) -> str:
-    """Construct the minimal Trust Matrix prompt."""
-    return f"""Analysiere diese SEC-Meldung. Gib mir 1. Credibility (0-100), 2. Impact (0-100), 3. Kurz-Summary (1 Satz) und 4. Ein Verdict (High/Medium/Low Trust).
+    """Construct the advanced Reasoning-Prompt for Trust Matrix."""
+    return f"""### SYSTEM: MBRN REASONING ENGINE (TRUST-MATRIX-v2)
+Analysiere diese SEC-Meldung mit Fokus auf **Silent Risks** (Risiken, die nicht explizit im Text stehen, aber logisch aus den regulatorischen Signalen folgen).
 
-Antwort nur als JSON in diesem exakten Format:
+### TASK:
+Nutze **Reasoning (Chain of Thought)**: Analysiere die regulatorischen Auswirkungen, institutionellen Implikationen und Markt-Signale im Detail, BEVOR du das finale JSON ausgibst.
+
+Antwort NUR als validiertes JSON in diesem Format:
 {{
   "credibility": 0,
   "impact": 0,
-  "summary": "Ein Satz.",
-  "verdict": "High Trust"
+  "summary": "Präzises One-Sentence-Summary inklusive Silent-Risk-Hint.",
+  "verdict": "High Trust / Medium Trust / Low Trust"
 }}
 
-SEC-Meldung:
+### SEC-DATEN:
 Titel: {item.title}
 Typ: {item.item_type}
-Feed: {item.feed_name}
 Veroeffentlicht: {item.published_at}
-Link: {item.link}
 Keywords: {", ".join(item.keyword_hits or item.form_hits) or "none"}
-Form-Hits: {", ".join(item.form_hits) or "none"}
 Summary: {item.summary or "Keine Kurzbeschreibung vorhanden."}
 """
 
@@ -597,6 +599,8 @@ def update_state_with_hashes(state: Dict[str, Any], items: List[SecFeedItem]) ->
 def run() -> bool:
     """Execute the Trust Matrix SEC-first pipeline."""
     load_pipeline_env()
+    # Tuning: Increase context window for reasoning on SEC documents
+    os.environ["OLLAMA_NUM_CTX"] = "8192"
     worker_log("INFO", "Trust Matrix V1 boot sequence engaged")
 
     validator = DummySchemaValidator()  # SchemaValidator archived

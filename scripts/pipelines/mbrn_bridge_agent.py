@@ -85,6 +85,77 @@ OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))
 MIN_HTML_CHARS = 500
 ELITE_THRESHOLD = 0.8
 
+
+def _safe_json_load(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, (dict, list)):
+        return value
+    try:
+        return json.loads(value)
+    except Exception:
+        return None
+
+
+def detect_source_type(module: dict[str, Any]) -> str:
+    name = str(module.get("name") or "")
+    source_file = str(module.get("source_file") or "")
+    raw_data = _safe_json_load(module.get("raw_data"))
+
+    if name.startswith("HN:") or source_file.startswith("https://news.ycombinator.com/"):
+        return "hackernews"
+    if name.startswith("GH:") or source_file.startswith("https://github.com/"):
+        return "github"
+    if isinstance(raw_data, dict):
+        analysis = raw_data.get("analysis") if isinstance(raw_data.get("analysis"), dict) else raw_data
+        if isinstance(analysis, dict) and str(analysis.get("source") or "").lower() == "hackernews":
+            return "hackernews"
+        if isinstance(analysis, dict) and str(analysis.get("source") or "").lower() == "github":
+            return "github"
+    return "unknown"
+
+
+def build_hackernews_markdown(module: dict[str, Any]) -> str:
+    title = str(module.get("name") or "HackerNews Alpha").strip()
+    url = str(module.get("source_file") or "").strip()
+    raw_data = _safe_json_load(module.get("raw_data"))
+    score = module.get("quality_score")
+
+    if isinstance(raw_data, dict):
+        analysis = raw_data.get("analysis") if isinstance(raw_data.get("analysis"), dict) else raw_data
+        if isinstance(analysis, dict):
+            title = str(analysis.get("title") or title).strip()
+            url = str(analysis.get("url") or url).strip()
+            score = analysis.get("roi_score", score)
+
+    score_str = "" if score is None else f"\n\nScore: {score}"
+    url_line = url if url else "(missing url)"
+    return f"# {title}\n\nLink: {url_line}{score_str}\n"
+
+
+def deploy_hackernews_bundle(module: dict[str, Any]) -> str:
+    dim = str(module.get("dimension") or "systeme").lower()
+    slug = re.sub(r"[^a-z0-9]", "_", str(module.get("name") or "hn").lower())
+    base_dir = DIMENSIONS_DIR / dim / "deployed" / f"{slug}_module_{module['id']}"
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    raw_data = _safe_json_load(module.get("raw_data"))
+    info = {
+        "id": module.get("id"),
+        "name": module.get("name"),
+        "dimension": module.get("dimension"),
+        "source_file": module.get("source_file"),
+        "quality_score": module.get("quality_score"),
+        "status": "deployed",
+        "source_type": "hackernews",
+        "raw_data": raw_data,
+    }
+    (base_dir / "info.json").write_text(json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8")
+    (base_dir / "summary.md").write_text(build_hackernews_markdown(module), encoding="utf-8")
+
+    summary_path = base_dir / "summary.md"
+    return str(summary_path.relative_to(PROJECT_ROOT)).replace("\\", "/")
+
 def strip_markdown_fences(text: str) -> str:
     """Helper for tests and production to clean LLM output."""
     if not text: return ""
@@ -214,77 +285,203 @@ def purge_module(module_id: int, frontend_file: str):
         conn.execute("DELETE FROM factory_modules WHERE id = ?", (module_id,))
         conn.commit()
 
-def run_bridge_cycle():
-    log("INFO", "Checking for pending modules...")
+def run_watchman_cycle():
+    """Process ONE module per cycle with atomic status transition."""
     with get_db() as conn:
-        pending = conn.execute("SELECT * FROM factory_modules WHERE status = 'ready'").fetchall()
+        # Atomar: ready → pending_generation (reserviert das Modul)
+        # SQLite 3.35.0+ unterstützt RETURNING
+        try:
+            row = conn.execute(
+                """UPDATE factory_modules 
+                   SET status = 'pending_generation', updated_at = datetime('now')
+                   WHERE id = (
+                       SELECT id FROM factory_modules 
+                       WHERE status = 'ready' 
+                       ORDER BY created_at ASC LIMIT 1
+                   )
+                   RETURNING *"""
+            ).fetchone()
+            conn.commit()
+        except Exception:
+            # Fallback für ältere SQLite ohne RETURNING
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute(
+                "SELECT * FROM factory_modules WHERE status = 'ready' ORDER BY created_at ASC LIMIT 1"
+            ).fetchone()
+            if row:
+                conn.execute(
+                    "UPDATE factory_modules SET status = 'pending_generation', updated_at = datetime('now') WHERE id = ?",
+                    (row['id'],)
+                )
+            conn.commit()
     
-    for row in pending:
-        module = dict(row)
-        log("INFO", f"Bridging module {module['id']}: {module['name']}...")
-        
+    if not row:
+        return False  # Keine Arbeit
+    
+    module = dict(row)
+    log("INFO", f"[WATCHMAN] Processing module {module['id']}: {module['name']}")
+    
+    try:
+        source_type = detect_source_type(module)
+        if source_type == "hackernews":
+            relative_path = deploy_hackernews_bundle(module)
+            with get_db() as conn:
+                conn.execute(
+                    """UPDATE factory_modules 
+                       SET status = 'deployed', 
+                           frontend_file = ?,
+                           updated_at = datetime('now')
+                       WHERE id = ?""",
+                    (relative_path, module["id"]),
+                )
+                conn.commit()
+            log("OK", f"[WATCHMAN] Deployed HN markdown {relative_path} → triggers Auditor")
+            insert_notification("Bridge", f"HN Alpha deployed: {module['name']}", "info")
+            export_factory_feed_snapshot()
+            return True
+
+        if source_type != "github":
+            log("WARN", f"[WATCHMAN] Unknown source type for module {module['id']}: {module.get('source_file')}. Skipping.")
+            with get_db() as conn:
+                conn.execute(
+                    "UPDATE factory_modules SET status = 'skipped', updated_at = datetime('now') WHERE id = ?",
+                    (module["id"],),
+                )
+                conn.commit()
+            return True
+
         # Extract logic from filesystem
         logic_desc = extract_logic_description(module['source_file'])
         if not logic_desc:
-            log("ERROR", f"No logic found for {module['name']}, skipping.")
-            continue
+            log("ERROR", f"No logic found for {module['name']}, reverting to ready.")
+            with get_db() as conn:
+                conn.execute(
+                    "UPDATE factory_modules SET status = 'ready', updated_at = datetime('now') WHERE id = ?",
+                    (module['id'],)
+                )
+                conn.commit()
+            return False
 
         # Calculate Auditor Score
         score = calculate_score(logic_desc)
         is_elite = 1 if score >= ELITE_THRESHOLD else 0
         
-        if score < 0.2: # Lowering purge threshold for initial factory runs
+        if score < 0.2:
             purge_module(module['id'], module.get('frontend_file'))
-            continue
+            return True  # Modul gelöscht, gilt als verarbeitet
 
         html = generate_standalone_html(module, logic_desc)
-        if html:
-            relative_path = deploy_to_dimension(module, html)
+        if not html:
+            log("ERROR", f"HTML generation failed for {module['name']}, reverting to ready.")
             with get_db() as conn:
                 conn.execute(
-                    "UPDATE factory_modules SET status = 'deployed', frontend_file = ?, is_elite = ?, score = ? WHERE id = ?",
-                    (relative_path, is_elite, score, module['id'])
+                    "UPDATE factory_modules SET status = 'ready', updated_at = datetime('now') WHERE id = ?",
+                    (module['id'],)
                 )
                 conn.commit()
-            log("OK", f"Deployed: {relative_path} (Score: {score})")
-            insert_notification("Bridge", f"Module {module['name']} deployed to {module['dimension']}", "info")
-            export_factory_feed_snapshot()
+            return False
+        
+        # Deploy & Status: pending_generation → deployed
+        relative_path = deploy_to_dimension(module, html)
+        
+        with get_db() as conn:
+            conn.execute(
+                """UPDATE factory_modules 
+                   SET status = 'deployed', 
+                       frontend_file = ?, 
+                       is_elite = ?, 
+                       score = ?,
+                       updated_at = datetime('now')
+                   WHERE id = ?""",
+                (relative_path, is_elite, score, module['id'])
+            )
+            conn.commit()
+        
+        log("OK", f"[WATCHMAN] Deployed {relative_path} (Score: {score}) → triggers Auditor")
+        insert_notification("Bridge", f"Module {module['name']} deployed to {module['dimension']}", "info")
+        export_factory_feed_snapshot()
+        return True
+        
+    except Exception as e:
+        log("ERROR", f"[WATCHMAN] Failed module {module['id']}: {e}, reverting to ready.")
+        # Fehler: Zurück zu ready für Retry
+        try:
+            with get_db() as conn:
+                conn.execute(
+                    "UPDATE factory_modules SET status = 'ready', updated_at = datetime('now') WHERE id = ?",
+                    (module['id'],)
+                )
+                conn.commit()
+        except Exception as revert_err:
+            log("ERROR", f"[WATCHMAN] Failed to revert status: {revert_err}")
+        return False
+
+
+def run_bridge_cycle():
+    """Legacy batch mode - process all ready modules."""
+    log("INFO", "[LEGACY] Checking for pending modules...")
+    processed = 0
+    while True:
+        result = run_watchman_cycle()
+        if not result:
+            break
+        processed += 1
+    log("INFO", f"[LEGACY] Processed {processed} modules.")
+
+
+def watchman_loop():
+    """Continuous watchman mode - poll every 2 seconds."""
+    log("INFO", "╔══════════════════════════════════════════════════╗")
+    log("INFO", "║  BRIDGE AGENT v2.0 - WATCHMAN MODE               ║")
+    log("INFO", "║  Flow: ready → pending_generation → deployed     ║")
+    log("INFO", "╚══════════════════════════════════════════════════╝")
+    
+    while True:
+        try:
+            processed = run_watchman_cycle()
+            if not processed:
+                # Nichts zu tun - kurz warten
+                time.sleep(2)
+            # Wenn processed=True, sofort nächsten Check (Backlog abbauen)
+            
+        except Exception as e:
+            log("ERROR", f"[WATCHMAN ERROR] {e}")
+            time.sleep(5)  # Länger warten bei Fehler
+            continue
 
 def run_bridge_batch(limit: int):
-    log("INFO", f"Running batch bridge cycle (Limit: {limit})...")
+    log("INFO", f"[LEGACY] Running batch bridge cycle (Limit: {limit})...")
     for _ in range(limit):
-        run_bridge_cycle()
+        run_watchman_cycle()
 
 def run_bridge_until_empty():
-    log("INFO", "Running bridge until queue is empty...")
+    log("INFO", "[LEGACY] Running bridge until queue is empty...")
     while True:
         with get_db() as conn:
             row = conn.execute("SELECT COUNT(*) as cnt FROM factory_modules WHERE status = 'ready'").fetchone()
             if row["cnt"] == 0: break
-        run_bridge_cycle()
+        run_watchman_cycle()
 
 def main():
     show_v5_banner()
     parser = argparse.ArgumentParser()
-    parser.add_argument("--autonomous", action="store_true")
-    parser.add_argument("--target", type=int, default=10)
-    parser.add_argument("--batch-count", type=int, help="Run a specific number of modules.")
-    parser.add_argument("--all-ready", action="store_true", help="Process all ready modules.")
+    parser.add_argument("--once", action="store_true", help="Single cycle (legacy mode)")
+    parser.add_argument("--batch-count", type=int, help="Run a specific number of modules (legacy).")
+    parser.add_argument("--all-ready", action="store_true", help="Process all ready modules (legacy).")
     args = parser.parse_args()
     
     init_db()
     
-    if args.autonomous:
-        log("INFO", f"Autonomous Production Mode (Target: {args.target} modules)")
-        while True:
-            run_bridge_cycle()
-            time.sleep(30)
+    if args.once:
+        # Legacy: Einmaliger Durchlauf
+        run_bridge_cycle()
     elif args.batch_count:
         run_bridge_batch(args.batch_count)
     elif args.all_ready:
         run_bridge_until_empty()
     else:
-        run_bridge_cycle()
+        # NEU: Standard ist Watchman Mode
+        watchman_loop()
 
 if __name__ == "__main__":
     main()

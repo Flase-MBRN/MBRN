@@ -1,127 +1,307 @@
 {
-  "timestamp": "2026-04-26T14:45:13.453701+00:00",
+  "timestamp": "2026-04-28T02:10:16.495955+00:00",
   "processes": {
     "sentinel-daemon": {
       "name": "sentinel-daemon",
-      "status": "offline",
+      "status": "critical",
       "triage": "CRITICAL",
-      "pm2_status": "stopped",
-      "pid": 0,
-      "uptime": "00:00:00",
-      "restart_count": 0,
-      "memory": "0 MB",
+      "pm2_status": "online",
+      "pid": 104388,
+      "uptime": "02:08:49",
+      "restart_count": 1,
+      "memory": "4 MB",
       "cpu": "0%",
-      "last_action": "Process not running in PM2",
-      "incident_report": "Process is not registered with PM2",
-      "incident_count": 0,
+      "last_action": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable.",
+      "incident_report": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable.",
+      "incident_count": 1,
       "metrics": {},
-      "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453585+00:00"
+      "forensic_history": [
+        {
+          "timestamp": "2026-04-28T02:09:45.774626+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:09:49.090988+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:09:52.140559+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:09:55.535566+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:09:58.906087+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:10:02.274058+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:10:05.890858+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:10:08.936850+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:10:12.391882+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        },
+        {
+          "timestamp": "2026-04-28T02:10:15.906986+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:02:31 +02:00: [2026-04-28T02:02:31.921569+00:00] [ERROR] Local LLM bridge unavailable."
+        }
+      ],
+      "last_update": "2026-04-28T02:10:15.907178+00:00"
     },
     "horizon-scout": {
       "name": "horizon-scout",
-      "status": "offline",
-      "triage": "CRITICAL",
-      "pm2_status": "stopped",
-      "pid": 0,
-      "uptime": "00:00:00",
-      "restart_count": 0,
-      "memory": "0 MB",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 69456,
+      "uptime": "00:17:02",
+      "restart_count": 5,
+      "memory": "5 MB",
       "cpu": "0%",
-      "last_action": "Process not running in PM2",
-      "incident_report": "Process is not registered with PM2",
+      "last_action": "2026-04-28 04:04:53 +02:00: \u001b[1m\u001b[38;2;123;92;245m[02:04:53 UTC] [SCOUT] [INFO] All sources checked.",
+      "incident_report": "",
       "incident_count": 0,
-      "metrics": {},
-      "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453624+00:00"
+      "metrics": {
+        "alphas_found_today": 0,
+        "iterations_completed": 47
+      },
+      "forensic_history": [
+        {
+          "timestamp": "2026-04-28T00:17:23.679714+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 02:13:06 +02:00: \u001b[1m\u001b[38;2;123;92;245m[00:13:06 UTC] [SCOUT] [INFO] All sources checked."
+        },
+        {
+          "timestamp": "2026-04-28T01:50:04.662771+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 03:48:44 +02:00: \u001b[1m\u001b[38;2;123;92;245m[01:48:44 UTC] [SCOUT] [INFO] All sources checked."
+        }
+      ],
+      "last_update": "2026-04-28T02:10:15.910253+00:00"
     },
     "nexus-bridge": {
       "name": "nexus-bridge",
-      "status": "offline",
-      "triage": "CRITICAL",
-      "pm2_status": "stopped",
-      "pid": 0,
-      "uptime": "00:00:00",
-      "restart_count": 0,
-      "memory": "0 MB",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 26752,
+      "uptime": "02:08:49",
+      "restart_count": 1,
+      "memory": "4 MB",
       "cpu": "0%",
-      "last_action": "Process not running in PM2",
-      "incident_report": "Process is not registered with PM2",
+      "last_action": "2026-04-28 04:10:10 +02:00: 2026-04-28T04:10:10 [SANDBOX_CTRL] INFO - Cooldown: 5 minutes...",
+      "incident_report": "",
+      "incident_count": 0,
+      "metrics": {
+        "alphas_processed": 0
+      },
+      "forensic_history": [],
+      "last_update": "2026-04-28T02:10:16.440506+00:00"
+    },
+    "value-router": {
+      "name": "value-router",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 149784,
+      "uptime": "00:17:02",
+      "restart_count": 5,
+      "memory": "5 MB",
+      "cpu": "0%",
+      "last_action": "2026-04-28 03:53:14 +02:00: 2026-04-28T03:53:14 [ROUTER] INFO - Watching: docs\\S3_Data\\outputs\\facto",
+      "incident_report": "",
       "incident_count": 0,
       "metrics": {},
       "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453635+00:00"
+      "last_update": "2026-04-28T02:10:16.441026+00:00"
     },
     "ouroboros-agent": {
       "name": "ouroboros-agent",
-      "status": "offline",
-      "triage": "CRITICAL",
-      "pm2_status": "stopped",
-      "pid": 0,
-      "uptime": "00:00:00",
-      "restart_count": 0,
-      "memory": "0 MB",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 151628,
+      "uptime": "02:08:49",
+      "restart_count": 1,
+      "memory": "4 MB",
       "cpu": "0%",
-      "last_action": "Process not running in PM2",
-      "incident_report": "Process is not registered with PM2",
+      "last_action": "2026-04-28 04:01:28 +02:00: [2026-04-28T02:01:28.018387+00:00] [INFO] [OUROBOROS-v2] Cooldown: 60 mi",
+      "incident_report": "",
       "incident_count": 0,
-      "metrics": {},
+      "metrics": {
+        "mutations_attempted": 11,
+        "fixes_applied": 0
+      },
       "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453646+00:00"
+      "last_update": "2026-04-28T02:10:16.441624+00:00"
     },
     "bridge-agent": {
       "name": "bridge-agent",
-      "status": "offline",
+      "status": "critical",
       "triage": "CRITICAL",
-      "pm2_status": "stopped",
-      "pid": 0,
-      "uptime": "00:00:00",
-      "restart_count": 0,
-      "memory": "0 MB",
+      "pm2_status": "online",
+      "pid": 148944,
+      "uptime": "02:08:48",
+      "restart_count": 1,
+      "memory": "4 MB",
       "cpu": "0%",
-      "last_action": "Process not running in PM2",
-      "incident_report": "Process is not registered with PM2",
-      "incident_count": 0,
-      "metrics": {},
-      "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453655+00:00"
+      "last_action": "2026-04-28 04:10:15 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:10:15 UTC] [BRIDGE] [ERROR] No logic found fo",
+      "incident_report": "2026-04-28 04:10:15 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:10:15 UTC] [BRIDGE] [ERROR] No logic found fo",
+      "incident_count": 1,
+      "metrics": {
+        "modules_generated": 0
+      },
+      "forensic_history": [
+        {
+          "timestamp": "2026-04-28T02:09:46.558521+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:09:45 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:09:45 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:09:49.612657+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:09:49 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:09:49 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:09:52.930648+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:09:51 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:09:51 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:09:56.341782+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:09:55 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:09:55 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:09:59.711746+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:09:59 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:09:59 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:10:03.312089+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:10:01 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:10:01 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:10:06.417042+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:10:05 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:10:05 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:10:09.763940+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:10:09 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:10:09 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:10:13.223099+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:10:11 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:10:11 UTC] [BRIDGE] [ERROR] No logic found fo"
+        },
+        {
+          "timestamp": "2026-04-28T02:10:16.454791+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 04:10:15 +02:00: \u001b[1m\u001b[38;2;255;107;107m[02:10:15 UTC] [BRIDGE] [ERROR] No logic found fo"
+        }
+      ],
+      "last_update": "2026-04-28T02:10:16.460512+00:00"
     },
     "live-monitor": {
       "name": "live-monitor",
-      "status": "offline",
-      "triage": "CRITICAL",
-      "pm2_status": "stopped",
-      "pid": 0,
-      "uptime": "00:00:00",
-      "restart_count": 0,
-      "memory": "0 MB",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 61364,
+      "uptime": "02:08:49",
+      "restart_count": 1,
+      "memory": "4 MB",
       "cpu": "0%",
-      "last_action": "Process not running in PM2",
-      "incident_report": "Process is not registered with PM2",
+      "last_action": "2026-04-28 04:08:14 +02:00: [2026-04-28T02:08:14.636375+00:00] [INFO] [LIVE-MONITOR] Next scan in 5 ",
+      "incident_report": "",
       "incident_count": 0,
       "metrics": {},
       "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453664+00:00"
+      "last_update": "2026-04-28T02:10:16.461063+00:00"
     },
     "logic-auditor": {
       "name": "logic-auditor",
-      "status": "offline",
-      "triage": "CRITICAL",
-      "pm2_status": "stopped",
-      "pid": 0,
-      "uptime": "00:00:00",
-      "restart_count": 0,
-      "memory": "0 MB",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 88728,
+      "uptime": "02:08:48",
+      "restart_count": 1,
+      "memory": "4 MB",
       "cpu": "0%",
-      "last_action": "Process not running in PM2",
-      "incident_report": "Process is not registered with PM2",
+      "last_action": "2026-04-28 02:01:28 +02:00: ╚══════════════════════════════════════════════════╝",
+      "incident_report": "",
       "incident_count": 0,
       "metrics": {},
       "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453674+00:00"
+      "last_update": "2026-04-28T02:10:16.461356+00:00"
     },
     "prime-director": {
       "name": "prime-director",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 20392,
+      "uptime": "00:17:01",
+      "restart_count": 5,
+      "memory": "5 MB",
+      "cpu": "0%",
+      "last_action": "2026-04-28 04:10:15 +02:00: 2026-04-28T04:10:15 [DIRECTOR-v2] INFO - Cycle complete. 0 decisions rec",
+      "incident_report": "",
+      "incident_count": 0,
+      "metrics": {},
+      "forensic_history": [
+        {
+          "timestamp": "2026-04-28T00:19:29.448806+00:00",
+          "event": "CRITICAL detected",
+          "details": "2026-04-28 02:19:29 +02:00: 2026-04-28T02:19:29 [DIRECTOR-v2] INFO - Cycle complete. 0 decisions rec"
+        }
+      ],
+      "last_update": "2026-04-28T02:10:16.469603+00:00"
+    },
+    "cockpit-server": {
+      "name": "cockpit-server",
+      "status": "nominal",
+      "triage": "INFO",
+      "pm2_status": "online",
+      "pid": 68480,
+      "uptime": "02:08:47",
+      "restart_count": 1,
+      "memory": "4 MB",
+      "cpu": "0%",
+      "last_action": "2026-04-28 04:10:16 +02:00: ::ffff:127.0.0.1 - - [28/Apr/2026 04:10:16] \"GET /docs/S3_Data/outputs/p",
+      "incident_report": "",
+      "incident_count": 0,
+      "metrics": {},
+      "forensic_history": [],
+      "last_update": "2026-04-28T02:10:16.495855+00:00"
+    },
+    "cockpit-sync": {
+      "name": "cockpit-sync",
       "status": "offline",
       "triage": "CRITICAL",
       "pm2_status": "stopped",
@@ -135,17 +315,17 @@
       "incident_count": 0,
       "metrics": {},
       "forensic_history": [],
-      "last_update": "2026-04-26T14:45:13.453683+00:00"
+      "last_update": "2026-04-28T02:10:16.495926+00:00"
     }
   },
   "system": {
-    "active_incidents": 8,
-    "total_processes": 8,
-    "healthy_processes": 0,
+    "active_incidents": 3,
+    "total_processes": 11,
+    "healthy_processes": 8,
     "recovering_processes": 0,
-    "critical_processes": 8,
-    "last_update": "2026-04-26T14:45:13.453704+00:00",
-    "observer_uptime": "00:01:18",
-    "observer_pid": 37628
+    "critical_processes": 3,
+    "last_update": "2026-04-28T02:10:16.495959+00:00",
+    "observer_uptime": "02:08:48",
+    "observer_pid": 118092
   }
 }

@@ -4,5 +4,47 @@
     "requested_tool_description": "Automated fix needed for: ImportGuardError: external imports are forbidden by the MBRN sandbox contract: crewai, crewai_tools. Rewrite the script to use Python stdlib only and implement any needed placeholder/core logic locally.",
     "status": "pending",
     "created_at": "2026-04-25T17:09:09.086549+00:00"
+  },
+  {
+    "alpha_id": "raw_aissac_smallclawLM",
+    "requested_tool_description": "Automated fix needed for: upsert_factory_module() missing 1 required positional argument: 'source_file'",
+    "status": "pending",
+    "created_at": "2026-04-27T14:58:13.040137+00:00"
+  },
+  {
+    "alpha_id": "raw_mikatachan_discord-nexus",
+    "requested_tool_description": "Automated fix needed for: upsert_factory_module() missing 1 required positional argument: 'source_file'",
+    "status": "pending",
+    "created_at": "2026-04-27T14:59:02.591852+00:00"
+  },
+  {
+    "alpha_id": "raw_kjm1559_GitFlow",
+    "requested_tool_description": "Automated fix needed for: upsert_factory_module() missing 1 required positional argument: 'source_file'",
+    "status": "pending",
+    "created_at": "2026-04-27T15:07:39.262306+00:00"
+  },
+  {
+    "alpha_id": "raw_firaseth_hivemind",
+    "requested_tool_description": "Automated fix needed for: upsert_factory_module() missing 1 required positional argument: 'source_file'",
+    "status": "pending",
+    "created_at": "2026-04-27T15:25:19.792699+00:00"
+  },
+  {
+    "alpha_id": "raw_wangmoumou760-sketch_pydanticai",
+    "requested_tool_description": "Automated fix needed for: upsert_factory_module() missing 1 required positional argument: 'source_file'",
+    "status": "pending",
+    "created_at": "2026-04-27T15:26:32.681687+00:00"
+  },
+  {
+    "alpha_id": "raw_Siddhesh-hub_Sentinel-AI-Enterprise-LLM-Governance-Security-Gateway",
+    "requested_tool_description": "Automated fix needed for: upsert_factory_module() missing 1 required positional argument: 'source_file'",
+    "status": "pending",
+    "created_at": "2026-04-27T15:29:13.450706+00:00"
+  },
+  {
+    "alpha_id": "raw_DenisCranes_MaxPilot",
+    "requested_tool_description": "Automated fix needed for: upsert_factory_module() missing 1 required positional argument: 'source_file'",
+    "status": "pending",
+    "created_at": "2026-04-27T15:31:50.530578+00:00"
   }
 ]

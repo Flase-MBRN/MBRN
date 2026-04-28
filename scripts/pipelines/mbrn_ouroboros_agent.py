@@ -22,6 +22,9 @@ import subprocess
 import sys
 import textwrap
 import time
+
+# Windows: Suppress console window for subprocess calls
+CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -138,7 +141,10 @@ def check_runtime_safety(script_path: Path) -> bool:
             [sys.executable, str(script_path)],
             timeout=5,
             capture_output=True,
-            text=True
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            creationflags=CREATE_NO_WINDOW
         )
         if process.returncode != 0:
             log("ERROR", f"Runtime Crash detected (Code {process.returncode}):\n{process.stderr[-500:]}")
@@ -195,6 +201,17 @@ OUROBOROS_SCHEMA_HINT = """{
 
 def run_ouroboros_mutation() -> None:
     log("INFO", "=== OUROBOROS v2 PROTOCOL INITIATED ===")
+
+    # Safety Gate: Check factory control for mutation_enabled
+    control_path = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control.json"
+    if control_path.exists():
+        try:
+            control = json.loads(control_path.read_text(encoding="utf-8"))
+            if not control.get("mutation_enabled", False):
+                log("WARN", "Mutation DISABLED via factory control. Observation mode only.")
+                return
+        except Exception as e:
+            log("ERROR", f"Failed to read factory control: {e}")
 
     if not CATALOG_PATH.exists():
         log("WARN", "Toolkit Catalog not found. Run mbrn_toolkit_compiler.py first.")

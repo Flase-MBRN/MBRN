@@ -10,7 +10,7 @@ Responsibilities:
 4. Enrich with local Ollama LLM sentiment analysis via LocalLLMBridge
 5. Output structured JSON for dashboard and Supabase ingestion
 
-Hardware Optimized For: RX 7700 XT (local LLM inference via Ollama/DeepSeek-Coder-V2)
+Hardware Optimized For: RX 7700 XT (local LLM inference via Ollama/qwen2.5-coder:14b)
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ import os
 import sys
 import urllib.parse
 from datetime import datetime, timezone
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -50,6 +51,7 @@ from pipeline_utils import (
     fetch_url_with_retry,
     get_news_impact_seed,
     is_crypto_ticker,
+    lazy_json_repair,
     load_pipeline_env,
     log,
     parse_feed_items,
@@ -70,15 +72,15 @@ PIPELINE_CONFIG = {
     "ollama": {
         "host": "localhost",
         "port": 11434,
-        "model": "llama3.2:latest",
+        "model": "qwen2.5-coder:14b",
         "temperature": 0.3,
-        "timeout_seconds": 120,
+        "timeout_seconds": 300,  # OPTIMIERT: Erhöht von 120 auf 300 (5 Min) für RX 7700 XT
     },
     "output": {
         "output_dir": PROJECT_ROOT / "AI" / "models" / "data",
         "dashboard_path": PROJECT_ROOT / "shared" / "data" / "market_sentiment.json",
         "filename_template": "market_sentiment_{timestamp}.json",
-        "news_limit": 10,
+        "news_limit": 20,       # OPTIMIERT: Von 10 auf 20 für breitere Datenbasis
     },
     "mbrn": {
         "sentiment_scale": 100,
@@ -110,11 +112,10 @@ ENRICHMENT_SCHEMA_HINT = """{
   "news_impact": 0,
   "key_theme": "short theme"
 }"""
-# Use centralized SENTIMENT_KEYWORDS from pipeline_utils (via classify_news_bias, get_news_impact_seed)
 
 
 # =============================================================================
-# DATA FETCHING (Uses centralized utilities from pipeline_utils)
+# DATA FETCHING
 # =============================================================================
 
 @with_retry(max_retries=3, base_delay=2.0, operation_name="fetch_batch_data")
@@ -124,7 +125,6 @@ def fetch_batch_data(tickers: List[str], lookback_days: int = 5) -> List[Dict[st
     for ticker in tickers:
         data = fetch_market_snapshot(ticker, lookback_days=lookback_days)
         if data:
-            # Enrich with market_cap and pe_ratio for sentiment analysis
             try:
                 import yfinance as yf
                 stock = yf.Ticker(ticker)
@@ -132,26 +132,25 @@ def fetch_batch_data(tickers: List[str], lookback_days: int = 5) -> List[Dict[st
                 data["market_cap"] = info.get("marketCap")
                 data["pe_ratio"] = info.get("trailingPE")
             except Exception:
-                pass  # Non-critical enrichment
+                pass
             results.append(data)
     return results
 
 
 @with_retry(max_retries=3, base_delay=2.0, operation_name="fetch_news_items")
-def fetch_news_items(limit: int = 10) -> List[Dict[str, Any]]:
+def fetch_news_items(limit: int = 20) -> List[Dict[str, Any]]:
     """Fetch, merge and rank RSS headlines using centralized utility."""
     news_items, _ = fetch_news_batch(
         feeds=RSS_CONFIG["feeds"],
         headers_pool=RSS_CONFIG["header_pool"],
         limit_per_feed=limit,
     )
-    # Sort by published date and apply limit
     news_items.sort(key=lambda item: item.get("published_at", ""), reverse=True)
     return news_items[:limit]
 
 
 # =============================================================================
-# OLLAMA LOCAL LLM ENRICHMENT (Now via LocalLLMBridge - Phase 3)
+# OLLAMA LOCAL LLM ENRICHMENT
 # =============================================================================
 
 def build_market_summary(market_data: List[Dict[str, Any]]) -> str:
@@ -172,7 +171,8 @@ def build_news_summary(news_items: List[Dict[str, Any]]) -> str:
         return "No finance RSS headlines available."
 
     lines = []
-    for item in news_items[:5]:
+    # OPTIMIERT: Erhöht auf 15 Headlines für die KI-Analyse
+    for item in news_items[:15]:
         lines.append(
             f"- [{item['source']}] {item['title']} ({item['published_at']})"
         )
@@ -186,7 +186,6 @@ def build_neutral_enrichment(
     key_theme: str,
     confidence: float = 0.0,
 ) -> Dict[str, Any]:
-    """Build the canonical neutral fallback enrichment payload."""
     return {
         "sentiment_score": 50,
         "confidence": confidence,
@@ -202,7 +201,6 @@ def build_neutral_enrichment(
 
 
 def normalize_recommendation(value: Any) -> str:
-    """Clamp model recommendation values to the fetcher contract."""
     text = str(value or "").strip().lower()
     if text in {"buy", "sell", "hold", "caution"}:
         return text
@@ -216,7 +214,6 @@ def normalize_recommendation(value: Any) -> str:
 
 
 def normalize_bias(value: Any) -> str:
-    """Normalize directional labels to bullish/bearish/neutral."""
     text = str(value or "").strip().lower()
     if "bull" in text:
         return "bullish"
@@ -229,17 +226,10 @@ def enrich_with_ollama(
     market_data: List[Dict[str, Any]],
     news_items: Optional[List[Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
-    """
-    Enrich market data with local LLM sentiment analysis via LocalLLMBridge.
-
-    Includes equity, crypto and RSS headline context.
-    Phase 3 Migration: Uses centralized LocalLLMBridge instead of inline urllib calls.
-    """
     news_items = news_items or []
     fallback_news_bias = classify_news_bias(news_items)
     fallback_news_impact = get_news_impact_seed(news_items)
 
-    # Initialize Bridge
     bridge = LocalLLMBridge(
         LocalLLMBridgeConfig(
             host=PIPELINE_CONFIG["ollama"]["host"],
@@ -263,44 +253,69 @@ def enrich_with_ollama(
     market_summary = build_market_summary(market_data)
     news_summary = build_news_summary(news_items)
 
-    prompt = f"""Analyze the following market data and finance headlines.
+    prompt = f"""You are a high-precision MBRN Market Analysis Engine (Optimized for qwen2.5-coder:14b). 
+Return ONLY valid JSON. No markdown, no explanations.
 You are a professional JSON-only output engine. Never add conversational filler or markdown code blocks like ```json. Output raw JSON only.
-Return ONLY a valid JSON object. No preamble, no explanation, no markdown.
-Return a 0-100 market sentiment score where 0 is extremely bearish and 100 is extremely bullish.
-You must account for equities, VIX, crypto momentum and news pressure.
+
+Analyze the following market data and finance headlines to calculate a professional **Market Impact Score (0-100)**.
+(0 = Extreme Systemic Risk/Bearish | 100 = Parabolic Growth/Bullish)
+
+Your analysis MUST factor in:
+1) **Liquidity & Volatility:** Volume trends and VIX/Price relationship.
+2) **Regulatory Pressure:** SEC news or institutional regulatory shifts.
+3) **Asset Correlation:** Momentum alignment between Equities and Crypto.
+
+Respond in this exact JSON format:
+{ENRICHMENT_SCHEMA_HINT}
 
 Market Data:
 {market_summary}
 
 Finance Headlines:
-{news_summary}
-
-Respond in this exact JSON format:
-{ENRICHMENT_SCHEMA_HINT}"""
+{news_summary}"""
 
     try:
-        # Use LocalLLMBridge for execution
-        success, result = bridge.execute_custom_prompt(
-            prompt=prompt,
-            required_keys=ENRICHMENT_REQUIRED_KEYS,
-            schema_hint=ENRICHMENT_SCHEMA_HINT,
-            worker_name="market_sentiment_enrichment"
-        )
+        raw_output = bridge._request_model(prompt, worker_name="market_sentiment_enrichment")
 
-        if not success:
-            log("WARN", f"Bridge execution failed: {result}")
+        if not raw_output:
+            log("WARN", "Empty response from Ollama")
             return build_neutral_enrichment(
-                analysis=f"Bridge failed: {result}",
+                analysis="Empty response from Ollama",
                 fallback_news_bias=fallback_news_bias,
                 fallback_news_impact=fallback_news_impact,
-                key_theme="bridge_error",
-                confidence=0.3,
+                key_theme="empty_response",
+                confidence=0.0,
             )
 
-        # result is the parsed dict on success
-        sentiment_data = result
+        sentiment_data = _lenient_json_parse(raw_output, log_prefix="sentiment")
 
-        # Return with exact same 8 keys as before (Frontend Schema Stability)
+        if sentiment_data is None:
+            try:
+                sentiment_data = parse_strict_json_response(raw_output, required_keys=ENRICHMENT_REQUIRED_KEYS)
+            except ValueError:
+                sentiment_data = None
+
+        if sentiment_data is None:
+            repaired = repair_json_with_ollama(
+                raw_output=raw_output,
+                schema_hint=ENRICHMENT_SCHEMA_HINT,
+                model=bridge.config.model,
+                timeout=bridge.config.timeout_seconds,
+                host=bridge.config.host,
+                port=bridge.config.port,
+                temperature=0.4,
+            )
+            if repaired:
+                sentiment_data = repaired
+            else:
+                return build_neutral_enrichment(
+                    analysis="JSON parsing failed after all attempts",
+                    fallback_news_bias=fallback_news_bias,
+                    fallback_news_impact=fallback_news_impact,
+                    key_theme="parse_failed",
+                    confidence=0.0,
+                )
+
         return {
             "sentiment_score": max(0, min(100, int(sentiment_data.get("sentiment_score", 50)))),
             "confidence": max(0.0, min(1.0, float(sentiment_data.get("confidence", 0.5)))),
@@ -325,26 +340,49 @@ Respond in this exact JSON format:
         )
 
 
-# =============================================================================
-# OUTPUT & STORAGE
-# =============================================================================
+def _lenient_json_parse(raw_text: str, log_prefix: str = "lenient_parse") -> Optional[Dict[str, Any]]:
+    if not raw_text:
+        return None
+    candidates = []
+    candidates.append(raw_text.strip())
+    first_brace = raw_text.find("{")
+    last_brace = raw_text.rfind("}")
+    if first_brace != -1 and last_brace > first_brace:
+        extracted = raw_text[first_brace:last_brace + 1].strip()
+        if extracted:
+            candidates.append(extracted)
+    cleaned = re.sub(r'```json\s*\n?', '', raw_text, flags=re.IGNORECASE)
+    cleaned = re.sub(r'```\s*\n?', '', cleaned).strip()
+    if cleaned and cleaned not in candidates:
+        candidates.append(cleaned)
+    for candidate in list(candidates):
+        no_trailing = re.sub(r',\s*([}\]])', r'\1', candidate)
+        no_comments = re.sub(r'//.*?\n', '\n', no_trailing)
+        no_comments = re.sub(r'/\*.*?\*/', '', no_comments, flags=re.DOTALL)
+        if no_comments not in candidates:
+            candidates.append(no_comments)
+    for candidate in candidates:
+        try:
+            parsed = json.loads(candidate)
+            if isinstance(parsed, dict):
+                return parsed
+        except json.JSONDecodeError:
+            continue
+    return None
+
 
 def save_to_json(data: Dict[str, Any], output_dir: Optional[str | Path] = None) -> str:
-    """Save enriched data to a timestamped JSON artifact."""
     output_path = Path(output_dir) if output_dir else Path(PIPELINE_CONFIG["output"]["output_dir"])
     output_path.mkdir(parents=True, exist_ok=True)
-
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     filename = PIPELINE_CONFIG["output"]["filename_template"].format(timestamp=timestamp)
     filepath = output_path / filename
     save_json_atomic(filepath, data)
-
     print(f"[INFO] Data saved to: {filepath}")
     return str(filepath)
 
 
 def save_for_dashboard(data: Dict[str, Any]) -> str:
-    """Persist the dashboard-facing snapshot."""
     dashboard_path = Path(PIPELINE_CONFIG["output"]["dashboard_path"])
     dashboard_data = {
         "timestamp_utc": data["fetched_at"],
@@ -362,27 +400,20 @@ def save_for_dashboard(data: Dict[str, Any]) -> str:
         "news_feed": data.get("news_feed", []),
         "mbrn_enriched": data["enrichment"],
     }
-
     save_json_atomic(dashboard_path, dashboard_data)
     print(f"[INFO] Dashboard data saved to: {dashboard_path}")
     return str(dashboard_path)
 
 
 def get_sentiment_label(score: int) -> str:
-    """Convert numeric score to a market mood label."""
-    if score <= 20:
-        return "Extreme Fear"
-    if score <= 40:
-        return "Fear"
-    if score <= 60:
-        return "Neutral"
-    if score <= 80:
-        return "Greed"
+    if score <= 20: return "Extreme Fear"
+    if score <= 40: return "Fear"
+    if score <= 60: return "Neutral"
+    if score <= 80: return "Greed"
     return "Extreme Greed"
 
 
 def prepare_for_supabase(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Prepare data for Supabase ingestion."""
     market_data = data.get("market_data", [])
     return {
         "id": f"mkt_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
@@ -409,28 +440,12 @@ def prepare_for_supabase(data: Dict[str, Any]) -> Dict[str, Any]:
 
 @with_retry(max_retries=3, base_delay=5.0, operation_name="push_to_supabase")
 def push_to_supabase(payload: Dict[str, Any]) -> bool:
-    """Push data to Supabase Edge Function via centralized SupabaseUplink."""
     uplink = SupabaseUplink()
     return uplink.dispatch(payload)
 
 
-# =============================================================================
-# MAIN EXECUTION
-# =============================================================================
-
 def main():
-    """
-    Main execution: Full Pillar 3 Data Arbitrage Pipeline.
-
-    Flow:
-    1. Fetch market + crypto data
-    2. Fetch finance RSS headlines
-    3. Enrich with Ollama LLM
-    4. Save to JSON
-    5. Output Supabase-ready format
-    """
     load_pipeline_env()
-
     print("=" * 60)
     print("MBRN PILLAR 3: Data Arbitrage Pipeline")
     print("Market Sentiment Fetcher v1.1")
@@ -449,7 +464,7 @@ def main():
     print(f"[OK] Fetched {len(news_items)} RSS headlines")
 
     print("\n[3/5] Enriching with Ollama LLM...")
-    print(f"       Model: {PIPELINE_CONFIG['ollama']['model']}")
+    print(f"        Model: {PIPELINE_CONFIG['ollama']['model']}")
     enrichment = enrich_with_ollama(market_data, news_items=news_items)
     print(f"[OK] Sentiment Score: {enrichment['sentiment_score']}/100")
     print(f"     Confidence: {enrichment['confidence']:.1%}")
@@ -462,36 +477,23 @@ def main():
         "market_data": market_data,
         "news_feed": news_items,
         "enrichment": enrichment,
-        "derived_metrics": {
-            "news_bias_seed": classify_news_bias(news_items),
-            "news_impact_seed": get_news_impact_seed(news_items),
-        },
     }
 
     print("\n[4/5] Saving to local storage...")
-    saved_path = save_to_json(full_record)
+    save_to_json(full_record)
 
     print("\n[4b/5] Saving dashboard data...")
-    dashboard_path = save_for_dashboard(full_record)
+    save_for_dashboard(full_record)
 
     print("\n[5/5] Preparing Supabase payload...")
     supabase_data = prepare_for_supabase(full_record)
-    print("\n--- SUPABASE PAYLOAD ---")
     print(json.dumps(supabase_data, indent=2))
 
     print("\n[5b/5] Pushing to Supabase Edge Function...")
     push_to_supabase(supabase_data)
-
-    print("\n" + "=" * 60)
-    print("Pipeline Complete. Next steps:")
-    print(f"  1. Data saved: {saved_path}")
-    print(f"  2. Dashboard data: {dashboard_path}")
-    print("  3. Verify dashboard sentiment + oracle widgets")
-    print("=" * 60)
-
+    print("\n" + "=" * 60 + "\nPipeline Complete.\n" + "=" * 60)
     return supabase_data
 
 
 if __name__ == "__main__":
-    result = main()
-    sys.exit(0 if result else 1)
+    main()

@@ -53,10 +53,18 @@ START_HEARTBEAT.bat
 # Archive Clutter
 docs/ARCHIVE_ENTERPRISE/
 docs/S1_S2_Logic/
-docs/S3_Data/
 docs/S4_Ecosystem/
 docs/_ARCHIVE_VAULTS/
 docs/OPTION_A_QUICKSTART.md
+
+# S3_Data Strategy: Track schemas/docs, ignore outputs
+# Allow: .md, .sql, .yaml, .yml, .txt (documentation & schemas)
+# Ignore: JSON outputs, error logs, factory data
+docs/S3_Data/**/*.json
+docs/S3_Data/**/outputs/**
+docs/S3_Data/**/errors/**
+docs/S3_Data/**/*.db
+docs/S3_Data/**/*.log
 
 # Python Cache
 __pycache__/
@@ -101,3 +109,9 @@ _backup/
 *.db
 *.sqlite
 shared/data/mbrn_state.db
+
+# Auto-Generated Agent Outputs (Factory Deployments)
+dimensions/**/deployed/
+
+# Temporary Test Scripts
+trigger.py

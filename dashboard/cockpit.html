@@ -3,60 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MBRN Cockpit - System Command Center</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;">
-
-  <!-- MBRN Theme -->
-  <link rel="stylesheet" href="../shared/ui/theme.css">
+  <title>MBRN COCKPIT 🧬 v2.1</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:;">
   <link rel="stylesheet" href="./cockpit_styles.css">
 </head>
-<body class="void-bg bg-grid">
+<body class="bg-grid">
 
-  <!-- Audio Toggle (Top Right) -->
-  <div class="audio-toggle">
-    <label>
-      <input type="checkbox" id="audio-toggle">
-      <span>🔊 Audio Alerts</span>
-    </label>
-  </div>
+  <!-- 🧠 TOP SIGNAL (Hero) -->
+  <section class="hero-signal" id="hero-signal">
+    <div class="system-status-pill">🟢 SYSTEM: ONLINE</div>
+    <div class="top-diamond-banner" id="top-diamond-banner">
+      <h2>💎 TOP DIAMOND CANDIDATE</h2>
+      <h1 id="top-diamond-name">Scanning...</h1>
+      <div class="action-badge">⚡ ACTION: READY FOR DEPLOY / MONETIZE</div>
+    </div>
+  </section>
 
-  <!-- Main Cockpit Container -->
-  <div class="cockpit-container">
+  <!-- 📡 SYSTEM MONITORING GRID (Restored & Enhanced) -->
+  <section class="system-grid" id="system-grid">
+    <!-- Populated by JS: 8 Core Processes -->
+  </section>
+
+  <!-- 🧬 OPERATIONAL LAYER -->
+  <main class="cockpit-main">
     
-    <!-- Header -->
-    <header class="cockpit-header">
-      <h1>🎯 MBRN Command Center</h1>
-      <p class="subtitle">Real-time System Orchestration Dashboard</p>
-      <p class="update-info">Updates every 2 seconds • PM2 Process Monitor</p>
-    </header>
-
-    <!-- 8-Module Grid -->
-    <section class="cockpit-grid" id="cockpit-grid">
-      <!-- Grid populated by JavaScript -->
+    <!-- LEFT: DIAMOND FEED (The Goldstream) -->
+    <section class="feed-section">
+      <h2 class="section-title">✨ DIAMOND FEED <span id="feed-count" style="color: var(--neon-blue); font-size: 0.9rem;">(0)</span></h2>
+      <div class="diamond-feed" id="diamond-feed">
+        <!-- Populated by JS -->
+      </div>
     </section>
 
-  </div>
+    <!-- RIGHT: ACTION CENTER -->
+    <aside class="sidebar">
+      <div class="sidebar-panel">
+        <h3 class="section-title" style="font-size: 1rem; margin-bottom: 15px;">⚡ ACTION CENTER</h3>
+        <div class="action-stack">
+          <button class="btn-action" onclick="window.openTopModule()">📂 Top Module öffnen</button>
+          <button class="btn-action gold" onclick="window.convertToTool()">🛠 In Tool umwandeln</button>
+          <button class="btn-action" onclick="alert('Integrating into Finance layer...')">💹 In Finanz-Rechner einspeisen</button>
+          <button class="btn-action" onclick="alert('Flagging as core feature...')">🎯 Als Feature markieren</button>
+        </div>
+      </div>
 
-  <!-- System Status Bar (Bottom) -->
-  <footer class="system-status-bar" id="system-status-bar">
-    <div class="status-indicator">
-      <span>●</span>
-      <span class="status-text">System Initializing...</span>
-    </div>
-    <div class="status-details">
-      Waiting for Hub Observer...
-    </div>
-  </footer>
+      <div style="font-size: 0.7rem; color: var(--text-secondary); text-align: center; margin-top: 20px;">
+        MBRN SYSTEM v2.1 | Hybrid Master Layer
+      </div>
+    </aside>
 
-  <!-- Forensic Drawer (Hidden by default) -->
-  <aside class="forensic-drawer forensic-drawer--hidden" id="forensic-drawer">
-    <div class="forensic-drawer__content" id="forensic-content">
-      <!-- Populated by JavaScript when CRITICAL clicked -->
-    </div>
-  </aside>
+  </main>
 
-  <!-- Cockpit Renderer -->
   <script src="./cockpit_renderer.js"></script>
-
 </body>
 </html>

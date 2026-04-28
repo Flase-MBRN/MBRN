@@ -3,5 +3,6 @@
     "nexus_status":  "running",
     "ouroboros_target_file":  null,
     "nexus_roi_threshold":  80,
+    "mutation_enabled": false,
     "prime_directive":  "Maintain stable throughput with Prime Director in canonical dry-run mode."
 }

@@ -351,4 +351,11 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # P1 SECURITY GUARDRAIL: Service-Role Warning
+    print("\n" + "=" * 60)
+    print("⚠️  WARNING: SERVICE ROLE ACTIVE - GOD MODE")
+    print("    This tool uses Supabase service-role privileges.")
+    print("    DO NOT SHARE LOGS OR SCREENSHOTS!")
+    print("    Operator-only tool on trusted machine.")
+    print("=" * 60 + "\n")
     raise SystemExit(main())

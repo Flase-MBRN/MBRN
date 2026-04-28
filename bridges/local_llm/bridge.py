@@ -39,8 +39,8 @@ ANALYSIS_SCHEMA_HINT = (
 class LocalLLMBridgeConfig:
     host: str = "localhost"
     port: int = 11434
-    model: str = "llama3.2:latest"
-    timeout_seconds: int = 120
+    model: str = "qwen2.5-coder:14b"
+    timeout_seconds: int = 300
     temperature: float = 0.2
     analysis_version: str = DEFAULT_ANALYSIS_VERSION
 
@@ -49,8 +49,8 @@ class LocalLLMBridgeConfig:
         return cls(
             host=os.getenv("OLLAMA_HOST", "localhost"),
             port=int(os.getenv("OLLAMA_PORT", "11434")),
-            model=os.getenv("OLLAMA_MODEL", "deepseek-coder-v2"),
-            timeout_seconds=int(os.getenv("OLLAMA_TIMEOUT_SECONDS", "120")),
+            model=os.getenv("OLLAMA_MODEL", "qwen2.5-coder:14b"),
+            timeout_seconds=int(os.getenv("OLLAMA_TIMEOUT_SECONDS", "300")),
             temperature=float(os.getenv("OLLAMA_TEMPERATURE", "0.2")),
             analysis_version=os.getenv("LOCAL_LLM_ANALYSIS_VERSION", DEFAULT_ANALYSIS_VERSION),
         )
@@ -90,6 +90,7 @@ class LocalLLMBridge:
         compact_payload = json.dumps(payload, ensure_ascii=False, sort_keys=True)
         return (
             "You are the MBRN local enrichment bridge.\n"
+            "Return ONLY valid JSON. No markdown, no explanations.\n"
             "You are a professional JSON-only output engine. Never add conversational filler or markdown code blocks like ```json. Output raw JSON only.\n"
             "Analyze the provided raw item and return ONLY one valid JSON object.\n"
             "Do not output markdown, prose, or any text outside the JSON object.\n"
@@ -113,6 +114,7 @@ class LocalLLMBridge:
             "keep_alive": 0,  # CRITICAL: Force VRAM release immediately after request
             "options": {
                 "temperature": self.config.temperature,
+                "num_ctx": int(os.environ.get("OLLAMA_NUM_CTX", "4096")),
             },
         }
         req = urllib.request.Request(

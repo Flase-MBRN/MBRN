@@ -3,7 +3,7 @@
 MBRN Nexus Bridge — Scout-to-Factory Autonomous Closure Loop
 ================================================================================
 System:       mbrn_nexus_bridge
-Version:      1.0.0
+Version:      1.11.0
 Owner Domain: meta_generator
 State:        experimental
 Depends On:   mbrn_horizon_scout, autonomous_dev_agent, split_brain_sandbox
@@ -58,14 +58,53 @@ from typing import Any, Dict, List, Optional
 # Path bootstrap — ensure project root and pipelines dir on sys.path
 # ---------------------------------------------------------------------------
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_PIPELINES_DIR = Path(__file__).resolve().parent
+_PIPELINE_DIR = Path(__file__).resolve().parent
 
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
-if str(_PIPELINES_DIR) not in sys.path:
-    sys.path.insert(0, str(_PIPELINES_DIR))
+if str(_PIPELINE_DIR) not in sys.path:
+    sys.path.insert(0, str(_PIPELINE_DIR))
 
-from autonomous_dev_agent import AutoDevAgent, AgentResult
+# Pfad zum Toolkit-Modul hinzufügen
+toolkit_path = os.path.join(os.path.dirname(__file__), 'mbrn_toolkit', 'modules')
+if toolkit_path not in sys.path:
+    sys.path.append(toolkit_path)
+
+# Toolkit-Imports
+try:
+    from nabilnet_org_claude_memory import chunk_text, read_file_content
+except ImportError:
+    # Fallback wenn Toolkit nicht verfügbar
+    def chunk_text(text, max_tokens):
+        chunks = []
+        current_chunk = []
+        current_tokens = 0
+        words = text.split()
+        for word in words:
+            if current_tokens + len(word) <= max_tokens:
+                current_chunk.append(word)
+                current_tokens += len(word)
+            else:
+                chunks.append(' '.join(current_chunk))
+                current_chunk = [word]
+                current_tokens = len(word)
+        if current_chunk:
+            chunks.append(' '.join(current_chunk))
+        return chunks
+    def read_file_content(file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except UnicodeDecodeError:
+            try:
+                with open(file_path, 'r', encoding='latin1') as f:
+                    return f.read()
+            except Exception:
+                return ''
+        except Exception:
+            return ''
+
+from autonomous_dev_agent import AutoDevAgent, AgentResult, validate_high_utility_code
 from shared.core.db import (
     CANONICAL_DIMENSIONS,
     export_factory_feed_snapshot,
@@ -107,23 +146,29 @@ FACTORY_CONTROL_PATH = _PROJECT_ROOT / "shared" / "data" / "mbrn_factory_control
 TOOL_REQUESTS_PATH = _PROJECT_ROOT / "shared" / "data" / "tool_requests.json"
 
 # Kill-switch file — create STOP_NEXUS in pipelines/ to halt the bridge loop
-KILL_SWITCH = _PIPELINES_DIR / "STOP_NEXUS"
+KILL_SWITCH = _PIPELINE_DIR / "STOP_NEXUS"
+
+# Datetime format constant
+DATETIME_FMT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
-def _utc_now() -> datetime:
+def _utc_now():
+    # Gibt ein echtes, zeitzonenbewusstes Objekt zurück statt eines Strings
     return datetime.now(timezone.utc)
 
 
-def _parse_utc_datetime(value: Any) -> Optional[datetime]:
-    if not value:
-        return None
-    try:
-        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
-    except ValueError:
-        return None
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
-    return parsed.astimezone(timezone.utc)
+def _parse_utc_datetime(text, max_tokens=500):
+    chunks = chunk_text(text, max_tokens)
+    for chunk in chunks:
+        try:
+            parsed = datetime.strptime(chunk.strip(), DATETIME_FMT)
+            # Ensure timezone-aware with UTC
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            return parsed
+        except ValueError:
+            pass
+    raise ValueError(f'Could not parse UTC datetime from text: {text}')
 
 
 def _clear_nexus_failure_fields(target: Dict[str, Any]) -> None:
@@ -137,13 +182,27 @@ def _clear_nexus_failure_fields(target: Dict[str, Any]) -> None:
         target.pop(key, None)
 
 
+def verify_skills(repo_url, layers):
+    return huxiaoman7_skills_eval.verify_skills(repo_url, layers)
+
+
+def process_content(content):
+    """Process content and return metadata."""
+    if not content:
+        return {"content": "", "length": 0}
+    return {"content": content[:5000], "length": len(content)}
+
+
+def process_chunk(chunk):
+    """Process a single chunk of content."""
+    return {"chunk": chunk[:1000], "processed": True}
+
+
 def _normalize_repo_name(repo_url):
-    # Verify the repo URL using verify_skills
-    verification = verify_skills(repo_url, layers=[1])
-    if not verification.get('success', False):
-        raise ValueError(f'Invalid repository URL: {repo_url}')
     # Extract and normalize the repo name
     parts = repo_url.split('/')[-2:]
+    if len(parts) < 2:
+        return 'default_repo'
     owner, repo = parts[0], parts[1].replace('.git', '')
     return f'{owner}/{repo}'
 
@@ -258,6 +317,8 @@ class AlphaCandidate:
     processed: bool = False
     dimension: str = "systeme"
     source_url: str = ""
+    source_type: str = "github"  # github | hackernews | other
+    quality_score: float = 0.0    # Scout-delivered score (0-100)
 
 
 @dataclass
@@ -292,15 +353,14 @@ def _load_alphas_json() -> Dict[str, Any]:
         return {}
 
 
-def _save_alphas_json(data: Dict[str, Any]) -> None:
-    """Atomic-safe write — write to .tmp then rename."""
-    tmp = ALPHAS_PATH.with_suffix(".tmp")
+def _save_alphas_json(alphas, file_path):
+    import json
     try:
-        with open(tmp, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-        tmp.replace(ALPHAS_PATH)
+        content = read_file_content(file_path)
+        with open(file_path, 'w') as f:
+            json.dump(alphas, f)
     except Exception as e:
-        log.error(f"Failed to save scout_alphas.json: {e}")
+        print(f'Error saving alphas: {e}')
 
 
 def scan_pending_alphas() -> List[AlphaCandidate]:
@@ -318,35 +378,55 @@ def scan_pending_alphas() -> List[AlphaCandidate]:
         rows = list_scout_alphas(statuses=("pending", "approved"), min_score=ROI_THRESHOLD)
         db_candidates: List[AlphaCandidate] = []
         for row in rows:
+            if not row:
+                continue
             # CRITICAL FIX: Handle None raw_data safely
-            raw_data = row.get("raw_data") if row else None
+            raw_data = row["raw_data"] if "raw_data" in row.keys() else None
             if not raw_data or not isinstance(raw_data, str):
                 raw_data = "{}"
             try:
                 raw = json.loads(raw_data)
             except json.JSONDecodeError:
                 raw = {}
-            repo = raw.get("repo") if isinstance(raw, dict) else {}
-            analysis = raw.get("analysis") if isinstance(raw, dict) else {}
+            
+            if raw is None:
+                raw = {}
+
+            repo = raw.get("repo") if isinstance(raw, dict) and raw.get("repo") is not None else {}
+            analysis = raw.get("analysis") if isinstance(raw, dict) and raw.get("analysis") is not None else {}
+            
+            # Helper to get value from row safely
+            def get_row_val(r, key, default=None):
+                try:
+                    return r[key]
+                except (KeyError, IndexError):
+                    return default
+
             repo_name = (
                 repo.get("full_name")
                 or repo.get("name")
                 or raw.get("repo_name")
-                or row["title"]
+                or get_row_val(row, "title")
             )
             if not repo_name:
                 continue
-            dimension = row["dimension"] if row["dimension"] in CANONICAL_DIMENSIONS else "systeme"
+
+            _row_dim = get_row_val(row, "dimension")
+            dimension = _row_dim if _row_dim in CANONICAL_DIMENSIONS else "systeme"
+            
+            source_url = get_row_val(row, "source_url") or repo.get("html_url") or f"https://github.com/{repo_name}"
+            score = get_row_val(row, "score") or 0.0
+
             db_candidates.append(AlphaCandidate(
                 alpha_id=f"sqlite_{row['id']}",
                 repo_name=str(repo_name),
-                repo_url=str(row["source_url"] or repo.get("html_url") or f"https://github.com/{repo_name}"),
-                roi_score=float(row["score"] or 0.0),
+                repo_url=str(source_url),
+                roi_score=float(score),
                 description=str(repo.get("description") or raw.get("description") or ""),
                 category=str(analysis.get("category") or "automation") if isinstance(analysis, dict) else "automation",
                 rationale=str(analysis.get("synergy_summary") or analysis.get("roi_rationale") or "") if isinstance(analysis, dict) else "",
                 dimension=dimension,
-                source_url=str(row["source_url"]),
+                source_url=str(get_row_val(row, "source_url") or ""),
             ))
         if db_candidates:
             log.info(f"Found {len(db_candidates)} SQLite alpha(s) with ROI > {ROI_THRESHOLD}")
@@ -511,7 +591,7 @@ def mark_alpha_processed(alpha_id: str) -> None:
             _clear_nexus_failure_fields(enriched)
             break
 
-    _save_alphas_json(data)
+    _save_alphas_json(data, ALPHAS_PATH)
     log.info(f"Alpha '{alpha_id}' marked as processed.")
 
 
@@ -546,16 +626,21 @@ def mark_alpha_failed(alpha_id: str, failure_reason: str) -> None:
         target["nexus_failed_at"] = now.isoformat()
         target["nexus_failure_reason"] = reason
         target["nexus_failure_count"] = failure_count
-        if failure_count >= MAX_NEXUS_FAILURES:
+        
+        # Immediate quarantine if generation is blocked by Value Gate (v1.10.1)
+        is_blocked = "ValueGateError" in reason or "Forbidden" in reason or "ExecutionRealityError" in reason
+        
+        if is_blocked or failure_count >= MAX_NEXUS_FAILURES:
             target["nexus_quarantined"] = True
             target["nexus_retry_after"] = None
+            target["nexus_status"] = "blocked_generation" if is_blocked else "failed"
             # Operation MacGyver triage
             _request_tool_if_needed(alpha_id, reason)
         else:
             target["nexus_retry_after"] = retry_after.isoformat()
         break
 
-    _save_alphas_json(data)
+    _save_alphas_json(data, ALPHAS_PATH)
     log.info(f"Alpha '{alpha_id}' marked as failed for retry/quarantine handling.")
 
 
@@ -563,18 +648,78 @@ def mark_alpha_failed(alpha_id: str, failure_reason: str) -> None:
 # README Fetcher — GitHub API with Jina fallback
 # ---------------------------------------------------------------------------
 
-def fetch_readme(repo_path):
-    md_files = extract_md_files(repo_path)
-    readme_content = read_file_content('README.md')
-    if readme_content:
-        chunks = chunk_text(readme_content, max_tokens=1000)
-        return '\n'.join(chunks)
-    return ''
+def fetch_content(alpha_item):
+    """Extract content from alpha item (URL or raw content)."""
+    # Handle AlphaCandidate objects
+    if hasattr(alpha_item, 'repo_url'):
+        readme = fetch_readme(alpha_item.repo_url)
+        return readme if readme else alpha_item.description
+    if isinstance(alpha_item, dict):
+        # Try to get content from various sources
+        content = alpha_item.get("content", "")
+        if not content and "repo_url" in alpha_item:
+            readme = fetch_readme(alpha_item["repo_url"])
+            return readme if readme else alpha_item.get("description", "")
+        return content
+    return str(alpha_item)
+
+
+def fetch_readme(repo_url):
+    """Fetch README from GitHub repo URL via HTTP API."""
+    try:
+        # Convert GitHub repo URL to raw README URL
+        if "github.com" in repo_url:
+            # Extract owner/repo from URL
+            parts = repo_url.rstrip('/').split('/')
+            if len(parts) >= 2:
+                owner, repo = parts[-2], parts[-1].replace('.git', '')
+                # Try raw GitHub content URL
+                raw_url = f"https://raw.githubusercontent.com/{owner}/{repo}/main/README.md"
+                try:
+                    with urllib.request.urlopen(raw_url, timeout=10) as response:
+                        return response.read().decode('utf-8')
+                except Exception:
+                    # Try master branch
+                    raw_url = f"https://raw.githubusercontent.com/{owner}/{repo}/master/README.md"
+                    with urllib.request.urlopen(raw_url, timeout=10) as response:
+                        return response.read().decode('utf-8')
+        # Fallback: treat as local file
+        return read_file_content(repo_url)
+    except Exception as e:
+        log.warning(f"Could not fetch README from {repo_url}: {e}")
+        return ""
 
 
 # ---------------------------------------------------------------------------
 # Goal Builder — translate alpha metadata into a concrete agent goal
 # ---------------------------------------------------------------------------
+
+def sanitize_text_for_prompt(text: str) -> str:
+    """
+    Remove or replace forbidden vocabulary that might cause the LLM 
+    to hallucinate low-utility patterns.
+    """
+    if not text:
+        return ""
+    
+    replacements = {
+        "sample": "canonical",
+        "demo": "operational",
+        "mock": "synthetic",
+        "dummy": "literal",
+        "placeholder": "variable",
+        "example": "instance",
+        "simulate": "execute",
+        "toy": "minimal"
+    }
+    
+    sanitized = text
+    import re
+    for word, replacement in replacements.items():
+        pattern = re.compile(re.escape(word), re.IGNORECASE)
+        sanitized = pattern.sub(replacement, sanitized)
+        
+    return sanitized
 
 def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
     """
@@ -582,7 +727,8 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
     """
     readme_excerpt = ""
     if readme:
-        readme_excerpt = f"\n\nREADME EXCERPT (first 1500 chars):\n{readme[:1500]}"
+        clean_readme = sanitize_text_for_prompt(readme[:2000])
+        readme_excerpt = f"\n\nREADME EXCERPT (first 1500 chars):\n{clean_readme[:1500]}"
 
     memory_context = ""
     try:
@@ -592,25 +738,168 @@ def build_factory_goal(alpha: AlphaCandidate, readme: Optional[str]) -> str:
         if elite_modules:
             memory_context = "\n\nMBRN FACTORY MEMORY (Diamond-tier elite modules only):\n"
             for mod in elite_modules:
-                memory_context += f"--- {mod['name']} (Score: {mod.get('quality_score', 'N/A')}) ---\n{mod['code'][:800]}...\n\n"
+                clean_mod = sanitize_text_for_prompt(mod['code'][:1000])
+                memory_context += f"--- {mod['name']} (Score: {mod.get('quality_score', 'N/A')}) ---\n{clean_mod[:800]}...\n\n"
     except Exception:
         pass
 
     goal = f"""Goal: Reimplement the core logic of the GitHub repository '{alpha.repo_name}' into a SINGLE standalone Python file.
 
-ARCHITECTURAL MANDATE (v1.2):
-- DO NOT copy the README content or metadata as a placeholder.
-- DO NOT attempt to import external libraries like 'crewai', 'langchain', 'pandas' etc.
-- USE ONLY the Python standard library (json, urllib, re, math, etc.).
-- REIMPLEMENT the logic (e.g. specialized scrapers, calculators, or agents) from scratch in pure Python.
-- Output MUST be a valid, executable Python script with a main() entry point.
+🧠 MBRN MASTER PROMPT v1.11.0
+(Synthetic Reality + Semantic Gate kompatibel)
+
+You are an Autonomous Software Reimplementation Agent operating inside the MBRN Factory.
+
+Your mission:
+Reimplement the CORE LOGIC of the given repository into a SINGLE, standalone, deterministic Python module using ONLY the Python standard library.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧬 CORE PRINCIPLES (NON-NEGOTIABLE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. NO PLACEHOLDER LOGIC
+- Do NOT use fake, empty, or illustrative logic.
+- Do NOT write shallow wrappers or stubs.
+- Every function must perform REAL computation, parsing, scoring, or transformation.
+
+2. NO FORBIDDEN PATTERNS
+- Certain low-utility vocabulary is globally banned by the validator.
+- Do not use synthetic labels, low-effort labels, filler labels, or canned greetings in code, comments, strings, names, or output.
+- Do NOT describe the code as temporary, illustrative, or incomplete.
+- ANTI-BAIT RULE: Do NOT include code snippets containing banned trivial patterns. All internal code snippets must be production-like and must not contain canned greetings, trivial functions, generic class names, or unused low-utility logic.
+
+3. PURE OFFLINE EXECUTION
+- Use ONLY Python standard library (json, re, math, datetime, collections, etc.)
+- DO NOT import: requests, subprocess, os.system, socket, urllib, http.client, etc.
+- DO NOT access network, filesystem, or external tools.
+
+4. DETERMINISTIC OUTPUT
+- No randomness
+- No time delays
+- Same input → same output
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧠 SYNTHETIC REALITY LAYER (CRITICAL)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You MUST construct realistic, domain-specific input data INSIDE the script.
+
+Rules:
+- Data must look like real-world structured data (configs, logs, rules, transactions, etc.)
+- Data must be specific and meaningful (NOT generic filler)
+- Data must be used by the logic (not just declared)
+
+Suitable domains:
+- Code analysis → code snippets, dependency patterns, import structures
+- Finance → transactions, categories, balances
+- Automation → task definitions, rules, triggers
+- Agent systems → roles, routing logic, constraints
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏗️ REQUIRED ENGINE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You MUST implement either:
+- At least 1 reusable class with multiple methods
+OR
+- At least 5 meaningful standalone functions
+
+Required functional components:
+
+1. extract_*      → parse structured information
+2. detect_*       → identify patterns/issues
+3. score_*        → compute a numeric evaluation
+4. build_*        → generate structured outputs
+5. analyze_*      → orchestrate full pipeline
+
+Each function must:
+- Take input
+- Transform it meaningfully
+- Return structured data
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 OUTPUT CONTRACT (MANDATORY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The main analysis function MUST return:
+
+{{
+  "score": number,
+  "severity": "low" | "medium" | "high" | "critical",
+  "findings": [ {{ ... detailed items ... }} ],
+  "recommendations": [ ... actionable steps ... ]
+}}
+
+- Score must be computed, not hardcoded. Do NOT use variants like severity_score, health_score, etc.
+- Severity must depend on score or findings.
+- Findings must contain meaningful structured insights.
+- Recommendations must be actionable and derived from findings.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚫 SANDBOX SAFETY RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ABSOLUTELY FORBIDDEN:
+- subprocess, eval, exec
+- network calls of any kind
+- file deletion or system modification
+- interactive input()
+
+ALLOWED:
+- string parsing
+- pattern detection (regex)
+- rule-based logic
+- scoring systems
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧪 MAIN FUNCTION (REQUIRED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You MUST include:
+
+def main():
+    # Construct realistic domain-specific input
+    # Run analysis
+    # Print JSON result
+
+if __name__ == "__main__":
+    main()
+
+Rules:
+- Input must look real (not generic filler)
+- Input must trigger meaningful logic paths
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧠 QUALITY STANDARD (VALUE GATE TARGET)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Your code will be rejected if:
+- Logic is shallow or repetitive
+- Data is generic or unused
+- Findings are obvious or trivial
+- Recommendations are generic advice
+
+Your code will pass if:
+- Logic shows clear reasoning layers
+- Data is structured and domain-relevant
+- Output is insightful and non-trivial
+- Functions are reusable and modular
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 FINAL OBJECTIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Transform the repository idea into a REAL, standalone utility engine.
 
 ALPHA CONTEXT:
+- Repository: {alpha.repo_name}
 - Category: {alpha.category}
 - Description: {alpha.description}
 - Rationale: {alpha.rationale}{readme_excerpt}{memory_context}
 
-The final module should be efficient, autonomous, and fit for production use in the MBRN Hub."""
+If the generated logic could be replaced by a simple template or static output, it is invalid. Increase complexity and reasoning depth.
+Build a REAL, standalone utility engine (v1.11.0). Not a shallow wrapper. Not a sketch.
+"""
     return goal
 
 
@@ -618,7 +907,7 @@ The final module should be efficient, autonomous, and fit for production use in 
 # Dashboard Notification Writer
 # ---------------------------------------------------------------------------
 
-def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result: AgentResult) -> None:
+def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result: AgentResult, value_card: Optional[Dict[str, Any]] = None) -> None:
     """
     Append a notification to SQLite and refresh the local read-only dashboard snapshot.
     """
@@ -644,6 +933,15 @@ def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result
             f"AutoDevAgent in {result.total_attempts} Versuch(en) in ein MBRN-Modul "
             f"transformiert und sandbox-validiert."
         ),
+    }
+
+    if value_card:
+        score = value_card["scoring"]["overall_value"]
+        target = value_card["target_app"]
+        notification["title"] = f"Diamond-Tier Modul: {module_name} ({score}%)"
+        notification["message"] += f" Spezialisierung: {target}. Klassifiziert als Integrations-Kandidat."
+
+    notification.update({
         "alpha_id": alpha.alpha_id,
         "repo_name": alpha.repo_name,
         "roi_score": alpha.roi_score,
@@ -652,8 +950,10 @@ def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result
         "agent_attempts": result.total_attempts,
         "self_heals": max(0, result.total_attempts - 1),
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "read": False
-    }
+        "read": False,
+        "value_score": value_card["scoring"]["overall_value"] if value_card else None,
+        "target_app": value_card["target_app"] if value_card else None
+    })
 
     insert_notification(
         notification_type="factory_module_ready",
@@ -677,88 +977,175 @@ def push_dashboard_notification(alpha: AlphaCandidate, output_path: Path, result
 
 # ---------------------------------------------------------------------------
 # Core Factory Run — process ONE alpha through the full pipeline
+def validate_execution_reality(stdout: str) -> tuple[bool, str]:
+    """
+    MBRN Execution Reality Gate v1.10.8: Deep validation of sandbox output.
+    """
+    try:
+        data = json.loads(stdout)
+    except Exception as exc:
+        return False, f"invalid JSON stdout: {exc}"
+
+    required = {"score", "severity", "findings", "recommendations"}
+    missing = required - set(data.keys())
+    if missing:
+        return False, f"missing output contract key(s): {sorted(missing)}"
+
+    if not isinstance(data["score"], (int, float)) or data["score"] <= 0:
+        return False, "score must be a positive number (greater than zero)"
+
+    if data["severity"] not in {"low", "medium", "high", "critical"}:
+        return False, "severity must be low, medium, high, or critical"
+
+    if not isinstance(data["findings"], list) or len(data["findings"]) < 2:
+        return False, "findings must contain at least 2 meaningful items"
+
+    if not isinstance(data["recommendations"], list) or len(data["recommendations"]) < 2:
+        return False, "recommendations must contain at least 2 actionable items"
+
+    weak_terms = {
+        "consider", "improve", "optimize", "review", "refactor",
+        "enhance", "ensure", "check", "update", "fix"
+    }
+
+    def flatten(item):
+        if isinstance(item, dict):
+            return " ".join(str(v) for v in item.values()).lower()
+        return str(item).lower()
+
+    finding_text = " ".join(flatten(x) for x in data["findings"])
+    recommendation_text = " ".join(flatten(x) for x in data["recommendations"])
+
+    if len(finding_text) < 80:
+        return False, "findings are too thin"
+
+    if len(recommendation_text) < 100:
+        return False, "recommendations are too thin"
+
+    weak_hits = sum(1 for term in weak_terms if term in recommendation_text)
+    if weak_hits >= 5:
+        return False, "recommendations are too generic"
+
+    if data["score"] in {0, 1, 50, 80, 100} and len(data["findings"]) < 3:
+        return False, "score looks canned or weakly justified"
+
+    # Banned pattern check in output (v1.10.8)
+    banned_json_patterns = ["sample", "demo", "mock", "dummy", "placeholder", "example", "simulate", "toy"]
+    full_output_text = (finding_text + " " + recommendation_text).lower()
+    found_banned = [p for p in banned_json_patterns if p in full_output_text]
+    if found_banned:
+        return False, f"forbidden pattern(s) detected in output JSON: {', '.join(found_banned)}"
+
+    return True, "execution reality accepted"
+
+
 # ---------------------------------------------------------------------------
 
 def process_alpha(alpha: AlphaCandidate) -> Optional[FactoryResult]:
     """
-    The main execution flow: README -> Goal -> Agent -> Code Save -> DB Upsert.
+    Process ONE alpha through the AutoDevAgent and write factory-ready module.
+    Returns FactoryResult on success, None on failure.
     """
-    log.info(f"--- STARTING FACTORY RUN: {alpha.repo_name} (ROI: {alpha.roi_score}) ---")
-
-    # 1. Fetch README
-    readme = fetch_readme(alpha.repo_name)
-    
-    # 2. Build Goal
-    goal = build_factory_goal(alpha, readme)
-    
-    # 3. Initialize Agent
-    agent = AutoDevAgent(max_retries=MAX_AGENT_RETRIES)
-    
-    # 4. Run Agent
-    result = agent.run(goal)
-    
-    if not result.success:
-        log.error(f"AutoDevAgent failed for {alpha.repo_name}: {result.failure_reason}")
-        mark_alpha_failed(alpha.alpha_id, result.failure_reason or "agent_failed")
-        return None
-
-    # 5. Success! Save and process
-    FACTORY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    slug = _make_slug(alpha.repo_name)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    filename = f"{ts}_{slug}_module.py"
-    output_path = FACTORY_OUTPUT_DIR / filename
-
-    header = f'''"""
-================================================================================
-MBRN Factory-Ready Module
-================================================================================
-Source Alpha    : {alpha.repo_name}
-Alpha ID        : {alpha.alpha_id}
-ROI Score       : {alpha.roi_score}
-Manufactured At : {datetime.now(timezone.utc).isoformat()}
-Agent Attempts  : {result.total_attempts}
-================================================================================
+    try:
+        log.info(f"Processing alpha: {alpha.repo_name} (ROI: {alpha.roi_score})")
+        
+        # Fetch README for context
+        readme = fetch_readme(alpha.repo_url)
+        
+        # Build goal for AutoDevAgent
+        goal = build_factory_goal(alpha, readme)
+        
+        # Run AutoDevAgent
+        agent = AutoDevAgent(max_retries=MAX_AGENT_RETRIES)
+        result = agent.run(goal)
+        
+        if not result.success:
+            log.error(f"AutoDevAgent failed for {alpha.repo_name}: {result.failure_reason}")
+            mark_alpha_failed(alpha.alpha_id, str(result.failure_reason))
+            return None
+        
+        # ── Post-Generation Value Gate v2 (v1.10.1) ──────────────────────────
+        success, reason = validate_high_utility_code(result.final_code)
+        if not success:
+            reason = f"ValueGateError: {reason}"
+            log.error(f"Post-generation gate rejected {alpha.repo_name}: {reason}")
+            mark_alpha_failed(alpha.alpha_id, reason)
+            return None
+            
+        # ── Execution Reality Gate (v1.10.1) ────────────────────────────────
+        success, reason = validate_execution_reality(result.final_output)
+        if not success:
+            reason = f"ExecutionRealityError: {reason}"
+            log.warning(f"Execution Reality Gate rejected module: {reason}")
+            mark_alpha_failed(alpha.alpha_id, reason)
+            return None
+            
+        # Build metadata header
+        meta_header = f'''"""
+# MBRN_MODULE_META
+# alpha_id: {alpha.alpha_id}
+# repo_name: {alpha.repo_name}
+# source_type: {alpha.source_type}
+# quality_score: {alpha.quality_score}
+# roi_score: {alpha.roi_score}
+# dimension: {alpha.dimension}
+# category: {alpha.category}
+# manufactured_at: {datetime.now(timezone.utc).isoformat()}
 """
 
 '''
-    output_path.write_text(header + result.final_code, encoding="utf-8")
-    
-    # DB Upsert
-    upsert_factory_module(
-        name=output_path.stem,
-        dimension=alpha.dimension if alpha.dimension in CANONICAL_DIMENSIONS else "systeme",
-        source_file=str(output_path),
-        frontend_file=None,
-        status="ready",
-        quality_score=alpha.roi_score,
-        raw_data={
-            "alpha_id": alpha.alpha_id,
-            "repo_name": alpha.repo_name,
-            "roi_score": alpha.roi_score,
-            "agent_attempts": result.total_attempts,
-        },
-    )
-    
-    # Mark as processed
-    mark_alpha_processed(alpha.alpha_id)
-    mark_scout_alpha_status(alpha.alpha_id, "processed")
-    
-    # Dashboard Notification
-    push_dashboard_notification(alpha, output_path, result)
-    
-    log.info(f"✅ SUCCESS: Factory module manufactured at {output_path}")
+        # Prepend metadata header to generated code
+        final_code = meta_header + result.final_code
+        
+        # Write to factory_ready directory (Initial Landing Zone)
+        FACTORY_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        safe_name = alpha.repo_name.replace('/', '_').replace('\\', '_')
+        output_path = FACTORY_OUTPUT_DIR / f"{safe_name}_module.py"
+        
+        output_path.write_text(final_code, encoding='utf-8')
+        log.info(f"Module written to landing zone: {output_path}")
 
-    return FactoryResult(
-        alpha_id=alpha.alpha_id,
-        repo_name=alpha.repo_name,
-        roi_score=alpha.roi_score,
-        module_name=output_path.stem,
-        output_path=str(output_path),
-        stdout_preview=result.final_output[:500],
-        total_agent_attempts=result.total_attempts
-    )
-
+        # NOTE: v1.11.0 Decoupling. Value Routing is now handled by a 
+        # separate standalone process (mbrn_value_router.py) watching this dir.
+        
+        # Register in Database for Logic Auditor
+        upsert_factory_module(
+            name=safe_name,
+            dimension=alpha.dimension,
+            source_file=alpha.source_url,
+            frontend_file=str(output_path.relative_to(_PROJECT_ROOT)),
+            status="deployed",
+            raw_data={
+                "alpha_id": alpha.alpha_id,
+                "roi_score": alpha.roi_score,
+                "agent_attempts": result.total_attempts,
+                "category": alpha.category
+            }
+        )
+        
+        # Mark as processed in source
+        mark_alpha_processed(alpha.alpha_id)
+        
+        # Push dashboard notification
+        push_dashboard_notification(alpha, output_path, result)
+        
+        return FactoryResult(
+            alpha_id=alpha.alpha_id,
+            repo_name=alpha.repo_name,
+            roi_score=alpha.roi_score,
+            module_name=output_path.name,
+            output_path=str(output_path),
+            stdout_preview=result.final_output[:500],
+            total_agent_attempts=result.total_attempts,
+            success=True
+        )
+        
+    except Exception as exc:
+        log.error(f"process_alpha failed for {alpha.repo_name}: {exc}")
+        import traceback
+        log.error(f"Traceback: {traceback.format_exc()}")
+        mark_alpha_failed(alpha.alpha_id, str(exc))
+        return None
 
 # ---------------------------------------------------------------------------
 # Single-Pass Nexus Sweep
@@ -819,8 +1206,10 @@ def run_infinite_nexus_loop():
                 log.info("Factory control paused Nexus. Sweep skipped.")
             else:
                 run_nexus_sweep()
-        except Exception as exc:
+        except (NameError, AttributeError, Exception) as exc:
             log.error(f"Nexus loop iteration failed: {exc}")
+            import traceback
+            log.error(f"Traceback: {traceback.format_exc()}")
         log.info(f"Cooldown: {NEXUS_COOLDOWN_MINUTES} minutes...")
         time.sleep(NEXUS_COOLDOWN_MINUTES * 60)
 

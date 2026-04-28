@@ -14,6 +14,9 @@ import json
 import os
 import subprocess
 import time
+
+# Windows: Suppress console window for subprocess calls
+CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
@@ -27,7 +30,7 @@ TOOL_REQUESTS_PATH = DATA_DIR / "tool_requests.json"
 SANDBOX_CONTROLLER = PROJECT_ROOT / "scripts" / "pipelines" / "sandbox_controller.py"
 
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
-CODER_MODEL = "deepseek-coder-v2"
+CODER_MODEL = "qwen2.5-coder:14b"
 
 
 def utc_now() -> str:
@@ -97,7 +100,7 @@ def run_sandbox_validation(script_path: Path) -> Tuple[bool, str]:
             "--timeout",
             "30"
         ]
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, creationflags=CREATE_NO_WINDOW)
         return result.returncode == 0, result.stdout + result.stderr
     except Exception as exc:
         return False, str(exc)

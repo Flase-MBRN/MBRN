@@ -48,6 +48,9 @@ import os
 import sys
 import logging
 import time
+
+# Windows: Suppress console window for subprocess calls
+CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
 from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Optional
@@ -120,7 +123,8 @@ def _image_exists(image_name: str) -> bool:
     result = subprocess.run(
         ["docker", "images", "-q", image_name],
         capture_output=True,
-        text=True
+        text=True,
+        creationflags=CREATE_NO_WINDOW
     )
     return bool(result.stdout.strip())
 
@@ -152,7 +156,8 @@ def ensure_sandbox_image() -> bool:
     result = subprocess.run(
         build_cmd,
         capture_output=False,  # Let build output stream to console
-        text=True
+        text=True,
+        creationflags=CREATE_NO_WINDOW
     )
 
     if result.returncode == 0:
@@ -239,7 +244,8 @@ def execute_in_sandbox(code_string: str) -> SandboxResult:
                 docker_cmd,
                 capture_output=True,
                 text=True,
-                timeout=EXECUTION_TIMEOUT
+                timeout=EXECUTION_TIMEOUT,
+                creationflags=CREATE_NO_WINDOW
             )
             elapsed_ms = int((time.monotonic() - start_time) * 1000)
 

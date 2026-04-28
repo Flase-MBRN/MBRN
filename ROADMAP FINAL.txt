@@ -1,0 +1,158 @@
+Mega-Audit (Dein „A“) — c:\DevLab\MBRN-HUB-V1 (Full Recursive, Read‑Only)
+0) Kanon-Check (Realitycheck)
+Kanon vorhanden: 000_CANONICAL_STATE.json (Authority: “single source of truth”).
+Drift-Tracker vorhanden: 000_DRIFT_REPORT.json
+Drift Item: dimensions/ Duplicate/Naming-Violations (v3 Nomenklatur) — Status action_required.
+1) Repo Hygiene / Current Working State (Evidence)
+git status --porcelain zeigt viele lokale Modifications + untracked deployed folders:
+Modified: u.a. scripts/pipelines/*.py, dashboard/*, bridges/local_llm/bridge.py, ecosystem.config.cjs
+Untracked: dimensions/*/deployed/ (mehrere), plus trigger.py, plus ein File namens $null
+Impact
+Deine lokale Arbeitskopie ist gerade nicht clean → Audit-Fundstellen sind trotzdem valide, aber “Ist-Zustand” ist potentiell “Work-in-progress”.
+2) Security & Secrets (P0/P1)
+P0 — Frontend greift Supabase direkt mit hardcoded User-Identifier ab (Datenschutz/Access Control)
+Evidence
+Datei: dashboard/data_vault.html
+Stelle: user_id=eq.erikk2k5@gmail.com in der Query-URL (ca. Zeile 81)
+Zusätzlich wird window.MBRN_CONFIG inline gesetzt (Zeile 58-62) und dann per fetch Rest-API benutzt.
+Risiko/Impact
+PII hardcoded in ausgeliefertem Frontend (E-Mail).
+Vault ist offensichtlich nicht “multi-user safe”, sondern auf einen User fest verdrahtet.
+Wenn RLS nicht 100% sitzt, kann das direkt Daten leaken.
+Fix-Vorschlag
+User-Identität darf nicht als hardcoded Queryparam im Frontend stehen.
+Authenticated user-id muss aus Supabase Auth kommen (JWT) oder via Edge Function proxy.
+P0 — CSP zu locker: unsafe-inline + unsafe-eval
+Evidence
+dashboard/data_vault.html CSP (Zeile 7): script-src ... 'unsafe-inline' 'unsafe-eval'
+Risiko/Impact
+XSS Surface massiv erhöht, gerade bei viel dynamischem DOM.
+Fix-Vorschlag
+Inline-Skripte raus, module-scripts nutzen + CSP ohne unsafe-*.
+P1 — Public Supabase Anon Key ist im Repo (okay, aber muss bewusst sein)
+Evidence
+shared/core/env.js enthält
+SUPABASE_URL: 'https://wqfijgzlxypqftwwoxxp.supabase.co'
+SUPABASE_ANON_KEY: 'sb_publishable_...'
+Bewertung
+Das ist by design public (Datei warnt auch korrekt davor).
+Sicherheit hängt voll an RLS + Edge Functions für “sensitive ops”.
+P1 — .env existiert lokal mit Secrets, aber ist nicht getrackt (gut) → trotzdem “Operator Risk”
+Evidence
+scripts/pipelines/.env existiert (enthält Keys), aber:
+git ls-files scripts/pipelines/.env → nicht gelistet (also nicht committed).
+.gitignore ignoriert scripts/**/.env korrekt.
+Risiko/Impact
+Kein Repo-Leak aktuell belegt — aber lokale Backups/Logs/Copy-Pastes bleiben Risiko.
+Fix-Vorschlag
+Keys trotzdem wie “sensitive” behandeln; Rotation nur nötig, wenn du weißt, dass es irgendwo geteilt/gepusht wurde.
+P1 — Default Dev-Key in Deploy Script
+Evidence
+scripts/deploy_function.ps1:
+Wenn Enter gedrückt: mbrn_dev_admin_key_999
+Risiko/Impact
+Standard-Key Patterns führen in der Praxis zu “vergessen zu ändern” → Security-Fail.
+Fix-Vorschlag
+Kein Default-Key. Abbruch wenn leer, oder random generator.
+3) Automation Reliability (Scheduler/Orchestrierung)
+Architektur-Realität: Du hast 2 Orchestratoren
+A) PowerShell-Orchestrierung (lokal/operator-driven)
+scripts/pipelines/mbrn_full_system_autostart.ps1 startet:
+sentinel_daemon.py (hidden)
+day_zero_autopilot.ps1
+mbrn_nexus_bridge.py, mbrn_ouroboros_agent.py, mbrn_live_monitor.py, mbrn_prime_director.py, mbrn_bridge_agent.py
+B) PM2 Orchestrierung (daemonized)
+ecosystem.config.cjs definiert Prozesse:
+sentinel, scout, nexus-bridge, live-monitor, ouroboros (autorestart false), bridge-agent, prime-director, logic-auditor, hub-observer, cockpit-server
+P1 — “No-Build Enforcement” Drift / Betriebsmodell-Unklarheit
+Evidence
+ecosystem.config.cjs fordert PM2 (Node ecosystem)
+PM2_MBRN_Autostart.bat nutzt pm2 resurrect
+scripts/deploy_function.ps1 sagt “Supabase CLI via: npm i -g supabase”
+Risiko/Impact
+Laut globalen Regeln ist “npm im ACTIVE Sektor” Null-Toleranz (Law 8). Hier wird npm/pm2 operational vorausgesetzt.
+Fix-Vorschlag
+Entscheiden: Ist Node/PM2 offiziell erlaubt als “ops tool”? Wenn ja, muss das kanonisch dokumentiert/abgesegnet sein.
+Wenn nein: PM2 Pfad abbauen und rein PowerShell/Python services.
+P1 — Python Interpreter Resolve inkonsistent
+Evidence
+PM2 config nutzt fest: venv\\Scripts\\pythonw.exe
+PowerShell autostart startet teils python.exe direkt (ohne klare venv activation).
+day_zero_autopilot.ps1 macht resolver (central venv -> local venv -> global python) — das ist gut.
+Risiko/Impact
+“Works on my machine” / unklare Dependencies / falsches venv.
+Fix-Vorschlag
+Eine kanonische Methode: “immer RepoRoot\venv\Scripts\python.exe” oder “MBRN-VENV” + harte Checks.
+P2 — Sentinel .env path probing wirkt fehlerhaft
+Evidence
+scripts/pipelines/sentinel_daemon.py load_env() checkt:
+Path(__file__).parent / ".env" (ok)
+Path(__file__).parent / "scripts" / "pipelines" / ".env" (wirkt wie doppelt verschachtelt)
+Impact
+Zweiter Pfad ist wahrscheinlich nie korrekt → unnötig/irreführend.
+4) Python Pipelines / Data Integrity / UTC
+Positiv (Pass-Kandidaten)
+UTC (Law 15): in mehreren Kernstellen genutzt
+z.B. pipeline_utils.log() nutzt datetime.now(timezone.utc).isoformat()
+Worker speichern datetime.now(timezone.utc).isoformat() (z.B. trust_matrix_worker.py snippet aus vorherigem Scan)
+Timeouts: einige Requests haben Timeouts (local_llm_enrichment_worker.py timeout=30, admin CLI timeout=20)
+Idempotency/Claiming Pattern: local_llm_enrichment_worker.py nutzt claim per PATCH analysis_status eq pending → grundsätzlich brauchbar gegen double-processing.
+Risiken / Findings
+P1 — Direkte Supabase Service-Role Nutzung in lokalen Tools (ok, aber sehr gefährlich)
+Evidence
+scripts/pipelines/local_llm_enrichment_worker.py und admin_entitlement_cli.py bauen Headers:
+"Authorization": f"Bearer {service_role_key}"
+Impact
+Service role ist “god mode”. Wenn irgendwo geloggt/geleakt → Vollschaden.
+Fix
+Nur auf Operator-Maschine, nie in UI, niemals in logs. (Audit: aktuell wird key nicht geloggt — gut.)
+P2 — Pipeline Utilities sind sehr groß (Law 1 Risiko)
+Evidence
+scripts/pipelines/pipeline_utils.py ist ~65kB / ~1800 Zeilen (laut früherem Read)
+Impact
+Wartbarkeit sinkt, Audit wird schwerer.
+Fix
+In Module splitten (Supabase uplink / ollama / caching / IO locks / logging).
+5) Canon Drift / Repo Struktur
+P1 — dimensions/*/deployed/ erzeugt lokale Drift (untracked)
+Evidence
+git status zeigt dimensions/.../deployed/ als untracked.
+Impact
+“Deployed artifacts” liegen im Repo-Tree → muss klar ignoriert/relocated sein (sonst repo wächst & drift).
+Fix
+Entweder strikt ignorieren (scheint so), oder output in klaren output-folder außerhalb repo.
+P2 — docs/S3_Data/ wird in .gitignore ignoriert (aber existiert)
+Evidence
+.gitignore: docs/S3_Data/
+Ordner existiert: docs/S3_Data/
+Impact
+Dokumentationspflicht kann “lokal” passieren ohne in git zu landen → Doku-Drift möglich.
+Fix
+Entscheiden: Welche Teile von docs/S3_Data sollen tracked sein (Schemas, Contracts) vs. Outputs/Errors.
+Scorecard (0–100) + Pass/Fail
+Security & Secrets — 35/100 (FAIL)
+Fail Gründe
+Hardcoded PII/User query im Frontend (data_vault.html)
+CSP erlaubt unsafe inline/eval
+Deploy script hat default dev key
+Pass Punkte
+.env ist korrekt ignored (nicht committed, soweit geprüft)
+Automation Reliability — 60/100 (PARTIAL)
+Stärken
+PM2 ecosystem ist ordentlich (watch=false, memory limits, restarts)
+Day-Zero hat readiness checks & log routing
+Schwächen
+Doppeltes Betriebsmodell (PS1 vs PM2) ohne “single source of ops truth”
+Python exe resolution inkonsistent
+Data Pipelines (Python/Ollama) — 70/100 (PARTIAL)
+Stärken
+UTC usage sichtbar
+timeouts/claiming patterns vorhanden
+Schwächen
+Monolith pipeline_utils.py
+Service role usage braucht harte Guardrails (policy/ops)
+Canon Drift/Compliance — 55/100 (PARTIAL)
+Stärken
+Kanon + drift report existieren
+Schwächen
+dimensions deployed outputs + local modifications/untracked artifacts → drift pressure bleibt

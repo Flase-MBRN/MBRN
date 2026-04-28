@@ -47,7 +47,7 @@ NOTIFICATIONS_PATH = DATA_DIR / "nexus_notifications.json"
 OLLAMA_URL = os.getenv("OLLAMA_GENERATE_URL", "http://127.0.0.1:11434/api/generate")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-PRIME_MODEL = "phi4:latest"
+PRIME_MODEL = "qwen2.5-coder:14b"
 REPAIR_MODEL = "qwen2.5-coder:14b"
 DEFAULT_INTERVAL_MINUTES = 30
 

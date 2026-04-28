@@ -3,7 +3,7 @@
 ================================================================================
 MBRN Hub Observer - Cockpit Data Aggregator
 ================================================================================
-Monitors all 8 PM2 processes and writes structured state to hub_state.json.
+Monitors all 11 PM2 processes and writes structured state to hub_state.json.
 
 Responsibilities:
 - Poll PM2 status every 2 seconds
@@ -24,6 +24,9 @@ import re
 import subprocess
 import sys
 import time
+
+# Windows: Suppress console window for subprocess calls
+CREATE_NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -56,11 +59,14 @@ PM2_PROCESSES = [
     "sentinel-daemon",
     "horizon-scout",
     "nexus-bridge",
+    "value-router",
     "ouroboros-agent",
     "bridge-agent",
     "live-monitor",
     "logic-auditor",
     "prime-director",
+    "cockpit-server",
+    "cockpit-sync",
 ]
 
 # Triage Classification Keywords
@@ -125,12 +131,14 @@ class HubObserver:
     def _parse_pm2_jlist(self) -> List[Dict[str, Any]]:
         """Get PM2 process list via pm2 jlist command."""
         try:
+            # Use shell=True on Windows to find pm2 in PATH
             result = subprocess.run(
-                ["pm2", "jlist"],
+                "pm2 jlist",
                 capture_output=True,
                 text=True,
                 timeout=10,
-                shell=False
+                shell=True,
+                creationflags=CREATE_NO_WINDOW
             )
             if result.returncode == 0:
                 return json.loads(result.stdout)
@@ -273,9 +281,11 @@ class HubObserver:
         triage = self._classify_triage(last_log)
         
         # Determine status
-        if pm2_status != "online":
+        # WATCHMAN MODE: All agents are expected to be online continuously
+        # Note: 'waiting restart' is allowed for cycling tasks like cockpit-sync
+        if pm2_status not in ["online", "waiting restart", "launching"]:
             status = "offline"
-            triage = "CRITICAL"
+            triage = "CRITICAL"  # Watchman agents must stay online
         elif triage == "CRITICAL":
             status = "critical"
         elif triage == "RECOVERY":
@@ -397,7 +407,7 @@ class HubObserver:
             # Log system status summary
             sys_status = state["system"]
             if sys_status["critical_processes"] > 0:
-                log.warning(f"System status: {sys_status['critical_count']} CRITICAL, {sys_status['recovering_processes']} RECOVERING")
+                log.warning(f"System status: {sys_status['critical_processes']} CRITICAL, {sys_status['recovering_processes']} RECOVERING")
             elif sys_status["recovering_processes"] > 0:
                 log.info(f"System status: {sys_status['recovering_processes']} recovering, {sys_status['healthy_processes']} nominal")
             else:

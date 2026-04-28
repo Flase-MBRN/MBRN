@@ -96,7 +96,7 @@ print(count)
     expect(nexus).toContain('upsert_factory_module(');
     expect(prime).toContain('def is_factory_paused()');
     expect(prime).toContain('save_db_factory_control');
-    expect(bridge).toContain('OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")');
+    expect(bridge).toContain('OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5-coder:14b")');
     expect(bridge).toContain('OLLAMA_TIMEOUT_SECONDS = int(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "300"))');
     expect(bridge).toContain('MIN_HTML_CHARS = 500');
     expect(bridge).toContain('def run_bridge_batch(');

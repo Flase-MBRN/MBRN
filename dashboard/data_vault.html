@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Data Vault - MBRN Hub</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;">
 
   <link rel="stylesheet" href="../shared/ui/theme.css">
   <link rel="stylesheet" href="../shared/ui/components.css">
@@ -54,12 +54,8 @@
     import { actions } from '../shared/application/actions.js';
     import { renderNavigation, nav } from '../pillars/frontend_os/navigation/index.js';
     import { renderAuth } from '../pillars/frontend_os/ui_states/auth_controller.js';
-    
-    // Inject MBRN_CONFIG for direct Supabase access
-    window.MBRN_CONFIG = {
-        supabaseUrl: 'https://wqfijgzlxypqftwwoxxp.supabase.co',
-        supabaseKey: 'sb_publishable_2K9K_RcFJyO5VS2XYlAWag_qFJuKseO'
-    };
+    import { ENV } from '../shared/core/env.js';
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
     async function loadVault() {
         // Initialize Scroll Reveal (MBRN Standard)
@@ -76,13 +72,34 @@
         const loader = document.getElementById('vault-loader');
         const empty = document.getElementById('vault-empty');
 
+        // Initialize Supabase Client
+        const supabase = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_ANON_KEY);
+
+        // Check Authentication
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session) {
+            loader.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 3rem; margin-bottom: 16px;">🔒</div>
+                    <div style="font-weight: 600; margin-bottom: 8px;">Nicht authentifiziert</div>
+                    <div style="opacity: 0.7;">Bitte einloggen, um den Data Vault zu sehen.</div>
+                </div>
+            `;
+            loader.style.color = '#fff';
+            return;
+        }
+
+        const userId = session.user.id;
+        const accessToken = session.access_token;
+
         try {
-            // Fetch from user_module_data
-            const url = `${window.MBRN_CONFIG.supabaseUrl}/rest/v1/user_module_data?user_id=eq.erikk2k5@gmail.com&select=*&order=updated_at.desc`;
+            // Fetch from user_module_data with dynamic user ID and JWT
+            const url = `${ENV.SUPABASE_URL}/rest/v1/user_module_data?user_id=eq.${userId}&select=*&order=updated_at.desc`;
             const response = await fetch(url, {
                 headers: {
-                    'apikey': window.MBRN_CONFIG.supabaseKey,
-                    'Authorization': `Bearer ${window.MBRN_CONFIG.supabaseKey}`
+                    'apikey': ENV.SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${accessToken}`
                 }
             });
 
@@ -138,11 +155,11 @@
                     deleteBtn.disabled = true;
                     deleteBtn.textContent = 'LÖSCHE...';
                     
-                    const res = await fetch(`${window.MBRN_CONFIG.supabaseUrl}/rest/v1/user_module_data?user_id=eq.erikk2k5@gmail.com&module_id=eq.${item.module_id}`, {
+                    const res = await fetch(`${ENV.SUPABASE_URL}/rest/v1/user_module_data?user_id=eq.${userId}&module_id=eq.${item.module_id}`, {
                         method: 'DELETE',
                         headers: {
-                            'apikey': window.MBRN_CONFIG.supabaseKey,
-                            'Authorization': `Bearer ${window.MBRN_CONFIG.supabaseKey}`
+                            'apikey': ENV.SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${accessToken}`
                         }
                     });
 

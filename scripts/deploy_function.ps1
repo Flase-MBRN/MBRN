@@ -7,10 +7,10 @@ Write-Host "==========================================================" -Foregro
 Write-Host " MBRN - SUPABASE EDGE FUNCTION DEPLOYER (PILLAR 3)" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-$apiKey = Read-Host "Bitte gib einen sicheren API Key fuer DATA_ARB_API_KEY ein (Enter fuer Development-Key)"
+$apiKey = Read-Host "Bitte gib einen sicheren API Key fuer DATA_ARB_API_KEY ein"
 if ([string]::IsNullOrWhiteSpace($apiKey)) {
-    $apiKey = "mbrn_dev_admin_key_999"
-    Write-Host "Setze automatischen Dev-Key: $apiKey" -ForegroundColor Yellow
+    Write-Host "FEHLER: Kein API Key angegeben. Deployment abgebrochen." -ForegroundColor Red
+    exit 1
 }
 
 Write-Host "`n[1/2] Deployment der Edge Funktion 'market_sentiment'..." -ForegroundColor Green

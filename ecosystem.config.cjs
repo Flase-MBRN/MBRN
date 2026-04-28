@@ -3,23 +3,21 @@
  * MBRN PM2 ECOSYSTEM CONFIGURATION
  * ================================================================================
  * Backend orchestration for the "Silent Engine" - no more batch terminal chaos.
- * 
- * USAGE:
- *   npm install -g pm2                    # Install PM2 globally (once)
- *   pm2 start ecosystem.config.js         # Start all services
- *   pm2 status                           # View running services
- *   pm2 logs                             # View all logs
- *   pm2 stop all                         # Stop all services
- *   pm2 delete all                       # Remove all from PM2
- *   pm2 startup                          # Enable auto-start on boot
- *   pm2 save                             # Save current process list
- * 
- * SAFETY FEATURES:
- *   - watch: false (no restart on file changes - prevents JSON-triggered restarts)
- *   - autorestart: true (auto-recovery from crashes)
- *   - max_memory_restart: 1G (Memory leak protection)
- *   - max_restarts: 10 (prevent restart loops)
- *   - min_uptime: 10s (ensure stability before marking as online)
+ * * USAGE:
+ * npm install -g pm2                     # Install PM2 globally (once)
+ * pm2 start ecosystem.config.js         # Start all services
+ * pm2 status                             # View running services
+ * pm2 logs                               # View all logs
+ * pm2 stop all                           # Stop all services
+ * pm2 delete all                         # Remove all from PM2
+ * pm2 startup                            # Enable auto-start on boot
+ * pm2 save                               # Save current process list
+ * * SAFETY FEATURES:
+ * - watch: false (no restart on file changes - prevents JSON-triggered restarts)
+ * - autorestart: true (auto-recovery from crashes)
+ * - max_memory_restart: 1G (Memory leak protection)
+ * - max_restarts: 10 (prevent restart loops)
+ * - min_uptime: 10s (ensure stability before marking as online)
  * ================================================================================
  */
 
@@ -30,8 +28,8 @@ const PROJECT_ROOT = __dirname;
 const PIPELINES_DIR = path.join(PROJECT_ROOT, 'scripts', 'pipelines');
 const LOGS_DIR = path.join(PROJECT_ROOT, 'logs', 'pm2');
 
-// Python interpreter (venv or global fallback)
-// Using pythonw.exe for windowless/fensterlos execution (no terminal windows)
+// Python interpreter (venv canonical)
+// LAW 8 OPS EXCEPTION: PM2 is the canonical orchestrator
 const PYTHON = path.join(PROJECT_ROOT, 'venv', 'Scripts', 'pythonw.exe');
 
 // Common environment variables
@@ -39,6 +37,7 @@ const env = {
   NODE_ENV: 'production',
   PYTHONUNBUFFERED: '1',
   PYTHONIOENCODING: 'utf-8',
+  PYTHONUTF8: '1',
   MBRN_ROOT: PROJECT_ROOT,
   MBRN_ENABLE_SCOUT: '1',
   // Supabase credentials loaded from .env or config
@@ -61,6 +60,7 @@ module.exports = {
       // Process management
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       // Safety: NO file watching (prevents JSON-triggered restarts)
       watch: false,
@@ -102,6 +102,7 @@ module.exports = {
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules'],
@@ -136,6 +137,7 @@ module.exports = {
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules', 'outputs'],
@@ -160,6 +162,41 @@ module.exports = {
     },
 
     // ---------------------------------------------------------------------------
+    // VALUE ROUTER - Module Scoring & Routing (WATCHMAN MODE)
+    // ---------------------------------------------------------------------------
+    {
+      name: 'value-router',
+      script: path.join(PIPELINES_DIR, 'mbrn_value_router.py'),
+      interpreter: PYTHON,
+      cwd: PIPELINES_DIR,
+      
+      instances: 1,
+      exec_mode: 'fork',
+      shell: false,
+      
+      watch: false,
+      ignore_watch: ['*.json', '*.log', 'logs', 'node_modules', 'outputs'],
+      
+      autorestart: true,
+      max_restarts: 10,
+      min_uptime: '10s',
+      
+      max_memory_restart: '512M',
+      
+      log_file: path.join(LOGS_DIR, 'value-router.log'),
+      out_file: path.join(LOGS_DIR, 'value-router-out.log'),
+      error_file: path.join(LOGS_DIR, 'value-router-error.log'),
+      merge_logs: true,
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      
+      env: env,
+      env_production: env,
+      
+      kill_timeout: 5000,
+      listen_timeout: 10000,
+    },
+
+    // ---------------------------------------------------------------------------
     // LIVE MONITOR - System Health Observer
     // ---------------------------------------------------------------------------
     {
@@ -167,9 +204,11 @@ module.exports = {
       script: path.join(PIPELINES_DIR, 'mbrn_live_monitor.py'),
       interpreter: PYTHON,
       cwd: PIPELINES_DIR,
+      args: '--infinite',
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules'],
@@ -201,13 +240,15 @@ module.exports = {
       script: path.join(PIPELINES_DIR, 'mbrn_ouroboros_agent.py'),
       interpreter: PYTHON,
       cwd: PIPELINES_DIR,
-      
+      args: '--infinite',
+
       instances: 1,
       exec_mode: 'fork',
-      
+      shell: false,
+
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules', 'outputs'],
-      
+
       autorestart: true,
       max_restarts: 5, // Fewer restarts for mutation engine (safety)
       min_uptime: '30s', // Require longer stability for mutation engine
@@ -228,7 +269,7 @@ module.exports = {
     },
 
     // ---------------------------------------------------------------------------
-    // BRIDGE AGENT - HTML Production Pipeline
+    // BRIDGE AGENT - HTML Production Pipeline (WATCHMAN MODE)
     // ---------------------------------------------------------------------------
     {
       name: 'bridge-agent',
@@ -238,12 +279,13 @@ module.exports = {
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules', 'outputs'],
       
-      autorestart: false,
-      cron_restart: '*/1 * * * *',
+      // WATCHMAN MODE: Dauerhaft online, 2-Sekunden-DB-Polling
+      autorestart: true,
       max_restarts: 10,
       min_uptime: '10s',
       
@@ -267,12 +309,13 @@ module.exports = {
     // ---------------------------------------------------------------------------
     {
       name: 'prime-director',
-      script: path.join(PIPELINES_DIR, 'mbrn_prime_director.py'),
+      script: path.join(PIPELINES_DIR, 'mbrn_prime_director_v2.py'),
       interpreter: PYTHON,
       cwd: PIPELINES_DIR,
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules', 'outputs'],
@@ -297,7 +340,7 @@ module.exports = {
     },
 
     // ---------------------------------------------------------------------------
-    // LOGIC AUDITOR - Code Quality Guardian
+    // LOGIC AUDITOR - Code Quality Guardian (WATCHMAN MODE)
     // ---------------------------------------------------------------------------
     {
       name: 'logic-auditor',
@@ -307,12 +350,13 @@ module.exports = {
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules'],
       
-      autorestart: false,
-      cron_restart: '*/1 * * * *',
+      // WATCHMAN MODE: Dauerhaft online, 2-Sekunden-DB-Polling
+      autorestart: true,
       max_restarts: 10,
       min_uptime: '10s',
       
@@ -342,6 +386,7 @@ module.exports = {
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       ignore_watch: ['*.json', '*.log', 'logs', 'node_modules'],
@@ -370,12 +415,13 @@ module.exports = {
     // ---------------------------------------------------------------------------
     {
       name: 'cockpit-server',
-      script: 'python',
+      script: PYTHON, // Nutzt jetzt zwingend pythonw.exe
       args: '-m http.server 8080',
       cwd: PROJECT_ROOT, // Root dir to access /shared/data/
       
       instances: 1,
       exec_mode: 'fork',
+      shell: false,
       
       watch: false,
       autorestart: true,
@@ -394,6 +440,15 @@ module.exports = {
       kill_timeout: 2000,
       listen_timeout: 3000,
     },
+    {
+      name: 'cockpit-sync',
+      script: 'powershell',
+      args: ['-File', 'scripts/pipelines/mbrn_cockpit_sync.ps1'],
+      autorestart: true,
+      restart_delay: 30000,
+      watch: false,
+      env: { NODE_ENV: 'production' }
+    }
   ],
 
   // ==============================================================================

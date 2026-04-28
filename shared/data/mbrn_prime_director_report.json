@@ -1,36 +1,23 @@
 {
-  "generated_at": "2026-04-26T14:43:25+00:00",
+  "generated_at": "2026-04-27T22:20:14+00:00",
   "dry_run": true,
   "model": "phi4:latest",
   "repair_model": "qwen2.5-coder:14b",
   "model_success": false,
-  "repair_used": true,
-  "fallback_used": false,
+  "repair_used": false,
+  "fallback_used": true,
   "validation_status": "ok",
   "validation_warnings": [],
   "sensor_snapshot": {
-    "generated_at": "2026-04-26T14:40:38+00:00",
-    "discoveries": 34,
+    "generated_at": "2026-04-27T22:20:10+00:00",
+    "discoveries": 54,
     "processed_alphas": 0,
     "backlog_alphas": 34,
     "seen_repo_ids": 0,
-    "factory_ready_modules": 2,
+    "factory_ready_modules": 34,
     "factory_memory_docs": 0,
     "nexus_notifications": 200,
-    "recent_findings": [
-      "horizon_scout_2026-04-26_144035.log: \u001b[1m\u001b[38;2;79;255;176m[14:40:35 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_144035.log: \u001b[1m\u001b[38;2;79;255;176m[14:40:35 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_144035.log: \u001b[1m\u001b[38;2;79;255;176m[14:40:35 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\core_logic\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_141714.log: \u001b[1m\u001b[38;2;255;107;107m[14:38:39 UTC] [SCOUT] [ERROR] Iteration #5 failed: name 'read_file_content' is not defined\u001b[0m",
-      "horizon_scout_2026-04-26_141714.log: \u001b[1m\u001b[38;2;255;107;107m[14:28:08 UTC] [SCOUT] [ERROR] Iteration #3 failed: name 'read_file_content' is not defined\u001b[0m",
-      "horizon_scout_2026-04-26_141714.log: \u001b[1m\u001b[38;2;255;107;107m[14:22:47 UTC] [SCOUT] [ERROR] Iteration #2 failed: name 'read_file_content' is not defined\u001b[0m",
-      "horizon_scout_2026-04-26_141714.log: \u001b[1m\u001b[38;2;79;255;176m[14:17:14 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_141714.log: \u001b[1m\u001b[38;2;79;255;176m[14:17:14 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_141714.log: \u001b[1m\u001b[38;2;79;255;176m[14:17:14 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\core_logic\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_143737.log: \u001b[1m\u001b[38;2;79;255;176m[14:37:37 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_143737.log: \u001b[1m\u001b[38;2;79;255;176m[14:37:37 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\autonomy\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m",
-      "horizon_scout_2026-04-26_143737.log: \u001b[1m\u001b[38;2;79;255;176m[14:37:37 UTC] [SCOUT] [OK] Alpha Vault entry created: C:\\DevLab\\MBRN-HUB-V1\\shared\\alphas\\core_logic\\2026-04-26_perrorapidito_declaracion-renta-ai\u001b[0m"
-    ],
+    "recent_findings": [],
     "current_control": {
       "scout_status": "running",
       "nexus_status": "running",
@@ -41,12 +28,13 @@
     }
   },
   "proposed_control": {
-    "scout_status": "paused",
-    "nexus_status": "paused",
+    "scout_status": "running",
+    "nexus_status": "running",
     "nexus_roi_threshold": 80.0,
     "ouroboros_target_file": null,
-    "prime_directive": "repair"
+    "prime_directive": "Maintain stable throughput and clear the current factory backlog.",
+    "factory_paused": false
   },
-  "raw_model_response_preview": "timed out",
+  "raw_model_response_preview": "<urlopen error [WinError 10061] Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte>",
   "control_panel_unchanged": true
 }

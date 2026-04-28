@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Business Audit Assistant | MBRN Hub</title>
+    <link rel="stylesheet" href="../../../shared/ui/theme.css">
+    <link rel="stylesheet" href="../../../shared/ui/components.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="void-bg">
+    <div class="bg-glow"></div>
+    
+    <main class="hub-container">
+        <header class="tool-hero reveal visible">
+            <span class="hero-eyebrow">MBRN Utility Engine</span>
+            <h1 class="hero-title">Business Website Audit</h1>
+            <p class="hero-subtitle">Lokale Webseiten prüfen und professionelle Optimierungs-Vorschläge erstellen.</p>
+        </header>
+
+        <!-- Step 1: Input -->
+        <section id="input-section" class="tool-section reveal visible">
+            <div class="section-card">
+                <h2>Neue Analyse</h2>
+                <div class="form-group">
+                    <label>Name des Unternehmens</label>
+                    <input type="text" id="business-name" placeholder="z.B. Schreinerei Müller">
+                </div>
+                <div class="form-group">
+                    <label>Webseiten-URL</label>
+                    <input type="text" id="business-url" placeholder="https://www.beispiel.de">
+                </div>
+                <button id="start-audit-btn" class="btn-primary">Analyse starten</button>
+            </div>
+        </section>
+
+        <!-- Step 2: Audit Checklist -->
+        <section id="audit-section" class="tool-section reveal" style="display: none;">
+            <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-24">
+                    <h2 id="active-business-name">Analysiere...</h2>
+                    <div class="score-display">
+                        <span class="stat-label">Audit Score</span>
+                        <span id="current-score" class="stat-value text-accent">0</span>
+                    </div>
+                </div>
+
+                <div id="checklist-container" class="checklist-grid mb-24">
+                    <!-- Dynamische Checkliste -->
+                </div>
+
+                <div class="form-group">
+                    <label>Interne Notizen / Beobachtungen</label>
+                    <textarea id="audit-notes" rows="3" placeholder="Besonderheiten für den Erstkontakt..."></textarea>
+                </div>
+
+                <div class="button-group mt-24">
+                    <button id="generate-pitch-btn" class="btn-primary">Vorschlag generieren</button>
+                    <button id="cancel-audit-btn" class="btn-secondary mt-16">Abbrechen</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Pitch & Result -->
+        <section id="result-section" class="tool-section reveal" style="display: none;">
+            <div class="section-card">
+                <h2>Beratungs-Vorschlag</h2>
+                <div class="pitch-container mb-24 p-24" style="background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border);">
+                    <pre id="pitch-text" style="white-space: pre-wrap; font-family: var(--font-body); color: var(--text-secondary); line-height: 1.6;"></pre>
+                </div>
+                <div class="button-group">
+                    <button id="copy-pitch-btn" class="btn-primary">Text kopieren</button>
+                    <button id="save-audit-btn" class="btn-secondary mt-16">Speichern & Neu</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="history-section" class="tool-section reveal visible">
+            <div class="section-card">
+                <h2>Letzte Analysen</h2>
+                <div id="audit-history-list" class="results-grid">
+                    <p class="text-muted text-center p-24">Noch keine Analysen gespeichert.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
